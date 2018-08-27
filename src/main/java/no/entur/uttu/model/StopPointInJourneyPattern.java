@@ -1,7 +1,11 @@
 package no.entur.uttu.model;
 
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.NotNull;
 
 @Entity
 public class StopPointInJourneyPattern extends ProviderEntity {
@@ -9,12 +13,24 @@ public class StopPointInJourneyPattern extends ProviderEntity {
     @ManyToOne
     private FlexibleStopPlace flexibleStopPlace;
 
+    // Reference to quay in external stop place registry (NSR), either this or flexibleStopPlace must be set
+    private String quayRef;
+
+    @NotNull
     @ManyToOne
     private JourneyPattern journeyPattern;
 
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private BookingArrangement bookingArrangement;
+
+
+    // Order is reserved word in db
+    @Column(name = "order_val")
     private int order;
 
-    private String destinationDisplayFrontText;
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private DestinationDisplay destinationDisplay;
 
     public FlexibleStopPlace getFlexibleStopPlace() {
         return flexibleStopPlace;
@@ -24,12 +40,12 @@ public class StopPointInJourneyPattern extends ProviderEntity {
         this.flexibleStopPlace = flexibleStopPlace;
     }
 
-    public String getDestinationDisplayFrontText() {
-        return destinationDisplayFrontText;
+    public DestinationDisplay getDestinationDisplay() {
+        return destinationDisplay;
     }
 
-    public void setDestinationDisplayFrontText(String destinationDisplayFrontText) {
-        this.destinationDisplayFrontText = destinationDisplayFrontText;
+    public void setDestinationDisplay(DestinationDisplay destinationDisplay) {
+        this.destinationDisplay = destinationDisplay;
     }
 
     public int getOrder() {
@@ -46,5 +62,21 @@ public class StopPointInJourneyPattern extends ProviderEntity {
 
     public void setJourneyPattern(JourneyPattern journeyPattern) {
         this.journeyPattern = journeyPattern;
+    }
+
+    public BookingArrangement getBookingArrangement() {
+        return bookingArrangement;
+    }
+
+    public void setBookingArrangement(BookingArrangement bookingArrangement) {
+        this.bookingArrangement = bookingArrangement;
+    }
+
+    public String getQuayRef() {
+        return quayRef;
+    }
+
+    public void setQuayRef(String quayRef) {
+        this.quayRef = quayRef;
     }
 }

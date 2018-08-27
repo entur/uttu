@@ -11,6 +11,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,7 +21,6 @@ import java.util.List;
 )
 public class FlexibleLine extends GroupOfEntities_VersionStructure {
 
-    @NotNull
     private String publicCode;
 
     @Enumerated(EnumType.STRING)
@@ -40,14 +40,14 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
 
     private String operatorRef;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Notice> notices;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private BookingArrangement bookingArrangement;
 
     @OneToMany(mappedBy = "flexibleLine", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<JourneyPattern> journeyPatterns;
+    private final List<JourneyPattern> journeyPatterns = new ArrayList<>();
 
     public String getPublicCode() {
         return publicCode;
@@ -78,7 +78,11 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
     }
 
     public void setJourneyPatterns(List<JourneyPattern> journeyPatterns) {
-        this.journeyPatterns = journeyPatterns;
+        this.journeyPatterns.clear();
+        if (journeyPatterns != null) {
+            journeyPatterns.stream().forEach(jp -> jp.setFlexibleLine(this));
+            this.journeyPatterns.addAll(journeyPatterns);
+        }
     }
 
     public Network getNetwork() {

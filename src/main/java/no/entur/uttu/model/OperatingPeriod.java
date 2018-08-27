@@ -4,7 +4,7 @@ import javax.persistence.Entity;
 import java.time.LocalDate;
 
 @Entity
-public class OperatingPeriod extends ProviderEntity {
+public class OperatingPeriod extends IdentifiedEntity {
 
     private LocalDate fromDate;
 
@@ -25,4 +25,6 @@ public class OperatingPeriod extends ProviderEntity {
     public void setToDate(LocalDate toDate) {
         this.toDate = toDate;
     }
+
+
 }

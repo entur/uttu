@@ -11,7 +11,7 @@ import graphql.GraphQLError;
 import graphql.GraphQLException;
 import io.swagger.annotations.Api;
 import no.entur.uttu.config.ProviderAuthenticationService;
-import no.entur.uttu.config.ProviderContext;
+import no.entur.uttu.config.Context;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,7 +131,7 @@ public class GraphQLResource {
         Response.ResponseBuilder res = Response.status(Response.Status.OK);
         HashMap<String, Object> content = new HashMap<>();
         try {
-            ProviderContext.setProvider(providerId);
+            Context.setProvider(providerId);
             ExecutionInput executionInput = ExecutionInput.newExecutionInput()
                                                     .query(query)
                                                     .operationName(operationName)
@@ -162,7 +162,7 @@ public class GraphQLResource {
             content.put("errors", Arrays.asList(e));
             transactionStatus.setRollbackOnly();
         } finally {
-            ProviderContext.clear();
+            Context.clear();
         }
         // TODO from tiamat: needed? removeErrorStacktraces(content);
         return res.entity(content).build();

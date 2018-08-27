@@ -1,8 +1,12 @@
 package no.entur.uttu.model;
 
+import no.entur.uttu.config.Context;
+
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
@@ -80,4 +84,20 @@ public abstract class IdentifiedEntity {
     public void setVersion(Long version) {
         this.version = version;
     }
+
+    @PrePersist
+    @PreUpdate
+    protected void setMetaData() {
+        String user = Context.getUsername();
+        Instant now = Instant.now();
+        this.setChanged(now);
+        this.setCreatedBy(user);
+
+        if (this.getCreated() == null) {
+            this.setCreated(now);
+            this.setChangedBy(user);
+        }
+    }
+
+
 }

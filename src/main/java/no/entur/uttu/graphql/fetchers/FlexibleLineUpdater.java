@@ -1,22 +1,17 @@
 package no.entur.uttu.graphql.fetchers;
 
-import graphql.schema.DataFetcher;
-import graphql.schema.DataFetchingEnvironment;
+import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.FlexibleLine;
-import no.entur.uttu.repository.FlexibleLineRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("flexibleLineUpdater")
 @Transactional
-public class FlexibleLineUpdater implements DataFetcher<FlexibleLine> {
+public class FlexibleLineUpdater extends AbstractProviderEntityUpdater<FlexibleLine> {
 
-    @Autowired
-    private FlexibleLineRepository flexibleLineRepository;
 
-    @Override
-    public FlexibleLine get(DataFetchingEnvironment env) {
-        return null;
+    public FlexibleLineUpdater(AbstractProviderEntityMapper<FlexibleLine> mapper, ProviderEntityRepository<FlexibleLine> repository) {
+        super(mapper, repository);
     }
 }

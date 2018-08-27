@@ -19,6 +19,9 @@ import javax.validation.constraints.NotNull;
 )
 public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
 
+
+    // TODO create StopPlace superclass, change all references to this.
+
     /**
      * Polygon is wrapped in PersistablePolygon.
      * Because we want to fetch polygons lazily and using lazy property fetching with byte code enhancement breaks tests.

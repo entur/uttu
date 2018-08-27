@@ -18,44 +18,56 @@ package no.entur.uttu.graphql.scalars;
 import graphql.language.StringValue;
 import graphql.schema.Coercing;
 import graphql.schema.GraphQLScalarType;
+import no.entur.uttu.config.ExportTimeZone;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
-public class DateScalar {
+@Component
+public class DateTimeScalar {
 
-    public static final String EXAMPLE = "2017-04-23";
 
+    @Autowired
+    private ExportTimeZone exportTimeZone;
 
-    public static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static final String EXAMPLE_DATE_TIME = "2017-04-23T18:25:43.511+0100";
 
-    private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_FORMAT);
+    /**
+     * Milliseconds and time zone offset is _REQUIRED_ in this scalar.
+     * Milliseconds will handle most cases for date and time.
+     * Enforcing time zone will avoid issues with making assumptions about time zones.
+     * ISO 8601 alone does not require time zone.
+     */
+    public static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXX";
 
-    private static String DESCRIPTION = "Date time using the format: " + DATE_FORMAT + ". Example: " + EXAMPLE;
+    private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-    private static GraphQLScalarType graphQLDateScalar;
+    private static String DESCRIPTION= "Date time using the format: " + DATE_TIME_PATTERN + ". Example: "+EXAMPLE_DATE_TIME;
 
-    public static GraphQLScalarType getGraphQLDateScalar() {
+    private GraphQLScalarType graphQLDateScalar;
+
+    public GraphQLScalarType getDateTimeScalar() {
         if (graphQLDateScalar == null) {
             graphQLDateScalar = createGraphQLDateScalar();
         }
         return graphQLDateScalar;
     }
 
-    private static GraphQLScalarType createGraphQLDateScalar() {
-        return new GraphQLScalarType("Date", DESCRIPTION, new Coercing() {
+    private GraphQLScalarType createGraphQLDateScalar() {
+        return new GraphQLScalarType("DateTime", DESCRIPTION, new Coercing() {
             @Override
             public String serialize(Object input) {
                 if (input instanceof Instant) {
-                    return (((LocalDate) input)).format(FORMATTER);
+                    return (((Instant) input)).atZone(exportTimeZone.getDefaultTimeZoneId()).format(FORMATTER);
                 }
                 return null;
             }
 
             @Override
-            public LocalDate parseValue(Object input) {
-                return LocalDate.parse((CharSequence) input);
+            public Instant parseValue(Object input) {
+                return Instant.from(FORMATTER.parse((CharSequence) input));
             }
 
             @Override

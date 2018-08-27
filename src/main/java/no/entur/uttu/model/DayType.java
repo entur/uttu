@@ -1,10 +1,10 @@
 package no.entur.uttu.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import java.time.DayOfWeek;
 import java.util.List;
@@ -12,14 +12,12 @@ import java.util.List;
 @Entity
 public class DayType extends ProviderEntity {
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    @ElementCollection
     @Enumerated(EnumType.STRING)
     private List<DayOfWeek> daysOfWeek;
 
-    @OneToMany
-    private List<OperatingPeriod> operatingPeriods;
-
-
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<DayTypeAssignment> dayTypeAssignments;
 
     public List<DayOfWeek> getDaysOfWeek() {
         return daysOfWeek;
@@ -30,4 +28,11 @@ public class DayType extends ProviderEntity {
     }
 
 
+    public List<DayTypeAssignment> getDayTypeAssignments() {
+        return dayTypeAssignments;
+    }
+
+    public void setDayTypeAssignments(List<DayTypeAssignment> dayTypeAssignments) {
+        this.dayTypeAssignments = dayTypeAssignments;
+    }
 }

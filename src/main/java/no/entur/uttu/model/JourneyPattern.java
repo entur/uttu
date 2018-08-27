@@ -6,6 +6,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -15,14 +17,15 @@ import java.util.List;
 )
 public class JourneyPattern extends GroupOfEntities_VersionStructure {
 
+    @NotNull
     @ManyToOne
     private FlexibleLine flexibleLine;
 
     @OneToMany(mappedBy = "journeyPattern", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ServiceJourney> serviceJourneys;
+    private final List<ServiceJourney> serviceJourneys= new ArrayList<>();;
 
     @OneToMany(mappedBy = "journeyPattern", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<StopPointInJourneyPattern> stopPointInJourneyPatterns;
+    private final List<StopPointInJourneyPattern> pointsInSequence = new ArrayList<>();
 
     public FlexibleLine getFlexibleLine() {
         return flexibleLine;
@@ -37,14 +40,22 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
     }
 
     public void setServiceJourneys(List<ServiceJourney> serviceJourneys) {
-        this.serviceJourneys = serviceJourneys;
+        this.serviceJourneys.clear();
+        if (serviceJourneys != null) {
+            serviceJourneys.stream().forEach(sj -> sj.setJourneyPattern(this));
+            this.serviceJourneys.addAll(serviceJourneys);
+        }
     }
 
-    public List<StopPointInJourneyPattern> getStopPointInJourneyPatterns() {
-        return stopPointInJourneyPatterns;
+    public List<StopPointInJourneyPattern> getPointsInSequence() {
+        return pointsInSequence;
     }
 
-    public void setStopPointInJourneyPatterns(List<StopPointInJourneyPattern> stopPointInJourneyPatterns) {
-        this.stopPointInJourneyPatterns = stopPointInJourneyPatterns;
+    public void setPointsInSequence(List<StopPointInJourneyPattern> pointsInSequence) {
+        this.pointsInSequence.clear();
+        if (pointsInSequence != null) {
+            pointsInSequence.stream().forEach(spinjp -> spinjp.setJourneyPattern(this));
+            this.pointsInSequence.addAll(pointsInSequence);
+        }
     }
 }
