@@ -18,6 +18,7 @@ import no.entur.uttu.graphql.scalars.LocalTimeScalar;
 import no.entur.uttu.model.BookingAccessEnumeration;
 import no.entur.uttu.model.BookingMethodEnumeration;
 import no.entur.uttu.model.CodeSpace;
+import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.FlexibleLineTypeEnumeration;
 import no.entur.uttu.model.FlexibleStopPlace;
@@ -26,7 +27,6 @@ import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
 import no.entur.uttu.model.VehicleModeEnumeration;
-import no.entur.uttu.repository.CodeSpaceRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
@@ -45,8 +45,11 @@ import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static no.entur.uttu.graphql.GraphQLNames.*;
 
+/**
+ * GraphQL schema for FlexibleLines and related entities.
+ */
 @Component
-public class FlexibleLineGraphQLSchema {
+public class FlexibleTransportGraphQLSchema {
     @Autowired
     private DateTimeScalar dateTimeScalar;
 
@@ -59,8 +62,6 @@ public class FlexibleLineGraphQLSchema {
     @Autowired
     private DataFetcher<Network> networkUpdater;
 
-    @Autowired
-    private CodeSpaceRepository codeSpaceRepository;
 
     @Autowired
     private FlexibleStopPlaceRepository flexibleStopPlaceRepository;
@@ -82,13 +83,13 @@ public class FlexibleLineGraphQLSchema {
                                                              .value("GeometryCollection")
                                                              .build();
 
-    private static GraphQLEnumType dayOfWeekEnum = FlexibleLineGraphQLSchema.createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name())); // TODO lower case?
-    private static GraphQLEnumType vehicleModeEnum = FlexibleLineGraphQLSchema.createEnum("VehicleModeEnumeration", VehicleModeEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType flexibleLineTypeEnum = FlexibleLineGraphQLSchema.createEnum("FlexibleLineTypeEnumeration", FlexibleLineTypeEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType bookingMethodEnum = FlexibleLineGraphQLSchema.createEnum("BookingMethodEnumeration", BookingMethodEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType bookingAccessEnum = FlexibleLineGraphQLSchema.createEnum("BookingAccessEnumeration", BookingAccessEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType purchaseWhenEnum = FlexibleLineGraphQLSchema.createEnum("PurchaseWhenEnumeration", PurchaseWhenEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType purchaseMomentEnum = FlexibleLineGraphQLSchema.createEnum("PurchaseMomentEnumeration", PurchaseMomentEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType dayOfWeekEnum = FlexibleTransportGraphQLSchema.createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name())); // TODO lower case?
+    private static GraphQLEnumType vehicleModeEnum = FlexibleTransportGraphQLSchema.createEnum("VehicleModeEnumeration", VehicleModeEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType flexibleLineTypeEnum = FlexibleTransportGraphQLSchema.createEnum("FlexibleLineTypeEnumeration", FlexibleLineTypeEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType bookingMethodEnum = FlexibleTransportGraphQLSchema.createEnum("BookingMethodEnumeration", BookingMethodEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType bookingAccessEnum = FlexibleTransportGraphQLSchema.createEnum("BookingAccessEnumeration", BookingAccessEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType purchaseWhenEnum = FlexibleTransportGraphQLSchema.createEnum("PurchaseWhenEnumeration", PurchaseWhenEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType purchaseMomentEnum = FlexibleTransportGraphQLSchema.createEnum("PurchaseMomentEnumeration", PurchaseMomentEnumeration.values(), (t -> t.value()));
 
     private static <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
         GraphQLEnumType.Builder enumBuilder = GraphQLEnumType.newEnum().name(name);
@@ -97,14 +98,13 @@ public class FlexibleLineGraphQLSchema {
     }
 
 
-    private GraphQLFieldDefinition idFieldDefinition;
-    private GraphQLFieldDefinition versionField;
     private GraphQLObjectType geoJSONObjectType;
     private GraphQLObjectType identifiedEntityObjectType;
     private GraphQLObjectType codeSpaceObjectType;
     private GraphQLObjectType groupOfEntitiesObjectType;
     private GraphQLObjectType flexibleLineObjectType;
     private GraphQLObjectType flexibleStopPlaceObjectType;
+    private GraphQLObjectType flexibleAreaObjectType;
 
     private GraphQLObjectType networkObjectType;
 
@@ -113,6 +113,7 @@ public class FlexibleLineGraphQLSchema {
     private GraphQLObjectType stopPointInJourneyPatternObjectType;
     private GraphQLObjectType timetabledPassingTimeObjectType;
     private GraphQLObjectType destinationDisplayObjectType;
+    private GraphQLObjectType noticeObjectType;
     private GraphQLObjectType dayTypeObjectType;
     private GraphQLObjectType dayTypeAssignmentObjectType;
     private GraphQLObjectType operatingPeriod;
@@ -132,16 +133,25 @@ public class FlexibleLineGraphQLSchema {
 
 
     private void initCommonTypes() {
-        idFieldDefinition = newFieldDefinition()
-                                    .name(FIELD_ID)
-                                    .type(new GraphQLNonNull(GraphQLString))
-                                    .dataFetcher(env -> ((ProviderEntity) env.getSource()).getNetexId())
-                                    .build();
+        GraphQLFieldDefinition idFieldDefinition = newFieldDefinition()
+                                                           .name(FIELD_ID)
+                                                           .type(new GraphQLNonNull(GraphQLString))
+                                                           .dataFetcher(env -> ((ProviderEntity) env.getSource()).getNetexId())
+                                                           .build();
 
-        versionField = newFieldDefinition()
-                               .name(FIELD_VERSION)
-                               .type(new GraphQLNonNull(GraphQLString))
-                               .build();
+        GraphQLFieldDefinition versionField = newFieldDefinition()
+                                                      .name(FIELD_VERSION)
+                                                      .type(new GraphQLNonNull(GraphQLString))
+                                                      .build();
+
+        identifiedEntityObjectType = newObject().name("IdentifiedEntity")
+                                             .field(idFieldDefinition)
+                                             .field(versionField)
+                                             .field(newFieldDefinition().name(FIELD_CREATED_BY).type(new GraphQLNonNull(GraphQLString)))
+                                             .field(newFieldDefinition().name(FIELD_CREATED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
+                                             .field(newFieldDefinition().name(FIELD_CHANGED_BY).type(new GraphQLNonNull(GraphQLString)))
+                                             .field(newFieldDefinition().name(FIELD_CHANGED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
+                                             .build();
 
 
         geoJSONObjectType = newObject()
@@ -210,14 +220,22 @@ public class FlexibleLineGraphQLSchema {
 
 
         destinationDisplayObjectType = newObject(identifiedEntityObjectType).name("DestinationDisplay")
-                                               .field(newFieldDefinition().name(FIELD_FRONT_TEXT).type(GraphQLString))
+                                               .field(newFieldDefinition().name(FIELD_FRONT_TEXT).type(new GraphQLNonNull(GraphQLString)))
                                                .build();
 
+        noticeObjectType = newObject(identifiedEntityObjectType).name("Notice")
+                                   .field(newFieldDefinition().name(FIELD_TEXT).type(new GraphQLNonNull(GraphQLString)))
+                                   .build();
+
+        flexibleAreaObjectType = newObject().name("FlexibleArea")
+                                         .field(newFieldDefinition().name(FIELD_POLYGON).type(new GraphQLNonNull(geoJSONObjectType))
+                                                        .dataFetcher(env -> ((FlexibleArea) env.getSource()).getPolygon()))
+                                         .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(vehicleModeEnum))
+                                         .build();
 
         flexibleStopPlaceObjectType = newObject(groupOfEntitiesObjectType).name("FlexibleStopPlace")
-                                              .field(newFieldDefinition().name(FIELD_FLEXIBLE_AREA).type(new GraphQLNonNull(geoJSONObjectType))
-                                                             .dataFetcher(env -> ((FlexibleStopPlace) env.getSource()).getPolygon()))
                                               .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(vehicleModeEnum))
+                                              .field(newFieldDefinition().name(FIELD_FLEXIBLE_AREA).type(new GraphQLNonNull(flexibleAreaObjectType)))
                                               .build();
 
         operatingPeriod = newObject().name("OperatingPeriod")
@@ -248,6 +266,7 @@ public class FlexibleLineGraphQLSchema {
                                                   .field(newFieldDefinition().name(FIELD_LATEST_ARRIVAL_DAY_OFFSET).type(GraphQLInt))
                                                   .field(newFieldDefinition().name(FIELD_EARLIEST_DEPARTURE_TIME).type(LocalTimeScalar.getLocalTimeScalar()))
                                                   .field(newFieldDefinition().name(FIELD_EARLIEST_DEPARTURE_DAY_OFFSET).type(GraphQLInt))
+                                                  .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                                   .build();
 
 
@@ -257,6 +276,7 @@ public class FlexibleLineGraphQLSchema {
                                            .field(newFieldDefinition().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementObjectType))
                                            .field(newFieldDefinition().name(FIELD_POINTS_IN_SEQUENCE).type(new GraphQLNonNull(new GraphQLList(timetabledPassingTimeObjectType))))
                                            .field(newFieldDefinition().name(FIELD_DAY_TYPES).type(dayTypeObjectType))
+                                           .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                            .build();
 
 
@@ -264,6 +284,7 @@ public class FlexibleLineGraphQLSchema {
                                                       .field(newFieldDefinition().name(FIELD_FLEXIBLE_STOP_PLACE).type(flexibleStopPlaceObjectType))
                                                       .field(newFieldDefinition().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementObjectType))
                                                       .field(newFieldDefinition().name(FIELD_DESTINATION_DISPLAY).type(destinationDisplayObjectType))
+                                                      .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                                       .build();
 
         journeyPatternObjectType = newObject(groupOfEntitiesObjectType).name("JourneyPattern")
@@ -280,6 +301,7 @@ public class FlexibleLineGraphQLSchema {
                                          .field(newFieldDefinition().name(FIELD_OPERATOR_REF).type(GraphQLString))
                                          .field(newFieldDefinition().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementObjectType))
                                          .field(newFieldDefinition().name(FIELD_JOURNEY_PATTERNS).type(new GraphQLNonNull(new GraphQLList(journeyPatternObjectType))))
+                                         .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                          .build();
 
 
@@ -287,15 +309,9 @@ public class FlexibleLineGraphQLSchema {
 
     private GraphQLObjectType createQueryObject() {
 
-// TODO code spaces  / providers. Different api?
         GraphQLObjectType queryType = newObject()
                                               .name("Queries")
                                               .description("Query and search for data")
-                                              .field(newFieldDefinition()
-                                                             .type(new GraphQLList(codeSpaceObjectType))
-                                                             .name("codeSpaces")
-                                                             .description("Search for CodeSpaces")
-                                                             .dataFetcher(env -> codeSpaceRepository.findAll()))
                                               .field(newFieldDefinition()
                                                              .type(new GraphQLList(flexibleLineObjectType))
                                                              .name("flexibleLines")
@@ -307,7 +323,7 @@ public class FlexibleLineGraphQLSchema {
                                                              .description("Search for FlexibleStopPlaces")
                                                              .dataFetcher(env -> flexibleStopPlaceRepository.findAll()))
                                               .field(newFieldDefinition()
-                                                             .type(new GraphQLList(flexibleStopPlaceObjectType))
+                                                             .type(new GraphQLList(networkObjectType))
                                                              .name("networks")
                                                              .description("Search for Networks")
                                                              .dataFetcher(env -> networkRepository.findAll()))
@@ -351,10 +367,14 @@ public class FlexibleLineGraphQLSchema {
                                                           .field(newInputObjectField().name(FIELD_AUTHORITY_REF).type(new GraphQLNonNull(GraphQLString)))
                                                           .build();
 
+        GraphQLInputObjectType flexibleAreaInput = newInputObject(groupOfEntitiesInputType)
+                                                           .name("FlexibleAreaInput")
+                                                           .field(newInputObjectField().name(FIELD_POLYGON).type(new GraphQLNonNull(geoJSONInputType)))
+                                                           .build();
 
         GraphQLInputObjectType flexibleStopPlaceInputType = newInputObject(groupOfEntitiesInputType)
                                                                     .name("FlexibleStopPlaceInput")
-                                                                    .field(newInputObjectField().name(FIELD_FLEXIBLE_AREA).type(new GraphQLNonNull(geoJSONInputType)))
+                                                                    .field(newInputObjectField().name(FIELD_FLEXIBLE_AREA).type(new GraphQLNonNull(flexibleAreaInput)))
                                                                     .field(newInputObjectField().name(FIELD_TRANSPORT_MODE).type(new GraphQLNonNull(vehicleModeEnum)))
                                                                     .build();
 

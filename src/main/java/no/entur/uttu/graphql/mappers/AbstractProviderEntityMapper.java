@@ -37,7 +37,6 @@ public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
                     "Attempting to update Entity with netexId=%s, but Entity does not exist.", netexId);
         }
 
-
         populateEntityFromInput(entity, input);
         return entity;
     }

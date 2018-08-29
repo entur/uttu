@@ -1,4 +1,4 @@
-package no.entur.uttu.graphql;
+package no.entur.uttu.graphql.resource;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
@@ -9,47 +9,31 @@ import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.GraphQLError;
 import graphql.GraphQLException;
-import io.swagger.annotations.Api;
-import no.entur.uttu.config.ProviderAuthenticationService;
 import no.entur.uttu.config.Context;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.NotAuthorizedException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
+import static java.util.stream.Collectors.toList;
 
-@Component
-@Api
-@Path("{providerId}")
-public class GraphQLResource {
-
-
-    private static final Logger logger = LoggerFactory.getLogger(GraphQLResource.class);
+public class GraphQLResourceHelper {
+    private static final Logger logger = LoggerFactory.getLogger(FlexibleTransportGraphQLResource.class);
 
     /**
      * Exception classes that should cause data fetching exceptions to be rethrown and mapped to corresponding HTTP status code outside transaction.
@@ -57,37 +41,27 @@ public class GraphQLResource {
     private static final Set<Class<? extends RuntimeException>> RETHROW_EXCEPTION_TYPES
             = Sets.newHashSet(NotAuthenticatedException.class, NotAuthorizedException.class, AccessDeniedException.class, DataIntegrityViolationException.class);
 
-    @Autowired
-    private FlexibleLineGraphQLSchema graphQLSchema;
-
-    @Autowired
-    private ProviderAuthenticationService providerAuthenticationService;
-
-    private final TransactionTemplate transactionTemplate;
-
-
-    public GraphQLResource(PlatformTransactionManager transactionManager) {
-        org.springframework.util.Assert.notNull(transactionManager, "The 'transactionManager' argument must not be null.");
-        this.transactionTemplate = new TransactionTemplate(transactionManager);
-    }
-
-    @PostConstruct
-    public void init() {
-        graphQL = GraphQL.newGraphQL(graphQLSchema.graphQLSchema).build();
-    }
-
     private GraphQL graphQL;
 
+    private TransactionTemplate transactionTemplate;
 
-    @POST
-    @SuppressWarnings("unchecked")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getGraphQL(@PathParam("providerId") Long providerId, HashMap<String, Object> request) {
+    public GraphQLResourceHelper(GraphQL graphQL, TransactionTemplate transactionTemplate) {
+        this.graphQL = graphQL;
+        this.transactionTemplate = transactionTemplate;
+    }
+
+    /**
+     * Use programmatic transaction because graphql catches RuntimeExceptions.
+     * With multiple transaction interceptors (Transactional annotation), this causes the rolled back transaction (in case of errors) to be commed (? TODO from tiamat) by the outer transaction interceptor.
+     * NRP-1992
+     */
+    public Response getGraphQLResponseInTransaction(String operationName, String query, Map<String, Object> variables) {
+        return transactionTemplate.execute((transactionStatus) -> getGraphQLResponse(operationName, query, variables, transactionStatus));
+    }
+
+
+    public Response executeStatement(Map<String, Object> request) {
         Map<String, Object> variables;
-
-        providerAuthenticationService.hasRoleForProvider(SecurityContextHolder.getContext().getAuthentication(), ROLE_ROUTE_DATA_EDIT, providerId);
-
         if (request.get("variables") instanceof Map) {
             variables = (Map) request.get("variables");
 
@@ -108,34 +82,17 @@ public class GraphQLResource {
         } else {
             variables = new HashMap<>();
         }
-        return getGraphQLResponseInTransaction(providerId, (String) request.get("operationName"), (String) request.get("query"), variables);
+        return getGraphQLResponseInTransaction((String) request.get("operationName"), (String) request.get("query"), variables);
     }
 
-    @POST
-    @Consumes("application/graphql")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getGraphQL(@PathParam("providerId") Long providerId, String query) {
-        return getGraphQLResponseInTransaction(providerId, "query", query, new HashMap<>());
-    }
-
-    /**
-     * Use programmatic transaction because graphql catches RuntimeExceptions.
-     * With multiple transaction interceptors (Transactional annotation), this causes the rolled back transaction (in case of errors) to be commed (? TODO from tiamat) by the outer transaction interceptor.
-     * NRP-1992
-     */
-    private Response getGraphQLResponseInTransaction(Long providerId, String operationName, String query, Map<String, Object> variables) {
-        return transactionTemplate.execute((transactionStatus) -> getGraphQLResponse(providerId, operationName, query, variables, transactionStatus));
-    }
-
-    private Response getGraphQLResponse(Long providerId, String operationName, String query, Map<String, Object> variables, TransactionStatus transactionStatus) {
+    public Response getGraphQLResponse(String operationName, String query, Map<String, Object> variables, TransactionStatus transactionStatus) {
         Response.ResponseBuilder res = Response.status(Response.Status.OK);
         HashMap<String, Object> content = new HashMap<>();
         try {
-            Context.setProvider(providerId);
             ExecutionInput executionInput = ExecutionInput.newExecutionInput()
                                                     .query(query)
                                                     .operationName(operationName)
-                                                    .context(providerId)
+                                                    .context(null)
                                                     .root(null)
                                                     .variables(variables)
                                                     .build();
@@ -164,10 +121,46 @@ public class GraphQLResource {
         } finally {
             Context.clear();
         }
-        // TODO from tiamat: needed? removeErrorStacktraces(content);
+        removeErrorStacktraces(content);
         return res.entity(content).build();
     }
 
+    private void removeErrorStacktraces(Map<String, Object> content) {
+        if (content.containsKey("errors")) {
+            @SuppressWarnings("unchecked")
+            List<GraphQLError> errors = (List<GraphQLError>) content.get("errors");
+
+            try {
+                content.put("errors", mapErrors(errors));
+            } catch (Exception e) {
+                logger.warn("Exception caught during stacktrace removal", e);
+            }
+        }
+    }
+
+    private List<Map<String, Object>> mapErrors(Collection<?> errors) {
+        return errors.stream().map(e -> {
+            HashMap<String, Object> response = new HashMap<>();
+
+            if (e instanceof GraphQLError) {
+                GraphQLError graphQLError = (GraphQLError) e;
+                response.put("message", graphQLError.getMessage());
+                response.put("errorType", graphQLError.getErrorType());
+                response.put("locations", graphQLError.getLocations());
+                response.put("path", graphQLError.getPath());
+            } else {
+                if (e instanceof Exception) {
+                    response.put("message", ((Exception) e).getMessage());
+                }
+                response.put("errorType", e.getClass().getSimpleName());
+            }
+
+            return response;
+        }).collect(Collectors.toList());
+    }
+
+
+    // TODO from tiamat, do we need this? only if access control is invoked in graphql
     private Response.Status getStatusCodeFromThrowable(Throwable e) {
         Throwable rootCause = getRootCause(e);
 
@@ -193,6 +186,5 @@ public class GraphQLResource {
         }
         return rootCause;
     }
-
 
 }

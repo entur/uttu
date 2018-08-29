@@ -24,11 +24,17 @@ public class FlexibleLineMapper extends AbstractGroupOfEntitiesMapper<FlexibleLi
     @Autowired
     private JourneyPatternMapper journeyPatternMapper;
 
+    @Autowired
+    private NoticeMapper noticeMapper;
 
-    public FlexibleLineMapper(ProviderRepository providerRepository, ProviderEntityRepository<FlexibleLine> repository, NetworkRepository networkRepository, BookingArrangementMapper bookingArrangementMapper) {
+
+    public FlexibleLineMapper(ProviderRepository providerRepository, ProviderEntityRepository<FlexibleLine> repository,
+                                     NetworkRepository networkRepository, BookingArrangementMapper bookingArrangementMapper,
+                                     NoticeMapper noticeMapper) {
         super(providerRepository, repository);
         this.networkRepository = networkRepository;
         this.bookingArrangementMapper = bookingArrangementMapper;
+        this.noticeMapper = noticeMapper;
     }
 
     @Override
@@ -42,10 +48,11 @@ public class FlexibleLineMapper extends AbstractGroupOfEntitiesMapper<FlexibleLi
         input.apply(FIELD_PUBLIC_CODE, entity::setPublicCode);
         input.apply(FIELD_TRANSPORT_MODE, entity::setTransportMode);
         input.applyReference(FIELD_NETWORK_REF, networkRepository, entity::setNetwork);
-        input.apply(FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineTypeEnumeration);
+        input.apply(FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineType);
         input.apply(FIELD_OPERATOR_REF, entity::setOperatorRef);
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
         input.applyList(FIELD_JOURNEY_PATTERNS, journeyPatternMapper::map, entity::setJourneyPatterns);
+        input.applyList(FIELD_NOTICES,noticeMapper::map,entity::setNotices);
     }
 
 

@@ -32,7 +32,7 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
 
     @Enumerated(EnumType.STRING)
     @NotNull
-    private FlexibleLineTypeEnumeration flexibleLineTypeEnumeration;
+    private FlexibleLineTypeEnumeration flexibleLineType;
 
     @NotNull
     @ManyToOne
@@ -65,12 +65,12 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
         this.transportMode = transportMode;
     }
 
-    public FlexibleLineTypeEnumeration getFlexibleLineTypeEnumeration() {
-        return flexibleLineTypeEnumeration;
+    public FlexibleLineTypeEnumeration getFlexibleLineType() {
+        return flexibleLineType;
     }
 
-    public void setFlexibleLineTypeEnumeration(FlexibleLineTypeEnumeration flexibleLineTypeEnumeration) {
-        this.flexibleLineTypeEnumeration = flexibleLineTypeEnumeration;
+    public void setFlexibleLineType(FlexibleLineTypeEnumeration flexibleLineType) {
+        this.flexibleLineType = flexibleLineType;
     }
 
     public List<JourneyPattern> getJourneyPatterns() {

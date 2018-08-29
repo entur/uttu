@@ -19,12 +19,17 @@ public class StopPointInJourneyPatternMapper extends AbstractProviderEntityMappe
 
     private DestinationDisplayMapper destinationDisplayMapper;
 
-    public StopPointInJourneyPatternMapper(ProviderRepository providerRepository, ProviderEntityRepository<StopPointInJourneyPattern> entityRepository, FlexibleStopPlaceRepository flexibleStopPlaceRepository,
-                                                  BookingArrangementMapper bookingArrangementMapper, DestinationDisplayMapper destinationDisplayMapper) {
+    private NoticeMapper noticeMapper;
+
+    public StopPointInJourneyPatternMapper(ProviderRepository providerRepository, ProviderEntityRepository<StopPointInJourneyPattern> entityRepository,
+                                                  FlexibleStopPlaceRepository flexibleStopPlaceRepository,
+                                                  BookingArrangementMapper bookingArrangementMapper, DestinationDisplayMapper destinationDisplayMapper,
+                                                  NoticeMapper noticeMapper) {
         super(providerRepository, entityRepository);
         this.bookingArrangementMapper = bookingArrangementMapper;
         this.flexibleStopPlaceRepository = flexibleStopPlaceRepository;
         this.destinationDisplayMapper = destinationDisplayMapper;
+        this.noticeMapper = noticeMapper;
     }
 
     @Override
@@ -40,5 +45,6 @@ public class StopPointInJourneyPatternMapper extends AbstractProviderEntityMappe
 
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
         input.apply(FIELD_DESTINATION_DISPLAY, destinationDisplayMapper::map, entity::setDestinationDisplay);
+        input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
     }
 }

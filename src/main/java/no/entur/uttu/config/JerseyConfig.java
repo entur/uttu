@@ -19,7 +19,9 @@ package no.entur.uttu.config;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
-import no.entur.uttu.graphql.GraphQLResource;
+import no.entur.uttu.export.ExportResource;
+import no.entur.uttu.graphql.resource.FlexibleTransportGraphQLResource;
+import no.entur.uttu.graphql.resource.ProviderGraphQLResource;
 import no.entur.uttu.health.rest.HealthResource;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
@@ -30,17 +32,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JerseyConfig {
 
-
-
     @Bean
     public ServletRegistrationBean publicAPIJerseyConfig() {
         ServletRegistrationBean publicJersey
-                = new ServletRegistrationBean(new ServletContainer(new FlexibleLinesAPI()));
-        publicJersey.addUrlMappings("/services/flexible-lines/*");
-        publicJersey.setName("FlexibleLinesAPI");
+                = new ServletRegistrationBean(new ServletContainer(new FlexibleTransportAPI()));
+        publicJersey.addUrlMappings("/services/timetable/flexible/*");
+        publicJersey.setName("FlexibleTransportAPI");
         publicJersey.setLoadOnStartup(0);
-        publicJersey.getInitParameters().put("swagger.scanner.id", "flexible-lines-scanner");
-        publicJersey.getInitParameters().put("swagger.config.id","flexible-lines-swagger-doc" );
         return publicJersey;
     }
 
@@ -52,40 +50,20 @@ public class JerseyConfig {
         privateJersey.addUrlMappings("/health/*");
         privateJersey.setName("PrivateJersey");
         privateJersey.setLoadOnStartup(0);
-        privateJersey.getInitParameters().put("swagger.scanner.id", "health-scanner");
-        privateJersey.getInitParameters().put("swagger.config.id","uttu-health-swagger-doc");
         return privateJersey;
     }
 
 
+    private class FlexibleTransportAPI extends ResourceConfig {
 
-
-    private class FlexibleLinesAPI extends ResourceConfig {
-
-        public FlexibleLinesAPI() {
+        public FlexibleTransportAPI() {
             register(CorsResponseFilter.class);
 
-            register(GraphQLResource.class);
-            configureSwagger();
+            register(FlexibleTransportGraphQLResource.class);
+            register(ProviderGraphQLResource.class);
+            register(ExportResource.class);
         }
 
-
-        // TODO remove
-        private void configureSwagger() {
-            // Available at localhost:port/api/swagger.json
-            this.register(ApiListingResource.class);
-            this.register(SwaggerSerializers.class);
-
-            BeanConfig config = new BeanConfig();
-            config.setConfigId("flexible-lines-swagger-doc");
-            config.setTitle("Flexible Lines API");
-            config.setVersion("v1");
-            config.setSchemes(new String[]{"http", "https"});
-            config.setResourcePackage("no.entur.uttu");
-            config.setPrettyPrint(true);
-            config.setScan(true);
-            config.setScannerId("flexible-lines-scanner");
-        }
     }
 
     private class HealthConfig extends ResourceConfig {

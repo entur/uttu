@@ -3,9 +3,11 @@ package no.entur.uttu.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 public class StopPointInJourneyPattern extends ProviderEntity {
@@ -31,6 +33,10 @@ public class StopPointInJourneyPattern extends ProviderEntity {
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private DestinationDisplay destinationDisplay;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Notice> notices;
+
 
     public FlexibleStopPlace getFlexibleStopPlace() {
         return flexibleStopPlace;
@@ -78,5 +84,13 @@ public class StopPointInJourneyPattern extends ProviderEntity {
 
     public void setQuayRef(String quayRef) {
         this.quayRef = quayRef;
+    }
+
+    public List<Notice> getNotices() {
+        return notices;
+    }
+
+    public void setNotices(List<Notice> notices) {
+        this.notices = notices;
     }
 }

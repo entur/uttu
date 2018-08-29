@@ -18,13 +18,16 @@ public class ServiceJourneyMapper extends AbstractProviderEntityMapper<ServiceJo
 
     private TimetabledPassingTimeMapper timetabledPassingTimeMapper;
 
+    private NoticeMapper noticeMapper;
+
     public ServiceJourneyMapper(ProviderRepository providerRepository, ProviderEntityRepository<ServiceJourney> repository,
                                        BookingArrangementMapper bookingArrangementMapper, DayTypeMapper dayTypeMapper,
-                                       TimetabledPassingTimeMapper timetabledPassingTimeMapper) {
+                                       TimetabledPassingTimeMapper timetabledPassingTimeMapper, NoticeMapper noticeMapper) {
         super(providerRepository, repository);
         this.bookingArrangementMapper = bookingArrangementMapper;
         this.dayTypeMapper = dayTypeMapper;
         this.timetabledPassingTimeMapper = timetabledPassingTimeMapper;
+        this.noticeMapper = noticeMapper;
     }
 
     @Override
@@ -39,6 +42,7 @@ public class ServiceJourneyMapper extends AbstractProviderEntityMapper<ServiceJo
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
         input.applyList(FIELD_POINTS_IN_SEQUENCE, timetabledPassingTimeMapper::map, entity::setPointsInSequence);
         input.applyList(FIELD_DAY_TYPES, dayTypeMapper::map, entity::setDayTypes);
+        input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
     }
 
 

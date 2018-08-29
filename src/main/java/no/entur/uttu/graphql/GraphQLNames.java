@@ -17,9 +17,17 @@ public class GraphQLNames {
     public static final String FIELD_BOOKING_ARRANGEMENT = "bookingArrangement";
     public static final String FIELD_NOTICES = "notices";
 
+    // CodeSpace
+    public static final String FIELD_XMLNS = "xmlns";
+    public static final String FIELD_XMLNS_URL = "xmlnsUrl";
+
+    // Provider
+    public static final String FIELD_CODE_SPACE = "codeSpace";
+    public static final String FIELD_CODE_SPACE_REF = "codeSpaceRef";
 
     // FlexibleStopPlace
     public static final String FIELD_FLEXIBLE_AREA = "flexibleArea";
+    public static final String FIELD_POLYGON = "polygon";
 
     // Network
     public static final String FIELD_AUTHORITY_REF = "authorityRef";

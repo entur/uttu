@@ -13,7 +13,7 @@ public class Context {
 
     public static void setProvider(Long providerId) {
         Preconditions.checkArgument(providerId != null,
-                "Attempt to set providerId = null for session", providerId);
+                "Attempt to set providerId = null for session");
         providerPerThread.set(providerId);
     }
 

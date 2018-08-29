@@ -1,10 +1,13 @@
 package no.entur.uttu.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 public class TimetabledPassingTime extends ProviderEntity {
@@ -16,6 +19,9 @@ public class TimetabledPassingTime extends ProviderEntity {
     // Order is reserved word in db
     @Column(name = "order_val")
     private int order;
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Notice> notices;
 
     private LocalTime departureTime;
 
@@ -111,5 +117,13 @@ public class TimetabledPassingTime extends ProviderEntity {
 
     public void setLatestArrivalDayOffset(int latestArrivalDayOffset) {
         this.latestArrivalDayOffset = latestArrivalDayOffset;
+    }
+
+    public List<Notice> getNotices() {
+        return notices;
+    }
+
+    public void setNotices(List<Notice> notices) {
+        this.notices = notices;
     }
 }

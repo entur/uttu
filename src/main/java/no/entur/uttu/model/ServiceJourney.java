@@ -2,6 +2,7 @@ package no.entur.uttu.model;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
@@ -35,6 +36,9 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     @OneToMany(mappedBy = "serviceJourney", cascade = CascadeType.ALL, orphanRemoval = true)
     private final List<TimetabledPassingTime> pointsInSequence = new ArrayList<>();
+
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private List<Notice> notices;
 
 
     public JourneyPattern getJourneyPattern() {
@@ -87,5 +91,13 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     public void setDayTypes(List<DayType> dayTypes) {
         this.dayTypes = dayTypes;
+    }
+
+    public List<Notice> getNotices() {
+        return notices;
+    }
+
+    public void setNotices(List<Notice> notices) {
+        this.notices = notices;
     }
 }
