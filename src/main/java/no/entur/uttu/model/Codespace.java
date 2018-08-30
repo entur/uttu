@@ -1,10 +1,16 @@
 package no.entur.uttu.model;
 
 import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 @Entity
-public class CodeSpace extends IdentifiedEntity {
+@Table(
+        uniqueConstraints = {
+                                    @UniqueConstraint(name = "codespace_xmlns", columnNames = {"xmlns"})}
+)
+public class Codespace extends IdentifiedEntity {
 
     @NotNull
     private String xmlns;

@@ -1,0 +1,32 @@
+{
+  "flexibleLine": {
+    "name": "Test",
+    "publicCode": "pubCode",
+    "description": "testDescNo3Updae",
+    "networkRef":"NSB:Network:1ca1056f-5bf6-448f-8d7c-d8c00abdb6c4",
+    "transportMode": "rail",
+    "journeyPatterns": [
+      {
+        "directionType": "inbound",
+        "stopPointsInJourneyPattern": [
+          {
+            "flexibleStopAreaRef":  "NSB:FlexibleStopPlace:ef814f11-538d-4410-af26-40bd22e0fce5"
+          },
+          {
+            "flexibleStopAreaRef":  "NSB:FlexibleStopPlace:ef814f11-538d-4410-af26-40bd22e0fce5"
+          }
+        ],
+        "serviceJourneys": [
+          {
+            "privateCode": "500",
+            "timetabledPassingTimes":[
+              {"earliestDepartureTime":"16:00"},
+              {"latestArrivalTime":"18:00"}
+
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

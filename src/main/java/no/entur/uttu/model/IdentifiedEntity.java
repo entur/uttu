@@ -10,6 +10,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Objects;
 
 @MappedSuperclass
 public abstract class IdentifiedEntity {

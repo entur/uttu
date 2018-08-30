@@ -1,6 +1,5 @@
 package no.entur.uttu.model;
 
-import org.joda.time.Duration;
 
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
@@ -8,13 +7,14 @@ import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
-import java.time.LocalDate;
+import java.time.Duration;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
 public class BookingArrangement extends IdentifiedEntity {
 
-    private LocalDate latestBookingTime;
+    private LocalTime latestBookingTime;
 
     private Duration minimumBookingPeriod;
 
@@ -33,11 +33,11 @@ public class BookingArrangement extends IdentifiedEntity {
     @OneToOne(cascade = CascadeType.ALL)
     private Contact bookingContact;
 
-    public LocalDate getLatestBookingTime() {
+    public LocalTime getLatestBookingTime() {
         return latestBookingTime;
     }
 
-    public void setLatestBookingTime(LocalDate latestBookingTime) {
+    public void setLatestBookingTime(LocalTime latestBookingTime) {
         this.latestBookingTime = latestBookingTime;
     }
 

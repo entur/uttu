@@ -42,10 +42,13 @@ public abstract class ProviderEntity extends IdentifiedEntity {
         this.netexId = netexId;
     }
 
+    public String getNetexVersion() {
+        return Objects.toString(version);
+    }
 
     @PrePersist
     public void setNetexIdIfMissing() {
-        this.setNetexId(this.getProvider().getCodeSpace().getXmlns() + ":" + this.getClass().getSimpleName() + ":" + UUID.randomUUID());
+        this.setNetexId(this.getProvider().getCodespace().getXmlns() + ":" + this.getClass().getSimpleName() + ":" + UUID.randomUUID());
     }
 
 
@@ -56,5 +59,25 @@ public abstract class ProviderEntity extends IdentifiedEntity {
                 "Provider mismatch, attempting to store entity[½s] in context of provider[%s] .", this, providerId);
     }
 
+    public Ref getRef() {
+        return new Ref(getNetexId(), getNetexVersion());
+    }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ProviderEntity that = (ProviderEntity) o;
+
+        if (netexId != null ? !netexId.equals(that.netexId) : that.netexId != null) return false;
+        return version != null ? version.equals(that.version) : that.version == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = netexId != null ? netexId.hashCode() : 0;
+        result = 31 * result + (version != null ? version.hashCode() : 0);
+        return result;
+    }
 }

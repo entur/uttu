@@ -1,6 +1,6 @@
 package no.entur.uttu.export.netex;
 
-import no.entur.uttu.export.ExportException;
+import no.entur.uttu.export.model.ExportException;
 import org.apache.commons.io.FileUtils;
 
 import java.io.Closeable;

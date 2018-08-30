@@ -51,7 +51,11 @@ public class FlexibleTransportGraphQLResource {
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerId)")
     public Response executeFlexibleLineStatement(@PathParam("providerId") Long providerId, HashMap<String, Object> request) {
         Context.setProvider(providerId);
-        return graphQLResourceHelper.executeStatement(request);
+        try {
+            return graphQLResourceHelper.executeStatement(request);
+        } finally {
+            Context.clear();
+        }
     }
 
 
@@ -62,7 +66,11 @@ public class FlexibleTransportGraphQLResource {
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerId)")
     public Response executeFlexibleLineStatement(@PathParam("providerId") Long providerId, String query) {
         Context.setProvider(providerId);
-        return graphQLResourceHelper.getGraphQLResponseInTransaction("query", query, new HashMap<>());
+        try {
+            return graphQLResourceHelper.getGraphQLResponseInTransaction("query", query, new HashMap<>());
+        } finally {
+            Context.clear();
+        }
     }
 
     @POST

@@ -1,39 +1,36 @@
 package no.entur.uttu.export.netex.producer;
 
 
+import no.entur.uttu.config.ExportTimeZone;
+import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
-import org.rutebanken.netex.model.CompositeFrame;
-import org.rutebanken.netex.model.DayOfWeekEnumeration;
-import org.rutebanken.netex.model.DayTypeRefStructure;
-import org.rutebanken.netex.model.DestinationDisplayRefStructure;
-import org.rutebanken.netex.model.LineRefStructure;
-import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.ObjectFactory;
-import org.rutebanken.netex.model.OperatorRefStructure;
-import org.rutebanken.netex.model.PointRefStructure;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.QuayRefStructure;
-import org.rutebanken.netex.model.Route;
-import org.rutebanken.netex.model.RoutePointRefStructure;
-import org.rutebanken.netex.model.RouteRefStructure;
-import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
-import org.rutebanken.netex.model.StopPlaceRefStructure;
-import org.rutebanken.netex.model.StopPointInJourneyPatternRefStructure;
+import no.entur.uttu.model.Ref;
+import no.entur.uttu.util.DateUtils;
+import org.rutebanken.netex.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.JAXBElement;
+import javax.xml.namespace.QName;
 import java.time.DayOfWeek;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static no.entur.uttu.export.netex.producer.NetexIdProducer.getEntityName;
 
 @Component(value = "netexObjectFactory")
 public class NetexObjectFactory {
 
     private static final String VERSION_ONE = "1";
+    private static final String DEFAULT_LANGUAGE = "no";
 
     @Value("${netex.export.version:1.08:NO-NeTEx-networktimetable:1.3}")
     private String netexVersion;
@@ -43,6 +40,9 @@ public class NetexObjectFactory {
 
     @Autowired
     private DateUtils dateUtils;
+
+    @Autowired
+    private ExportTimeZone exportTimeZone;
 
     private static final Map<DayOfWeek, DayOfWeekEnumeration> dayOfWeekMap = new HashMap<>();
 
@@ -56,6 +56,33 @@ public class NetexObjectFactory {
         dayOfWeekMap.put(DayOfWeek.SUNDAY, DayOfWeekEnumeration.SUNDAY);
     }
 
+    public <E> JAXBElement<E> wrapAsJAXBElement(E entity) {
+        if (entity == null) {
+            return null;
+        }
+        return new JAXBElement(new QName("http://www.netex.org.uk/netex", getEntityName(entity)), entity.getClass(), null, entity);
+    }
+
+
+    public <N extends EntityInVersionStructure> N populateId(N netex, Ref ref) {
+        netex.setId(NetexIdProducer.getId(netex, ref));
+        netex.setVersion(ref.version);
+        return netex;
+    }
+
+    public <N extends VersionOfObjectRefStructure> N populateRefStructure(N netex, Ref ref, boolean withVersion) {
+        netex.setRef(NetexIdProducer.getReference(netex, ref));
+        if (withVersion) {
+            netex.setVersion(ref.version);
+        }
+        return netex;
+    }
+
+    public <N extends VersionOfObjectRefStructure> JAXBElement<N> createRefStructure(N netex, Ref ref, boolean withVersion) {
+        populateRefStructure(netex, ref, withVersion);
+        return wrapAsJAXBElement(netex);
+    }
+
     public JAXBElement<PublicationDeliveryStructure> createPublicationDelivery(NetexExportContext exportContext, CompositeFrame compositeFrame) {
 
         PublicationDeliveryStructure.DataObjects dataObjects = objectFactory.createPublicationDeliveryStructureDataObjects();
@@ -65,285 +92,207 @@ public class NetexObjectFactory {
                                                                             .withVersion(netexVersion)
                                                                             .withPublicationTimestamp(dateUtils.toExportLocalDateTime(exportContext.publicationTimestamp))
                                                                             .withParticipantRef(exportContext.provider.getName())
-                                                                            .withDescription(createMultilingualString("Flexible lines")) // TODO ?
+                                                                            .withDescription(createMultilingualString("Flexible lines"))
                                                                             .withDataObjects(dataObjects);
-
         return objectFactory.createPublicationDelivery(publicationDeliveryStructure);
     }
 
     // TODO remove unused
 
-//
-//    public JAXBElement<PublicationDeliveryStructure> createPublicationDeliveryStructureElement(
-//                                                                                                      Instant publicationTimestamp, JAXBElement<CompositeFrame> compositeFrame, String description) {
-//
-//        NetexStaticDataSet.OrganisationDataSet avinorDataSet = netexStaticDataSet.getOrganisations().get(AVINOR_XMLNS.toLowerCase());
-//
-//        PublicationDeliveryStructure.DataObjects dataObjects = objectFactory.createPublicationDeliveryStructureDataObjects();
-//        dataObjects.getCompositeFrameOrCommonFrame().add(compositeFrame);
-//
-//        PublicationDeliveryStructure publicationDeliveryStructure = objectFactory.createPublicationDeliveryStructure()
-//                                                                            .withVersion(NETEX_PROFILE_VERSION)
-//                                                                            .withPublicationTimestamp(dateUtils.toExportLocalDateTime(publicationTimestamp))
-//                                                                            .withParticipantRef(avinorDataSet.getName())
-//                                                                            //.withDescription(createMultilingualString(description)) // TODO find out if needed
-//                                                                            .withDataObjects(dataObjects);
-//
-//        return objectFactory.createPublicationDelivery(publicationDeliveryStructure);
-//    }
-//
-//    public JAXBElement<CompositeFrame> createCompositeFrame(Instant publicationTimestamp,
-//                                                                   AvailabilityPeriod availabilityPeriod, String airlineIata, String lineDesignation, Frames_RelStructure frames) {
-//
-//        ValidityConditions_RelStructure validityConditionsStruct = objectFactory.createValidityConditions_RelStructure()
-//                                                                           .withValidityConditionRefOrValidBetweenOrValidityCondition_(createAvailabilityCondition(availabilityPeriod));
-//
-//        Codespace avinorCodespace = createCodespace(AVINOR_XMLNS, AVINOR_XMLNSURL);
-//        Codespace nsrCodespace = createCodespace(NSR_XMLNS, NSR_XMLNSURL);
-//
-//        Codespaces_RelStructure codespaces = objectFactory.createCodespaces_RelStructure()
-//                                                     .withCodespaceRefOrCodespace(Arrays.asList(avinorCodespace, nsrCodespace));
-//
-//        LocaleStructure localeStructure = objectFactory.createLocaleStructure()
-//                                                  .withTimeZone(DEFAULT_ZONE_ID)
-//                                                  .withDefaultLanguage(DEFAULT_LANGUAGE);
-//
-//        VersionFrameDefaultsStructure versionFrameDefaultsStructure = objectFactory.createVersionFrameDefaultsStructure()
-//                                                                              .withDefaultLocale(localeStructure);
-//
-//        String compositeFrameId = NetexObjectIdCreator.createCompositeFrameId(
-//                AVINOR_XMLNS, Joiner.on(DASH).skipNulls().join(airlineIata, lineDesignation));
-//
-//        CompositeFrame compositeFrame = objectFactory.createCompositeFrame()
-//                                                .withVersion(VERSION_ONE)
-//                                                .withCreated(dateUtils.toExportLocalDateTime(publicationTimestamp))
-//                                                .withId(compositeFrameId)
-//                                                .withValidityConditions(validityConditionsStruct)
-//                                                .withCodespaces(codespaces)
-//                                                .withFrameDefaults(versionFrameDefaultsStructure)
-//                                                .withFrames(frames);
-//
-//        return objectFactory.createCompositeFrame(compositeFrame);
-//    }
-//
-//    public JAXBElement<CompositeFrame> createCompositeFrameElement(Instant publicationTimestamp, Frames_RelStructure frames, AvailabilityPeriod availabilityPeriod, Codespace... codespaces) {
-//
-//        ValidityConditions_RelStructure validityConditionsStruct = objectFactory.createValidityConditions_RelStructure()
-//                                                                           .withValidityConditionRefOrValidBetweenOrValidityCondition_(createAvailabilityCondition(availabilityPeriod));
-//
-//        Codespaces_RelStructure codespacesStruct = objectFactory.createCodespaces_RelStructure()
-//                                                           .withCodespaceRefOrCodespace((Object[]) codespaces);
-//
-//        LocaleStructure localeStructure = objectFactory.createLocaleStructure()
-//                                                  .withTimeZone(DEFAULT_ZONE_ID)
-//                                                  .withDefaultLanguage(DEFAULT_LANGUAGE);
-//
-//        VersionFrameDefaultsStructure versionFrameDefaultsStructure = objectFactory.createVersionFrameDefaultsStructure()
-//                                                                              .withDefaultLocale(localeStructure);
-//
-//        String compositeFrameId = NetexObjectIdCreator.createCompositeFrameId(AVINOR_XMLNS,
-//                String.valueOf(NetexObjectIdCreator.generateRandomId(DEFAULT_START_INCLUSIVE, DEFAULT_END_EXCLUSIVE)));
-//
-//        CompositeFrame compositeFrame = objectFactory.createCompositeFrame()
-//                                                .withVersion(VERSION_ONE)
-//                                                .withCreated(dateUtils.toExportLocalDateTime(publicationTimestamp))
-//                                                .withId(compositeFrameId)
-//                                                .withValidityConditions(validityConditionsStruct)
-//                                                .withCodespaces(codespacesStruct)
-//                                                .withFrameDefaults(versionFrameDefaultsStructure)
-//                                                .withFrames(frames);
-//
-//        return objectFactory.createCompositeFrame(compositeFrame);
-//    }
-//
-//    public JAXBElement<ResourceFrame> createResourceFrameElement(Collection<JAXBElement<Authority>> authorityElements,
-//                                                                        Collection<JAXBElement<Operator>> operatorElements) {
-//
-//        OrganisationsInFrame_RelStructure organisationsStruct = objectFactory.createOrganisationsInFrame_RelStructure();
-//
-//        String resourceFrameId = NetexObjectIdCreator.createResourceFrameId(AVINOR_XMLNS,
-//                String.valueOf(NetexObjectIdCreator.generateRandomId(DEFAULT_START_INCLUSIVE, DEFAULT_END_EXCLUSIVE)));
-//
-//        ResourceFrame resourceFrame = objectFactory.createResourceFrame()
-//                                              .withVersion(VERSION_ONE)
-//                                              .withId(resourceFrameId);
-//        resourceFrame.setOrganisations(organisationsStruct);
-//
-//        for (Iterator<JAXBElement<Authority>> iterator = authorityElements.iterator(); iterator.hasNext(); ) {
-//            JAXBElement<Authority> authorityElement = iterator.next();
-//            resourceFrame.getOrganisations().getOrganisation_().add(authorityElement);
-//        }
-//
-//        for (Iterator<JAXBElement<Operator>> iterator = operatorElements.iterator(); iterator.hasNext(); ) {
-//            JAXBElement<Operator> operatorElement = iterator.next();
-//            resourceFrame.getOrganisations().getOrganisation_().add(operatorElement);
-//        }
-//
-//        return objectFactory.createResourceFrame(resourceFrame);
-//    }
-//
-//    public JAXBElement<ResourceFrame> createResourceFrameElement(Operator operator) {
-//        OrganisationsInFrame_RelStructure organisationsStruct = objectFactory.createOrganisationsInFrame_RelStructure();
-//        organisationsStruct.getOrganisation_().add(createAirlineOperatorElement(operator));
-//
-//        String resourceFrameId = NetexObjectIdCreator.createResourceFrameId(AVINOR_XMLNS,
-//                String.valueOf(NetexObjectIdCreator.generateRandomId(DEFAULT_START_INCLUSIVE, DEFAULT_END_EXCLUSIVE)));
-//
-//        ResourceFrame resourceFrame = objectFactory.createResourceFrame()
-//                                              .withVersion(VERSION_ONE)
-//                                              .withId(resourceFrameId);
-//        resourceFrame.setOrganisations(organisationsStruct);
-//
-//        return objectFactory.createResourceFrame(resourceFrame);
-//    }
-//
-//
-//    public JAXBElement<ServiceFrame> createCommonServiceFrameElement(Collection<Network> networks, List<RoutePoint> routePoints,
-//                                                                            List<ScheduledStopPoint> scheduledStopPoints, List<JAXBElement<PassengerStopAssignment>> stopAssignmentElements) {
-//
-//        String serviceFrameId = NetexObjectIdCreator.createServiceFrameId(AVINOR_XMLNS,
-//                String.valueOf(NetexObjectIdCreator.generateRandomId(DEFAULT_START_INCLUSIVE, DEFAULT_END_EXCLUSIVE)));
-//
-//        RoutePointsInFrame_RelStructure routePointStruct = objectFactory.createRoutePointsInFrame_RelStructure()
-//                                                                   .withRoutePoint(routePoints);
-//
-//        ScheduledStopPointsInFrame_RelStructure scheduledStopPointsStruct = objectFactory.createScheduledStopPointsInFrame_RelStructure();
-//        scheduledStopPoints.forEach(stopPoint -> scheduledStopPointsStruct.getScheduledStopPoint().add(stopPoint));
-//
-//        StopAssignmentsInFrame_RelStructure stopAssignmentsStruct = objectFactory.createStopAssignmentsInFrame_RelStructure();
-//        stopAssignmentElements.forEach(stopAssignmentElement -> stopAssignmentsStruct.getStopAssignment().add(stopAssignmentElement));
-//
-//        ServiceFrame serviceFrame = objectFactory.createServiceFrame()
-//                                            .withVersion(VERSION_ONE)
-//                                            .withId(serviceFrameId)
-//                                            .withRoutePoints(routePointStruct)
-//                                            .withScheduledStopPoints(scheduledStopPointsStruct)
-//                                            .withStopAssignments(stopAssignmentsStruct);
-//
-//        if (!CollectionUtils.isEmpty(networks)) {
-//            Iterator<Network> networkIterator=networks.iterator();
-//            serviceFrame.withNetwork(networkIterator.next());
-//
-//            if (networkIterator.hasNext()) {
-//                NetworksInFrame_RelStructure additionalNetworks = new NetworksInFrame_RelStructure();
-//                while (networkIterator.hasNext()) {
-//                    additionalNetworks.getNetwork().add(networkIterator.next());
-//                }
-//                serviceFrame.withAdditionalNetworks(additionalNetworks);
-//            }
-//        }
-//
-//        return objectFactory.createServiceFrame(serviceFrame);
-//    }
-//
-//    public JAXBElement<ServiceFrame> createServiceFrame(Instant publicationTimestamp, String airlineName,
-//                                                               String airlineIata, List<Route> routes, Line line, List<DestinationDisplay> destinationDisplays, List<JourneyPattern> journeyPatterns) {
-//
-//        Network network = null;
-//        if (!isCommonDesignator(airlineIata)) {
-//            network = createNetwork(publicationTimestamp, airlineIata, airlineName);
-//        }
-//
-//        RoutesInFrame_RelStructure routesInFrame = objectFactory.createRoutesInFrame_RelStructure();
-//        for (Route route : routes) {
-//            JAXBElement<Route> routeElement = objectFactory.createRoute(route);
-//            routesInFrame.getRoute_().add(routeElement);
-//        }
-//
-//        LinesInFrame_RelStructure linesInFrame = objectFactory.createLinesInFrame_RelStructure();
-//        linesInFrame.getLine_().add(objectFactory.createLine(line));
-//
-//        DestinationDisplaysInFrame_RelStructure destinationDisplayStruct = objectFactory.createDestinationDisplaysInFrame_RelStructure()
-//                                                                                   .withDestinationDisplay(destinationDisplays);
-//
-//        JourneyPatternsInFrame_RelStructure journeyPatternsInFrame = objectFactory.createJourneyPatternsInFrame_RelStructure();
-//        for (JourneyPattern journeyPattern : journeyPatterns) {
-//            JAXBElement<JourneyPattern> journeyPatternElement = objectFactory.createJourneyPattern(journeyPattern);
-//            journeyPatternsInFrame.getJourneyPattern_OrJourneyPatternView().add(journeyPatternElement);
-//        }
-//
-//        String serviceFrameId = NetexObjectIdCreator.createServiceFrameId(AVINOR_XMLNS,
-//                String.valueOf(NetexObjectIdCreator.generateRandomId(DEFAULT_START_INCLUSIVE, DEFAULT_END_EXCLUSIVE)));
-//
-//        ServiceFrame serviceFrame = objectFactory.createServiceFrame()
-//                                            .withVersion(VERSION_ONE)
-//                                            .withId(serviceFrameId)
-//                                            .withRoutes(routesInFrame)
-//                                            .withLines(linesInFrame)
-//                                            .withDestinationDisplays(destinationDisplayStruct)
-//                                            .withJourneyPatterns(journeyPatternsInFrame);
-//
-//        if (network != null) {
-//            serviceFrame.setNetwork(network);
-//        }
-//
-//        return objectFactory.createServiceFrame(serviceFrame);
-//    }
-//
-//
-//
-//    public JAXBElement<TimetableFrame> createTimetableFrame(List<ServiceJourney> serviceJourneys) {
-//        JourneysInFrame_RelStructure journeysInFrameRelStructure = objectFactory.createJourneysInFrame_RelStructure();
-//        journeysInFrameRelStructure.getDatedServiceJourneyOrDeadRunOrServiceJourney().addAll(serviceJourneys);
-//
-//        String timetableFrameId = NetexObjectIdCreator.createTimetableFrameId(AVINOR_XMLNS,
-//                String.valueOf(NetexObjectIdCreator.generateRandomId(DEFAULT_START_INCLUSIVE, DEFAULT_END_EXCLUSIVE)));
-//
-//        TimetableFrame timetableFrame = objectFactory.createTimetableFrame()
-//                                                .withVersion(VERSION_ONE)
-//                                                .withId(timetableFrameId)
-//                                                .withVehicleJourneys(journeysInFrameRelStructure);
-//
-//        return objectFactory.createTimetableFrame(timetableFrame);
-//    }
-//
-//    public JAXBElement<ServiceCalendarFrame> createServiceCalendarFrame(Map<String, DayType> dayTypes, Map<String, DayTypeAssignment> dayTypeAssignments, Map<String, OperatingPeriod> operatingPeriods) {
-//        DayTypesInFrame_RelStructure dayTypesStruct = objectFactory.createDayTypesInFrame_RelStructure();
-//        for (DayType dayType : dayTypes.values()) {
-//            JAXBElement<DayType> dayTypeElement = objectFactory.createDayType(dayType);
-//            dayTypesStruct.getDayType_().add(dayTypeElement);
-//        }
-//
-//        String serviceCalendarFrameId = NetexObjectIdCreator.createServiceCalendarFrameId(AVINOR_XMLNS,
-//                String.valueOf(NetexObjectIdCreator.generateRandomId(DEFAULT_START_INCLUSIVE, DEFAULT_END_EXCLUSIVE)));
-//
-//        ServiceCalendarFrame serviceCalendarFrame = objectFactory.createServiceCalendarFrame()
-//                                                            .withVersion(VERSION_ONE)
-//                                                            .withId(serviceCalendarFrameId)
-//                                                            .withDayTypes(dayTypesStruct);
-//
-//        if (!dayTypeAssignments.isEmpty()) {
-//            List<DayTypeAssignment> dayTypeAssignmentList = new ArrayList<>(dayTypeAssignments.values());
-//            dayTypeAssignmentList.sort(Comparator.comparing(DayTypeAssignment::getOrder));
-//            DayTypeAssignmentsInFrame_RelStructure dayTypeAssignmentsStruct = objectFactory.createDayTypeAssignmentsInFrame_RelStructure();
-//            dayTypeAssignmentList.forEach(dayTypeAssignment -> dayTypeAssignmentsStruct.getDayTypeAssignment().add(dayTypeAssignment));
-//
-//            serviceCalendarFrame.withDayTypeAssignments(dayTypeAssignmentsStruct);
-//        }
-//
-//        if (!operatingPeriods.isEmpty()) {
-//            OperatingPeriodsInFrame_RelStructure operatingPeriodStruct = objectFactory.createOperatingPeriodsInFrame_RelStructure();
-//            operatingPeriodStruct.getOperatingPeriodOrUicOperatingPeriod().addAll(operatingPeriods.values());
-//            operatingPeriodStruct.getOperatingPeriodOrUicOperatingPeriod().sort(Comparator.comparing(OperatingPeriod_VersionStructure::getFromDate));
-//            serviceCalendarFrame.withOperatingPeriods(operatingPeriodStruct);
-//        }
-//
-//        return objectFactory.createServiceCalendarFrame(serviceCalendarFrame);
-//    }
-//
-//    public JAXBElement<AvailabilityCondition> createAvailabilityCondition(AvailabilityPeriod availabilityPeriod) {
-//        String availabilityConditionId = NetexObjectIdCreator.createAvailabilityConditionId(AVINOR_XMLNS,
-//                String.valueOf(NetexObjectIdCreator.generateRandomId(DEFAULT_START_INCLUSIVE, DEFAULT_END_EXCLUSIVE)));
-//
-//        AvailabilityCondition availabilityCondition = objectFactory.createAvailabilityCondition()
-//                                                              .withVersion(VERSION_ONE)
-//                                                              .withId(availabilityConditionId)
-//                                                              .withFromDate(availabilityPeriod.getPeriodFromDateTime())
-//                                                              .withToDate(availabilityPeriod.getPeriodToDateTime());
-//
-//        return objectFactory.createAvailabilityCondition(availabilityCondition);
-//    }
-//
+
+    public <F extends Common_VersionFrameStructure> CompositeFrame createCompositeFrame(NetexExportContext context, AvailabilityPeriod availabilityPeriod, F... frames) {
+        ValidityConditions_RelStructure validityConditionsStruct = objectFactory.createValidityConditions_RelStructure()
+                                                                           .withValidityConditionRefOrValidBetweenOrValidityCondition_(createAvailabilityCondition(availabilityPeriod, context));
+
+        Codespace providerCodespace = createCodespace(context.provider.getCodespace());
+
+        Codespaces_RelStructure codespaces = objectFactory.createCodespaces_RelStructure().withCodespaceRefOrCodespace(providerCodespace);
+
+        LocaleStructure localeStructure = objectFactory.createLocaleStructure()
+                                                  .withTimeZone(exportTimeZone.getDefaultTimeZoneId().getId())
+                                                  .withDefaultLanguage(DEFAULT_LANGUAGE);
+
+        VersionFrameDefaultsStructure versionFrameDefaultsStructure = objectFactory.createVersionFrameDefaultsStructure()
+                                                                              .withDefaultLocale(localeStructure);
+
+        Frames_RelStructure frames_relStructure = null;
+        if (frames != null) {
+            frames_relStructure = new Frames_RelStructure().withCommonFrame(Arrays.stream(frames).map(this::wrapAsJAXBElement).collect(Collectors.toList()));
+        }
+        String compositeFrameId = NetexIdProducer.generateId(CompositeFrame.class, context);
+
+        CompositeFrame compositeFrame = objectFactory.createCompositeFrame()
+                                                .withVersion(VERSION_ONE)
+                                                .withCreated(dateUtils.toExportLocalDateTime(context.publicationTimestamp))
+                                                .withId(compositeFrameId)
+                                                .withValidityConditions(validityConditionsStruct)
+                                                .withFrames(frames_relStructure)
+                                                .withCodespaces(codespaces)
+                                                .withFrameDefaults(versionFrameDefaultsStructure);
+
+
+        return compositeFrame;
+    }
+
+
+    public ResourceFrame createResourceFrame(NetexExportContext context, Collection<Authority> authorities, Collection<Operator> operators) {
+        String resourceFrameId = NetexIdProducer.generateId(ResourceFrame.class, context);
+        OrganisationsInFrame_RelStructure organisationsStruct = objectFactory.createOrganisationsInFrame_RelStructure()
+                                                                        .withOrganisation_(authorities.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList()))
+                                                                        .withOrganisation_(operators.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList()));
+
+        return objectFactory.createResourceFrame()
+                       .withOrganisations(organisationsStruct)
+                       .withVersion(VERSION_ONE)
+                       .withId(resourceFrameId);
+    }
+
+    public SiteFrame createSiteFrame(NetexExportContext context, Collection<FlexibleStopPlace> flexibleStopPlaces) {
+        String frameId = NetexIdProducer.generateId(SiteFrame.class, context);
+        return objectFactory.createSiteFrame()
+                       .withFlexibleStopPlaces(new FlexibleStopPlacesInFrame_RelStructure().withFlexibleStopPlace(flexibleStopPlaces))
+                       .withVersion(VERSION_ONE)
+                       .withId(frameId);
+    }
+
+    public ServiceFrame createCommonServiceFrame(NetexExportContext context, Collection<Network> networks, Collection<RoutePoint> routePoints,
+                                                        Collection<ScheduledStopPoint> scheduledStopPoints, Collection<? extends StopAssignment_VersionStructure> stopAssignmentElements) {
+
+        RoutePointsInFrame_RelStructure routePointStruct = objectFactory.createRoutePointsInFrame_RelStructure()
+                                                                   .withRoutePoint(routePoints);
+
+        ScheduledStopPointsInFrame_RelStructure scheduledStopPointsStruct = objectFactory.createScheduledStopPointsInFrame_RelStructure();
+        scheduledStopPoints.forEach(stopPoint -> scheduledStopPointsStruct.getScheduledStopPoint().add(stopPoint));
+
+        StopAssignmentsInFrame_RelStructure stopAssignmentsStruct = objectFactory.createStopAssignmentsInFrame_RelStructure()
+                                                                            .withStopAssignment(stopAssignmentElements.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList()));
+
+        NetworksInFrame_RelStructure additionalNetworks = null;
+        Network network = null;
+        if (!CollectionUtils.isEmpty(networks)) {
+            Iterator<Network> networkIterator = networks.iterator();
+            network = networkIterator.next();
+
+
+            if (networkIterator.hasNext()) {
+                additionalNetworks = new NetworksInFrame_RelStructure();
+                while (networkIterator.hasNext()) {
+                    additionalNetworks.getNetwork().add(networkIterator.next());
+                }
+            }
+        }
+
+        return createServiceFrame(context)
+                       .withRoutePoints(routePointStruct)
+                       .withScheduledStopPoints(scheduledStopPointsStruct)
+                       .withStopAssignments(stopAssignmentsStruct)
+                       .withNetwork(network)
+                       .withAdditionalNetworks(additionalNetworks);
+
+    }
+
+
+    public <N extends Line_VersionStructure> ServiceFrame createLineServiceFrame(NetexExportContext context, N line, List<Route> routes, List<JourneyPattern> journeyPatterns) {
+        RoutesInFrame_RelStructure routesInFrame = objectFactory.createRoutesInFrame_RelStructure();
+        for (Route route : routes) {
+            JAXBElement<Route> routeElement = objectFactory.createRoute(route);
+            routesInFrame.getRoute_().add(routeElement);
+        }
+
+        LinesInFrame_RelStructure linesInFrame = objectFactory.createLinesInFrame_RelStructure();
+        linesInFrame.getLine_().add(wrapAsJAXBElement(line));
+
+        JourneyPatternsInFrame_RelStructure journeyPatternsInFrame = objectFactory.createJourneyPatternsInFrame_RelStructure();
+        for (JourneyPattern journeyPattern : journeyPatterns) {
+            JAXBElement<JourneyPattern> journeyPatternElement = objectFactory.createJourneyPattern(journeyPattern);
+            journeyPatternsInFrame.getJourneyPattern_OrJourneyPatternView().add(journeyPatternElement);
+        }
+
+        return createServiceFrame(context)
+                       .withRoutes(routesInFrame)
+                       .withLines(linesInFrame)
+                       .withJourneyPatterns(journeyPatternsInFrame);
+    }
+
+    private ServiceFrame createServiceFrame(NetexExportContext context) {
+        String serviceFrameId = NetexIdProducer.generateId(ServiceFrame.class, context);
+
+        return objectFactory.createServiceFrame()
+                       .withVersion(VERSION_ONE)
+                       .withId(serviceFrameId);
+    }
+
+
+    public TimetableFrame createTimetableFrame(NetexExportContext context, List<ServiceJourney> serviceJourneys, List<NoticeAssignment> noticeAssignments) {
+        JourneysInFrame_RelStructure journeysInFrameRelStructure = objectFactory.createJourneysInFrame_RelStructure();
+        journeysInFrameRelStructure.getDatedServiceJourneyOrDeadRunOrServiceJourney().addAll(serviceJourneys);
+
+        String timetableFrameId = NetexIdProducer.generateId(TimetableFrame.class, context);
+        return objectFactory.createTimetableFrame()
+                       .withVersion(VERSION_ONE)
+                       .withId(timetableFrameId)
+                       .withNoticeAssignments(new NoticeAssignmentsInFrame_RelStructure().withNoticeAssignment_(noticeAssignments.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())))
+                       .withVehicleJourneys(journeysInFrameRelStructure);
+
+    }
+
+    public ServiceCalendarFrame createServiceCalendarFrame(NetexExportContext context, Collection<DayType> dayTypes, Collection<DayTypeAssignment> dayTypeAssignments, Collection<OperatingPeriod> operatingPeriods) {
+        String frameId = NetexIdProducer.generateId(ServiceCalendarFrame.class, context);
+
+        DayTypesInFrame_RelStructure dayTypesStruct = null;
+        if (dayTypes != null) {
+            dayTypesStruct = new DayTypesInFrame_RelStructure().withDayType_(dayTypes.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList()));
+        }
+
+        DayTypeAssignmentsInFrame_RelStructure dayTypeAssignmentsInFrameRelStructure = null;
+        if (dayTypeAssignments != null) {
+            dayTypeAssignmentsInFrameRelStructure = new DayTypeAssignmentsInFrame_RelStructure().withDayTypeAssignment(dayTypeAssignments);
+            dayTypeAssignmentsInFrameRelStructure.getDayTypeAssignment().sort(Comparator.comparing(DayTypeAssignment::getOrder));
+        }
+
+        OperatingPeriodsInFrame_RelStructure operatingPeriodsInFrameRelStructure = null;
+        if (operatingPeriods != null) {
+            operatingPeriodsInFrameRelStructure = new OperatingPeriodsInFrame_RelStructure();
+            operatingPeriodsInFrameRelStructure.getOperatingPeriodOrUicOperatingPeriod().addAll(operatingPeriods);
+            operatingPeriodsInFrameRelStructure.getOperatingPeriodOrUicOperatingPeriod().sort(Comparator.comparing(OperatingPeriod_VersionStructure::getFromDate));
+        }
+
+        return objectFactory.createServiceCalendarFrame()
+                       .withVersion(VERSION_ONE)
+                       .withId(frameId)
+                       .withDayTypes(dayTypesStruct)
+                       .withDayTypeAssignments(dayTypeAssignmentsInFrameRelStructure)
+                       .withOperatingPeriods(operatingPeriodsInFrameRelStructure);
+
+    }
+
+    public JAXBElement<AvailabilityCondition> createAvailabilityCondition(AvailabilityPeriod availabilityPeriod, NetexExportContext context) {
+        String availabilityConditionId = NetexIdProducer.generateId(AvailabilityCondition.class, context);
+
+        AvailabilityCondition availabilityCondition = objectFactory.createAvailabilityCondition()
+                                                              .withVersion(VERSION_ONE)
+                                                              .withId(availabilityConditionId)
+                                                              .withFromDate(availabilityPeriod.getFrom().atStartOfDay())
+                                                              .withToDate(availabilityPeriod.getTo().atStartOfDay());
+
+        return objectFactory.createAvailabilityCondition(availabilityCondition);
+    }
+
+    public <N extends Enum<N>, L extends Enum> List<N> mapEnums(Collection<L> local, Class<N> netexEnumClass) {
+        if (local == null) {
+            return null;
+        }
+        return local.stream().map(localEnum -> mapEnum(localEnum, netexEnumClass)).collect(Collectors.toList());
+    }
+
+    public <N extends Enum<N>, L extends Enum> N mapEnum(L local, Class<N> netexEnumClass) {
+        if (local == null) {
+            return null;
+        }
+        return Enum.valueOf(netexEnumClass, local.name());
+    }
+
+    //
 //    public Network createNetwork(Instant publicationTimestamp, String airlineIata, String airlineName) {
 //        NetexStaticDataSet.OrganisationDataSet avinorDataSet = netexStaticDataSet.getOrganisations()
 //                                                                       .get(AVINOR_XMLNS.toLowerCase());
@@ -453,12 +402,13 @@ public class NetexObjectFactory {
 //                       .withUrl(url);
 //    }
 //
-//    public Codespace createCodespace(String id, String xmlnsUrl) {
-//        return objectFactory.createCodespace()
-//                       .withId(id.toLowerCase())
-//                       .withXmlns(id)
-//                       .withXmlnsUrl(xmlnsUrl);
-//    }
+
+    public Codespace createCodespace(no.entur.uttu.model.Codespace local) {
+        return objectFactory.createCodespace()
+                       .withId(local.getXmlns().toLowerCase())
+                       .withXmlns(local.getXmlns())
+                       .withXmlnsUrl(local.getXmlnsUrl());
+    }
 //
 //    public Line createLine(String airlineIata, String lineDesignation, String lineName) {
 //        String lineId = NetexObjectIdCreator.createLineId(AVINOR_XMLNS, new String[] {airlineIata, lineDesignation});
@@ -647,10 +597,21 @@ public class NetexObjectFactory {
 //    }
 
     public MultilingualString createMultilingualString(String value) {
+        if (value == null) {
+            return null;
+        }
         return objectFactory.createMultilingualString().withValue(value);
     }
 
+    public PrivateCodeStructure createPrivateCodeStructure(String value) {
+        if (value == null) {
+            return null;
+        }
+        return objectFactory.createPrivateCodeStructure().withValue(value);
+    }
+
     // reference structures creation
+
 
     public LineRefStructure createLineRefStructure(String lineId) {
         return objectFactory.createLineRefStructure()
@@ -662,6 +623,10 @@ public class NetexObjectFactory {
         OperatorRefStructure operatorRefStruct = objectFactory.createOperatorRefStructure()
                                                          .withRef(operatorId);
         return withRefValidation ? operatorRefStruct.withVersion(VERSION_ONE) : operatorRefStruct;
+    }
+
+    public GroupOfLinesRefStructure createGroupOfLinesRefStructure(String groupOfLinesId) {
+        return objectFactory.createGroupOfLinesRefStructure().withRef(groupOfLinesId);
     }
 
     public RouteRefStructure createRouteRefStructure(String routeId) {

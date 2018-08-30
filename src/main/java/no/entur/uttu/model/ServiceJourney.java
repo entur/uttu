@@ -31,10 +31,12 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
     private JourneyPattern journeyPattern;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @NotNull
     private List<DayType> dayTypes;
 
 
     @OneToMany(mappedBy = "serviceJourney", cascade = CascadeType.ALL, orphanRemoval = true)
+    @NotNull
     private final List<TimetabledPassingTime> pointsInSequence = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

@@ -52,7 +52,7 @@ public class ProviderAuthenticationService {
         }
 
         return roleAssignmentExtractor.getRoleAssignmentsForUser(authentication).stream()
-                       .filter(ra -> role.equals(ra.r)).anyMatch(ra -> provider.getCodeSpace().getXmlns().equals(ra.o));
+                       .filter(ra -> role.equals(ra.r)).anyMatch(ra -> provider.getCodespace().getXmlns().equals(ra.o));
     }
 
 

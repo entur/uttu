@@ -2,6 +2,8 @@ package no.entur.uttu.model;
 
 import javax.persistence.Entity;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
 public class Provider extends IdentifiedEntity {
@@ -9,7 +11,7 @@ public class Provider extends IdentifiedEntity {
     private String name;
 
     @ManyToOne
-    private CodeSpace codeSpace;
+    private Codespace codespace;
 
     // TODO settings
 
@@ -22,11 +24,11 @@ public class Provider extends IdentifiedEntity {
         this.name = name;
     }
 
-    public CodeSpace getCodeSpace() {
-        return codeSpace;
+    public Codespace getCodespace() {
+        return codespace;
     }
 
-    public void setCodeSpace(CodeSpace codeSpace) {
-        this.codeSpace = codeSpace;
+    public void setCodespace(Codespace codespace) {
+        this.codespace = codespace;
     }
 }

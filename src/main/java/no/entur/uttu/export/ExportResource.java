@@ -4,6 +4,7 @@ package no.entur.uttu.export;
 import io.swagger.annotations.Api;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.export.blob.BlobStoreService;
+import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.DataSetProducer;
 import no.entur.uttu.export.netex.NetexExporter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,11 +38,13 @@ public class ExportResource {
     @Path("{providerId}")
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerId)")
     public void exportDataSet(@PathParam("providerId") Long providerId) {
-        Context.setProvider(providerId);
 
+        Context.setProvider(providerId);
         try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
 
-            exporter.exportDataSet(providerId, dataSetProducer);
+
+            boolean validateAgainstSchema = false; // TODO
+            exporter.exportDataSet(providerId, dataSetProducer, validateAgainstSchema);
 
             InputStream dataSetStream = dataSetProducer.buildDataSet();
 
@@ -50,6 +53,25 @@ public class ExportResource {
             blobStoreService.uploadBlob(blobName, true, dataSetStream);
         } catch (IOException ioe) {
             throw new ExportException("Export failed with exception: " + ioe.getMessage(), ioe);
+        } finally {
+            Context.clear();
+        }
+
+    }
+
+    @POST
+    @Path("{providerId}/validat")
+    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerId)")
+    public void validateDataSet(@PathParam("providerId") Long providerId) {
+        Context.setProvider(providerId);
+
+        try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
+            exporter.exportDataSet(providerId, dataSetProducer, true);
+            dataSetProducer.buildDataSet();
+        } catch (IOException ioe) {
+            throw new ExportException("Export failed with exception: " + ioe.getMessage(), ioe);
+        }finally {
+            Context.clear();
         }
 
     }

@@ -8,7 +8,7 @@ import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
-import no.entur.uttu.model.CodeSpace;
+import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodeSpaceRepository;
 import no.entur.uttu.repository.ProviderRepository;
@@ -36,7 +36,7 @@ public class ProviderGraphQLSchema {
     @Autowired
     private ProviderRepository providerRepository;
     @Autowired
-    private DataFetcher<CodeSpace> codeSpaceUpdater;
+    private DataFetcher<Codespace> codeSpaceUpdater;
     @Autowired
     private DataFetcher<Provider> providerUpdater;
 
@@ -68,7 +68,7 @@ public class ProviderGraphQLSchema {
                                              .field(newFieldDefinition().name(FIELD_CHANGED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
                                              .build();
 
-        codeSpaceObjectType = newObject(identifiedEntityObjectType).name("CodeSpace")
+        codeSpaceObjectType = newObject(identifiedEntityObjectType).name("Codespace")
                                       .field(newFieldDefinition().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString)))
                                       .field(newFieldDefinition().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString)))
                                       .build();
@@ -129,7 +129,7 @@ public class ProviderGraphQLSchema {
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(codeSpaceObjectType))
                                                                 .name("mutateCodeSpace")
-                                                                .description("Create new or update existing CodeSpace")
+                                                                .description("Create new or update existing Codespace")
                                                                 .argument(GraphQLArgument.newArgument()
                                                                                   .name("input")
                                                                                   .type(codeSpaceInputType))

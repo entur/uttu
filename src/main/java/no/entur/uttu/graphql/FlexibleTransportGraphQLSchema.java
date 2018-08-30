@@ -17,7 +17,7 @@ import no.entur.uttu.graphql.scalars.GeoJSONCoordinatesScalar;
 import no.entur.uttu.graphql.scalars.LocalTimeScalar;
 import no.entur.uttu.model.BookingAccessEnumeration;
 import no.entur.uttu.model.BookingMethodEnumeration;
-import no.entur.uttu.model.CodeSpace;
+import no.entur.uttu.model.DirectionTypeEnumeration;
 import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.FlexibleLineTypeEnumeration;
@@ -83,13 +83,15 @@ public class FlexibleTransportGraphQLSchema {
                                                              .value("GeometryCollection")
                                                              .build();
 
-    private static GraphQLEnumType dayOfWeekEnum = FlexibleTransportGraphQLSchema.createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name())); // TODO lower case?
+    private static GraphQLEnumType dayOfWeekEnum = FlexibleTransportGraphQLSchema.createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name().toLowerCase()));
     private static GraphQLEnumType vehicleModeEnum = FlexibleTransportGraphQLSchema.createEnum("VehicleModeEnumeration", VehicleModeEnumeration.values(), (t -> t.value()));
     private static GraphQLEnumType flexibleLineTypeEnum = FlexibleTransportGraphQLSchema.createEnum("FlexibleLineTypeEnumeration", FlexibleLineTypeEnumeration.values(), (t -> t.value()));
     private static GraphQLEnumType bookingMethodEnum = FlexibleTransportGraphQLSchema.createEnum("BookingMethodEnumeration", BookingMethodEnumeration.values(), (t -> t.value()));
     private static GraphQLEnumType bookingAccessEnum = FlexibleTransportGraphQLSchema.createEnum("BookingAccessEnumeration", BookingAccessEnumeration.values(), (t -> t.value()));
     private static GraphQLEnumType purchaseWhenEnum = FlexibleTransportGraphQLSchema.createEnum("PurchaseWhenEnumeration", PurchaseWhenEnumeration.values(), (t -> t.value()));
     private static GraphQLEnumType purchaseMomentEnum = FlexibleTransportGraphQLSchema.createEnum("PurchaseMomentEnumeration", PurchaseMomentEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType directionTypeEnum = FlexibleTransportGraphQLSchema.createEnum("DirectionTypeEnumeration", DirectionTypeEnumeration.values(), (t -> t.value()));
+
 
     private static <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
         GraphQLEnumType.Builder enumBuilder = GraphQLEnumType.newEnum().name(name);
@@ -100,7 +102,6 @@ public class FlexibleTransportGraphQLSchema {
 
     private GraphQLObjectType geoJSONObjectType;
     private GraphQLObjectType identifiedEntityObjectType;
-    private GraphQLObjectType codeSpaceObjectType;
     private GraphQLObjectType groupOfEntitiesObjectType;
     private GraphQLObjectType flexibleLineObjectType;
     private GraphQLObjectType flexibleStopPlaceObjectType;
@@ -179,12 +180,6 @@ public class FlexibleTransportGraphQLSchema {
                                              .field(newFieldDefinition().name(FIELD_CHANGED_BY).type(new GraphQLNonNull(GraphQLString)))
                                              .field(newFieldDefinition().name(FIELD_CHANGED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
                                              .build();
-
-
-        codeSpaceObjectType = newObject(identifiedEntityObjectType).name("CodeSpace")
-                                      .field(newFieldDefinition().name("xmlns").type(GraphQLString).dataFetcher(env -> ((CodeSpace) env.getSource()).getXmlns()).build())
-                                      .field(newFieldDefinition().name("xmlnsUrl").type(GraphQLString).dataFetcher(env -> ((CodeSpace) env.getSource()).getXmlns()).build())
-                                      .build();
 
 
         groupOfEntitiesObjectType = newObject(identifiedEntityObjectType).name("GroupOfEntities")
@@ -288,8 +283,10 @@ public class FlexibleTransportGraphQLSchema {
                                                       .build();
 
         journeyPatternObjectType = newObject(groupOfEntitiesObjectType).name("JourneyPattern")
+                                           .field(newFieldDefinition().name(FIELD_DIRECTION_TYPE).type(directionTypeEnum))
                                            .field(newFieldDefinition().name(FIELD_POINTS_IN_SEQUENCE).type(new GraphQLNonNull(new GraphQLList(stopPointInJourneyPatternObjectType))))
                                            .field(newFieldDefinition().name(FIELD_SERVICE_JOURNEYS).type(new GraphQLNonNull(new GraphQLList(serviceJourneyObjectType))))
+                                           .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                            .build();
 
 
@@ -422,6 +419,10 @@ public class FlexibleTransportGraphQLSchema {
                                                           .build();
 
 
+        GraphQLInputObjectType noticeInputType = newInputObject(identifiedEntityInputType).name("NoticeInput")
+                                   .field(newInputObjectField().name(FIELD_TEXT).type(new GraphQLNonNull(GraphQLString)))
+                                   .build();
+
         GraphQLInputObjectType timetabledPassingTimeInputType = newInputObject(groupOfEntitiesInputType).name("TimetabledPassingTimeInput")
                                                                         .field(newInputObjectField().name(FIELD_ARRIVAL_TIME).type(LocalTimeScalar.getLocalTimeScalar()))
                                                                         .field(newInputObjectField().name(FIELD_ARRIVAL_DAY_OFFSET).type(GraphQLInt))
@@ -431,6 +432,7 @@ public class FlexibleTransportGraphQLSchema {
                                                                         .field(newInputObjectField().name(FIELD_LATEST_ARRIVAL_DAY_OFFSET).type(GraphQLInt))
                                                                         .field(newInputObjectField().name(FIELD_EARLIEST_DEPARTURE_TIME).type(LocalTimeScalar.getLocalTimeScalar()))
                                                                         .field(newInputObjectField().name(FIELD_EARLIEST_DEPARTURE_DAY_OFFSET).type(GraphQLInt))
+                                                                        .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                         .build();
 
 
@@ -440,6 +442,7 @@ public class FlexibleTransportGraphQLSchema {
                                                                  .field(newInputObjectField().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementInputType))
                                                                  .field(newInputObjectField().name(FIELD_POINTS_IN_SEQUENCE).type(new GraphQLNonNull(new GraphQLList(timetabledPassingTimeInputType))))
                                                                  .field(newInputObjectField().name(FIELD_DAY_TYPES).type(new GraphQLList(dayTypeInputType)))
+                                                                 .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                  .build();
 
 
@@ -447,11 +450,14 @@ public class FlexibleTransportGraphQLSchema {
                                                                             .field(newInputObjectField().name(FIELD_FLEXIBLE_STOP_PLACE_REF).type(new GraphQLNonNull(GraphQLString)))
                                                                             .field(newInputObjectField().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementInputType))
                                                                             .field(newInputObjectField().name(FIELD_DESTINATION_DISPLAY).type(destinationDisplayInputType))
+                                                                            .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                             .build();
 
         GraphQLInputObjectType journeyPatternInputType = newInputObject(groupOfEntitiesInputType).name("JourneyPatternInput")
+                                                                 .field(newInputObjectField().name(FIELD_DIRECTION_TYPE).type(directionTypeEnum))
                                                                  .field(newInputObjectField().name(FIELD_POINTS_IN_SEQUENCE).type(new GraphQLNonNull(new GraphQLList(stopPointInJourneyPatternInputType))))
                                                                  .field(newInputObjectField().name(FIELD_SERVICE_JOURNEYS).type(new GraphQLNonNull(new GraphQLList(serviceJourneyInputType))))
+                                                                 .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                  .build();
 
 
@@ -463,6 +469,7 @@ public class FlexibleTransportGraphQLSchema {
                                                                .field(newInputObjectField().name(FIELD_OPERATOR_REF).type(GraphQLString))
                                                                .field(newInputObjectField().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementInputType))
                                                                .field(newInputObjectField().name(FIELD_JOURNEY_PATTERNS).type(new GraphQLNonNull(new GraphQLList(journeyPatternInputType))))
+                                                               .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                .build();
 
 

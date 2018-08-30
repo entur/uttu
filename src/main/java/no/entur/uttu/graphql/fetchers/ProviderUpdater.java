@@ -4,7 +4,7 @@ import com.google.common.base.Preconditions;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.ArgumentWrapper;
-import no.entur.uttu.model.CodeSpace;
+import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodeSpaceRepository;
 import no.entur.uttu.repository.ProviderRepository;
@@ -44,13 +44,13 @@ public class ProviderUpdater implements DataFetcher<Provider> {
 
     private void populateEntityFromInput(Provider entity, ArgumentWrapper input) {
         input.apply(FIELD_NAME, entity::setName);
-        input.apply(FIELD_CODE_SPACE_REF, this::getVerifiedCodeSpace, entity::setCodeSpace);
+        input.apply(FIELD_CODE_SPACE_REF, this::getVerifiedCodeSpace, entity::setCodespace);
     }
 
-    private CodeSpace getVerifiedCodeSpace(Long codeSpaceId) {
-        CodeSpace codeSpace = codeSpaceRepository.getOne(codeSpaceId);
-        Preconditions.checkArgument(codeSpace != null,
-                "CodeSpace not found [pk=%s]", codeSpaceId);
-        return codeSpace;
+    private Codespace getVerifiedCodeSpace(Long codeSpaceId) {
+        Codespace codespace = codeSpaceRepository.getOne(codeSpaceId);
+        Preconditions.checkArgument(codespace != null,
+                "Codespace not found [pk=%s]", codeSpaceId);
+        return codespace;
     }
 }

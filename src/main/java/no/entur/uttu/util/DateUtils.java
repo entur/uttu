@@ -1,4 +1,4 @@
-package no.entur.uttu.export.netex.producer;
+package no.entur.uttu.util;
 
 
 import org.springframework.beans.factory.annotation.Value;

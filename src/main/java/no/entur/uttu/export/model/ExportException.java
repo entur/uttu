@@ -1,4 +1,4 @@
-package no.entur.uttu.export;
+package no.entur.uttu.export.model;
 
 public class ExportException extends RuntimeException {
 

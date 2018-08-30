@@ -17,6 +17,7 @@ public class Network extends GroupOfEntities_VersionStructure {
      * Reference to Authority in organisation registry.
      */
     @NotNull
+    // TODO this should probably be change to Long?
     private String authorityRef;
 
     public String getAuthorityRef() {

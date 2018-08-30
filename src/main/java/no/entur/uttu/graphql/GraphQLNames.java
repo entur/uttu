@@ -42,6 +42,7 @@ public class GraphQLNames {
     public static final String FIELD_JOURNEY_PATTERNS = "journeyPatterns";
 
     // JourneyPattern
+    public static final String FIELD_DIRECTION_TYPE = "directionType";
     public static final String FIELD_SERVICE_JOURNEYS = "serviceJourneys";
 
     // DayType

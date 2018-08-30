@@ -118,8 +118,6 @@ public class GraphQLResourceHelper {
 
             content.put("errors", Arrays.asList(e));
             transactionStatus.setRollbackOnly();
-        } finally {
-            Context.clear();
         }
         removeErrorStacktraces(content);
         return res.entity(content).build();

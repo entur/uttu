@@ -1,9 +1,9 @@
 package no.entur.uttu.export.netex;
 
 import com.google.common.base.Preconditions;
-import no.entur.uttu.export.ExportException;
-import no.entur.uttu.export.netex.producer.NetexCommonFileProducer;
-import no.entur.uttu.export.netex.producer.NetexLineFileProducer;
+import no.entur.uttu.export.model.ExportException;
+import no.entur.uttu.export.netex.producer.common.NetexCommonFileProducer;
+import no.entur.uttu.export.netex.producer.line.NetexLineFileProducer;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.FlexibleLineRepository;
@@ -42,9 +42,6 @@ public class NetexExporter {
 
     private NeTExValidator netexValidator;
 
-    // TODO
-    private boolean validateAgainstSchema = false;
-
 
     @PostConstruct
     public void init() {
@@ -56,7 +53,7 @@ public class NetexExporter {
         }
     }
 
-    public void exportDataSet(Long providerId, DataSetProducer dataSetProducer) {
+    public void exportDataSet(Long providerId, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
         NetexExportContext exportContext = new NetexExportContext(getVerifiedProvider(providerId));
 
         List<FlexibleLine> flexibleLines = flexibleLineRepository.findAll();
@@ -64,11 +61,11 @@ public class NetexExporter {
         Preconditions.checkArgument(!flexibleLines.isEmpty(), "No FlexibleLines defined");
 
         flexibleLines.stream().map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
-                .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer));
-        marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer);
+                .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
+        marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
     }
 
-    private void marshalToFile(NetexFile lineFile, DataSetProducer dataSetProducer) {
+    private void marshalToFile(NetexFile lineFile, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
         try {
             Marshaller marshaller = jaxbContext.createMarshaller();
 
