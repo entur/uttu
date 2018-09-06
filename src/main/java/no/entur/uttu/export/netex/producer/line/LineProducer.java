@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class NetexLineProducer {
+public class LineProducer {
 
     @Autowired
     private NetexObjectFactory objectFactory;
@@ -55,6 +55,8 @@ public class NetexLineProducer {
         context.flexibleStopPlaces.addAll(local.getJourneyPatterns().stream()
                                                   .map(JourneyPattern::getPointsInSequence).flatMap(List::stream)
                                                   .map(StopPointInJourneyPattern::getFlexibleStopPlace).collect(Collectors.toList()));
+
+
 
         // Notices TODO separate noticeproducer?
 

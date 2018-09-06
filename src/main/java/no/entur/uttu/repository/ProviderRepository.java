@@ -5,6 +5,8 @@ import no.entur.uttu.model.Provider;
 import java.util.List;
 
 public interface ProviderRepository {
+    Provider getOne(String code);
+
     Provider getOne(Long id);
 
     List<Provider> findAll();

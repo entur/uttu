@@ -53,8 +53,8 @@ public class NetexExporter {
         }
     }
 
-    public void exportDataSet(Long providerId, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
-        NetexExportContext exportContext = new NetexExportContext(getVerifiedProvider(providerId));
+    public void exportDataSet(String providerCode, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
+        NetexExportContext exportContext = new NetexExportContext(getVerifiedProvider(providerCode));
 
         List<FlexibleLine> flexibleLines = flexibleLineRepository.findAll();
 
@@ -83,10 +83,10 @@ public class NetexExporter {
 
     }
 
-    private Provider getVerifiedProvider(Long providerId) {
-        Provider provider = providerRepository.getOne(providerId);
+    private Provider getVerifiedProvider(String providerCode) {
+        Provider provider = providerRepository.getOne(providerCode);
         Preconditions.checkArgument(provider != null,
-                "Provider not found: %s", providerId);
+                "Provider not found: %s", providerCode);
         return provider;
     }
 

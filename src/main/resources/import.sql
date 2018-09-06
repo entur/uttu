@@ -1,3 +1,8 @@
 
-insert into codespace values (nextval('codespace_seq'), now(),'test',now(),'test',0,'NSB','http://www.rutebanken.org/ns/nsb');
-insert into provider values  (nextval('provider_seq'), now(),'test',now(),'test',0,'NSB',(select pk from codespace where xmlns='NSB'));
+insert into codespace (pk,version, xmlns, xmlns_url,created,created_by,changed,changed_by) values (nextval('codespace_seq'), 1,'NSB','http://www.rutebanken.org/ns/nsb',now(),'test',now(),'test');
+insert into codespace (pk,version, xmlns, xmlns_url,created,created_by,changed,changed_by)  values (nextval('codespace_seq'),1,'RUT','http://www.rutebanken.org/ns/rut', now(),'test',now(),'test');
+
+
+
+insert into provider (pk,version,code, name, codespace_pk,created,created_by,changed,changed_by) values  (nextval('provider_seq'),1,'NSB', 'NSB',(select pk from codespace where xmlns='NSB'), now(),'test',now(),'test');
+insert into provider (pk,version,code, name, codespace_pk,created,created_by,changed,changed_by) values  (nextval('provider_seq'),1, 'RUT', 'Ruter',(select pk from codespace where xmlns='RUT'),now(),'test',now(),'test');

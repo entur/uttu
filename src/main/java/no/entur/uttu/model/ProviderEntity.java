@@ -54,9 +54,9 @@ public abstract class ProviderEntity extends IdentifiedEntity {
 
     @PreUpdate
     protected void verifyProvider() {
-        Long providerId = Context.getVerifiedProviderId();
-        Preconditions.checkArgument(Objects.equals(this.getProvider().getPk(), providerId),
-                "Provider mismatch, attempting to store entity[½s] in context of provider[%s] .", this, providerId);
+        String providerCode = Context.getVerifiedProviderCode();
+        Preconditions.checkArgument(Objects.equals(this.getProvider().getCode(), providerCode),
+                "Provider mismatch, attempting to store entity[½s] in context of provider[%s] .", this, providerCode);
     }
 
     public Ref getRef() {

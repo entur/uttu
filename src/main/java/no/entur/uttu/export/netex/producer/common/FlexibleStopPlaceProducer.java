@@ -1,6 +1,8 @@
 package no.entur.uttu.export.netex.producer.common;
 
+import net.opengis.gml._3.PolygonType;
 import no.entur.uttu.export.netex.NetexExportContext;
+import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleStopPlace;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -23,7 +26,7 @@ public class FlexibleStopPlaceProducer {
     }
 
     private org.rutebanken.netex.model.FlexibleStopPlace mapFlexibleStopPlace(FlexibleStopPlace localStopPlace, NetexExportContext context) {
-        org.rutebanken.netex.model.FlexibleArea netexArea = mapFlexibleArea(localStopPlace);
+        org.rutebanken.netex.model.FlexibleArea netexArea = mapFlexibleArea(localStopPlace, context);
 
         return new org.rutebanken.netex.model.FlexibleStopPlace()
                        .withId(localStopPlace.getNetexId())
@@ -35,9 +38,9 @@ public class FlexibleStopPlaceProducer {
                        .withAreas(new FlexibleStopPlace_VersionStructure.Areas().withFlexibleAreaOrFlexibleAreaRefOrHailAndRideArea(netexArea));
     }
 
-    private org.rutebanken.netex.model.FlexibleArea mapFlexibleArea(FlexibleStopPlace flexibleStopPlace) {
+    private org.rutebanken.netex.model.FlexibleArea mapFlexibleArea(FlexibleStopPlace flexibleStopPlace, NetexExportContext context) {
         FlexibleArea localArea = flexibleStopPlace.getFlexibleArea();
-        return  objectFactory.populateId(new org.rutebanken.netex.model.FlexibleArea(), flexibleStopPlace.getRef())
-                       .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon()));
+        return objectFactory.populateId(new org.rutebanken.netex.model.FlexibleArea(), flexibleStopPlace.getRef())
+                       .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon(), context));
     }
 }

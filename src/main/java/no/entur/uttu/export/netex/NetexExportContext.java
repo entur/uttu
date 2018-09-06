@@ -3,8 +3,11 @@ package no.entur.uttu.export.netex;
 
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.model.ExportError;
+import no.entur.uttu.model.DayType;
+import no.entur.uttu.model.DestinationDisplay;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.Network;
+import no.entur.uttu.model.Notice;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.Ref;
 
@@ -27,12 +30,17 @@ public class NetexExportContext {
 
     public Set<FlexibleStopPlace> flexibleStopPlaces = new HashSet<>();
 
-    public Set<Ref> routePointRefs =new HashSet<>();
+    public Set<Ref> routePointRefs = new HashSet<>();
 
     public Set<String> operatorRefs = new HashSet<>();
 
     public Set<ExportError> errors = new HashSet<>();
 
+    public Set<Notice> notices = new HashSet<>();
+
+    public Set<DayType> dayTypes = new HashSet<>();
+
+    public Set<DestinationDisplay> destinationDisplays = new HashSet<>();
 
     private Map<String, AtomicLong> idSequences = new HashMap<>();
 
@@ -54,7 +62,7 @@ public class NetexExportContext {
     public long getAndIncrementIdSequence(String entityName) {
         AtomicLong sequence = idSequences.get(entityName);
         if (sequence == null) {
-            sequence = new AtomicLong();
+            sequence = new AtomicLong(1);
             idSequences.put(entityName, sequence);
         }
         return sequence.getAndIncrement();

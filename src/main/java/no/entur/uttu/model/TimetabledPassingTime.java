@@ -5,11 +5,15 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.util.List;
 
 @Entity
+@Table(uniqueConstraints = {@UniqueConstraint(name = "timetabled_passing_time_unique_order_constraint", columnNames = {"service_journey_pk", "order_val"})})
 public class TimetabledPassingTime extends ProviderEntity {
 
     @NotNull
@@ -18,6 +22,7 @@ public class TimetabledPassingTime extends ProviderEntity {
 
     // Order is reserved word in db
     @Column(name = "order_val")
+    @Min(value = 1L, message = "The value must be positive")
     private int order;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})

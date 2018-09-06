@@ -28,7 +28,7 @@ public class ArgumentWrapper {
      * Extract field from input if exists and apply to consumer func. Ignore of field is  not set.
      */
     public <T> void apply(String name, Consumer<T> func) {
-        T val = get(name);
+        T val = get(name); // TODO should make distinction between map.exists( and val ==null? to be able to clear fields?
         if (val != null) {
             func.accept(val);
         }

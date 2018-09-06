@@ -30,7 +30,7 @@ public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
         T entity;
         if (netexId == null) {
             entity = createNewEntity(input);
-            entity.setProvider(getVerifiedProvider(Context.getVerifiedProviderId()));
+            entity.setProvider(getVerifiedProvider(Context.getVerifiedProviderCode()));
         } else {
             entity = entityRepository.getOne(netexId);
             Preconditions.checkArgument(entity != null,
@@ -47,10 +47,10 @@ public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
     protected abstract void populateEntityFromInput(T entity, ArgumentWrapper input);
 
 
-    private Provider getVerifiedProvider(Long providerId) {
-        Provider provider = providerRepository.getOne(providerId);
+    private Provider getVerifiedProvider(String providerCode) {
+        Provider provider = providerRepository.getOne(providerCode);
         Preconditions.checkArgument(provider != null,
-                "Provider not found [pk=%s]", providerId);
+                "Provider not found [code=%s]", providerCode);
         return provider;
     }
 

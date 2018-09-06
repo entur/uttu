@@ -63,6 +63,13 @@ public class NetexObjectFactory {
         return new JAXBElement(new QName("http://www.netex.org.uk/netex", getEntityName(entity)), entity.getClass(), null, entity);
     }
 
+    public <N extends LinkSequence_VersionStructure, L extends no.entur.uttu.model.GroupOfEntities_VersionStructure> N populate(N netex, L local) {
+        return (N) populateId(netex, local.getRef())
+                           .withName(createMultilingualString(local.getName()))
+                           .withPrivateCode(createPrivateCodeStructure(local.getPrivateCode()))
+                           .withShortName(createMultilingualString(local.getShortName()))
+                           .withDescription(createMultilingualString(local.getDescription()));
+    }
 
     public <N extends EntityInVersionStructure> N populateId(N netex, Ref ref) {
         netex.setId(NetexIdProducer.getId(netex, ref));
@@ -156,16 +163,21 @@ public class NetexObjectFactory {
     }
 
     public ServiceFrame createCommonServiceFrame(NetexExportContext context, Collection<Network> networks, Collection<RoutePoint> routePoints,
-                                                        Collection<ScheduledStopPoint> scheduledStopPoints, Collection<? extends StopAssignment_VersionStructure> stopAssignmentElements) {
+                                                        Collection<ScheduledStopPoint> scheduledStopPoints, Collection<? extends StopAssignment_VersionStructure> stopAssignmentElements,
+                                                        Collection<Notice> notices) {
 
         RoutePointsInFrame_RelStructure routePointStruct = objectFactory.createRoutePointsInFrame_RelStructure()
                                                                    .withRoutePoint(routePoints);
 
-        ScheduledStopPointsInFrame_RelStructure scheduledStopPointsStruct = objectFactory.createScheduledStopPointsInFrame_RelStructure();
-        scheduledStopPoints.forEach(stopPoint -> scheduledStopPointsStruct.getScheduledStopPoint().add(stopPoint));
+        ScheduledStopPointsInFrame_RelStructure scheduledStopPointsStruct = objectFactory.createScheduledStopPointsInFrame_RelStructure().withScheduledStopPoint(scheduledStopPoints);
 
         StopAssignmentsInFrame_RelStructure stopAssignmentsStruct = objectFactory.createStopAssignmentsInFrame_RelStructure()
                                                                             .withStopAssignment(stopAssignmentElements.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList()));
+
+        NoticesInFrame_RelStructure noticesInFrame_relStructure = null;
+        if (!CollectionUtils.isEmpty(notices)) {
+            noticesInFrame_relStructure = objectFactory.createNoticesInFrame_RelStructure().withNotice(notices);
+        }
 
         NetworksInFrame_RelStructure additionalNetworks = null;
         Network network = null;
@@ -187,12 +199,15 @@ public class NetexObjectFactory {
                        .withScheduledStopPoints(scheduledStopPointsStruct)
                        .withStopAssignments(stopAssignmentsStruct)
                        .withNetwork(network)
-                       .withAdditionalNetworks(additionalNetworks);
+                       .withAdditionalNetworks(additionalNetworks)
+                       .withNotices(noticesInFrame_relStructure);
 
     }
 
 
-    public <N extends Line_VersionStructure> ServiceFrame createLineServiceFrame(NetexExportContext context, N line, List<Route> routes, List<JourneyPattern> journeyPatterns) {
+    public <N extends Line_VersionStructure> ServiceFrame createLineServiceFrame(NetexExportContext context, N line, List<Route> routes,
+                                                                                        Collection<JourneyPattern> journeyPatterns,
+                                                                                        Collection<NoticeAssignment> noticeAssignments) {
         RoutesInFrame_RelStructure routesInFrame = objectFactory.createRoutesInFrame_RelStructure();
         for (Route route : routes) {
             JAXBElement<Route> routeElement = objectFactory.createRoute(route);
@@ -211,7 +226,8 @@ public class NetexObjectFactory {
         return createServiceFrame(context)
                        .withRoutes(routesInFrame)
                        .withLines(linesInFrame)
-                       .withJourneyPatterns(journeyPatternsInFrame);
+                       .withJourneyPatterns(journeyPatternsInFrame)
+                       .withNoticeAssignments(wrapNoticeAssignments(noticeAssignments));
     }
 
     private ServiceFrame createServiceFrame(NetexExportContext context) {
@@ -223,7 +239,7 @@ public class NetexObjectFactory {
     }
 
 
-    public TimetableFrame createTimetableFrame(NetexExportContext context, List<ServiceJourney> serviceJourneys, List<NoticeAssignment> noticeAssignments) {
+    public TimetableFrame createTimetableFrame(NetexExportContext context, Collection<ServiceJourney> serviceJourneys, Collection<NoticeAssignment> noticeAssignments) {
         JourneysInFrame_RelStructure journeysInFrameRelStructure = objectFactory.createJourneysInFrame_RelStructure();
         journeysInFrameRelStructure.getDatedServiceJourneyOrDeadRunOrServiceJourney().addAll(serviceJourneys);
 
@@ -231,12 +247,20 @@ public class NetexObjectFactory {
         return objectFactory.createTimetableFrame()
                        .withVersion(VERSION_ONE)
                        .withId(timetableFrameId)
-                       .withNoticeAssignments(new NoticeAssignmentsInFrame_RelStructure().withNoticeAssignment_(noticeAssignments.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())))
+                       .withNoticeAssignments(wrapNoticeAssignments(noticeAssignments))
                        .withVehicleJourneys(journeysInFrameRelStructure);
 
     }
 
-    public ServiceCalendarFrame createServiceCalendarFrame(NetexExportContext context, Collection<DayType> dayTypes, Collection<DayTypeAssignment> dayTypeAssignments, Collection<OperatingPeriod> operatingPeriods) {
+    private NoticeAssignmentsInFrame_RelStructure wrapNoticeAssignments(Collection<NoticeAssignment> noticeAssignments) {
+        if (CollectionUtils.isEmpty(noticeAssignments)) {
+            return null;
+        }
+        return new NoticeAssignmentsInFrame_RelStructure().withNoticeAssignment_(noticeAssignments.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList()));
+    }
+
+    public ServiceCalendarFrame createServiceCalendarFrame(NetexExportContext context, Collection<DayType> dayTypes, Collection<DayTypeAssignment> dayTypeAssignments,
+                                                                  Collection<OperatingPeriod> operatingPeriods) {
         String frameId = NetexIdProducer.generateId(ServiceCalendarFrame.class, context);
 
         DayTypesInFrame_RelStructure dayTypesStruct = null;
@@ -251,7 +275,7 @@ public class NetexObjectFactory {
         }
 
         OperatingPeriodsInFrame_RelStructure operatingPeriodsInFrameRelStructure = null;
-        if (operatingPeriods != null) {
+        if (!CollectionUtils.isEmpty(operatingPeriods)) {
             operatingPeriodsInFrameRelStructure = new OperatingPeriodsInFrame_RelStructure();
             operatingPeriodsInFrameRelStructure.getOperatingPeriodOrUicOperatingPeriod().addAll(operatingPeriods);
             operatingPeriodsInFrameRelStructure.getOperatingPeriodOrUicOperatingPeriod().sort(Comparator.comparing(OperatingPeriod_VersionStructure::getFromDate));

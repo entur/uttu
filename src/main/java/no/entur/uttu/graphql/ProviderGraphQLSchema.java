@@ -74,6 +74,7 @@ public class ProviderGraphQLSchema {
                                       .build();
 
         providerObjectType = newObject(identifiedEntityObjectType).name("Provider")
+                                     .field(newFieldDefinition().name(FIELD_CODE).type(new GraphQLNonNull(GraphQLString)))
                                      .field(newFieldDefinition().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
                                      .field(newFieldDefinition().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codeSpaceObjectType)))
                                      .build();
@@ -119,6 +120,7 @@ public class ProviderGraphQLSchema {
                                                             .build();
 
         GraphQLInputObjectType providerInputType = newInputObject(identifiedEntityInputType).name("ProviderInput")
+                                                           .field(newInputObjectField().name(FIELD_CODE).type(new GraphQLNonNull(GraphQLString)))
                                                            .field(newInputObjectField().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
                                                            .field(newInputObjectField().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codeSpaceInputType)))
                                                            .build();

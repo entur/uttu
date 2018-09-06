@@ -6,6 +6,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -13,10 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(
-        uniqueConstraints = {
-                                    @UniqueConstraint(name = "service_journey_unique_name_constraint", columnNames = {"provider_pk", "name"})}
-)
+@Table(uniqueConstraints = {@UniqueConstraint(name = "service_journey_unique_name_constraint", columnNames = {"provider_pk", "name"})})
 public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     private String publicCode;
@@ -37,7 +35,8 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     @OneToMany(mappedBy = "serviceJourney", cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
-    private final List<TimetabledPassingTime> pointsInSequence = new ArrayList<>();
+    @OrderBy("order")
+    private final List<TimetabledPassingTime> passingTimes = new ArrayList<>();
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Notice> notices;
@@ -51,15 +50,19 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
         this.journeyPattern = journeyPattern;
     }
 
-    public List<TimetabledPassingTime> getPointsInSequence() {
-        return pointsInSequence;
+    public List<TimetabledPassingTime> getPassingTimes() {
+        return passingTimes;
     }
 
-    public void setPointsInSequence(List<TimetabledPassingTime> pointsInSequence) {
-        this.pointsInSequence.clear();
-        if (pointsInSequence != null) {
-            pointsInSequence.stream().forEach(ttpt -> ttpt.setServiceJourney(this));
-            this.pointsInSequence.addAll(pointsInSequence);
+    public void setPassingTimes(List<TimetabledPassingTime> passingTimes) {
+        this.passingTimes.clear();
+        if (passingTimes != null) {
+            int i = 1;
+            for (TimetabledPassingTime passingTime : passingTimes) {
+                passingTime.setOrder(i++);
+                passingTime.setServiceJourney(this);
+            }
+            this.passingTimes.addAll(passingTimes);
         }
     }
 

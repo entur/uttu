@@ -4,8 +4,7 @@ import org.junit.Test;
 
 public class OrganisationRegistryTest {
 
-// TODO remove
-    @Test
+// TODO remove med. Used for manual test
     public void t() {
         OrganisationRegistry organisationRegistry = new OrganisationRegistry("https://tjenester.entur.org/organisations/v1/organisations/");
 

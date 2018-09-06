@@ -279,6 +279,8 @@ public class FlexibleTransportGraphQLSchema {
                                                       .field(newFieldDefinition().name(FIELD_FLEXIBLE_STOP_PLACE).type(flexibleStopPlaceObjectType))
                                                       .field(newFieldDefinition().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementObjectType))
                                                       .field(newFieldDefinition().name(FIELD_DESTINATION_DISPLAY).type(destinationDisplayObjectType))
+                                                      .field(newFieldDefinition().name(FIELD_FOR_BOARDING).type(GraphQLBoolean))
+                                                      .field(newFieldDefinition().name(FIELD_FOR_ALIGHTING).type(GraphQLBoolean))
                                                       .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                                       .build();
 
@@ -450,6 +452,8 @@ public class FlexibleTransportGraphQLSchema {
                                                                             .field(newInputObjectField().name(FIELD_FLEXIBLE_STOP_PLACE_REF).type(new GraphQLNonNull(GraphQLString)))
                                                                             .field(newInputObjectField().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementInputType))
                                                                             .field(newInputObjectField().name(FIELD_DESTINATION_DISPLAY).type(destinationDisplayInputType))
+                                                                            .field(newInputObjectField().name(FIELD_FOR_BOARDING).type(GraphQLBoolean))
+                                                                            .field(newInputObjectField().name(FIELD_FOR_ALIGHTING).type(GraphQLBoolean))
                                                                             .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                             .build();
 

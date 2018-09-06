@@ -39,14 +39,14 @@ public class ProviderAuthenticationService {
     protected boolean authorizationEnabled;
 
 
-    public boolean hasRoleForProvider(Authentication authentication, String role, Long providerId) {
+    public boolean hasRoleForProvider(Authentication authentication, String role, String providerCode) {
         if (!authorizationEnabled) {
             return true;
         }
-        if (providerId == null) {
+        if (providerCode == null) {
             return false;
         }
-        Provider provider = providerRepository.getOne(providerId);
+        Provider provider = providerRepository.getOne(providerCode);
         if (provider == null) {
             return false;
         }

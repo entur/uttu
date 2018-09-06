@@ -47,10 +47,10 @@ public class FlexibleTransportGraphQLResource {
     @SuppressWarnings("unchecked")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{providerId}")
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerId)")
-    public Response executeFlexibleLineStatement(@PathParam("providerId") Long providerId, HashMap<String, Object> request) {
-        Context.setProvider(providerId);
+    @Path("{providerCode}")
+    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
+    public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
+        Context.setProvider(providerCode);
         try {
             return graphQLResourceHelper.executeStatement(request);
         } finally {
@@ -62,10 +62,10 @@ public class FlexibleTransportGraphQLResource {
     @POST
     @Consumes("application/graphql")
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{providerId}")
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerId)")
-    public Response executeFlexibleLineStatement(@PathParam("providerId") Long providerId, String query) {
-        Context.setProvider(providerId);
+    @Path("{providerCode}")
+    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
+    public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, String query) {
+        Context.setProvider(providerCode);
         try {
             return graphQLResourceHelper.getGraphQLResponseInTransaction("query", query, new HashMap<>());
         } finally {

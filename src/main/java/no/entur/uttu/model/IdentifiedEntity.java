@@ -10,7 +10,6 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
-import java.util.Objects;
 
 @MappedSuperclass
 public abstract class IdentifiedEntity {
@@ -21,7 +20,7 @@ public abstract class IdentifiedEntity {
 
     @Version
     @NotNull
-    protected Long version;
+    protected Long version = 1l;
 
     @NotNull
     protected Instant created;

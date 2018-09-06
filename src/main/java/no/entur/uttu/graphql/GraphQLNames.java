@@ -22,6 +22,7 @@ public class GraphQLNames {
     public static final String FIELD_XMLNS_URL = "xmlnsUrl";
 
     // Provider
+    public static final String FIELD_CODE = "code";
     public static final String FIELD_CODE_SPACE = "codeSpace";
     public static final String FIELD_CODE_SPACE_REF = "codeSpaceRef";
 
@@ -52,6 +53,8 @@ public class GraphQLNames {
     public static final String FIELD_FLEXIBLE_STOP_PLACE = "flexibleStopPlace";
     public static final String FIELD_FLEXIBLE_STOP_PLACE_REF = "flexibleStopPlaceRef";
     public static final String FIELD_DESTINATION_DISPLAY = "destinationDisplay";
+    public static final String FIELD_FOR_ALIGHTING = "forAlighting";
+    public static final String FIELD_FOR_BOARDING = "forBoarding";
 
     // TimetabledPassingTime
     public static final String FIELD_ARRIVAL_TIME = "arrivalTime";

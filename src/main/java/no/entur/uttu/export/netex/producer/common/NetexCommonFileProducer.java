@@ -13,9 +13,9 @@ import org.rutebanken.netex.model.FlexibleStopAssignment;
 import org.rutebanken.netex.model.FlexibleStopPlace;
 import org.rutebanken.netex.model.FlexibleStopPlaceRefStructure;
 import org.rutebanken.netex.model.Network;
+import org.rutebanken.netex.model.Notice;
 import org.rutebanken.netex.model.OperatingPeriod;
 import org.rutebanken.netex.model.Operator;
-import org.rutebanken.netex.model.PassengerStopAssignment;
 import org.rutebanken.netex.model.PointProjection;
 import org.rutebanken.netex.model.PointRefStructure;
 import org.rutebanken.netex.model.Projections_RelStructure;
@@ -50,6 +50,8 @@ public class NetexCommonFileProducer {
     @Autowired
     private FlexibleStopPlaceProducer flexibleStopPlaceProducer;
 
+    @Autowired
+    private ServiceCalendarFrameProducer serviceCalendarFrameProducer;
 
     @Autowired
     private NetworkProducer networkProducer;
@@ -59,7 +61,7 @@ public class NetexCommonFileProducer {
         ResourceFrame resourceFrame = createResourceFrame(context);
         SiteFrame siteFrame = createSiteFrame(context);
         ServiceFrame serviceFrame = createServiceFrame(context);
-        ServiceCalendarFrame serviceCalendarFrame = createServiceCalendarFrame(context);
+        ServiceCalendarFrame serviceCalendarFrame = serviceCalendarFrameProducer.produce(context);
         CompositeFrame compositeFrame = objectFactory.createCompositeFrame(context, context.getAvailabilityPeriod(), resourceFrame, siteFrame, serviceFrame, serviceCalendarFrame);
 
         JAXBElement<PublicationDeliveryStructure> publicationDelivery = objectFactory.createPublicationDelivery(context, compositeFrame);
@@ -85,17 +87,9 @@ public class NetexCommonFileProducer {
         List<ScheduledStopPoint> scheduledStopPoints = context.flexibleStopPlaces.stream().map(no.entur.uttu.model.FlexibleStopPlace::getRef)
                                                                .map(this::buildScheduledStopPoint).collect(Collectors.toList());
         List<FlexibleStopAssignment> flexibleStopAssignments = context.flexibleStopPlaces.stream().map(no.entur.uttu.model.FlexibleStopPlace::getRef)
-                                                                        .map(this::buildFlexibleStopAssignment).collect(Collectors.toList());
-        return objectFactory.createCommonServiceFrame(context, networks, routePoints, scheduledStopPoints, flexibleStopAssignments);
-    }
-
-    private ServiceCalendarFrame createServiceCalendarFrame(NetexExportContext context) {
-
-        List<DayType> netexDayTypes = new ArrayList<>();
-        List<DayTypeAssignment> netexDayTypeAssignments = new ArrayList<>();
-        List<OperatingPeriod> netexOperatingPeriods = new ArrayList<>();
-
-        return objectFactory.createServiceCalendarFrame(context, netexDayTypes, netexDayTypeAssignments, netexOperatingPeriods);
+                                                                       .map(this::buildFlexibleStopAssignment).collect(Collectors.toList());
+        List<Notice> notices = context.notices.stream().map(this::mapNotice).collect(Collectors.toList());
+        return objectFactory.createCommonServiceFrame(context, networks, routePoints, scheduledStopPoints, flexibleStopAssignments, notices);
     }
 
 
@@ -116,5 +110,9 @@ public class NetexCommonFileProducer {
         return objectFactory.populateId(new FlexibleStopAssignment(), ref)
                        .withScheduledStopPointRef(objectFactory.createRefStructure(new ScheduledStopPointRefStructure(), ref, true))
                        .withFlexibleStopPlaceRef(objectFactory.populateRefStructure(new FlexibleStopPlaceRefStructure(), ref, true));
+    }
+
+    public Notice mapNotice(no.entur.uttu.model.Notice local) {
+        return objectFactory.populateId(new Notice(), local.getRef()).withText(objectFactory.createMultilingualString(local.getText()));
     }
 }

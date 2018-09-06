@@ -43,6 +43,7 @@ public class ProviderUpdater implements DataFetcher<Provider> {
     }
 
     private void populateEntityFromInput(Provider entity, ArgumentWrapper input) {
+        input.apply(FIELD_CODE, entity::setCode);
         input.apply(FIELD_NAME, entity::setName);
         input.apply(FIELD_CODE_SPACE_REF, this::getVerifiedCodeSpace, entity::setCodespace);
     }

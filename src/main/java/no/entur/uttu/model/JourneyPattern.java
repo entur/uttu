@@ -7,6 +7,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
@@ -30,6 +31,7 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
 
     @OneToMany(mappedBy = "journeyPattern", cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
+    @OrderBy("order")
     private final List<StopPointInJourneyPattern> pointsInSequence = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
@@ -81,7 +83,11 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
     public void setPointsInSequence(List<StopPointInJourneyPattern> pointsInSequence) {
         this.pointsInSequence.clear();
         if (pointsInSequence != null) {
-            pointsInSequence.stream().forEach(spinjp -> spinjp.setJourneyPattern(this));
+            int i=1;
+            for (StopPointInJourneyPattern sp:pointsInSequence) {
+                sp.setOrder(i++);
+                sp.setJourneyPattern(this);
+            }
             this.pointsInSequence.addAll(pointsInSequence);
         }
     }

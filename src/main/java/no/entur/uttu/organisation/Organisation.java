@@ -26,29 +26,36 @@ public class Organisation {
     public OrganisationContact contact;
     public OrganisationContact customerContact;
 
-
-    // TODO what i org is authority and operator? what will netexId look like? should we use netexId? or create netex id from id with appropriate type?
-    public String getNetexId() {
-        if (references == null) {
+    public String getAuthorityNetexId() {
+        if (!isAuthority() || references == null) {
             return null;
         }
 
-        String netexId = null;
-        if (isAuthority()) {
-            netexId = references.get(NETEX_AUTHORITY_ID_REFEFRENCE_KEY);
-        } else if (isOperator()) {
-            netexId = references.get(NETEX_OPERATOR_ID_REFEFRENCE_KEY);
-        }
+        String netexId = references.get(NETEX_AUTHORITY_ID_REFEFRENCE_KEY);
         if (netexId == null) {
             netexId = references.get(NETEX_ID_REFEFRENCE_KEY);
 
-            if (isOperator() && netexId!=null && netexId.contains(":Authority:")) {
+        }
+        return netexId;
+    }
+
+    public String getOperatorNetexId() {
+        if (!isOperator() || references == null) {
+            return null;
+        }
+
+        String netexId = references.get(NETEX_OPERATOR_ID_REFEFRENCE_KEY);
+
+        if (netexId == null) {
+            netexId = references.get(NETEX_ID_REFEFRENCE_KEY);
+            if (netexId != null && netexId.contains(":Authority:")) {
                 // TODO tmp hack until operator netex refs are registered in org reg.
-                netexId.replaceFirst(":Authority:",":Operator:");
+                netexId = netexId.replaceFirst(":Authority:", ":Operator:");
             }
         }
         return netexId;
     }
+
 
     public String getCompanyNumber() {
         if (references == null) {

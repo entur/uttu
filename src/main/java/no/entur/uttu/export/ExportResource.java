@@ -35,21 +35,21 @@ public class ExportResource {
     private String workingFolder;
 
     @POST
-    @Path("{providerId}")
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerId)")
-    public void exportDataSet(@PathParam("providerId") Long providerId) {
+    @Path("{providerCode}")
+    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
+    public void exportDataSet(@PathParam("providerCode") String providerCode) {
 
-        Context.setProvider(providerId);
+        Context.setProvider(providerCode);
         try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
 
 
             boolean validateAgainstSchema = false; // TODO
-            exporter.exportDataSet(providerId, dataSetProducer, validateAgainstSchema);
+            exporter.exportDataSet(providerCode, dataSetProducer, validateAgainstSchema);
 
             InputStream dataSetStream = dataSetProducer.buildDataSet();
 
 // TODO
-            String blobName = "outbound/netex/rb_" + providerId + "_flexible_lines.zip";
+            String blobName = "outbound/netex/rb_" + providerCode + "_flexible_lines.zip";
             blobStoreService.uploadBlob(blobName, true, dataSetStream);
         } catch (IOException ioe) {
             throw new ExportException("Export failed with exception: " + ioe.getMessage(), ioe);
@@ -60,13 +60,13 @@ public class ExportResource {
     }
 
     @POST
-    @Path("{providerId}/validat")
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerId)")
-    public void validateDataSet(@PathParam("providerId") Long providerId) {
-        Context.setProvider(providerId);
+    @Path("{providerCode}/validate")
+    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
+    public void validateDataSet(@PathParam("providerCode") String providerCode) {
+        Context.setProvider(providerCode);
 
         try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
-            exporter.exportDataSet(providerId, dataSetProducer, true);
+            exporter.exportDataSet(providerCode, dataSetProducer, true);
             dataSetProducer.buildDataSet();
         } catch (IOException ioe) {
             throw new ExportException("Export failed with exception: " + ioe.getMessage(), ioe);

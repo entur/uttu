@@ -23,7 +23,7 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
         super(entityInformation, entityManager);
         this.entityManager = entityManager;
         this.entityInformation = entityInformation;
-        findAllQuery = "from " + entityInformation.getEntityName() + " where provider.pk=:providerId";
+        findAllQuery = "from " + entityInformation.getEntityName() + " where provider.code=:providerCode";
         findOneByNetexIdQuery = findAllQuery + " and netexId=:netexId";
     }
 
@@ -36,13 +36,13 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
     @Override
     public List<T> findAll() {
         return entityManager.createQuery(findAllQuery,
-                entityInformation.getJavaType()).setParameter("providerId", Context.getVerifiedProviderId()).getResultList();
+                entityInformation.getJavaType()).setParameter("providerCode", Context.getVerifiedProviderCode()).getResultList();
     }
 
     @Override
     public T getOne(String netexId) {
         List<T> results = entityManager.createQuery(findOneByNetexIdQuery,
-                entityInformation.getJavaType()).setParameter("providerId", Context.getVerifiedProviderId())
+                entityInformation.getJavaType()).setParameter("providerCode", Context.getVerifiedProviderCode())
                                   .setParameter("netexId", netexId).getResultList();
         if (results.isEmpty()) {
             return null;
@@ -54,7 +54,7 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
     public T getOne(Long aLong) {
         T entity = super.getOne(aLong);
         if (entity != null) {
-            if (!entity.getProvider().getPk().equals(Context.getVerifiedProviderId())) {
+            if (!entity.getProvider().getPk().equals(Context.getVerifiedProviderCode())) {
                 return null;
             }
         }

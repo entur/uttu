@@ -9,15 +9,15 @@ import java.util.Objects;
 
 public class Context {
 
-    private static ThreadLocal<Long> providerPerThread = new ThreadLocal<>();
+    private static ThreadLocal<String> providerPerThread = new ThreadLocal<>();
 
-    public static void setProvider(Long providerId) {
-        Preconditions.checkArgument(providerId != null,
-                "Attempt to set providerId = null for session");
-        providerPerThread.set(providerId);
+    public static void setProvider(String providerCode) {
+        Preconditions.checkArgument(providerCode != null,
+                "Attempt to set providerCode = null for session");
+        providerPerThread.set(providerCode);
     }
 
-    public static Long getProvider() {
+    public static String getProvider() {
         return providerPerThread.get();
     }
 
@@ -35,11 +35,11 @@ public class Context {
     }
 
 
-    public static Long getVerifiedProviderId() {
-        Long providerId = Context.getProvider();
-        Preconditions.checkArgument(providerId != null,
+    public static String getVerifiedProviderCode() {
+        String providerCode = Context.getProvider();
+        Preconditions.checkArgument(providerCode != null,
                 "Provider not set for session");
-        return providerId;
+        return providerCode;
     }
 
 }

@@ -16,4 +16,9 @@ public class ProviderRepositoryImpl extends SimpleJpaRepository<Provider, Long> 
         this.entityManager = entityManager;
     }
 
+    @Override
+    public Provider getOne(String code) {
+        return entityManager.createQuery("from Provider where code=:code", Provider.class).setParameter("code", code).getResultList().stream().findFirst().orElse(null);
+    }
+
 }
