@@ -20,7 +20,7 @@ import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.entur.uttu.export.ExportResource;
-import no.entur.uttu.graphql.resource.FlexibleTransportGraphQLResource;
+import no.entur.uttu.graphql.resource.FlexibleLinesGraphQLResource;
 import no.entur.uttu.graphql.resource.ProviderGraphQLResource;
 import no.entur.uttu.health.rest.HealthResource;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -35,9 +35,9 @@ public class JerseyConfig {
     @Bean
     public ServletRegistrationBean publicAPIJerseyConfig() {
         ServletRegistrationBean publicJersey
-                = new ServletRegistrationBean(new ServletContainer(new FlexibleTransportAPI()));
-        publicJersey.addUrlMappings("/services/timetable/flexible/*");
-        publicJersey.setName("FlexibleTransportAPI");
+                = new ServletRegistrationBean(new ServletContainer(new FlexibleLinesAPI()));
+        publicJersey.addUrlMappings("/services/timetable-flexible/*");
+        publicJersey.setName("FlexibleLinesAPI");
         publicJersey.setLoadOnStartup(0);
         return publicJersey;
     }
@@ -54,12 +54,12 @@ public class JerseyConfig {
     }
 
 
-    private class FlexibleTransportAPI extends ResourceConfig {
+    private class FlexibleLinesAPI extends ResourceConfig {
 
-        public FlexibleTransportAPI() {
+        public FlexibleLinesAPI() {
             register(CorsResponseFilter.class);
 
-            register(FlexibleTransportGraphQLResource.class);
+            register(FlexibleLinesGraphQLResource.class);
             register(ProviderGraphQLResource.class);
             register(ExportResource.class);
         }

@@ -23,8 +23,10 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 
 @Component
 @Api
-@Path("/export")
+@Path("/lines/{providerCode}")
 public class ExportResource {
+
+    // TODO use grapQL for this as well?
 
     @Autowired
     private NetexExporter exporter;
@@ -35,7 +37,7 @@ public class ExportResource {
     private String workingFolder;
 
     @POST
-    @Path("{providerCode}")
+    @Path("/export")
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
     public void exportDataSet(@PathParam("providerCode") String providerCode) {
 
@@ -60,7 +62,7 @@ public class ExportResource {
     }
 
     @POST
-    @Path("{providerCode}/validate")
+    @Path("/validate")
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
     public void validateDataSet(@PathParam("providerCode") String providerCode) {
         Context.setProvider(providerCode);
@@ -70,7 +72,7 @@ public class ExportResource {
             dataSetProducer.buildDataSet();
         } catch (IOException ioe) {
             throw new ExportException("Export failed with exception: " + ioe.getMessage(), ioe);
-        }finally {
+        } finally {
             Context.clear();
         }
 

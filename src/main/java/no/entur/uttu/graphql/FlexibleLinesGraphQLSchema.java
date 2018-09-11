@@ -49,7 +49,7 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
  * GraphQL schema for FlexibleLines and related entities.
  */
 @Component
-public class FlexibleTransportGraphQLSchema {
+public class FlexibleLinesGraphQLSchema {
     @Autowired
     private DateTimeScalar dateTimeScalar;
 
@@ -83,14 +83,14 @@ public class FlexibleTransportGraphQLSchema {
                                                              .value("GeometryCollection")
                                                              .build();
 
-    private static GraphQLEnumType dayOfWeekEnum = FlexibleTransportGraphQLSchema.createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name().toLowerCase()));
-    private static GraphQLEnumType vehicleModeEnum = FlexibleTransportGraphQLSchema.createEnum("VehicleModeEnumeration", VehicleModeEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType flexibleLineTypeEnum = FlexibleTransportGraphQLSchema.createEnum("FlexibleLineTypeEnumeration", FlexibleLineTypeEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType bookingMethodEnum = FlexibleTransportGraphQLSchema.createEnum("BookingMethodEnumeration", BookingMethodEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType bookingAccessEnum = FlexibleTransportGraphQLSchema.createEnum("BookingAccessEnumeration", BookingAccessEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType purchaseWhenEnum = FlexibleTransportGraphQLSchema.createEnum("PurchaseWhenEnumeration", PurchaseWhenEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType purchaseMomentEnum = FlexibleTransportGraphQLSchema.createEnum("PurchaseMomentEnumeration", PurchaseMomentEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType directionTypeEnum = FlexibleTransportGraphQLSchema.createEnum("DirectionTypeEnumeration", DirectionTypeEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType dayOfWeekEnum = FlexibleLinesGraphQLSchema.createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name().toLowerCase()));
+    private static GraphQLEnumType vehicleModeEnum = FlexibleLinesGraphQLSchema.createEnum("VehicleModeEnumeration", VehicleModeEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType flexibleLineTypeEnum = FlexibleLinesGraphQLSchema.createEnum("FlexibleLineTypeEnumeration", FlexibleLineTypeEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType bookingMethodEnum = FlexibleLinesGraphQLSchema.createEnum("BookingMethodEnumeration", BookingMethodEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType bookingAccessEnum = FlexibleLinesGraphQLSchema.createEnum("BookingAccessEnumeration", BookingAccessEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType purchaseWhenEnum = FlexibleLinesGraphQLSchema.createEnum("PurchaseWhenEnumeration", PurchaseWhenEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType purchaseMomentEnum = FlexibleLinesGraphQLSchema.createEnum("PurchaseMomentEnumeration", PurchaseMomentEnumeration.values(), (t -> t.value()));
+    private static GraphQLEnumType directionTypeEnum = FlexibleLinesGraphQLSchema.createEnum("DirectionTypeEnumeration", DirectionTypeEnumeration.values(), (t -> t.value()));
 
 
     private static <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {

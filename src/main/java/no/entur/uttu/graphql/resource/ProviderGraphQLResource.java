@@ -4,7 +4,6 @@ import graphql.GraphQL;
 import io.swagger.annotations.Api;
 import no.entur.uttu.graphql.ProviderGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -18,11 +17,9 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-
 @Component
 @Api
-@Path("/providers")
+@Path("/providers/graphql")
 public class ProviderGraphQLResource {
 
     @Autowired

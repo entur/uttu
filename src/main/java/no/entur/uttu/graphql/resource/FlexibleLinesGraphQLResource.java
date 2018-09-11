@@ -3,7 +3,7 @@ package no.entur.uttu.graphql.resource;
 import graphql.GraphQL;
 import io.swagger.annotations.Api;
 import no.entur.uttu.config.Context;
-import no.entur.uttu.graphql.FlexibleTransportGraphQLSchema;
+import no.entur.uttu.graphql.FlexibleLinesGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -25,11 +25,11 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 
 @Component
 @Api
-@Path("/flexible-transport")
-public class FlexibleTransportGraphQLResource {
+@Path("/lines/{providerCode}/graphql")
+public class FlexibleLinesGraphQLResource {
 
     @Autowired
-    private FlexibleTransportGraphQLSchema flexibleLineSchema;
+    private FlexibleLinesGraphQLSchema flexibleLineSchema;
 
     @Autowired
     private PlatformTransactionManager transactionManager;
@@ -47,7 +47,6 @@ public class FlexibleTransportGraphQLResource {
     @SuppressWarnings("unchecked")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{providerCode}")
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
     public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
         Context.setProvider(providerCode);
@@ -62,7 +61,6 @@ public class FlexibleTransportGraphQLResource {
     @POST
     @Consumes("application/graphql")
     @Produces(MediaType.APPLICATION_JSON)
-    @Path("{providerCode}")
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
     public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, String query) {
         Context.setProvider(providerCode);
@@ -71,24 +69,6 @@ public class FlexibleTransportGraphQLResource {
         } finally {
             Context.clear();
         }
-    }
-
-    @POST
-    @SuppressWarnings("unchecked")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
-    public Response executeProviderStatement(HashMap<String, Object> request) {
-        return graphQLResourceHelper.executeStatement(request);
-    }
-
-
-    @POST
-    @Consumes("application/graphql")
-    @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
-    public Response executeProviderStatement(String query) {
-        return graphQLResourceHelper.getGraphQLResponseInTransaction("query", query, new HashMap<>());
     }
 
 

@@ -9,7 +9,6 @@ import graphql.ExecutionResult;
 import graphql.GraphQL;
 import graphql.GraphQLError;
 import graphql.GraphQLException;
-import no.entur.uttu.config.Context;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,10 +29,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import static java.util.stream.Collectors.toList;
-
 public class GraphQLResourceHelper {
-    private static final Logger logger = LoggerFactory.getLogger(FlexibleTransportGraphQLResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(FlexibleLinesGraphQLResource.class);
 
     /**
      * Exception classes that should cause data fetching exceptions to be rethrown and mapped to corresponding HTTP status code outside transaction.
