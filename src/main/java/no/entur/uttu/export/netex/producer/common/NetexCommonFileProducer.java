@@ -7,14 +7,11 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Ref;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.CompositeFrame;
-import org.rutebanken.netex.model.DayType;
-import org.rutebanken.netex.model.DayTypeAssignment;
 import org.rutebanken.netex.model.FlexibleStopAssignment;
 import org.rutebanken.netex.model.FlexibleStopPlace;
 import org.rutebanken.netex.model.FlexibleStopPlaceRefStructure;
 import org.rutebanken.netex.model.Network;
 import org.rutebanken.netex.model.Notice;
-import org.rutebanken.netex.model.OperatingPeriod;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.PointProjection;
 import org.rutebanken.netex.model.PointRefStructure;
@@ -31,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBElement;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 

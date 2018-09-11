@@ -1,7 +1,5 @@
 package no.entur.uttu.organisation;
 
-import org.junit.Test;
-
 public class OrganisationRegistryTest {
 
 // TODO remove med. Used for manual test

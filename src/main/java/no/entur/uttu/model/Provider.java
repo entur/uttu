@@ -12,14 +12,14 @@ public class Provider extends IdentifiedEntity {
     @NotNull
     private String code;
 
+    // TODO change code to NetexId? for code space as well. strange combo now. code, id (pk) and id
+
     @NotNull
     private String name;
 
     @NotNull
     @ManyToOne
     private Codespace codespace;
-
-    // TODO settings
 
 
     public String getName() {

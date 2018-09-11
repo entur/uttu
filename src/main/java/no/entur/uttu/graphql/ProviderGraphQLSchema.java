@@ -83,7 +83,6 @@ public class ProviderGraphQLSchema {
 
     private GraphQLObjectType createQueryObject() {
 
-// TODO code spaces  / providers. Different api?
         GraphQLObjectType queryType = newObject()
                                               .name("Queries")
                                               .description("Query and search for data")

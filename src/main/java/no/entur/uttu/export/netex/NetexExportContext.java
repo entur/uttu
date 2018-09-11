@@ -58,12 +58,18 @@ public class NetexExportContext {
         return availabilityPeriod;
     }
 
-    // TODO not thread safe.. problem?
     public long getAndIncrementIdSequence(String entityName) {
         AtomicLong sequence = idSequences.get(entityName);
         if (sequence == null) {
-            sequence = new AtomicLong(1);
-            idSequences.put(entityName, sequence);
+
+            synchronized (idSequences) {
+                sequence = idSequences.get(entityName);
+
+                if (sequence == null) {
+                    sequence = new AtomicLong(1);
+                    idSequences.put(entityName, sequence);
+                }
+            }
         }
         return sequence.getAndIncrement();
     }

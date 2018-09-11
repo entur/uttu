@@ -51,13 +51,6 @@ public class LineProducer {
         context.networks.add(local.getNetwork());
 
 
-        // TODO for testing
-        context.flexibleStopPlaces.addAll(local.getJourneyPatterns().stream()
-                                                  .map(JourneyPattern::getPointsInSequence).flatMap(List::stream)
-                                                  .map(StopPointInJourneyPattern::getFlexibleStopPlace).collect(Collectors.toList()));
-
-
-
         // Notices TODO separate noticeproducer?
 
         return NetexIdProducer.copyIdAndVersion(netex, local);
