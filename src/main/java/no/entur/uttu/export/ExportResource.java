@@ -23,7 +23,7 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 
 @Component
 @Api
-@Path("/lines/{providerCode}")
+@Path("/{providerCode}")
 public class ExportResource {
 
     // TODO use grapQL for this as well?

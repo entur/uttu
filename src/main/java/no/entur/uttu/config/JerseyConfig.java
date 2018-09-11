@@ -36,7 +36,7 @@ public class JerseyConfig {
     public ServletRegistrationBean publicAPIJerseyConfig() {
         ServletRegistrationBean publicJersey
                 = new ServletRegistrationBean(new ServletContainer(new FlexibleLinesAPI()));
-        publicJersey.addUrlMappings("/services/timetable-flexible/*");
+        publicJersey.addUrlMappings("/services/flexible-lines/*");
         publicJersey.setName("FlexibleLinesAPI");
         publicJersey.setLoadOnStartup(0);
         return publicJersey;

@@ -25,7 +25,7 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 
 @Component
 @Api
-@Path("/lines/{providerCode}/graphql")
+@Path("/{providerCode}/graphql")
 public class FlexibleLinesGraphQLResource {
 
     @Autowired
