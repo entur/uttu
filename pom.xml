@@ -1,0 +1,454 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed under the EUPL, Version 1.2 or – as soon they will be approved by
+  ~ the European Commission - subsequent versions of the EUPL (the "Licence");
+  ~ You may not use this work except in compliance with the Licence.
+  ~ You may obtain a copy of the Licence at:
+  ~
+  ~   https://joinup.ec.europa.eu/software/page/eupl
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the Licence is distributed on an "AS IS" basis,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the Licence for the specific language governing permissions and
+  ~ limitations under the Licence.
+  ~
+  -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.rutebanken.superpom</groupId>
+        <artifactId>superpom</artifactId>
+        <version>0.0.6</version>
+    </parent>
+
+    <groupId>no.rutebanken</groupId>
+    <artifactId>uttu</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <packaging>jar</packaging>
+
+    <name>uttu</name>
+    <description>Back end for Flexible Line with Flexible Areas timetable data editor and export module</description>
+
+    <scm>
+        <connection>scm:git:ssh://git@github.com/entur/uttu.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/entur/uttu.git</developerConnection>
+    </scm>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
+        <entur.helpers.version>0.0.4-SNAPSHOT</entur.helpers.version>
+        <docker.maven.plugin.version>0.21.0</docker.maven.plugin.version>
+        <spring-boot-plugin.version>2.0.3.RELEASE</spring-boot-plugin.version>
+        <spring-boot.version>2.0.3.RELEASE</spring-boot.version>
+        <spring.security.version>5.0.7.RELEASE</spring.security.version>
+        <postgresql.version>9.4-1201-jdbc41</postgresql.version>
+        <keycloak.version>4.1.0.Final</keycloak.version>
+
+        <!-- Docker & Fabric8 Configs -->
+        <docker.from>eu.gcr.io/carbon-1287/java-base-image</docker.from>
+        <fabric8.dockerUser>carbon-1287/</fabric8.dockerUser>
+        <docker.image>eu.gcr.io/${fabric8.dockerUser}${project.artifactId}:${project.version}</docker.image>
+        <docker.cleanup>none</docker.cleanup>
+        <fabric8.service.name>springboot-webmvc</fabric8.service.name>
+        <fabric8.service.port>80</fabric8.service.port>
+        <fabric8.service.containerPort>9004</fabric8.service.containerPort>
+
+        <!-- fabric8.env.AB_JOLOKIA_AUTH_OPENSHIFT>true</fabric8.env.AB_JOLOKIA_AUTH_OPENSHIFT -->
+        <fabric8.label.component>${project.artifactId}</fabric8.label.component>
+        <fabric8.label.container>spring-boot</fabric8.label.container>
+        <fabric8.label.group>entur</fabric8.label.group>
+        <fabric8.iconRef>spring-boot</fabric8.iconRef>
+        <fabric8.iconRef>spring-boot</fabric8.iconRef>
+
+        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
+        <docker.port.container.jolokia>8778</docker.port.container.jolokia>
+        <jackson-jaxrs-xml-provider.version>2.9.0</jackson-jaxrs-xml-provider.version>
+
+        <flyway-core.version>5.1.4</flyway-core.version>
+        <httpcomponents-fluent.version>4.5.3</httpcomponents-fluent.version>
+        <assertj-core.version>3.8.0</assertj-core.version>
+        <rest-assured.version>2.9.0</rest-assured.version>
+        <geodb.version>0.9</geodb.version>
+        <geotools.version>17.2</geotools.version>
+        <hibernate-spatial.version>5.2.17.Final</hibernate-spatial.version>
+        <hibernate.version>5.2.17.Final</hibernate.version>
+        <fabric8.version>2.3.4</fabric8.version>
+        <swagger-jersey2.version>1.5.16</swagger-jersey2.version>
+        <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
+
+        <graphql.version>9.2</graphql.version>
+        <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.fabric8</groupId>
+                <artifactId>fabric8-project</artifactId>
+                <version>${fabric8.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+        </dependencies>
+    </dependencyManagement>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>org.entur</groupId>
+            <artifactId>netex-java-model</artifactId>
+            <version>${netex-java-model.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java</artifactId>
+            <version>${graphql.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>${flyway-core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>javax.jdo</groupId>
+            <artifactId>jdo2-api</artifactId>
+            <version>${javax.jdo.jdo2-api.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.swagger</groupId>
+            <artifactId>swagger-jersey2-jaxrs</artifactId>
+            <version>${swagger-jersey2.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.logstash.logback</groupId>
+            <artifactId>logstash-logback-encoder</artifactId>
+            <version>4.11</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.codehaus.janino</groupId>
+            <artifactId>janino</artifactId>
+            <version>3.0.7</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.entur.helpers</groupId>
+            <artifactId>organisation</artifactId>
+            <version>${entur.helpers.version}</version>
+        </dependency>
+
+        <!-- Due to maven artifact cache, this dependency needs to be explicit -->
+        <dependency>
+            <groupId>io.fabric8</groupId>
+            <artifactId>kubernetes-client</artifactId>
+            <version>2.6.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.jaxrs</groupId>
+            <artifactId>jackson-jaxrs-xml-provider</artifactId>
+            <version>${jackson-jaxrs-xml-provider.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-config</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-web</artifactId>
+            <version>${spring.security.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-core</artifactId>
+                </exclusion>
+
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-jersey</artifactId>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.entur.helpers</groupId>
+            <artifactId>gcp-storage</artifactId>
+            <version>${entur.helpers.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.servlet</groupId>
+                    <artifactId>servlet-api</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.netty</groupId>
+                    <artifactId>netty-codec-http2</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.google.protobuf</groupId>
+                    <artifactId>protobuf-lite</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-admin-client</artifactId>
+            <version>${keycloak.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>net.postgis</groupId>
+            <artifactId>postgis-jdbc</artifactId>
+            <version>2.2.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>2.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>23.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-spatial</artifactId>
+            <version>${hibernate-spatial.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-core</artifactId>
+            <version>${hibernate.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opengeo</groupId>
+            <artifactId>geodb</artifactId>
+            <version>${geodb.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.geotools</groupId>
+            <artifactId>gt-geojson</artifactId>
+            <version>${geotools.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-tomcat8-adapter</artifactId>
+            <version>${keycloak.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-boot-2-adapter</artifactId>
+            <version>${keycloak.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.keycloak</groupId>
+            <artifactId>keycloak-spring-security-adapter</artifactId>
+            <version>${keycloak.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-test</artifactId>
+            <version>${spring-boot.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.jayway.restassured</groupId>
+            <artifactId>rest-assured</artifactId>
+            <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.assertj</groupId>
+            <artifactId>assertj-core</artifactId>
+            <version>${assertj-core.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>${spring-boot-plugin.version}</version>
+                <configuration>
+                    <mainClass>no.entur.uttu.App</mainClass>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>fabric8-maven-plugin</artifactId>
+                <version>${fabric8.version}</version>
+                <executions>
+                    <execution>
+                        <id>json</id>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>json</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>attach</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>attach</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>${docker.maven.plugin.version}</version>
+                <configuration>
+                    <images>
+                        <image>
+                            <name>${docker.image}</name>
+                            <build>
+                                <from>${docker.from}</from>
+                                <cleanup>${docker.cleanup}</cleanup>
+                                <assembly>
+                                    <basedir>/deployments</basedir>
+                                    <descriptorRef>artifact</descriptorRef>
+                                </assembly>
+                                <env>
+                                    <JAVA_APP_JAR>${project.build.finalName}.jar</JAVA_APP_JAR>
+                                </env>
+                            </build>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <!-- Default sample commands: mvn -Pf8-build ... build Docker images and create OpenShift deployment configs mvn -Pf8-deploy
+        ... f8-build + push to Docker registry + applying deployment config to OpenShift mvn -Pf8-local-deploy ... deployment for
+        a single node setup without pushing to a registry For individual goal usage please consult the fabric8 documentation -->
+
+    <profiles>
+        <profile>
+            <id>rutebanken</id>
+            <properties>
+                <fabric8.imagePullPolicySnapshot>Always</fabric8.imagePullPolicySnapshot>
+                <fabric8.recreate>true</fabric8.recreate>
+            </properties>
+            <build>
+                <!-- Missing fabric8:apply, as this crashed (probably due to missing fabric8) -->
+                <defaultGoal>clean install docker:build docker:push fabric8:json</defaultGoal>
+            </build>
+        </profile>
+        <profile>
+            <id>f8-build</id>
+            <build>
+                <defaultGoal>clean install docker:build fabric8:json</defaultGoal>
+            </build>
+        </profile>
+        <profile>
+            <id>f8-deploy</id>
+            <properties>
+                <fabric8.imagePullPolicySnapshot>Always</fabric8.imagePullPolicySnapshot>
+                <fabric8.recreate>true</fabric8.recreate>
+            </properties>
+            <build>
+                <defaultGoal>clean install docker:build docker:push fabric8:json fabric8:apply</defaultGoal>
+            </build>
+        </profile>
+        <profile>
+            <id>h2</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+            </dependencies>
+        </profile>
+        <profile>
+            <id>f8-local-deploy</id>
+            <properties>
+                <fabric8.recreate>true</fabric8.recreate>
+            </properties>
+            <build>
+                <defaultGoal>clean install docker:build fabric8:json fabric8:apply</defaultGoal>
+            </build>
+        </profile>
+    </profiles>
+
+</project>
