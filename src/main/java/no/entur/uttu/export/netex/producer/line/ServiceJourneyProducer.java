@@ -49,7 +49,7 @@ public class ServiceJourneyProducer {
 
         DayTypeRefs_RelStructure dayTypeRefs_relStructure = new DayTypeRefs_RelStructure()
                                                                     .withDayTypeRef(local.getDayTypes().stream()
-                                                                                            .map(dt -> objectFactory.createRefStructure(new DayTypeRefStructure(), local.getRef(), false)).collect(Collectors.toList()));
+                                                                                            .map(dt -> objectFactory.wrapRefStructure(new DayTypeRefStructure(), local.getRef(), false)).collect(Collectors.toList()));
         context.dayTypes.addAll(local.getDayTypes());
 
         List<org.rutebanken.netex.model.TimetabledPassingTime> timetabledPassingTimes = local.getPassingTimes().stream().map(ttpt -> mapTimetabledPassingTime(ttpt, context)).collect(Collectors.toList());

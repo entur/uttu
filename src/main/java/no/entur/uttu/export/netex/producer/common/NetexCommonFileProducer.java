@@ -7,6 +7,7 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Ref;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.CompositeFrame;
+import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.FlexibleStopAssignment;
 import org.rutebanken.netex.model.FlexibleStopPlace;
 import org.rutebanken.netex.model.FlexibleStopPlaceRefStructure;
@@ -85,7 +86,10 @@ public class NetexCommonFileProducer {
         List<FlexibleStopAssignment> flexibleStopAssignments = context.flexibleStopPlaces.stream().map(no.entur.uttu.model.FlexibleStopPlace::getRef)
                                                                        .map(this::buildFlexibleStopAssignment).collect(Collectors.toList());
         List<Notice> notices = context.notices.stream().map(this::mapNotice).collect(Collectors.toList());
-        return objectFactory.createCommonServiceFrame(context, networks, routePoints, scheduledStopPoints, flexibleStopAssignments, notices);
+        List<DestinationDisplay> destinationDisplays = context.destinationDisplays.stream().map(this::mapDestinationDisplay).collect(Collectors.toList());
+
+
+        return objectFactory.createCommonServiceFrame(context, networks, routePoints, scheduledStopPoints, flexibleStopAssignments, notices, destinationDisplays);
     }
 
 
@@ -104,11 +108,15 @@ public class NetexCommonFileProducer {
 
     private FlexibleStopAssignment buildFlexibleStopAssignment(Ref ref) {
         return objectFactory.populateId(new FlexibleStopAssignment(), ref)
-                       .withScheduledStopPointRef(objectFactory.createRefStructure(new ScheduledStopPointRefStructure(), ref, true))
+                       .withScheduledStopPointRef(objectFactory.wrapRefStructure(new ScheduledStopPointRefStructure(), ref, true))
                        .withFlexibleStopPlaceRef(objectFactory.populateRefStructure(new FlexibleStopPlaceRefStructure(), ref, true));
     }
 
     public Notice mapNotice(no.entur.uttu.model.Notice local) {
         return objectFactory.populateId(new Notice(), local.getRef()).withText(objectFactory.createMultilingualString(local.getText()));
+    }
+
+    public DestinationDisplay mapDestinationDisplay(no.entur.uttu.model.DestinationDisplay local) {
+        return objectFactory.populateId(new DestinationDisplay(), local.getRef()).withFrontText(objectFactory.createMultilingualString(local.getFrontText()));
     }
 }

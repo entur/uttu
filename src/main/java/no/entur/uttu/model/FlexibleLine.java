@@ -38,7 +38,7 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
     @ManyToOne
     private Network network;
 
-    private String operatorRef;
+    private Long operatorRef;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Notice> notices;
@@ -93,11 +93,11 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
         this.network = network;
     }
 
-    public String getOperatorRef() {
+    public Long getOperatorRef() {
         return operatorRef;
     }
 
-    public void setOperatorRef(String operatorRef) {
+    public void setOperatorRef(Long operatorRef) {
         this.operatorRef = operatorRef;
     }
 
@@ -115,5 +115,13 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
 
     public void setBookingArrangement(BookingArrangement bookingArrangement) {
         this.bookingArrangement = bookingArrangement;
+    }
+
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+
+        getJourneyPatterns().stream().forEach(ProviderEntity::checkPersistable);
     }
 }

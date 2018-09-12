@@ -36,7 +36,7 @@ public class OrganisationProducer {
         return context.operatorRefs.stream().map(ref -> mapOperator(ref, context)).collect(Collectors.toList());
     }
 
-    public AuthorityRefStructure produceAuthorityRef(String authorityRef, boolean withVersion, NetexExportContext context) {
+    public AuthorityRefStructure produceAuthorityRef(Long authorityRef, boolean withVersion, NetexExportContext context) {
         Authority authority = mapAuthority(authorityRef, context);
         AuthorityRefStructure authorityRefStruct = new AuthorityRefStructure().withRef(authority.getId());
         if (withVersion) {
@@ -46,7 +46,7 @@ public class OrganisationProducer {
     }
 
 
-    public OperatorRefStructure produceOperatorRef(String operatorRef, boolean withVersion, NetexExportContext context) {
+    public OperatorRefStructure produceOperatorRef(Long operatorRef, boolean withVersion, NetexExportContext context) {
         Operator operator = mapOperator(operatorRef, context);
         OperatorRefStructure operatorRefStructure = new OperatorRefStructure().withRef(operator.getId());
         if (withVersion) {
@@ -55,20 +55,20 @@ public class OrganisationProducer {
         return operatorRefStructure;
     }
 
-    private Authority mapAuthority(String authorityRef, NetexExportContext context) {
+    private Authority mapAuthority(Long authorityRef, NetexExportContext context) {
         Organisation orgRegAuthority = organisationRegistry.getOrganisation(authorityRef);
         if (orgRegAuthority == null || orgRegAuthority.getAuthorityNetexId() == null) {
-            context.errors.add(new ExportError("Authority [id:{}] not found", authorityRef));
+            context.errors.add(new ExportError("Authority [id:{0}] not found", authorityRef));
             return new Authority();
         }
         return populateNetexOrganisation(new Authority(), orgRegAuthority)
                        .withId(orgRegAuthority.getAuthorityNetexId());
     }
 
-    private Operator mapOperator(String operatorRef, NetexExportContext context) {
+    private Operator mapOperator(Long operatorRef, NetexExportContext context) {
         Organisation orgRegOperator = organisationRegistry.getOrganisation(operatorRef);
         if (orgRegOperator == null || orgRegOperator.getOperatorNetexId() == null) {
-            context.errors.add(new ExportError("Operator [id:{}] not found", operatorRef));
+            context.errors.add(new ExportError("Operator [id:{0}] not found", operatorRef));
             return new Operator();
         }
         return populateNetexOrganisation(new Operator(), orgRegOperator)

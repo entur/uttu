@@ -19,7 +19,11 @@ public abstract class AbstractProviderEntityUpdater<T extends ProviderEntity> im
 
     @Override
     public T get(DataFetchingEnvironment env) {
-        return repository.save(mapper.map(env.getArgument("input")));
+        T entity = mapper.map(env.getArgument("input"));
+
+        entity.checkPersistable();
+
+        return repository.save(entity);
     }
 
 

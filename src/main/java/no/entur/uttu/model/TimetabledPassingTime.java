@@ -1,5 +1,8 @@
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+import no.entur.uttu.util.ValidationHelper;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -131,4 +134,33 @@ public class TimetabledPassingTime extends ProviderEntity {
     public void setNotices(List<Notice> notices) {
         this.notices = notices;
     }
+
+
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+        Preconditions.checkArgument(departureTime != null || arrivalTime != null || earliestDepartureTime != null || latestArrivalTime != null,
+                "%s must have at least one of the following fields set: arrivalTime, latestArrivalTime, departureTime or earliestDepartureTime", identity());
+
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(departureTime, departureDayOffset, arrivalTime, arrivalDayOffset), "%s departureTime cannot be later than arrivalTime");
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(earliestDepartureTime, earliestDepartureDayOffset, departureTime, departureDayOffset), "%s earliestDepartureTime cannot be later than departureTime");
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, latestArrivalTime, latestArrivalDayOffset), "%s arrivalTime cannot be later than latestArrivalTime");
+    }
+
+
+    /**
+     * Check that this TimetabledPassingTime fits chronologically before another TimetablePassingTime in a ServiceJourney.
+     *
+     * @param other the other TimetabledPassingTime
+     */
+    public void checkBeforeOther(TimetabledPassingTime other) {
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(departureTime, departureDayOffset, other.departureTime, other.departureDayOffset), "%s departureTime cannot be after next elements (%s) departureTime", identity(), other.identity());
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(departureTime, departureDayOffset, other.arrivalTime, other.arrivalDayOffset), "%s departureTime cannot be after next elements (%s) arrivalTime", identity(), other.identity());
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, other.arrivalTime, other.arrivalDayOffset), "%s arrivalTime cannot be after next elements (%s) arrivalTime", identity(), other.identity());
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, other.departureTime, other.departureDayOffset), "%s arrivalTime cannot be after next elements (%s) departureTime", identity(), other.identity());
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(latestArrivalTime, latestArrivalDayOffset, other.latestArrivalTime, other.latestArrivalDayOffset), "%s latestArrivalTime cannot be after later next elements (%s) latestArrivalTime", identity(), other.identity());
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(earliestDepartureTime, earliestDepartureDayOffset, other.earliestDepartureTime, other.earliestDepartureDayOffset), "%s earliestDepartureTime cannot be after later next elements (%s) earliestDepartureTime", identity(), other.identity());
+    }
+
 }

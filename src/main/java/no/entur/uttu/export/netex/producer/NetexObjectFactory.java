@@ -14,14 +14,11 @@ import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
-import java.time.DayOfWeek;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static no.entur.uttu.export.netex.producer.NetexIdProducer.getEntityName;
@@ -73,7 +70,7 @@ public class NetexObjectFactory {
         return netex;
     }
 
-    public <N extends VersionOfObjectRefStructure> JAXBElement<N> createRefStructure(N netex, Ref ref, boolean withVersion) {
+    public <N extends VersionOfObjectRefStructure> JAXBElement<N> wrapRefStructure(N netex, Ref ref, boolean withVersion) {
         populateRefStructure(netex, ref, withVersion);
         return wrapAsJAXBElement(netex);
     }
@@ -150,7 +147,7 @@ public class NetexObjectFactory {
 
     public ServiceFrame createCommonServiceFrame(NetexExportContext context, Collection<Network> networks, Collection<RoutePoint> routePoints,
                                                         Collection<ScheduledStopPoint> scheduledStopPoints, Collection<? extends StopAssignment_VersionStructure> stopAssignmentElements,
-                                                        Collection<Notice> notices) {
+                                                        Collection<Notice> notices, Collection<DestinationDisplay> destinationDisplays) {
 
         RoutePointsInFrame_RelStructure routePointStruct = objectFactory.createRoutePointsInFrame_RelStructure()
                                                                    .withRoutePoint(routePoints);
@@ -159,6 +156,11 @@ public class NetexObjectFactory {
 
         StopAssignmentsInFrame_RelStructure stopAssignmentsStruct = objectFactory.createStopAssignmentsInFrame_RelStructure()
                                                                             .withStopAssignment(stopAssignmentElements.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList()));
+
+        DestinationDisplaysInFrame_RelStructure destinationDisplaysInFrame_relStructure = null;
+        if (!CollectionUtils.isEmpty(destinationDisplays)) {
+            destinationDisplaysInFrame_relStructure = objectFactory.createDestinationDisplaysInFrame_RelStructure().withDestinationDisplay(destinationDisplays);
+        }
 
         NoticesInFrame_RelStructure noticesInFrame_relStructure = null;
         if (!CollectionUtils.isEmpty(notices)) {
@@ -186,7 +188,8 @@ public class NetexObjectFactory {
                        .withStopAssignments(stopAssignmentsStruct)
                        .withNetwork(network)
                        .withAdditionalNetworks(additionalNetworks)
-                       .withNotices(noticesInFrame_relStructure);
+                       .withNotices(noticesInFrame_relStructure)
+                       .withDestinationDisplays(destinationDisplaysInFrame_relStructure);
 
     }
 
@@ -324,20 +327,9 @@ public class NetexObjectFactory {
         return objectFactory.createPrivateCodeStructure().withValue(value);
     }
 
-    public OperatorRefStructure createOperatorRefStructure(String operatorId, boolean withRefValidation) {
-        OperatorRefStructure operatorRefStruct = objectFactory.createOperatorRefStructure()
-                                                         .withRef(operatorId);
-        return withRefValidation ? operatorRefStruct.withVersion(VERSION_ONE) : operatorRefStruct;
-    }
 
     public GroupOfLinesRefStructure createGroupOfLinesRefStructure(String groupOfLinesId) {
         return objectFactory.createGroupOfLinesRefStructure().withRef(groupOfLinesId);
-    }
-
-    public DestinationDisplayRefStructure createDestinationDisplayRefStructure(String destinationDisplayId) {
-        return objectFactory.createDestinationDisplayRefStructure()
-                       .withVersion(VERSION_ONE)
-                       .withRef(destinationDisplayId);
     }
 
 

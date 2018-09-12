@@ -16,13 +16,12 @@ import javax.validation.constraints.NotNull;
 )
 public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
 
-
     @Enumerated(EnumType.STRING)
     @NotNull
     private VehicleModeEnumeration transportMode;
 
-
     @OneToOne(cascade = CascadeType.ALL)
+    @NotNull
     private FlexibleArea flexibleArea;
 
     public FlexibleArea getFlexibleArea() {

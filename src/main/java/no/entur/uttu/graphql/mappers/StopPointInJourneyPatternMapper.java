@@ -43,8 +43,8 @@ public class StopPointInJourneyPatternMapper extends AbstractProviderEntityMappe
 
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
         input.apply(FIELD_DESTINATION_DISPLAY, destinationDisplayMapper::map, entity::setDestinationDisplay);
-        input.apply(FIELD_FOR_BOARDING, entity::setForBoarding); // TODO how do
-        input.apply(FIELD_FOR_BOARDING, entity::setForAlighting);
+        input.apply(FIELD_FOR_BOARDING, entity::setForBoarding);
+        input.apply(FIELD_FOR_ALIGHTING, entity::setForAlighting);
         input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
     }
 }

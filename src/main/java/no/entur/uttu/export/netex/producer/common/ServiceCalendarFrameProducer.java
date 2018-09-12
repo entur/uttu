@@ -110,6 +110,6 @@ public class ServiceCalendarFrameProducer {
                        .withOrder(BigInteger.valueOf(index))
                        .withDate(date)
                        .withOperatingPeriodRef(operatingPeriodRefStructure)
-                       .withDayTypeRef(objectFactory.createRefStructure(new DayTypeRefStructure(), localDayType.getRef(), true));
+                       .withDayTypeRef(objectFactory.wrapRefStructure(new DayTypeRefStructure(), localDayType.getRef(), true));
     }
 }

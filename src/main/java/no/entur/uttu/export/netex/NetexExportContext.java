@@ -32,7 +32,7 @@ public class NetexExportContext {
 
     public Set<Ref> routePointRefs = new HashSet<>();
 
-    public Set<String> operatorRefs = new HashSet<>();
+    public Set<Long> operatorRefs = new HashSet<>();
 
     public Set<ExportError> errors = new HashSet<>();
 

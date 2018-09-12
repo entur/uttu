@@ -3,26 +3,40 @@
     "name": "Test",
     "publicCode": "pubCode",
     "description": "testDescNo3Updae",
-    "networkRef":"NSB:Network:1ca1056f-5bf6-448f-8d7c-d8c00abdb6c4",
+    "operatorRef": "22",
+    "flexibleLineType": "flexibleAreasOnly",
+    "networkRef": "RUT:Network:42047a9b-dcba-4287-b4ea-b041a4a0b035",
     "transportMode": "rail",
     "journeyPatterns": [
       {
         "directionType": "inbound",
-        "stopPointsInJourneyPattern": [
+        "pointsInSequence": [
           {
-            "flexibleStopAreaRef":  "NSB:FlexibleStopPlace:ef814f11-538d-4410-af26-40bd22e0fce5"
+            "flexibleStopPlaceRef": "RUT:FlexibleStopPlace:a6ffac2b-fc09-40e8-94e7-f68d77a7e53f"
           },
           {
-            "flexibleStopAreaRef":  "NSB:FlexibleStopPlace:ef814f11-538d-4410-af26-40bd22e0fce5"
+            "flexibleStopPlaceRef": "RUT:FlexibleStopPlace:a6ffac2b-fc09-40e8-94e7-f68d77a7e53f"
           }
         ],
         "serviceJourneys": [
           {
+            "dayTypes": [
+              {
+                "dayTypeAssignments": [
+                  {
+                    "date": "2018-10-01"
+                  }
+                ]
+              }
+            ],
             "privateCode": "500",
-            "timetabledPassingTimes":[
-              {"earliestDepartureTime":"16:00"},
-              {"latestArrivalTime":"18:00"}
-
+            "pointsInSequence": [
+              {
+                "earliestDepartureDayOffset": 2
+              },
+              {
+                "latestArrivalTime": "18:00"
+              }
             ]
           }
         ]

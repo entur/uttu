@@ -1,5 +1,8 @@
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+import org.springframework.util.CollectionUtils;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
@@ -10,6 +13,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -19,7 +23,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     private String publicCode;
 
-    private String operatorRef;
+    private Long operatorRef;
 
     @OneToOne(cascade = CascadeType.ALL)
     private BookingArrangement bookingArrangement;
@@ -74,11 +78,11 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
         this.publicCode = publicCode;
     }
 
-    public String getOperatorRef() {
+    public Long getOperatorRef() {
         return operatorRef;
     }
 
-    public void setOperatorRef(String operatorRef) {
+    public void setOperatorRef(Long operatorRef) {
         this.operatorRef = operatorRef;
     }
 
@@ -105,4 +109,44 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
     public void setNotices(List<Notice> notices) {
         this.notices = notices;
     }
+
+
+    public boolean isValid(Instant from, Instant to) {
+        if (CollectionUtils.isEmpty(dayTypes)) {
+            return false;
+        }
+        // TODO
+        return true;
+    }
+
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+        Preconditions.checkArgument(getJourneyPattern().getPointsInSequence().size() == getPassingTimes().size(),
+                "%s must have same no of TimetabledPassingTimes as corresponding %s has no of StopPointInJourneyPattern", identity(), journeyPattern.identity());
+
+        TimetabledPassingTime prevPassingTime = null;
+        for (TimetabledPassingTime timetabledPassingTime : getPassingTimes()) {
+            timetabledPassingTime.checkPersistable();
+
+            if (prevPassingTime == null) {
+                Preconditions.checkArgument(timetabledPassingTime.getDepartureTime() != null || timetabledPassingTime.getEarliestDepartureTime() != null,
+                        "%s First TimetablePassingTime in ServiceJourney %s must have at least one of the following fields set: departureTime, earliestDepartureTime", timetabledPassingTime.identity(), this.identity());
+            } else {
+                prevPassingTime.checkBeforeOther(timetabledPassingTime);
+
+            }
+            prevPassingTime = timetabledPassingTime;
+        }
+        Preconditions.checkArgument(prevPassingTime.getArrivalTime() != null || prevPassingTime.getLatestArrivalTime() != null,
+                "%s Last TimetablePassingTime in ServiceJourney %s must have at least one of the following fields set: arrivalTime, latestArrivalTime", prevPassingTime.identity(), this.identity());
+
+        Preconditions.checkArgument(operatorRef != null || getJourneyPattern().getFlexibleLine().getOperatorRef() != null,
+                "%s has operator set on neither ServiceJourney or FlexibleLine", identity());
+
+
+    }
+
+
 }

@@ -2,6 +2,7 @@ package no.entur.uttu.graphql.mappers;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.FlexibleLine;
+import no.entur.uttu.organisation.OrganisationRegistry;
 import no.entur.uttu.repository.NetworkRepository;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
@@ -27,6 +28,9 @@ public class FlexibleLineMapper extends AbstractGroupOfEntitiesMapper<FlexibleLi
     @Autowired
     private NoticeMapper noticeMapper;
 
+    @Autowired
+    private OrganisationRegistry organisationRegistry;
+
 
     public FlexibleLineMapper(ProviderRepository providerRepository, ProviderEntityRepository<FlexibleLine> repository,
                                      NetworkRepository networkRepository, BookingArrangementMapper bookingArrangementMapper,
@@ -49,11 +53,13 @@ public class FlexibleLineMapper extends AbstractGroupOfEntitiesMapper<FlexibleLi
         input.apply(FIELD_TRANSPORT_MODE, entity::setTransportMode);
         input.applyReference(FIELD_NETWORK_REF, networkRepository, entity::setNetwork);
         input.apply(FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineType);
-        input.apply(FIELD_OPERATOR_REF, entity::setOperatorRef);
+        input.apply(FIELD_OPERATOR_REF, organisationRegistry::getVerifiedOperatorRef, entity::setOperatorRef);
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
         input.applyList(FIELD_JOURNEY_PATTERNS, journeyPatternMapper::map, entity::setJourneyPatterns);
-        input.applyList(FIELD_NOTICES,noticeMapper::map,entity::setNotices);
+        input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
+
     }
+
 
 
 }

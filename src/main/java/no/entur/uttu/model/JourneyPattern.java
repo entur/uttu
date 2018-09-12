@@ -1,5 +1,7 @@
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -83,12 +85,33 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
     public void setPointsInSequence(List<StopPointInJourneyPattern> pointsInSequence) {
         this.pointsInSequence.clear();
         if (pointsInSequence != null) {
-            int i=1;
-            for (StopPointInJourneyPattern sp:pointsInSequence) {
+            int i = 1;
+            for (StopPointInJourneyPattern sp : pointsInSequence) {
                 sp.setOrder(i++);
                 sp.setJourneyPattern(this);
             }
             this.pointsInSequence.addAll(pointsInSequence);
         }
+    }
+
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+
+        Preconditions.checkArgument(getPointsInSequence().size() >= 2,
+                "%s does not have minimum of 2 pointsInSequence", identity());
+
+        getPointsInSequence().stream().forEach(ProviderEntity::checkPersistable);
+
+        Preconditions.checkArgument(getPointsInSequence().get(0).getDestinationDisplay() != null,
+                "%s is missing destinationDisplay for first pointsInSequence", identity());
+
+        // TODO validate forBoarding on first / forAlighting on last? or just set?
+
+        // TODO require at least one serviceJourney? not point, must still filter for validity
+
+
+        getServiceJourneys().stream().forEach(ProviderEntity::checkPersistable);
     }
 }

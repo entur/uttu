@@ -1,5 +1,6 @@
 package no.entur.uttu.model;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import no.entur.uttu.config.Context;
 
@@ -9,6 +10,7 @@ import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
+import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -48,7 +50,7 @@ public abstract class ProviderEntity extends IdentifiedEntity {
 
     @PrePersist
     public void setNetexIdIfMissing() {
-        this.setNetexId(this.getProvider().getCodespace().getXmlns() + ":" + this.getClass().getSimpleName() + ":" + UUID.randomUUID());
+        this.setNetexId(Joiner.on(":").join(getProvider().getCodespace().getXmlns(), this.getClass().getSimpleName(), UUID.randomUUID()));
     }
 
 
@@ -79,5 +81,12 @@ public abstract class ProviderEntity extends IdentifiedEntity {
         int result = netexId != null ? netexId.hashCode() : 0;
         result = 31 * result + (version != null ? version.hashCode() : 0);
         return result;
+    }
+
+    public void checkPersistable() {}
+
+
+    protected String identity() {
+        return MessageFormat.format("{0}[{1}]", getClass().getSimpleName(), getNetexId());
     }
 }

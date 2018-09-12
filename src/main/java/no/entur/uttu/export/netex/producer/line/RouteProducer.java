@@ -56,6 +56,6 @@ public class RouteProducer {
         FlexibleStopPlace flexibleStopPlace = stopPointInJourneyPattern.getFlexibleStopPlace();
         return objectFactory.populateId(new PointOnRoute(), flexibleStopPlace.getRef())
                        .withOrder(BigInteger.valueOf(order))
-                       .withPointRef(objectFactory.createRefStructure(new RoutePointRefStructure(), flexibleStopPlace.getRef(), false));
+                       .withPointRef(objectFactory.wrapRefStructure(new RoutePointRefStructure(), flexibleStopPlace.getRef(), false));
     }
 }

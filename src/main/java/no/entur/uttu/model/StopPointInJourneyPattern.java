@@ -1,5 +1,7 @@
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -116,5 +118,16 @@ public class StopPointInJourneyPattern extends ProviderEntity {
 
     public void setForBoarding(Boolean forBoarding) {
         this.forBoarding = forBoarding;
+    }
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+
+        Preconditions.checkArgument(Boolean.TRUE.equals(forBoarding) || Boolean.TRUE.equals(forAlighting),
+                "%s allows neither boarding or alighting", identity());
+
+        Preconditions.checkArgument(flexibleStopPlace != null || quayRef != null,
+                "%s is not linked to stop place", identity());
     }
 }

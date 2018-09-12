@@ -1,6 +1,8 @@
 package no.entur.uttu.model;
 
 import no.entur.uttu.config.Context;
+import org.springframework.validation.Errors;
+import org.springframework.validation.ValidationUtils;
 
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -98,6 +100,5 @@ public abstract class IdentifiedEntity {
             this.setChangedBy(user);
         }
     }
-
 
 }

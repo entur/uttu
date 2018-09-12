@@ -3,10 +3,9 @@ package no.entur.uttu.export.netex.producer.line;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
+import no.entur.uttu.export.netex.producer.common.OrganisationProducer;
 import no.entur.uttu.model.BookingArrangement;
 import no.entur.uttu.model.FlexibleLine;
-import no.entur.uttu.model.JourneyPattern;
-import no.entur.uttu.model.StopPointInJourneyPattern;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
@@ -16,9 +15,6 @@ import org.rutebanken.netex.model.PurchaseWhenEnumeration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 @Component
 public class LineProducer {
 
@@ -27,6 +23,9 @@ public class LineProducer {
 
     @Autowired
     private ContactStructureProducer contactStructureProducer;
+
+    @Autowired
+    private OrganisationProducer organisationProducer;
 
     public org.rutebanken.netex.model.FlexibleLine produce(FlexibleLine local, NetexExportContext context) {
         org.rutebanken.netex.model.FlexibleLine netex = new org.rutebanken.netex.model.FlexibleLine();
@@ -43,7 +42,7 @@ public class LineProducer {
 
 
         if (local.getOperatorRef() != null) {
-            netex.setOperatorRef(objectFactory.createOperatorRefStructure(local.getOperatorRef(), false));
+            netex.setOperatorRef(organisationProducer.produceOperatorRef(local.getOperatorRef(), false, context));
             context.operatorRefs.add(local.getOperatorRef());
         }
 

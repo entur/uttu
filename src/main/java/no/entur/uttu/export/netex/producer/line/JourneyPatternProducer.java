@@ -10,6 +10,7 @@ import no.entur.uttu.model.StopPointInJourneyPattern;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
+import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.DestinationDisplayRefStructure;
 import org.rutebanken.netex.model.PointInLinkSequence_VersionedChildStructure;
 import org.rutebanken.netex.model.PointsInJourneyPattern_RelStructure;
@@ -47,7 +48,7 @@ public class JourneyPatternProducer {
         DestinationDisplayRefStructure destinationDisplayRefStructure = null;
         if (local.getDestinationDisplay() != null) {
             context.destinationDisplays.add(local.getDestinationDisplay());
-            objectFactory.createDestinationDisplayRefStructure(local.getDestinationDisplay().getNetexId());
+            destinationDisplayRefStructure = objectFactory.populateRefStructure(new DestinationDisplayRefStructure(), local.getDestinationDisplay().getRef(), false);
         }
 
         JAXBElement<ScheduledStopPointRefStructure> scheduledStopPointRefStructure = null;

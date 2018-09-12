@@ -98,7 +98,7 @@ public class GraphQLResourceHelper {
             if (!executionResult.getErrors().isEmpty()) {
                 List<GraphQLError> errors = executionResult.getErrors();
                 if (errors.stream().anyMatch(error -> error.getErrorType().equals(ErrorType.DataFetchingException))) {
-                    logger.warn("Detected DataFetchingException from errors: {} Setting transaction to rollback only", errors);
+                    logger.info("Detected DataFetchingException from errors: {} Setting transaction to rollback only", errors);
                     transactionStatus.setRollbackOnly();
                 }
 
