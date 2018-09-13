@@ -30,7 +30,7 @@ public class NetexLineFileProducer {
     private NetexObjectFactory objectFactory;
 
     @Autowired
-    private LineProducer lineProducer;
+    private FlexibleLineProducer flexibleLineProducer;
 
     @Autowired
     private RouteProducer routeProducer;
@@ -94,7 +94,7 @@ public class NetexLineFileProducer {
 
     private ServiceFrame createServiceFrame(FlexibleLine line, NetexExportContext context) {
 
-        org.rutebanken.netex.model.FlexibleLine netexLine = lineProducer.produce(line, context);
+        org.rutebanken.netex.model.FlexibleLine netexLine = flexibleLineProducer.produce(line, context);
 
         List<Route> netexRoutes = routeProducer.produce(line, context);
         List<org.rutebanken.netex.model.JourneyPattern> netexJourneyPatterns = line.getJourneyPatterns().stream()

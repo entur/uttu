@@ -17,10 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(
-        uniqueConstraints = {
-                                    @UniqueConstraint(name = "journey_pattern_unique_name_constraint", columnNames = {"provider_pk", "name"})}
-)
+@Table(uniqueConstraints = {@UniqueConstraint(name = "journey_pattern_unique_name_constraint", columnNames = {"provider_pk", "name"})})
 public class JourneyPattern extends GroupOfEntities_VersionStructure {
 
     @NotNull
@@ -107,12 +104,11 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
         Preconditions.checkArgument(getPointsInSequence().get(0).getDestinationDisplay() != null,
                 "%s is missing destinationDisplay for first pointsInSequence", identity());
 
+        Preconditions.checkArgument(Boolean.TRUE.equals(getPointsInSequence().get(0).getForBoarding()),
+                "%s does not permit boarding on first pointsInSequence", identity());
 
-
-        // TODO validate forBoarding on first / forAlighting on last? or just set?
-
-        // TODO require at least one serviceJourney? not point, must still filter for validity
-
+        Preconditions.checkArgument(Boolean.TRUE.equals(getPointsInSequence().get(getPointsInSequence().size() - 1).getForAlighting()),
+                "%s does not permit alighting on last pointsInSequence", identity());
 
         getServiceJourneys().stream().forEach(ProviderEntity::checkPersistable);
     }

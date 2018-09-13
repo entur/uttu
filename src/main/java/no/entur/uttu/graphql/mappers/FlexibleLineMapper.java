@@ -51,6 +51,7 @@ public class FlexibleLineMapper extends AbstractGroupOfEntitiesMapper<FlexibleLi
         input.apply(FIELD_NAME, entity::setName);
         input.apply(FIELD_PUBLIC_CODE, entity::setPublicCode);
         input.apply(FIELD_TRANSPORT_MODE, entity::setTransportMode);
+        input.apply(FIELD_TRANSPORT_SUBMODE, entity::setTransportSubmode);
         input.applyReference(FIELD_NETWORK_REF, networkRepository, entity::setNetwork);
         input.apply(FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineType);
         input.apply(FIELD_OPERATOR_REF, organisationRegistry::getVerifiedOperatorRef, entity::setOperatorRef);
@@ -59,7 +60,6 @@ public class FlexibleLineMapper extends AbstractGroupOfEntitiesMapper<FlexibleLi
         input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
 
     }
-
 
 
 }

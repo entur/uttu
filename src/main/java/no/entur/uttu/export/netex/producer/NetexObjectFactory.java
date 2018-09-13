@@ -5,6 +5,7 @@ import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.model.Ref;
+import no.entur.uttu.model.VehicleSubmodeEnumeration;
 import no.entur.uttu.util.DateUtils;
 import org.rutebanken.netex.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -314,6 +315,44 @@ public class NetexObjectFactory {
         return Enum.valueOf(netexEnumClass, local.name());
     }
 
+    public TransportSubmodeStructure mapTransportSubmodeStructure(VehicleSubmodeEnumeration submode) {
+        if (submode == null) {
+            return null;
+        }
+        TransportSubmodeStructure submodeStructure = new TransportSubmodeStructure();
+        switch (submode.getVehicleMode()) {
+            case TROLLEY_BUS:
+            case BUS:
+                submodeStructure.withBusSubmode(mapEnum(submode, BusSubmodeEnumeration.class));
+                break;
+            case COACH:
+                submodeStructure.withCoachSubmode(mapEnum(submode, CoachSubmodeEnumeration.class));
+                break;
+            case TRAM:
+                submodeStructure.withTramSubmode(mapEnum(submode, TramSubmodeEnumeration.class));
+                break;
+            case WATER:
+                submodeStructure.withWaterSubmode(mapEnum(submode, WaterSubmodeEnumeration.class));
+                break;
+            case RAIL:
+                submodeStructure.withRailSubmode(mapEnum(submode, RailSubmodeEnumeration.class));
+                break;
+            case AIR:
+                submodeStructure.withAirSubmode(mapEnum(submode, AirSubmodeEnumeration.class));
+                break;
+            case FUNICULAR:
+                submodeStructure.withFunicularSubmode(mapEnum(submode, FunicularSubmodeEnumeration.class));
+                break;
+            case METRO:
+                submodeStructure.withMetroSubmode(mapEnum(submode, MetroSubmodeEnumeration.class));
+                break;
+            case CABLEWAY:
+                submodeStructure.withTelecabinSubmode(mapEnum(submode, TelecabinSubmodeEnumeration.class));
+                break;
+        }
+
+        return submodeStructure;
+    }
 
     public Codespace createCodespace(String xmlns, String xmlnsUrl) {
         return objectFactory.createCodespace()

@@ -24,14 +24,16 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
         super(entityInformation, entityManager);
         this.entityManager = entityManager;
         this.entityInformation = entityInformation;
-        findAllQuery = "from " + entityInformation.getEntityName() + " where provider.code=:providerCode";
+        findAllQuery = "from " + entityInformation.getEntityName() + " e where e.provider.code=:providerCode";
         findOneByNetexIdQuery = findAllQuery + " and netexId=:netexId";
     }
 
 
     @Override
     public void deleteAll() {
-        entityManager.createQuery("delete " + findAllQuery).setParameter("providerCoder", Context.getVerifiedProviderCode()).executeUpdate();
+        // TODO getting errors for cascade delete with batch statement, fetching all and deleting one by on for now
+        findAll().stream().forEach(this::delete);
+//        entityManager.createQuery("delete " + findAllQuery).setParameter("providerCode", Context.getVerifiedProviderCode()).executeUpdate();
     }
 
     @Override

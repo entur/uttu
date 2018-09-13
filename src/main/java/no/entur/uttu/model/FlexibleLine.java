@@ -1,5 +1,8 @@
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+import org.springframework.util.ObjectUtils;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -13,12 +16,10 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
-@Table(
-        uniqueConstraints = {
-                                    @UniqueConstraint(name = "flexible_lines_unique_name_constraint", columnNames = {"provider_pk", "name"})}
-)
+@Table(uniqueConstraints = {@UniqueConstraint(name = "flexible_lines_unique_name_constraint", columnNames = {"provider_pk", "name"})})
 public class FlexibleLine extends GroupOfEntities_VersionStructure {
 
     private String publicCode;
@@ -27,8 +28,9 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
     @NotNull
     private VehicleModeEnumeration transportMode;
 
-
-    // TODO submode
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private VehicleSubmodeEnumeration transportSubmode;
 
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -117,10 +119,19 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
         this.bookingArrangement = bookingArrangement;
     }
 
+    public VehicleSubmodeEnumeration getTransportSubmode() {
+        return transportSubmode;
+    }
+
+    public void setTransportSubmode(VehicleSubmodeEnumeration transportSubmode) {
+        this.transportSubmode = transportSubmode;
+    }
 
     @Override
     public void checkPersistable() {
         super.checkPersistable();
+
+        Preconditions.checkArgument(Objects.equals(transportMode, transportSubmode.getVehicleMode()), "%s transportSubmode %s is valid for transportMode %s", identity(), transportSubmode.value(), transportMode.value());
 
         getJourneyPatterns().stream().forEach(ProviderEntity::checkPersistable);
     }

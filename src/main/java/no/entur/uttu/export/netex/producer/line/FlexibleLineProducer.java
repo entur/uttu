@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class LineProducer {
+public class FlexibleLineProducer {
 
     @Autowired
     private NetexObjectFactory objectFactory;
@@ -35,6 +35,8 @@ public class LineProducer {
 
         netex.setFlexibleLineType(objectFactory.mapEnum(local.getFlexibleLineType(), FlexibleLineTypeEnumeration.class));
         netex.setTransportMode(objectFactory.mapEnum(local.getTransportMode(), AllVehicleModesOfTransportEnumeration.class));
+        netex.setTransportSubmode(objectFactory.mapTransportSubmodeStructure(local.getTransportSubmode()));
+
         netex.setPublicCode(local.getPublicCode());
         netex.setDescription(objectFactory.createMultilingualString(local.getDescription()));
 

@@ -26,7 +26,7 @@ import no.entur.uttu.model.Network;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
-import no.entur.uttu.model.VehicleModeEnumeration;
+import no.entur.uttu.profile.Profile;
 import no.entur.uttu.repository.DataSpaceCleaner;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
@@ -37,6 +37,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.time.DayOfWeek;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.function.Function;
 
 import static graphql.Scalars.*;
@@ -63,7 +64,6 @@ public class FlexibleLinesGraphQLSchema {
     @Autowired
     private DataFetcher<Network> networkUpdater;
 
-
     @Autowired
     private FlexibleStopPlaceRepository flexibleStopPlaceRepository;
 
@@ -76,32 +76,39 @@ public class FlexibleLinesGraphQLSchema {
     @Autowired
     private DataSpaceCleaner dataSpaceCleaner;
 
-    public static GraphQLEnumType geometryTypeEnum = GraphQLEnumType.newEnum()
-                                                             .name("GeometryType")
-                                                             .value("Point")
-                                                             .value("LineString")
-                                                             .value("Polygon")
-                                                             .value("MultiPoint")
-                                                             .value("MultiLineString")
-                                                             .value("MultiPolygon")
-                                                             .value("GeometryCollection")
-                                                             .build();
+    @Autowired
+    private Profile profile;
 
-    private static GraphQLEnumType dayOfWeekEnum = FlexibleLinesGraphQLSchema.createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name().toLowerCase()));
-    private static GraphQLEnumType vehicleModeEnum = FlexibleLinesGraphQLSchema.createEnum("VehicleModeEnumeration", VehicleModeEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType flexibleLineTypeEnum = FlexibleLinesGraphQLSchema.createEnum("FlexibleLineTypeEnumeration", FlexibleLineTypeEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType bookingMethodEnum = FlexibleLinesGraphQLSchema.createEnum("BookingMethodEnumeration", BookingMethodEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType bookingAccessEnum = FlexibleLinesGraphQLSchema.createEnum("BookingAccessEnumeration", BookingAccessEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType purchaseWhenEnum = FlexibleLinesGraphQLSchema.createEnum("PurchaseWhenEnumeration", PurchaseWhenEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType purchaseMomentEnum = FlexibleLinesGraphQLSchema.createEnum("PurchaseMomentEnumeration", PurchaseMomentEnumeration.values(), (t -> t.value()));
-    private static GraphQLEnumType directionTypeEnum = FlexibleLinesGraphQLSchema.createEnum("DirectionTypeEnumeration", DirectionTypeEnumeration.values(), (t -> t.value()));
+    private <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
+        return createEnum(name, Arrays.asList(values), mapping);
+    }
 
-
-    private static <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
+    private <T extends Enum> GraphQLEnumType createEnum(String name, Collection<T> values, Function<T, String> mapping) {
         GraphQLEnumType.Builder enumBuilder = GraphQLEnumType.newEnum().name(name);
-        Arrays.stream(values).forEach(type -> enumBuilder.value(mapping.apply(type), type));
+        values.forEach(type -> enumBuilder.value(mapping.apply(type), type));
         return enumBuilder.build();
     }
+
+    private GraphQLEnumType geometryTypeEnum = GraphQLEnumType.newEnum()
+                                                       .name("GeometryType")
+                                                       .value("Point")
+                                                       .value("LineString")
+                                                       .value("Polygon")
+                                                       .value("MultiPoint")
+                                                       .value("MultiLineString")
+                                                       .value("MultiPolygon")
+                                                       .value("GeometryCollection")
+                                                       .build();
+
+    private GraphQLEnumType dayOfWeekEnum = createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name().toLowerCase()));
+    private GraphQLEnumType vehicleModeEnum;
+    private GraphQLEnumType vehicleSubmodeEnum;
+    private GraphQLEnumType flexibleLineTypeEnum = createEnum("FlexibleLineTypeEnumeration", FlexibleLineTypeEnumeration.values(), (t -> t.value()));
+    private GraphQLEnumType bookingMethodEnum = createEnum("BookingMethodEnumeration", BookingMethodEnumeration.values(), (t -> t.value()));
+    private GraphQLEnumType bookingAccessEnum = createEnum("BookingAccessEnumeration", BookingAccessEnumeration.values(), (t -> t.value()));
+    private GraphQLEnumType purchaseWhenEnum = createEnum("PurchaseWhenEnumeration", PurchaseWhenEnumeration.values(), (t -> t.value()));
+    private GraphQLEnumType purchaseMomentEnum = createEnum("PurchaseMomentEnumeration", PurchaseMomentEnumeration.values(), (t -> t.value()));
+    private GraphQLEnumType directionTypeEnum = createEnum("DirectionTypeEnumeration", DirectionTypeEnumeration.values(), (t -> t.value()));
 
 
     private GraphQLObjectType geoJSONObjectType;
@@ -127,9 +134,14 @@ public class FlexibleLinesGraphQLSchema {
     private GraphQLObjectType contactObjectType;
     public GraphQLSchema graphQLSchema;
 
+
     @PostConstruct
     public void init() {
+        vehicleModeEnum = createEnum("VehicleModeEnumeration", profile.getLegalVehicleModes(), (t -> t.value()));
+        vehicleSubmodeEnum = createEnum("VehicleSubmodeEnumeration", profile.getLegalVehicleSubmodes(), (t -> t.value()));
+
         initCommonTypes();
+
         graphQLSchema = GraphQLSchema.newSchema()
                                 .query(createQueryObject())
                                 .mutation(createMutationObject())
@@ -300,6 +312,7 @@ public class FlexibleLinesGraphQLSchema {
         flexibleLineObjectType = newObject(groupOfEntitiesObjectType).name("FlexibleLine")
                                          .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(new GraphQLNonNull(GraphQLString)))
                                          .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(new GraphQLNonNull(vehicleModeEnum)))
+                                         .field(newFieldDefinition().name(FIELD_TRANSPORT_SUBMODE).type(new GraphQLNonNull(vehicleSubmodeEnum)))
                                          .field(newFieldDefinition().name(FIELD_FLEXIBLE_LINE_TYPE).type(new GraphQLNonNull(flexibleLineTypeEnum)))
                                          .field(newFieldDefinition().name(FIELD_NETWORK).type(new GraphQLNonNull(networkObjectType)))
                                          .field(newFieldDefinition().name(FIELD_OPERATOR_REF).type(GraphQLLong))
@@ -474,6 +487,7 @@ public class FlexibleLinesGraphQLSchema {
         GraphQLInputObjectType flexibleLineInputType = newInputObject(groupOfEntitiesInputType).name("FlexibleLineInput")
                                                                .field(newInputObjectField().name(FIELD_PUBLIC_CODE).type(new GraphQLNonNull(GraphQLString)))
                                                                .field(newInputObjectField().name(FIELD_TRANSPORT_MODE).type(new GraphQLNonNull(vehicleModeEnum)))
+                                                               .field(newInputObjectField().name(FIELD_TRANSPORT_SUBMODE).type(new GraphQLNonNull(vehicleSubmodeEnum)))
                                                                .field(newInputObjectField().name(FIELD_FLEXIBLE_LINE_TYPE).type(new GraphQLNonNull(flexibleLineTypeEnum)))
                                                                .field(newInputObjectField().name(FIELD_NETWORK_REF).type(new GraphQLNonNull(GraphQLString)))
                                                                .field(newInputObjectField().name(FIELD_OPERATOR_REF).type(GraphQLLong))

@@ -17,9 +17,14 @@ public class DataSpaceCleaner {
     @Autowired
     private NetworkRepository networkRepository;
 
+    @Autowired
+    private NoticeRepository noticeRepository;
+
+
     public void clean() {
         flexibleLineRepository.deleteAll();
         flexibleStopPlaceRepository.deleteAll();
         networkRepository.deleteAll();
+        noticeRepository.deleteAll();
     }
 }
