@@ -17,5 +17,7 @@ public interface ProviderEntityRepository<T extends ProviderEntity> extends Repo
 
     <S extends T> S save(S entity);
 
+    T delete(String netexId);
+
     void deleteAll();
 }

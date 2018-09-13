@@ -14,10 +14,12 @@ import org.rutebanken.netex.model.FlexibleStopPlaceRefStructure;
 import org.rutebanken.netex.model.Network;
 import org.rutebanken.netex.model.Notice;
 import org.rutebanken.netex.model.Operator;
+import org.rutebanken.netex.model.PassengerStopAssignment;
 import org.rutebanken.netex.model.PointProjection;
 import org.rutebanken.netex.model.PointRefStructure;
 import org.rutebanken.netex.model.Projections_RelStructure;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.netex.model.QuayRefStructure;
 import org.rutebanken.netex.model.ResourceFrame;
 import org.rutebanken.netex.model.RoutePoint;
 import org.rutebanken.netex.model.ScheduledStopPoint;
@@ -25,17 +27,20 @@ import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 import org.rutebanken.netex.model.ServiceCalendarFrame;
 import org.rutebanken.netex.model.ServiceFrame;
 import org.rutebanken.netex.model.SiteFrame;
+import org.rutebanken.netex.model.StopAssignment_VersionStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBElement;
+import java.math.BigInteger;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Component
 public class NetexCommonFileProducer {
 
-    private static final String COMMON_FILE_NAME = "_common.xml";
+    private static final String COMMON_FILE_NAME_SUFFIX = "_shared_data.xml";
 
 
     @Autowired
@@ -63,7 +68,9 @@ public class NetexCommonFileProducer {
 
         JAXBElement<PublicationDeliveryStructure> publicationDelivery = objectFactory.createPublicationDelivery(context, compositeFrame);
 
-        return new NetexFile(COMMON_FILE_NAME, publicationDelivery);
+        String fileName = "_" + context.getFileNamePrefix() + COMMON_FILE_NAME_SUFFIX;
+
+        return new NetexFile(fileName, publicationDelivery);
     }
 
     private ResourceFrame createResourceFrame(NetexExportContext context) {
@@ -81,15 +88,21 @@ public class NetexCommonFileProducer {
     private ServiceFrame createServiceFrame(NetexExportContext context) {
         List<Network> networks = networkProducer.produce(context);
         List<RoutePoint> routePoints = context.routePointRefs.stream().map(this::buildRoutePoint).collect(Collectors.toList());
-        List<ScheduledStopPoint> scheduledStopPoints = context.flexibleStopPlaces.stream().map(no.entur.uttu.model.FlexibleStopPlace::getRef)
+        List<ScheduledStopPoint> scheduledStopPoints = context.scheduledStopPointRefs.stream()
                                                                .map(this::buildScheduledStopPoint).collect(Collectors.toList());
-        List<FlexibleStopAssignment> flexibleStopAssignments = context.flexibleStopPlaces.stream().map(no.entur.uttu.model.FlexibleStopPlace::getRef)
-                                                                       .map(this::buildFlexibleStopAssignment).collect(Collectors.toList());
+
+        List<StopAssignment_VersionStructure> stopAssignments = context.flexibleStopPlaces.stream().map(no.entur.uttu.model.FlexibleStopPlace::getRef)
+                                                                        .map(this::buildFlexibleStopAssignment).collect(Collectors.toList());
+
+        AtomicInteger passengerStopAssignmentOrder = new AtomicInteger(1);
+
+        stopAssignments.addAll(context.quayRefs.stream().map(quayRef -> mapPassengerStopAssignment(quayRef, passengerStopAssignmentOrder.getAndIncrement(), context)).collect(Collectors.toList()));
+
         List<Notice> notices = context.notices.stream().map(this::mapNotice).collect(Collectors.toList());
         List<DestinationDisplay> destinationDisplays = context.destinationDisplays.stream().map(this::mapDestinationDisplay).collect(Collectors.toList());
 
 
-        return objectFactory.createCommonServiceFrame(context, networks, routePoints, scheduledStopPoints, flexibleStopAssignments, notices, destinationDisplays);
+        return objectFactory.createCommonServiceFrame(context, networks, routePoints, scheduledStopPoints, stopAssignments, notices, destinationDisplays);
     }
 
 
@@ -118,5 +131,14 @@ public class NetexCommonFileProducer {
 
     public DestinationDisplay mapDestinationDisplay(no.entur.uttu.model.DestinationDisplay local) {
         return objectFactory.populateId(new DestinationDisplay(), local.getRef()).withFrontText(objectFactory.createMultilingualString(local.getFrontText()));
+    }
+
+
+    public PassengerStopAssignment mapPassengerStopAssignment(String quayRef, int order, NetexExportContext context) {
+        Ref scheduledStopPointRef = objectFactory.createScheduledStopPointRefFromQuayRef(quayRef, context);
+        return objectFactory.populateId(new PassengerStopAssignment(), scheduledStopPointRef).withOrder(BigInteger.valueOf(order))
+                       .withScheduledStopPointRef(objectFactory.wrapRefStructure(new ScheduledStopPointRefStructure(), scheduledStopPointRef, true))
+                       .withQuayRef(new QuayRefStructure().withRef(quayRef));
+
     }
 }

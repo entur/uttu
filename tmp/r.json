@@ -1,25 +1,29 @@
 {
   "flexibleLine": {
-    "name": "Test",
+    "name": "Test4",
     "publicCode": "pubCode",
     "description": "testDescNo3Updae",
     "operatorRef": "22",
     "flexibleLineType": "flexibleAreasOnly",
-    "networkRef": "RUT:Network:42047a9b-dcba-4287-b4ea-b041a4a0b035",
+    "networkRef": "RUT:Network:e77abc1d-36e1-4dc5-8d28-32a1317c49f4",
     "transportMode": "rail",
     "journeyPatterns": [
       {
         "directionType": "inbound",
         "pointsInSequence": [
           {
-            "flexibleStopPlaceRef": "RUT:FlexibleStopPlace:a6ffac2b-fc09-40e8-94e7-f68d77a7e53f"
+            "quayRef":"NSR:Quay:5228",
+            "forBoarding": true,
+            "destinationDisplay": {"frontText": "krokkus"}
           },
           {
-            "flexibleStopPlaceRef": "RUT:FlexibleStopPlace:a6ffac2b-fc09-40e8-94e7-f68d77a7e53f"
+            "quayRef":"NSR:Quay:3513",
+            "forAlighting": true
           }
         ],
         "serviceJourneys": [
           {
+            "notices": {"text": "koko"},
             "dayTypes": [
               {
                 "dayTypeAssignments": [
@@ -32,11 +36,12 @@
             "privateCode": "500",
             "pointsInSequence": [
               {
-                "earliestDepartureDayOffset": 2
+                "departureTime": "16:00"
               },
               {
-                "latestArrivalTime": "18:00"
+                "arrivalTime": "18:00"
               }
+
             ]
           }
         ]

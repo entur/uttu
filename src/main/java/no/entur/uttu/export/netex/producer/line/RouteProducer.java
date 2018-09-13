@@ -3,10 +3,12 @@ package no.entur.uttu.export.netex.producer.line;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.FlexibleLine;
-import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.JourneyPattern;
+import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import org.rutebanken.netex.model.DirectionTypeEnumeration;
+import org.rutebanken.netex.model.FlexibleLineRefStructure;
+import org.rutebanken.netex.model.LineRefStructure;
 import org.rutebanken.netex.model.PointOnRoute;
 import org.rutebanken.netex.model.PointsOnRoute_RelStructure;
 import org.rutebanken.netex.model.Route;
@@ -14,6 +16,7 @@ import org.rutebanken.netex.model.RoutePointRefStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,37 +28,53 @@ public class RouteProducer {
     private NetexObjectFactory objectFactory;
 
     public List<Route> produce(FlexibleLine line, NetexExportContext context) {
-        return line.getJourneyPatterns().stream().map(jp -> mapRoute(jp,context)).collect(Collectors.toList());
+        return line.getJourneyPatterns().stream().map(jp -> mapRoute(jp, context)).collect(Collectors.toList());
     }
 
     /**
      * Create Route from JourneyPattern.
-     *
+     * <p>
      * User first and last StopPointInJourneyPattern as RoutePoints
      */
     private Route mapRoute(JourneyPattern journeyPattern, NetexExportContext context) {
         StopPointInJourneyPattern firstStopPointInJP = journeyPattern.getPointsInSequence().get(0);
         StopPointInJourneyPattern lastStopPointInJP = journeyPattern.getPointsInSequence().get(journeyPattern.getPointsInSequence().size() - 1);
 
-        // TODO these might be refs to NSR stops in the future. how do we avoid collision for ScheduledStopPoints? prefix NSR scheduledStopPoints?
-        context.routePointRefs.add(firstStopPointInJP.getFlexibleStopPlace().getRef());
-        context.routePointRefs.add(lastStopPointInJP.getFlexibleStopPlace().getRef());
-
         PointsOnRoute_RelStructure pointsOnRoute_relStructure = new PointsOnRoute_RelStructure().withPointOnRoute().withPointOnRoute(
-                mapPointOnRoute(firstStopPointInJP, 1),
-                mapPointOnRoute(lastStopPointInJP, 2)
+                mapPointOnRoute(firstStopPointInJP, 1, context),
+                mapPointOnRoute(lastStopPointInJP, 2, context)
         );
 
+
+        String name = journeyPattern.getName();
+        if (name == null) {
+            // Generate name from points
+            // TODO? must look up quayREf from NSR?
+            name = journeyPattern.getFlexibleLine().getName();
+        }
+
+        JAXBElement<LineRefStructure> lineRef = objectFactory.wrapAsJAXBElement(
+                objectFactory.populateRefStructure(new FlexibleLineRefStructure(), journeyPattern.getFlexibleLine().getRef(), true));
+
         return objectFactory.populateId(new Route(), journeyPattern.getRef())
-                       .withName(objectFactory.createMultilingualString(journeyPattern.getName()))
+                       .withLineRef(lineRef)
+                       .withName(objectFactory.createMultilingualString(name))
                        .withDirectionType(objectFactory.mapEnum(journeyPattern.getDirectionType(), DirectionTypeEnumeration.class))
                        .withPointsInSequence(pointsOnRoute_relStructure);
     }
 
-    private PointOnRoute mapPointOnRoute(StopPointInJourneyPattern stopPointInJourneyPattern, int order) {
-        FlexibleStopPlace flexibleStopPlace = stopPointInJourneyPattern.getFlexibleStopPlace();
-        return objectFactory.populateId(new PointOnRoute(), flexibleStopPlace.getRef())
+    private PointOnRoute mapPointOnRoute(StopPointInJourneyPattern stopPoint, int order, NetexExportContext context) {
+        Ref ref;
+        if (stopPoint.getFlexibleStopPlace() != null) {
+            ref = stopPoint.getFlexibleStopPlace().getRef();
+        } else {
+            ref = objectFactory.createScheduledStopPointRefFromQuayRef(stopPoint.getQuayRef(), context);
+        }
+
+        context.routePointRefs.add(ref);
+
+        return objectFactory.populateId(new PointOnRoute(), ref)
                        .withOrder(BigInteger.valueOf(order))
-                       .withPointRef(objectFactory.wrapRefStructure(new RoutePointRefStructure(), flexibleStopPlace.getRef(), false));
+                       .withPointRef(objectFactory.wrapRefStructure(new RoutePointRefStructure(), ref, false));
     }
 }

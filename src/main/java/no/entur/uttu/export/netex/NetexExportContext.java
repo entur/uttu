@@ -30,6 +30,9 @@ public class NetexExportContext {
 
     public Set<FlexibleStopPlace> flexibleStopPlaces = new HashSet<>();
 
+    public Set<Ref> scheduledStopPointRefs = new HashSet<>();
+    public Set<String> quayRefs = new HashSet<>();
+
     public Set<Ref> routePointRefs = new HashSet<>();
 
     public Set<Long> operatorRefs = new HashSet<>();
@@ -72,5 +75,9 @@ public class NetexExportContext {
             }
         }
         return sequence.getAndIncrement();
+    }
+
+    public String getFileNamePrefix() {
+        return provider.getCodespace().getXmlns().toUpperCase();
     }
 }

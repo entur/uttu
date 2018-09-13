@@ -1,5 +1,6 @@
 package no.entur.uttu.repository.generic;
 
+import com.google.common.base.Preconditions;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.model.ProviderEntity;
 import org.slf4j.Logger;
@@ -30,13 +31,22 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
 
     @Override
     public void deleteAll() {
-        super.deleteAll();
+        entityManager.createQuery("delete " + findAllQuery).setParameter("providerCoder", Context.getVerifiedProviderCode()).executeUpdate();
     }
 
     @Override
     public List<T> findAll() {
         return entityManager.createQuery(findAllQuery,
                 entityInformation.getJavaType()).setParameter("providerCode", Context.getVerifiedProviderCode()).getResultList();
+    }
+
+    @Override
+    public T delete(String netexId) {
+        T entity = getOne(netexId);
+
+        Preconditions.checkArgument(entity != null, "%s not found", netexId);
+        super.delete(entity);
+        return entity;
     }
 
     @Override

@@ -107,6 +107,8 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
         Preconditions.checkArgument(getPointsInSequence().get(0).getDestinationDisplay() != null,
                 "%s is missing destinationDisplay for first pointsInSequence", identity());
 
+
+
         // TODO validate forBoarding on first / forAlighting on last? or just set?
 
         // TODO require at least one serviceJourney? not point, must still filter for validity

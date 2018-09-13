@@ -132,7 +132,7 @@ public class ProviderGraphQLSchema {
                                                                 .name("mutateCodeSpace")
                                                                 .description("Create new or update existing Codespace")
                                                                 .argument(GraphQLArgument.newArgument()
-                                                                                  .name("input")
+                                                                                  .name(FIELD_INPUT)
                                                                                   .type(codeSpaceInputType))
                                                                 .dataFetcher(codeSpaceUpdater))
                                                  .field(newFieldDefinition()
@@ -140,7 +140,7 @@ public class ProviderGraphQLSchema {
                                                                 .name("mutateProvider")
                                                                 .description("Create new or update existing Provider")
                                                                 .argument(GraphQLArgument.newArgument()
-                                                                                  .name("input")
+                                                                                  .name(FIELD_INPUT)
                                                                                   .type(providerInputType))
                                                                 .dataFetcher(providerUpdater))
 

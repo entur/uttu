@@ -25,7 +25,7 @@ public class CodeSpaceUpdater implements DataFetcher<Codespace> {
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
     public Codespace get(DataFetchingEnvironment env) {
 
-        ArgumentWrapper input = new ArgumentWrapper((Map) env.getArgument("input"));
+        ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
         Long id = input.get(FIELD_ID);
         Codespace entity;
         if (id == null) {

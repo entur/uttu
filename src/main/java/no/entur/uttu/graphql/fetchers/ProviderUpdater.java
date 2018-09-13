@@ -26,7 +26,7 @@ public class ProviderUpdater implements DataFetcher<Provider> {
     @Override
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
     public Provider get(DataFetchingEnvironment env) {
-        ArgumentWrapper input = new ArgumentWrapper(env.getArgument("input"));
+        ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
         Long id = input.get(FIELD_ID);
         Provider entity;
         if (id == null) {

@@ -10,12 +10,12 @@ import no.entur.uttu.model.StopPointInJourneyPattern;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
-import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.DestinationDisplayRefStructure;
 import org.rutebanken.netex.model.PointInLinkSequence_VersionedChildStructure;
 import org.rutebanken.netex.model.PointsInJourneyPattern_RelStructure;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
 import org.rutebanken.netex.model.PurchaseWhenEnumeration;
+import org.rutebanken.netex.model.RouteRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,11 @@ public class JourneyPatternProducer {
         List<PointInLinkSequence_VersionedChildStructure> netexStopPoints = local.getPointsInSequence().stream().map(spinjp -> mapStopPointInJourneyPattern(spinjp, context)).collect(Collectors.toList());
         PointsInJourneyPattern_RelStructure pointsInJourneyPattern_relStructure = new PointsInJourneyPattern_RelStructure().withPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern(netexStopPoints);
 
+        RouteRefStructure routeRef = objectFactory.populateRefStructure(new RouteRefStructure(), local.getRef(), true);
+
         return objectFactory.populate(new org.rutebanken.netex.model.JourneyPattern(), local)
+                       .withRouteRef(routeRef)
+                       .withName(objectFactory.createMultilingualString(local.getName()))
                        .withPointsInSequence(pointsInJourneyPattern_relStructure);
     }
 
@@ -51,12 +55,19 @@ public class JourneyPatternProducer {
             destinationDisplayRefStructure = objectFactory.populateRefStructure(new DestinationDisplayRefStructure(), local.getDestinationDisplay().getRef(), false);
         }
 
-        JAXBElement<ScheduledStopPointRefStructure> scheduledStopPointRefStructure = null;
+        // Create ref to scheduledStopPoint referring to either a flexible stop place or a NSR QuayRef
+        Ref stopRef;
         if (local.getFlexibleStopPlace() != null) {
             context.flexibleStopPlaces.add(local.getFlexibleStopPlace());
-            Ref scheduledStopPointRef = NetexIdProducer.replaceEntityName(local.getFlexibleStopPlace().getRef(), ScheduledStopPoint.class.getSimpleName());
-            scheduledStopPointRefStructure = objectFactory.wrapAsJAXBElement(new ScheduledStopPointRefStructure().withRef(scheduledStopPointRef.id));
+            stopRef = local.getFlexibleStopPlace().getRef();
+        } else {
+            context.quayRefs.add(local.getQuayRef());
+            stopRef = objectFactory.createScheduledStopPointRefFromQuayRef(local.getQuayRef(), context);
         }
+
+        Ref scheduledStopPointRef = NetexIdProducer.replaceEntityName(stopRef, ScheduledStopPoint.class.getSimpleName());
+        context.scheduledStopPointRefs.add(scheduledStopPointRef);
+        JAXBElement<ScheduledStopPointRefStructure> scheduledStopPointRefStructure = objectFactory.wrapAsJAXBElement(new ScheduledStopPointRefStructure().withRef(scheduledStopPointRef.id));
 
         return objectFactory.populateId(new org.rutebanken.netex.model.StopPointInJourneyPattern(), local.getRef())
                        .withBookingArrangements(mapBookingArrangement(local.getBookingArrangement()))

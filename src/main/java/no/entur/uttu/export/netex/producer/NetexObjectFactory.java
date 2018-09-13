@@ -26,8 +26,10 @@ import static no.entur.uttu.export.netex.producer.NetexIdProducer.getEntityName;
 @Component(value = "netexObjectFactory")
 public class NetexObjectFactory {
 
-    private static final String VERSION_ONE = "1";
-    private static final String DEFAULT_LANGUAGE = "no";
+    public static final String VERSION_ONE = "1";
+    public static final String DEFAULT_LANGUAGE = "no";
+    public static final String NSR_XMLNS = "NSR";
+    public static final String NSR_XMLNSURL = "http://www.rutebanken.org/ns/nsr";
 
     @Value("${netex.export.version:1.08:NO-NeTEx-networktimetable:1.3}")
     private String netexVersion;
@@ -94,9 +96,13 @@ public class NetexObjectFactory {
         ValidityConditions_RelStructure validityConditionsStruct = objectFactory.createValidityConditions_RelStructure()
                                                                            .withValidityConditionRefOrValidBetweenOrValidityCondition_(createAvailabilityCondition(availabilityPeriod, context));
 
-        Codespace providerCodespace = createCodespace(context.provider.getCodespace());
+        no.entur.uttu.model.Codespace localProviderCodespace = context.provider.getCodespace();
+        Codespace providerCodespace = createCodespace(localProviderCodespace.getXmlns(), localProviderCodespace.getXmlnsUrl());
+        Codespace nsrCodespace = createCodespace(NSR_XMLNS, NSR_XMLNSURL);
 
-        Codespaces_RelStructure codespaces = objectFactory.createCodespaces_RelStructure().withCodespaceRefOrCodespace(providerCodespace);
+        Codespaces_RelStructure codespaces = objectFactory.createCodespaces_RelStructure()
+                                                     .withCodespaceRefOrCodespace(providerCodespace)
+                                                     .withCodespaceRefOrCodespace(nsrCodespace);
 
         LocaleStructure localeStructure = objectFactory.createLocaleStructure()
                                                   .withTimeZone(exportTimeZone.getDefaultTimeZoneId().getId())
@@ -138,6 +144,9 @@ public class NetexObjectFactory {
     }
 
     public SiteFrame createSiteFrame(NetexExportContext context, Collection<FlexibleStopPlace> flexibleStopPlaces) {
+        if (CollectionUtils.isEmpty(flexibleStopPlaces)) {
+            return null;
+        }
         String frameId = NetexIdProducer.generateId(SiteFrame.class, context);
         return objectFactory.createSiteFrame()
                        .withFlexibleStopPlaces(new FlexibleStopPlacesInFrame_RelStructure().withFlexibleStopPlace(flexibleStopPlaces))
@@ -305,11 +314,12 @@ public class NetexObjectFactory {
         return Enum.valueOf(netexEnumClass, local.name());
     }
 
-    public Codespace createCodespace(no.entur.uttu.model.Codespace local) {
+
+    public Codespace createCodespace(String xmlns, String xmlnsUrl) {
         return objectFactory.createCodespace()
-                       .withId(local.getXmlns().toLowerCase())
-                       .withXmlns(local.getXmlns())
-                       .withXmlnsUrl(local.getXmlnsUrl());
+                       .withId(xmlns.toLowerCase())
+                       .withXmlns(xmlns)
+                       .withXmlnsUrl(xmlnsUrl);
     }
 
 
@@ -332,5 +342,7 @@ public class NetexObjectFactory {
         return objectFactory.createGroupOfLinesRefStructure().withRef(groupOfLinesId);
     }
 
-
+    public Ref createScheduledStopPointRefFromQuayRef(String quayRef, NetexExportContext context) {
+        return new Ref(NetexIdProducer.updateIdPrefix(quayRef, context), VERSION_ONE);
+    }
 }

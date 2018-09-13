@@ -1,6 +1,7 @@
 package no.entur.uttu.graphql;
 
 public class GraphQLNames {
+    public static final String FIELD_INPUT = "input";
     public static final String FIELD_ID = "id";
     public static final String FIELD_VERSION = "version";
     public static final String FIELD_NAME = "name";
@@ -51,6 +52,7 @@ public class GraphQLNames {
 
     // StopPointInJourneyPattern
     public static final String FIELD_FLEXIBLE_STOP_PLACE = "flexibleStopPlace";
+    public static final String FIELD_QUAY_REF = "quayRef";
     public static final String FIELD_FLEXIBLE_STOP_PLACE_REF = "flexibleStopPlaceRef";
     public static final String FIELD_DESTINATION_DISPLAY = "destinationDisplay";
     public static final String FIELD_FOR_ALIGHTING = "forAlighting";

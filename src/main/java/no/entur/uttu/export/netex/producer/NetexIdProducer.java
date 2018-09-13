@@ -26,7 +26,7 @@ public class NetexIdProducer {
     }
 
     public static <N extends VersionOfObjectRefStructure> String getReference(N netex, Ref ref) {
-        return getId(NetexIdProducer.getObjectIdPrefix(ref.id), getReferedEntityName(netex), NetexIdProducer.getObjectIdSuffix(ref.id));
+        return getId(NetexIdProducer.getObjectIdPrefix(ref.id), getReferredEntityName(netex), NetexIdProducer.getObjectIdSuffix(ref.id));
     }
 
     public static <N extends EntityInVersionStructure, L extends ProviderEntity> N copyIdAndVersion(N netex, L local) {
@@ -54,6 +54,10 @@ public class NetexIdProducer {
 
     private static String getIdPrefix(NetexExportContext context) {
         return context.provider.getCodespace().getXmlns();
+    }
+
+    public static String updateIdPrefix(String objectId, NetexExportContext context) {
+        return objectId.replaceFirst(getObjectIdPrefix(objectId), getIdPrefix(context));
     }
 
     public static String getObjectIdPrefix(String objectId) {
@@ -84,7 +88,7 @@ public class NetexIdProducer {
     /**
      * Returns the name of the Netex entity or the referred entity if Netex class is a refererence type.
      */
-    public static <E> String getReferedEntityName(E entity) {
+    public static <E> String getReferredEntityName(E entity) {
         String localPart = entity.getClass().getSimpleName();
 
         if (entity instanceof VersionOfObjectRefStructure) {

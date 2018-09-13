@@ -14,7 +14,8 @@ public enum VehicleModeEnumeration {
     CABLEWAY("cableway"),
     FUNICULAR("funicular"),
     LIFT("lift"),
-    OTHER("other");
+    // Not in norwegian profile OTHER("other")
+    ;
     private final String value;
 
     VehicleModeEnumeration(String v) {

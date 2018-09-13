@@ -27,6 +27,7 @@ import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
 import no.entur.uttu.model.VehicleModeEnumeration;
+import no.entur.uttu.repository.DataSpaceCleaner;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
@@ -71,6 +72,9 @@ public class FlexibleLinesGraphQLSchema {
 
     @Autowired
     private FlexibleLineRepository flexibleLineRepository;
+
+    @Autowired
+    private DataSpaceCleaner dataSpaceCleaner;
 
     public static GraphQLEnumType geometryTypeEnum = GraphQLEnumType.newEnum()
                                                              .name("GeometryType")
@@ -277,6 +281,7 @@ public class FlexibleLinesGraphQLSchema {
 
         stopPointInJourneyPatternObjectType = newObject(identifiedEntityObjectType).name("StopPointInJourneyPattern")
                                                       .field(newFieldDefinition().name(FIELD_FLEXIBLE_STOP_PLACE).type(flexibleStopPlaceObjectType))
+                                                      .field(newFieldDefinition().name(FIELD_QUAY_REF).type(GraphQLString))
                                                       .field(newFieldDefinition().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementObjectType))
                                                       .field(newFieldDefinition().name(FIELD_DESTINATION_DISPLAY).type(destinationDisplayObjectType))
                                                       .field(newFieldDefinition().name(FIELD_FOR_BOARDING).type(GraphQLBoolean))
@@ -422,8 +427,8 @@ public class FlexibleLinesGraphQLSchema {
 
 
         GraphQLInputObjectType noticeInputType = newInputObject(identifiedEntityInputType).name("NoticeInput")
-                                   .field(newInputObjectField().name(FIELD_TEXT).type(new GraphQLNonNull(GraphQLString)))
-                                   .build();
+                                                         .field(newInputObjectField().name(FIELD_TEXT).type(new GraphQLNonNull(GraphQLString)))
+                                                         .build();
 
         GraphQLInputObjectType timetabledPassingTimeInputType = newInputObject(groupOfEntitiesInputType).name("TimetabledPassingTimeInput")
                                                                         .field(newInputObjectField().name(FIELD_ARRIVAL_TIME).type(LocalTimeScalar.getLocalTimeScalar()))
@@ -449,7 +454,8 @@ public class FlexibleLinesGraphQLSchema {
 
 
         GraphQLInputObjectType stopPointInJourneyPatternInputType = newInputObject(groupOfEntitiesInputType).name("StopPointInJourneyPatternInput")
-                                                                            .field(newInputObjectField().name(FIELD_FLEXIBLE_STOP_PLACE_REF).type(new GraphQLNonNull(GraphQLString)))
+                                                                            .field(newInputObjectField().name(FIELD_FLEXIBLE_STOP_PLACE_REF).type(GraphQLString))
+                                                                            .field(newInputObjectField().name(FIELD_QUAY_REF).type(GraphQLString))
                                                                             .field(newInputObjectField().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementInputType))
                                                                             .field(newInputObjectField().name(FIELD_DESTINATION_DISPLAY).type(destinationDisplayInputType))
                                                                             .field(newInputObjectField().name(FIELD_FOR_BOARDING).type(GraphQLBoolean))
@@ -483,27 +489,60 @@ public class FlexibleLinesGraphQLSchema {
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(networkObjectType))
                                                                 .name("mutateNetwork")
-                                                                .description("Create new or update existing Network")
+                                                                .description("Create new or update existing network")
                                                                 .argument(GraphQLArgument.newArgument()
-                                                                                  .name("input")
+                                                                                  .name(FIELD_INPUT)
                                                                                   .type(networkInputType))
+                                                                .dataFetcher(networkUpdater))
+                                                 .field(newFieldDefinition()
+                                                                .type(new GraphQLNonNull(networkObjectType))
+                                                                .name("deleteNetwork")
+                                                                .description("Delete an existing network")
+                                                                .argument(GraphQLArgument.newArgument()
+                                                                                  .name(FIELD_ID)
+                                                                                  .type(new GraphQLNonNull(GraphQLString)))
                                                                 .dataFetcher(networkUpdater))
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(flexibleLineObjectType))
                                                                 .name("mutateFlexibleLine")
-                                                                .description("Create new or update existing FlexibleLine")
+                                                                .description("Create new or update existing flexibleLine")
                                                                 .argument(GraphQLArgument.newArgument()
-                                                                                  .name("input")
+                                                                                  .name(FIELD_INPUT)
                                                                                   .type(flexibleLineInputType))
+                                                                .dataFetcher(flexibleLineUpdater))
+                                                 .field(newFieldDefinition()
+                                                                .type(new GraphQLNonNull(flexibleLineObjectType))
+                                                                .name("deleteFlexibleLine")
+                                                                .description("Delete an existing flexibleLine")
+                                                                .argument(GraphQLArgument.newArgument()
+                                                                                  .name(FIELD_ID)
+                                                                                  .type(new GraphQLNonNull(GraphQLString)))
                                                                 .dataFetcher(flexibleLineUpdater))
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(flexibleStopPlaceObjectType))
                                                                 .name("mutateFlexibleStopPlace")
                                                                 .description("Create new or update existing flexibleStopPlace")
                                                                 .argument(GraphQLArgument.newArgument()
-                                                                                  .name("input")
+                                                                                  .name(FIELD_INPUT)
                                                                                   .type(flexibleStopPlaceInputType))
                                                                 .dataFetcher(flexibleStopPlaceUpdater))
+                                                 .field(newFieldDefinition()
+                                                                .type(new GraphQLNonNull(flexibleStopPlaceObjectType))
+                                                                .name("deleteFlexibleStopPlace")
+                                                                .description("Delete an existing flexibleStopPlace")
+                                                                .argument(GraphQLArgument.newArgument()
+                                                                                  .name(FIELD_ID)
+                                                                                  .type(new GraphQLNonNull(GraphQLString)))
+                                                                .dataFetcher(flexibleStopPlaceUpdater))
+
+                                                 .field(newFieldDefinition()
+                                                                .type(new GraphQLNonNull(GraphQLString))
+                                                                .name("cleanDataSpace")
+                                                                .description("Delete all data in provider data space!")
+                                                                .dataFetcher(env -> {
+                                                                    dataSpaceCleaner.clean();
+                                                                    return "OK";
+                                                                }))
 
                                                  .build();
 

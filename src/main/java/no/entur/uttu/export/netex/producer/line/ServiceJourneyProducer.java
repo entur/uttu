@@ -13,6 +13,7 @@ import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
+import org.rutebanken.netex.model.JourneyPatternRefStructure;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.PointInJourneyPatternRefStructure;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
@@ -49,11 +50,18 @@ public class ServiceJourneyProducer {
 
         DayTypeRefs_RelStructure dayTypeRefs_relStructure = new DayTypeRefs_RelStructure()
                                                                     .withDayTypeRef(local.getDayTypes().stream()
-                                                                                            .map(dt -> objectFactory.wrapRefStructure(new DayTypeRefStructure(), local.getRef(), false)).collect(Collectors.toList()));
+                                                                                            .map(dt -> objectFactory.wrapRefStructure(new DayTypeRefStructure(), dt.getRef(), false)).collect(Collectors.toList()));
         context.dayTypes.addAll(local.getDayTypes());
 
         List<org.rutebanken.netex.model.TimetabledPassingTime> timetabledPassingTimes = local.getPassingTimes().stream().map(ttpt -> mapTimetabledPassingTime(ttpt, context)).collect(Collectors.toList());
+
+
+        JAXBElement<JourneyPatternRefStructure> journeyPatternRef = objectFactory.wrapAsJAXBElement(
+                objectFactory.populateRefStructure(new JourneyPatternRefStructure(), local.getJourneyPattern().getRef(), true));
+
         return objectFactory.populate(new org.rutebanken.netex.model.ServiceJourney(), local)
+                       .withJourneyPatternRef(journeyPatternRef)
+                       .withName(objectFactory.createMultilingualString(local.getName()))
                        .withFlexibleServiceProperties(mapFlexibleServiceProperties(local.getBookingArrangement()))
                        .withPublicCode(local.getPublicCode())
                        .withOperatorRef(operatorRefStructure)
