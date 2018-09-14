@@ -9,11 +9,15 @@ import no.entur.uttu.model.FlexibleLine;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
+import org.rutebanken.netex.model.FlexibleLineRefStructure;
 import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
+import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
 import org.rutebanken.netex.model.PurchaseWhenEnumeration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 @Component
 public class FlexibleLineProducer {
@@ -27,7 +31,7 @@ public class FlexibleLineProducer {
     @Autowired
     private OrganisationProducer organisationProducer;
 
-    public org.rutebanken.netex.model.FlexibleLine produce(FlexibleLine local, NetexExportContext context) {
+    public org.rutebanken.netex.model.FlexibleLine produce(FlexibleLine local, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
         org.rutebanken.netex.model.FlexibleLine netex = new org.rutebanken.netex.model.FlexibleLine();
 
         netex.setName(objectFactory.createMultilingualString(local.getName()));
@@ -51,12 +55,10 @@ public class FlexibleLineProducer {
         netex.setRepresentedByGroupRef(objectFactory.createGroupOfLinesRefStructure(local.getNetwork().getNetexId()));
         context.networks.add(local.getNetwork());
 
-
-        // Notices TODO separate noticeproducer?
+        noticeAssignments.addAll(objectFactory.createNoticeAssignments(local, FlexibleLineRefStructure.class, local.getNotices(), context));
+        context.notices.addAll(local.getNotices());
 
         return NetexIdProducer.copyIdAndVersion(netex, local);
-
-
     }
 
     protected void mapBookingArrangements(BookingArrangement local, org.rutebanken.netex.model.FlexibleLine netex) {

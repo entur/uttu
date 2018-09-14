@@ -93,20 +93,23 @@ public class NetexLineFileProducer {
 
 
     private ServiceFrame createServiceFrame(FlexibleLine line, NetexExportContext context) {
-
-        org.rutebanken.netex.model.FlexibleLine netexLine = flexibleLineProducer.produce(line, context);
+        List<NoticeAssignment> noticeAssignments = new ArrayList<>();
+        org.rutebanken.netex.model.FlexibleLine netexLine = flexibleLineProducer.produce(line, noticeAssignments, context);
 
         List<Route> netexRoutes = routeProducer.produce(line, context);
         List<org.rutebanken.netex.model.JourneyPattern> netexJourneyPatterns = line.getJourneyPatterns().stream()
-                                                                                       .map(jp -> journeyPatternProducer.produce(jp, context)).collect(Collectors.toList());
-        List<NoticeAssignment> noticeAssignments = new ArrayList<>();
+                                                                                       .map(jp -> journeyPatternProducer.produce(jp, noticeAssignments, context)).collect(Collectors.toList());
+
         return objectFactory.createLineServiceFrame(context, netexLine, netexRoutes, netexJourneyPatterns, noticeAssignments);
     }
 
     private TimetableFrame createTimetableFrame(FlexibleLine line, NetexExportContext context) {
-        List<org.rutebanken.netex.model.ServiceJourney> netexServiceJourneys = line.getJourneyPatterns().stream().map(JourneyPattern::getServiceJourneys).flatMap(List::stream)
-                                                                                       .map(sj -> serviceJourneyProducer.produce(sj, context)).collect(Collectors.toList());
         List<NoticeAssignment> noticeAssignments = new ArrayList<>();
+        List<org.rutebanken.netex.model.ServiceJourney> netexServiceJourneys = line.getJourneyPatterns().stream().map(JourneyPattern::getServiceJourneys).flatMap(List::stream)
+                                                                                       .map(sj -> serviceJourneyProducer.produce(sj, noticeAssignments, context)).collect(Collectors.toList());
+
         return objectFactory.createTimetableFrame(context, netexServiceJourneys, noticeAssignments);
     }
+
+
 }

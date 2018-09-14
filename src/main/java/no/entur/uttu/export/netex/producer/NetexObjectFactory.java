@@ -3,7 +3,9 @@ package no.entur.uttu.export.netex.producer;
 
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;
+import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.NetexExportContext;
+import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.VehicleSubmodeEnumeration;
 import no.entur.uttu.util.DateUtils;
@@ -250,6 +252,33 @@ public class NetexObjectFactory {
                        .withVehicleJourneys(journeysInFrameRelStructure);
 
     }
+
+    public <T extends ProviderEntity, N extends VersionOfObjectRefStructure> List<NoticeAssignment> createNoticeAssignments(T entity,
+                                                                                                                                   Class<N> refStructureClass,
+                                                                                                                                   Collection<no.entur.uttu.model.Notice> notices,
+                                                                                                                                   NetexExportContext context) {
+        return notices.stream().map(notice -> createNoticeAssignment(entity, refStructureClass, notice, context)).collect(Collectors.toList());
+    }
+
+    public <T extends ProviderEntity, N extends VersionOfObjectRefStructure> NoticeAssignment createNoticeAssignment(T entity, Class<N> refStructureClass,
+                                                                                                                            no.entur.uttu.model.Notice notice,
+                                                                                                                            NetexExportContext context) {
+        String netexId = NetexIdProducer.generateId(NoticeAssignment.class, context);
+        N refStructure;
+        try {
+            refStructure = refStructureClass.newInstance();
+        } catch (Exception e) {
+            throw new ExportException("Failed to instantiate ref structure class (" + refStructureClass.getSimpleName() + "): " + e.getMessage(), e);
+        }
+
+        populateRefStructure(refStructure, entity.getRef(), true);
+
+        return objectFactory.createNoticeAssignment().withId(netexId).withVersion(VERSION_ONE)
+                       .withNoticeRef(populateRefStructure(new NoticeRefStructure(), notice.getRef(), false))
+                       .withNoticedObjectRef(refStructure);
+
+    }
+
 
     private NoticeAssignmentsInFrame_RelStructure wrapNoticeAssignments(Collection<NoticeAssignment> noticeAssignments) {
         if (CollectionUtils.isEmpty(noticeAssignments)) {

@@ -14,11 +14,14 @@ import org.rutebanken.netex.model.DayTypeRefStructure;
 import org.rutebanken.netex.model.DayTypeRefs_RelStructure;
 import org.rutebanken.netex.model.FlexibleServiceProperties;
 import org.rutebanken.netex.model.JourneyPatternRefStructure;
+import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.PointInJourneyPatternRefStructure;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
 import org.rutebanken.netex.model.PurchaseWhenEnumeration;
+import org.rutebanken.netex.model.ServiceJourneyRefStructure;
 import org.rutebanken.netex.model.StopPointInJourneyPatternRefStructure;
+import org.rutebanken.netex.model.TimetabledPassingTimeRefStructure;
 import org.rutebanken.netex.model.TimetabledPassingTimes_RelStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -41,7 +44,7 @@ public class ServiceJourneyProducer {
     @Autowired
     private OrganisationProducer organisationProducer;
 
-    public org.rutebanken.netex.model.ServiceJourney produce(ServiceJourney local, NetexExportContext context) {
+    public org.rutebanken.netex.model.ServiceJourney produce(ServiceJourney local, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
 
         OperatorRefStructure operatorRefStructure = null;
         if (local.getOperatorRef() != null) {
@@ -50,14 +53,22 @@ public class ServiceJourneyProducer {
 
         DayTypeRefs_RelStructure dayTypeRefs_relStructure = new DayTypeRefs_RelStructure()
                                                                     .withDayTypeRef(local.getDayTypes().stream()
-                                                                                            .map(dt -> objectFactory.wrapRefStructure(new DayTypeRefStructure(), dt.getRef(), false)).collect(Collectors.toList()));
+                                                                                            .map(dt -> objectFactory.wrapRefStructure(
+                                                                                                    new DayTypeRefStructure(), dt.getRef(), false))
+                                                                                            .collect(Collectors.toList()));
         context.dayTypes.addAll(local.getDayTypes());
 
-        List<org.rutebanken.netex.model.TimetabledPassingTime> timetabledPassingTimes = local.getPassingTimes().stream().map(ttpt -> mapTimetabledPassingTime(ttpt, context)).collect(Collectors.toList());
+        List<org.rutebanken.netex.model.TimetabledPassingTime> timetabledPassingTimes = local.getPassingTimes()
+                                                                                                .stream().map(ttpt -> mapTimetabledPassingTime(ttpt, noticeAssignments, context))
+                                                                                                .collect(Collectors.toList());
 
 
         JAXBElement<JourneyPatternRefStructure> journeyPatternRef = objectFactory.wrapAsJAXBElement(
                 objectFactory.populateRefStructure(new JourneyPatternRefStructure(), local.getJourneyPattern().getRef(), true));
+
+
+        noticeAssignments.addAll(objectFactory.createNoticeAssignments(local, ServiceJourneyRefStructure.class, local.getNotices(), context));
+        context.notices.addAll(local.getNotices());
 
         return objectFactory.populate(new org.rutebanken.netex.model.ServiceJourney(), local)
                        .withJourneyPatternRef(journeyPatternRef)
@@ -69,7 +80,7 @@ public class ServiceJourneyProducer {
                        .withDayTypes(dayTypeRefs_relStructure);
     }
 
-    private org.rutebanken.netex.model.TimetabledPassingTime mapTimetabledPassingTime(TimetabledPassingTime local, NetexExportContext context) {
+    private org.rutebanken.netex.model.TimetabledPassingTime mapTimetabledPassingTime(TimetabledPassingTime local, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
 
         JAXBElement<? extends PointInJourneyPatternRefStructure> pointInJourneyPatternRef = null;
         Optional<StopPointInJourneyPattern> stopPointInJourneyPattern = local.getServiceJourney().getJourneyPattern().getPointsInSequence().stream().filter(sp -> sp.getOrder() == local.getOrder()).findFirst();
@@ -83,6 +94,9 @@ public class ServiceJourneyProducer {
         BigInteger departureDayOffset = local.getDepartureDayOffset() != 0 ? BigInteger.valueOf(local.getDepartureDayOffset()) : null;
         BigInteger latestArrivalDayOffset = local.getLatestArrivalDayOffset() != 0 ? BigInteger.valueOf(local.getLatestArrivalDayOffset()) : null;
         BigInteger earliestDepartureDayOffset = local.getEarliestDepartureDayOffset() != 0 ? BigInteger.valueOf(local.getEarliestDepartureDayOffset()) : null;
+
+        noticeAssignments.addAll(objectFactory.createNoticeAssignments(local, TimetabledPassingTimeRefStructure.class, local.getNotices(), context));
+        context.notices.addAll(local.getNotices());
 
         return objectFactory.populateId(new org.rutebanken.netex.model.TimetabledPassingTime(), local.getRef())
                        .withPointInJourneyPatternRef(pointInJourneyPatternRef)

@@ -11,6 +11,8 @@ import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.DestinationDisplayRefStructure;
+import org.rutebanken.netex.model.JourneyPatternRefStructure;
+import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PointInLinkSequence_VersionedChildStructure;
 import org.rutebanken.netex.model.PointsInJourneyPattern_RelStructure;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
@@ -18,6 +20,7 @@ import org.rutebanken.netex.model.PurchaseWhenEnumeration;
 import org.rutebanken.netex.model.RouteRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
+import org.rutebanken.netex.model.StopPointInJourneyPatternRefStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -35,11 +38,14 @@ public class JourneyPatternProducer {
     @Autowired
     private ContactStructureProducer contactStructureProducer;
 
-    public org.rutebanken.netex.model.JourneyPattern produce(JourneyPattern local, NetexExportContext context) {
-        List<PointInLinkSequence_VersionedChildStructure> netexStopPoints = local.getPointsInSequence().stream().map(spinjp -> mapStopPointInJourneyPattern(spinjp, context)).collect(Collectors.toList());
+    public org.rutebanken.netex.model.JourneyPattern produce(JourneyPattern local, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
+        List<PointInLinkSequence_VersionedChildStructure> netexStopPoints = local.getPointsInSequence().stream().map(spinjp -> mapStopPointInJourneyPattern(spinjp, noticeAssignments, context)).collect(Collectors.toList());
         PointsInJourneyPattern_RelStructure pointsInJourneyPattern_relStructure = new PointsInJourneyPattern_RelStructure().withPointInJourneyPatternOrStopPointInJourneyPatternOrTimingPointInJourneyPattern(netexStopPoints);
 
         RouteRefStructure routeRef = objectFactory.populateRefStructure(new RouteRefStructure(), local.getRef(), true);
+
+        noticeAssignments.addAll(objectFactory.createNoticeAssignments(local, JourneyPatternRefStructure.class, local.getNotices(), context));
+        context.notices.addAll(local.getNotices());
 
         return objectFactory.populate(new org.rutebanken.netex.model.JourneyPattern(), local)
                        .withRouteRef(routeRef)
@@ -48,7 +54,9 @@ public class JourneyPatternProducer {
     }
 
 
-    private org.rutebanken.netex.model.StopPointInJourneyPattern mapStopPointInJourneyPattern(StopPointInJourneyPattern local, NetexExportContext context) {
+    private org.rutebanken.netex.model.StopPointInJourneyPattern mapStopPointInJourneyPattern(StopPointInJourneyPattern local,
+                                                                                                     List<NoticeAssignment> noticeAssignments,
+                                                                                                     NetexExportContext context) {
         DestinationDisplayRefStructure destinationDisplayRefStructure = null;
         if (local.getDestinationDisplay() != null) {
             context.destinationDisplays.add(local.getDestinationDisplay());
@@ -68,6 +76,9 @@ public class JourneyPatternProducer {
         Ref scheduledStopPointRef = NetexIdProducer.replaceEntityName(stopRef, ScheduledStopPoint.class.getSimpleName());
         context.scheduledStopPointRefs.add(scheduledStopPointRef);
         JAXBElement<ScheduledStopPointRefStructure> scheduledStopPointRefStructure = objectFactory.wrapAsJAXBElement(new ScheduledStopPointRefStructure().withRef(scheduledStopPointRef.id));
+
+        noticeAssignments.addAll(objectFactory.createNoticeAssignments(local, StopPointInJourneyPatternRefStructure.class, local.getNotices(), context));
+        context.notices.addAll(local.getNotices());
 
         return objectFactory.populateId(new org.rutebanken.netex.model.StopPointInJourneyPattern(), local.getRef())
                        .withBookingArrangements(mapBookingArrangement(local.getBookingArrangement()))
