@@ -32,11 +32,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -72,17 +75,19 @@ public class ServiceCalendarFrameProducer {
         for (DayType localDayType : context.dayTypes) {
             netexDayTypes.add(mapDayType(localDayType));
 
-            // TODO order daytypeassignments. inclusions before excl? chronologically? see chouette
-
-            for (no.entur.uttu.model.DayTypeAssignment localDayTypeAssignment : localDayType.getDayTypeAssignments()) {
+            List<no.entur.uttu.model.DayTypeAssignment> validDayTypeAssignments = localDayType.getDayTypeAssignments()
+                                                                                          .stream().filter(context::isValid).collect(Collectors.toList());
+            for (no.entur.uttu.model.DayTypeAssignment localDayTypeAssignment : validDayTypeAssignments) {
                 OperatingPeriod operatingPeriod = null;
-                if (localDayTypeAssignment.getOperatingPeriod() != null) {
+                if (context.isValid(localDayTypeAssignment.getOperatingPeriod())) {
                     operatingPeriod = mapOperatingPeriod(localDayTypeAssignment.getOperatingPeriod(), context);
                     netexOperatingPeriods.add(operatingPeriod);
                 }
                 netexDayTypeAssignments.add(mapDayTypeAssignment(localDayTypeAssignment, localDayType, operatingPeriod, dayTypeAssignmentOrder++, context));
             }
         }
+
+        Collections.sort(netexDayTypeAssignments, new DayTypeAssignmentExportComparator());
 
         return objectFactory.createServiceCalendarFrame(context, netexDayTypes, netexDayTypeAssignments, netexOperatingPeriods);
     }
@@ -104,7 +109,9 @@ public class ServiceCalendarFrameProducer {
         String id = NetexIdProducer.generateId(OperatingPeriod.class, context);
         return new org.rutebanken.netex.model.OperatingPeriod()
                        .withId(id)
-                       .withVersion(Objects.toString(local.getVersion()));
+                       .withVersion(Objects.toString(local.getVersion()))
+                       .withFromDate(local.getFromDate().atStartOfDay())
+                       .withToDate(local.getToDate().atStartOfDay());
     }
 
     private DayTypeAssignment mapDayTypeAssignment(no.entur.uttu.model.DayTypeAssignment local, DayType localDayType,
@@ -119,12 +126,38 @@ public class ServiceCalendarFrameProducer {
             operatingPeriodRefStructure = objectFactory.populateRefStructure(new OperatingPeriodRefStructure(), new Ref(operatingPeriod.getId(), operatingPeriod.getVersion()), true);
         }
 
+        JAXBElement<DayTypeRefStructure> dayTypeRefStructure = objectFactory.wrapRefStructure(new DayTypeRefStructure(), localDayType.getRef(), true);
         return new DayTypeAssignment()
                        .withId(id)
                        .withVersion(Objects.toString(local.getVersion()))
                        .withOrder(BigInteger.valueOf(index))
                        .withDate(date)
                        .withOperatingPeriodRef(operatingPeriodRefStructure)
-                       .withDayTypeRef(objectFactory.wrapRefStructure(new DayTypeRefStructure(), localDayType.getRef(), true));
+                       .withDayTypeRef(dayTypeRefStructure)
+                       .withIsAvailable(local.getAvailable());
     }
+
+
+    /**
+     * Sort DayTypeAssignments for export.
+     * <p>
+     * Most specific assignments (exclusions) should be sorted after less specific (inclusions) to allow readers to apply assignments sequencially.
+     */
+    public class DayTypeAssignmentExportComparator implements Comparator<DayTypeAssignment> {
+
+        @Override
+        public int compare(DayTypeAssignment o1, DayTypeAssignment o2) {
+
+            if (Boolean.FALSE.equals(o1.isIsAvailable())) {
+                if (!Boolean.FALSE.equals(o2.isIsAvailable())) {
+                    return 1;
+                }
+            } else if (Boolean.FALSE.equals(o2.isIsAvailable())) {
+                return -1;
+            }
+
+            return o1.getId().compareTo(o2.getId());
+        }
+    }
+
 }

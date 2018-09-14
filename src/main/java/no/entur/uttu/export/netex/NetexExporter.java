@@ -33,7 +33,9 @@ import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static javax.xml.bind.JAXBContext.newInstance;
 
@@ -68,16 +70,20 @@ public class NetexExporter {
         }
     }
 
-    public void exportDataSet(String providerCode, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
-        NetexExportContext exportContext = new NetexExportContext(getVerifiedProvider(providerCode));
+    public NetexExportContext exportDataSet(String providerCode, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
+        LocalDate fromDate = LocalDate.now().minusDays(3);
+        LocalDate toDate = LocalDate.now().plusDays(180);
+        NetexExportContext exportContext = new NetexExportContext(getVerifiedProvider(providerCode), fromDate, toDate);
 
-        List<FlexibleLine> flexibleLines = flexibleLineRepository.findAll();
+        List<FlexibleLine> flexibleLines = flexibleLineRepository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
 
-        Preconditions.checkArgument(!flexibleLines.isEmpty(), "No FlexibleLines defined");
+        Preconditions.checkArgument(!flexibleLines.isEmpty(), "No valid FlexibleLines in data space");
 
         flexibleLines.stream().map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
         marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
+
+        return exportContext;
     }
 
     private void marshalToFile(NetexFile lineFile, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {

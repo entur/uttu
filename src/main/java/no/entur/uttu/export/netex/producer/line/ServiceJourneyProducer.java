@@ -20,6 +20,7 @@ import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.export.netex.producer.common.OrganisationProducer;
 import no.entur.uttu.model.BookingArrangement;
+import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.model.TimetabledPassingTime;
@@ -66,12 +67,14 @@ public class ServiceJourneyProducer {
             operatorRefStructure = organisationProducer.produceOperatorRef(local.getOperatorRef(), false, context);
         }
 
+        List<DayType> validDayTypes=local.getDayTypes().stream().filter(context::isValid).collect(Collectors.toList());
+
         DayTypeRefs_RelStructure dayTypeRefs_relStructure = new DayTypeRefs_RelStructure()
-                                                                    .withDayTypeRef(local.getDayTypes().stream()
+                                                                    .withDayTypeRef(validDayTypes.stream()
                                                                                             .map(dt -> objectFactory.wrapRefStructure(
                                                                                                     new DayTypeRefStructure(), dt.getRef(), false))
                                                                                             .collect(Collectors.toList()));
-        context.dayTypes.addAll(local.getDayTypes());
+        context.dayTypes.addAll(validDayTypes);
 
         List<org.rutebanken.netex.model.TimetabledPassingTime> timetabledPassingTimes = local.getPassingTimes()
                                                                                                 .stream().map(ttpt -> mapTimetabledPassingTime(ttpt, noticeAssignments, context))

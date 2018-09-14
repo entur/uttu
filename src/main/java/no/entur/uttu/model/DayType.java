@@ -15,6 +15,9 @@
 
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+import org.springframework.util.CollectionUtils;
+
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -57,6 +60,11 @@ public class DayType extends ProviderEntity {
     public void checkPersistable() {
         super.checkPersistable();
         getDayTypeAssignments().stream().forEach(IdentifiedEntity::checkPersistable);
+
+        if (CollectionUtils.isEmpty(daysOfWeek)) {
+            boolean includedPeriod = getDayTypeAssignments().stream().anyMatch(dta -> !Boolean.FALSE.equals(dta.getAvailable()) && dta.getOperatingPeriod() != null);
+            Preconditions.checkArgument(!includedPeriod, "%s has included OperatingPeriod without setting daysOfWeek", identity());
+        }
     }
 
     @Override

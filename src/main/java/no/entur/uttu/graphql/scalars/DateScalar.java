@@ -47,7 +47,7 @@ public class DateScalar {
         return new GraphQLScalarType("Date", DESCRIPTION, new Coercing() {
             @Override
             public String serialize(Object input) {
-                if (input instanceof Instant) {
+                if (input instanceof LocalDate) {
                     return (((LocalDate) input)).format(FORMATTER);
                 }
                 return null;

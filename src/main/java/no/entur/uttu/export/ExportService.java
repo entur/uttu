@@ -19,7 +19,9 @@ import no.entur.uttu.config.Context;
 import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.DataSetProducer;
+import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexExporter;
+import no.entur.uttu.util.FileNameUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,12 +45,12 @@ public class ExportService {
 
             String providerCode = Context.getVerifiedProviderCode();
             boolean validateAgainstSchema = false; // TODO
-            exporter.exportDataSet(providerCode, dataSetProducer, validateAgainstSchema);
+            NetexExportContext context = exporter.exportDataSet(providerCode, dataSetProducer, validateAgainstSchema);
 
             InputStream dataSetStream = dataSetProducer.buildDataSet();
 
 // TODO
-            String blobName = "outbound/netex/rb_" + providerCode.toLowerCase() + "_flexible_lines.zip";
+            String blobName = "outbound/netex/" + FileNameUtil.createDataSetFilename(context.provider);
             blobStoreService.uploadBlob(blobName, true, dataSetStream);
 
 

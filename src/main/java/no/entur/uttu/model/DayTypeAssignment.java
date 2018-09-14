@@ -64,7 +64,7 @@ public class DayTypeAssignment extends IdentifiedEntity {
     public void checkPersistable() {
         super.checkPersistable();
 
-        Preconditions.checkArgument(date != null || operatingPeriod != null, "One of date or operationPeriod must be set for DayTypeAssignment");
+        Preconditions.checkArgument(date != null ^ operatingPeriod != null, "Exactly one of date or operationPeriod must be set for DayTypeAssignment");
 
         if (operatingPeriod != null) {
             operatingPeriod.checkPersistable();
@@ -74,15 +74,15 @@ public class DayTypeAssignment extends IdentifiedEntity {
 
 
     public boolean isValid(LocalDate from, LocalDate to) {
-        boolean valid = false;
+        boolean dateValid = false;
         if (date != null) {
-            valid &= !(from.isAfter(date) || to.isBefore(date));
+            dateValid = !(from.isAfter(date) || to.isBefore(date));
         }
-
+        boolean operatingPeriodValid = false;
         if (operatingPeriod != null) {
-            valid = operatingPeriod.isValid(from, to);
+            operatingPeriodValid = operatingPeriod.isValid(from, to);
         }
 
-        return valid && super.isValid(from, to);
+        return (dateValid || operatingPeriodValid) && super.isValid(from, to);
     }
 }

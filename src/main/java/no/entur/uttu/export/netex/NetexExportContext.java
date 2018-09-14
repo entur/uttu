@@ -21,12 +21,14 @@ import no.entur.uttu.export.model.ExportError;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DestinationDisplay;
 import no.entur.uttu.model.FlexibleStopPlace;
+import no.entur.uttu.model.IdentifiedEntity;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.Notice;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.Ref;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -38,6 +40,10 @@ public class NetexExportContext {
     private AvailabilityPeriod availabilityPeriod;
 
     public Provider provider;
+
+    private LocalDate fromDate;
+
+    private LocalDate toDate;
 
     public Instant publicationTimestamp;
 
@@ -62,10 +68,12 @@ public class NetexExportContext {
 
     private Map<String, AtomicLong> idSequences = new HashMap<>();
 
-    public NetexExportContext(Provider provider) {
+
+    public NetexExportContext(Provider provider, LocalDate fromDate, LocalDate toDate) {
         this.provider = provider;
         this.publicationTimestamp = Instant.now();
-
+        this.fromDate = fromDate;
+        this.toDate = toDate;
     }
 
     public void updateAvailabilityPeriod(AvailabilityPeriod newPeriod) {
@@ -92,7 +100,10 @@ public class NetexExportContext {
         return sequence.getAndIncrement();
     }
 
-    public String getFileNamePrefix() {
-        return provider.getCodespace().getXmlns().toUpperCase();
+    public <I extends IdentifiedEntity> boolean isValid(I entity) {
+        if (entity == null) {
+            return false;
+        }
+        return entity.isValid(fromDate, toDate);
     }
 }

@@ -32,11 +32,13 @@ import org.springframework.util.CollectionUtils;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
+import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import static no.entur.uttu.export.netex.producer.NetexIdProducer.getEntityName;
@@ -239,11 +241,18 @@ public class NetexObjectFactory {
             journeyPatternsInFrame.getJourneyPattern_OrJourneyPatternView().add(journeyPatternElement);
         }
 
+        orderAssignments(noticeAssignments);
+
         return createServiceFrame(context)
                        .withRoutes(routesInFrame)
                        .withLines(linesInFrame)
                        .withJourneyPatterns(journeyPatternsInFrame)
                        .withNoticeAssignments(wrapNoticeAssignments(noticeAssignments));
+    }
+
+    private void orderAssignments(Collection<? extends Assignment_VersionStructure_> assignments) {
+        AtomicInteger cnt = new AtomicInteger(1);
+        assignments.stream().forEach(a -> a.setOrder(BigInteger.valueOf(cnt.incrementAndGet())));
     }
 
     private ServiceFrame createServiceFrame(NetexExportContext context) {
@@ -258,6 +267,8 @@ public class NetexObjectFactory {
     public TimetableFrame createTimetableFrame(NetexExportContext context, Collection<ServiceJourney> serviceJourneys, Collection<NoticeAssignment> noticeAssignments) {
         JourneysInFrame_RelStructure journeysInFrameRelStructure = objectFactory.createJourneysInFrame_RelStructure();
         journeysInFrameRelStructure.getDatedServiceJourneyOrDeadRunOrServiceJourney().addAll(serviceJourneys);
+
+        orderAssignments(noticeAssignments);
 
         String timetableFrameId = NetexIdProducer.generateId(TimetableFrame.class, context);
         return objectFactory.createTimetableFrame()

@@ -20,6 +20,7 @@ import no.entur.uttu.export.netex.NetexFile;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Ref;
+import no.entur.uttu.util.FileNameUtil;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.CompositeFrame;
 import org.rutebanken.netex.model.DestinationDisplay;
@@ -83,7 +84,7 @@ public class NetexCommonFileProducer {
 
         JAXBElement<PublicationDeliveryStructure> publicationDelivery = objectFactory.createPublicationDelivery(context, compositeFrame);
 
-        String fileName = "_" + context.getFileNamePrefix() + COMMON_FILE_NAME_SUFFIX;
+        String fileName = FileNameUtil.createCommonFileFilename(context.provider);
 
         return new NetexFile(fileName, publicationDelivery);
     }

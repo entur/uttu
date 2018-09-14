@@ -18,12 +18,14 @@ package no.entur.uttu.export.netex.producer.line;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexFile;
+import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.ServiceJourney;
+import no.entur.uttu.util.FileNameUtil;
 import org.rutebanken.netex.model.CompositeFrame;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
@@ -58,7 +60,7 @@ public class NetexLineFileProducer {
 
     public NetexFile toNetexFile(FlexibleLine line, NetexExportContext context) {
 
-        String fileName = createFileName(line);
+        String fileName = FileNameUtil.createLineFilename(line);
 
         ServiceFrame serviceFrame = createServiceFrame(line, context);
         TimetableFrame timetableFrame = createTimetableFrame(line, context);
@@ -72,12 +74,10 @@ public class NetexLineFileProducer {
         return new NetexFile(fileName, publicationDelivery);
     }
 
-    protected String createFileName(FlexibleLine line) {
-        return line.getPublicCode() + "_" + line.getName() + ".xml";
-    }
 
     private AvailabilityPeriod calculateAvailabilityPeriod(FlexibleLine line) {
         AvailabilityPeriod period = null;
+
         List<DayTypeAssignment> allDayTypeAssignmentsForLine = line.getJourneyPatterns().stream()
                                                                        .map(JourneyPattern::getServiceJourneys).flatMap(List::stream)
                                                                        .map(ServiceJourney::getDayTypes).flatMap(List::stream)
@@ -112,7 +112,7 @@ public class NetexLineFileProducer {
         org.rutebanken.netex.model.FlexibleLine netexLine = flexibleLineProducer.produce(line, noticeAssignments, context);
 
         List<Route> netexRoutes = routeProducer.produce(line, context);
-        List<org.rutebanken.netex.model.JourneyPattern> netexJourneyPatterns = line.getJourneyPatterns().stream()
+        List<org.rutebanken.netex.model.JourneyPattern> netexJourneyPatterns = line.getJourneyPatterns().stream().filter(context::isValid)
                                                                                        .map(jp -> journeyPatternProducer.produce(jp, noticeAssignments, context)).collect(Collectors.toList());
 
         return objectFactory.createLineServiceFrame(context, netexLine, netexRoutes, netexJourneyPatterns, noticeAssignments);
@@ -120,7 +120,7 @@ public class NetexLineFileProducer {
 
     private TimetableFrame createTimetableFrame(FlexibleLine line, NetexExportContext context) {
         List<NoticeAssignment> noticeAssignments = new ArrayList<>();
-        List<org.rutebanken.netex.model.ServiceJourney> netexServiceJourneys = line.getJourneyPatterns().stream().map(JourneyPattern::getServiceJourneys).flatMap(List::stream)
+        List<org.rutebanken.netex.model.ServiceJourney> netexServiceJourneys = line.getJourneyPatterns().stream().map(JourneyPattern::getServiceJourneys).flatMap(List::stream).filter(context::isValid)
                                                                                        .map(sj -> serviceJourneyProducer.produce(sj, noticeAssignments, context)).collect(Collectors.toList());
 
         return objectFactory.createTimetableFrame(context, netexServiceJourneys, noticeAssignments);
