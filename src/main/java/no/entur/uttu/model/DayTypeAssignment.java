@@ -1,10 +1,11 @@
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
 import java.time.LocalDate;
-
 
 
 @Entity
@@ -41,5 +42,32 @@ public class DayTypeAssignment extends IdentifiedEntity {
 
     public void setOperatingPeriod(OperatingPeriod operatingPeriod) {
         this.operatingPeriod = operatingPeriod;
+    }
+
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+
+        Preconditions.checkArgument(date != null || operatingPeriod != null, "One of date or operationPeriod must be set for DayTypeAssignment");
+
+        if (operatingPeriod != null) {
+            operatingPeriod.checkPersistable();
+        }
+
+    }
+
+
+    public boolean isValid(LocalDate from, LocalDate to) {
+        boolean valid = false;
+        if (date != null) {
+            valid &= !(from.isAfter(date) || to.isBefore(date));
+        }
+
+        if (operatingPeriod != null) {
+            valid = operatingPeriod.isValid(from, to);
+        }
+
+        return valid && super.isValid(from, to);
     }
 }

@@ -1,7 +1,6 @@
 package no.entur.uttu.model;
 
 import com.google.common.base.Preconditions;
-import org.springframework.util.ObjectUtils;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -14,6 +13,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -125,6 +125,11 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
 
     public void setTransportSubmode(VehicleSubmodeEnumeration transportSubmode) {
         this.transportSubmode = transportSubmode;
+    }
+
+    @Override
+    public boolean isValid(LocalDate from, LocalDate to) {
+        return super.isValid(from, to) && getJourneyPatterns().stream().anyMatch(e -> e.isValid(from, to));
     }
 
     @Override

@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,14 +112,10 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
     }
 
 
-    public boolean isValid(Instant from, Instant to) {
-        if (CollectionUtils.isEmpty(dayTypes)) {
-            return false;
-        }
-        // TODO
-        return true;
+    @Override
+    public boolean isValid(LocalDate from, LocalDate to) {
+        return super.isValid(from, to) && getDayTypes().stream().anyMatch(e -> e.isValid(from, to));
     }
-
 
     @Override
     public void checkPersistable() {

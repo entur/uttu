@@ -12,6 +12,7 @@ import javax.persistence.PreUpdate;
 import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.time.LocalDate;
 
 @MappedSuperclass
 public abstract class IdentifiedEntity {
@@ -101,4 +102,20 @@ public abstract class IdentifiedEntity {
         }
     }
 
+    /**
+     * Check whether entity is complete and consistent.
+     * <p>
+     * throws exception if not in a persistable state.
+     */
+    public void checkPersistable() {
+    }
+
+    /**
+     * Check whether entity is valid within a period.
+     *
+     * @return if entity is valid for at least a part of the period.
+     */
+    public boolean isValid(LocalDate from, LocalDate to) {
+        return true;
+    }
 }

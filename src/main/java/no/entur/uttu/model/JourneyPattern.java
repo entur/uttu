@@ -13,6 +13,7 @@ import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -91,6 +92,10 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
         }
     }
 
+    @Override
+    public boolean isValid(LocalDate from, LocalDate to) {
+        return super.isValid(from, to) && getServiceJourneys().stream().anyMatch(e -> e.isValid(from, to));
+    }
 
     @Override
     public void checkPersistable() {

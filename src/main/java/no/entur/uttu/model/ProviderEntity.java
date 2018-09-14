@@ -83,8 +83,6 @@ public abstract class ProviderEntity extends IdentifiedEntity {
         return result;
     }
 
-    public void checkPersistable() {}
-
 
     protected String identity() {
         return MessageFormat.format("{0}[{1}]", getClass().getSimpleName(), getNetexId());

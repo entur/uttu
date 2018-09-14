@@ -7,6 +7,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -34,5 +35,17 @@ public class DayType extends ProviderEntity {
 
     public void setDayTypeAssignments(List<DayTypeAssignment> dayTypeAssignments) {
         this.dayTypeAssignments = dayTypeAssignments;
+    }
+
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+        getDayTypeAssignments().stream().forEach(IdentifiedEntity::checkPersistable);
+    }
+
+    @Override
+    public boolean isValid(LocalDate from, LocalDate to) {
+        return super.isValid(from, to) && getDayTypeAssignments().stream().anyMatch(e -> e.isValid(from, to));
     }
 }
