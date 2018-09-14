@@ -28,4 +28,11 @@ public class ExportError {
     public String getMessage() {
         return message;
     }
+
+    @Override
+    public String toString() {
+        return "ExportError{" +
+                       "message='" + message + '\'' +
+                       '}';
+    }
 }

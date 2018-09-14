@@ -15,6 +15,7 @@
 
 package no.entur.uttu.export.netex.producer.line;
 
+import no.entur.uttu.export.model.ExportError;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
@@ -22,6 +23,7 @@ import no.entur.uttu.model.BookingArrangement;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
+import no.entur.uttu.stopplace.StopPlaceRegistry;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
@@ -52,6 +54,9 @@ public class JourneyPatternProducer {
 
     @Autowired
     private ContactStructureProducer contactStructureProducer;
+
+    @Autowired
+    private StopPlaceRegistry stopPlaceRegistry;
 
     public org.rutebanken.netex.model.JourneyPattern produce(JourneyPattern local, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
         List<PointInLinkSequence_VersionedChildStructure> netexStopPoints = local.getPointsInSequence().stream().map(spinjp -> mapStopPointInJourneyPattern(spinjp, noticeAssignments, context)).collect(Collectors.toList());
@@ -84,6 +89,10 @@ public class JourneyPatternProducer {
             context.flexibleStopPlaces.add(local.getFlexibleStopPlace());
             stopRef = local.getFlexibleStopPlace().getRef();
         } else {
+            if (!stopPlaceRegistry.isValidQuayRef(local.getQuayRef())) {
+                context.errors.add(new ExportError("{0} is not a valid quayRef", local.getQuayRef()));
+            }
+
             context.quayRefs.add(local.getQuayRef());
             stopRef = objectFactory.createScheduledStopPointRefFromQuayRef(local.getQuayRef(), context);
         }
