@@ -33,6 +33,8 @@ public class GraphQLNames {
     public static final String FIELD_POINTS_IN_SEQUENCE = "pointsInSequence";
     public static final String FIELD_BOOKING_ARRANGEMENT = "bookingArrangement";
     public static final String FIELD_NOTICES = "notices";
+    public static final String FIELD_FROM_DATE = "fromDate";
+    public static final String FIELD_TO_DATE = "toDate";
 
     // CodeSpace
     public static final String FIELD_XMLNS = "xmlns";
@@ -112,7 +114,9 @@ public class GraphQLNames {
     public static final String FIELD_OPERATING_PERIOD = "operatingPeriod";
     public static final String FIELD_IS_AVAILABLE = "isAvailable";
 
-    // OperatingPeriod
-    public static final String FIELD_FROM_DATE = "fromDate";
-    public static final String FIELD_TO_DATE = "toDate";
+    // Export
+    public static final String FIELD_EXPORT_STATUS = "exportStatus";
+    public static final String FIELD_MESSAGES = "messages";
+    public static final String FIELD_MESSAGE = "message";
+    public static final String FIELD_SEVERITY = "severity";
 }

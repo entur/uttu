@@ -15,22 +15,25 @@
 
 package no.entur.uttu.export;
 
-import no.entur.uttu.config.Context;
 import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.DataSetProducer;
-import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexExporter;
+import no.entur.uttu.model.job.Export;
 import no.entur.uttu.util.FileNameUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 
 @Component
 public class ExportService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private NetexExporter exporter;
@@ -40,26 +43,44 @@ public class ExportService {
     @Value("${export.working.folder:tmp}")
     private String workingFolder;
 
-    public void exportDataSet() {
+    @Value("${export.days.historic.default:2}")
+    private int historicDaysDefault;
+
+    @Value("${export.days.future.default:185}")
+    private int futureDaysDefault;
+
+    public void exportDataSet(Export export) {
+        setExportDefaults(export);
+
+        logger.info("Starting {}", export);
+
         try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
 
-            String providerCode = Context.getVerifiedProviderCode();
-            boolean validateAgainstSchema = false; // TODO
-            NetexExportContext context = exporter.exportDataSet(providerCode, dataSetProducer, validateAgainstSchema);
+            boolean validateAgainstSchema = true;
+            exporter.exportDataSet(export, dataSetProducer, validateAgainstSchema);
 
             InputStream dataSetStream = dataSetProducer.buildDataSet();
 
-// TODO
-            String blobName = "outbound/netex/" + FileNameUtil.createDataSetFilename(context.provider);
+
+            String blobName = "outbound/netex/" + FileNameUtil.createDataSetFilename(export.getProvider());
             blobStoreService.uploadBlob(blobName, true, dataSetStream);
 
-
-            // TODO remove me, tmp doing validation after export in order to see results
-            exporter.exportDataSet(providerCode, dataSetProducer, true);
-
-
+            export.markAsFinished();
         } catch (IOException ioe) {
             throw new ExportException("Export failed with exception: " + ioe.getMessage(), ioe);
         }
+
+        logger.info("Completed {}", export);
+    }
+
+    private void setExportDefaults(Export export) {
+        LocalDate today = LocalDate.now();
+        if (export.getFromDate() == null) {
+            export.setFromDate(today.minusDays(historicDaysDefault));
+        }
+        if (export.getToDate() == null) {
+            export.setToDate(today.plusDays(futureDaysDefault));
+        }
+        export.checkPersistable();
     }
 }

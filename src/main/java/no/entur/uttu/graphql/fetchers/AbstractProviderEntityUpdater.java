@@ -26,9 +26,9 @@ import static no.entur.uttu.graphql.GraphQLNames.FIELD_INPUT;
 
 public abstract class AbstractProviderEntityUpdater<T extends ProviderEntity> implements DataFetcher<T> {
 
-    private AbstractProviderEntityMapper<T> mapper;
+    protected AbstractProviderEntityMapper<T> mapper;
 
-    private ProviderEntityRepository<T> repository;
+    protected ProviderEntityRepository<T> repository;
 
     public AbstractProviderEntityUpdater(AbstractProviderEntityMapper<T> mapper, ProviderEntityRepository<T> repository) {
         this.mapper = mapper;
@@ -44,11 +44,11 @@ public abstract class AbstractProviderEntityUpdater<T extends ProviderEntity> im
         }
     }
 
-    private T deleteEntity(DataFetchingEnvironment env) {
+    protected T deleteEntity(DataFetchingEnvironment env) {
         return repository.delete(env.getArgument(FIELD_ID));
     }
 
-    private T saveEntity(DataFetchingEnvironment env) {
+    protected T saveEntity(DataFetchingEnvironment env) {
         T entity = mapper.map(env.getArgument(FIELD_INPUT));
         entity.checkPersistable();
         return repository.save(entity);

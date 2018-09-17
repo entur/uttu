@@ -13,24 +13,13 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.repository.generic;
+package no.entur.uttu.repository;
 
-import no.entur.uttu.model.ProviderEntity;
-import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.repository.Repository;
+import no.entur.uttu.model.job.Export;
+import no.entur.uttu.repository.generic.ProviderEntityRepository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
-@NoRepositoryBean
-public interface ProviderEntityRepository<T extends ProviderEntity> extends Repository<T, Long> {
-
-    List<T> findAll();
-
-    T getOne(String netexId);
-
-    <S extends T> S save(S entity);
-
-    T delete(String netexId);
-
-    void deleteAll();
+@Transactional(propagation = Propagation.REQUIRES_NEW)
+public interface ExportRepository extends ProviderEntityRepository<Export> {
 }

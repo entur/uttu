@@ -16,7 +16,6 @@
 package no.entur.uttu.export.netex;
 
 import org.junit.Assert;
-import org.junit.Test;
 
 public class NetexLineFileProducerTest {
 

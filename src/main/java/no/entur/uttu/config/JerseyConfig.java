@@ -18,7 +18,6 @@ package no.entur.uttu.config;
 import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
-import no.entur.uttu.export.ExportResource;
 import no.entur.uttu.graphql.resource.FlexibleLinesGraphQLResource;
 import no.entur.uttu.graphql.resource.ProviderGraphQLResource;
 import no.entur.uttu.health.rest.HealthResource;
@@ -60,7 +59,6 @@ public class JerseyConfig {
 
             register(FlexibleLinesGraphQLResource.class);
             register(ProviderGraphQLResource.class);
-            register(ExportResource.class);
         }
 
     }

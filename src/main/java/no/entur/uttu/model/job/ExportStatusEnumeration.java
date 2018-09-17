@@ -13,26 +13,22 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.export.model;
+package no.entur.uttu.model.job;
 
-import java.text.MessageFormat;
+public enum ExportStatusEnumeration {
 
-public class ExportError {
+    IN_PROGRESS("inProgress"),
+    FAILED("failed"),
+    SUCCESS("success");
 
-    private String message;
+    private final String value;
 
-    public ExportError(String message, Object... params) {
-        this.message = MessageFormat.format(message, params);
+    ExportStatusEnumeration(String v) {
+        this.value = v;
     }
 
-    public String getMessage() {
-        return message;
+    public String value() {
+        return this.value;
     }
 
-    @Override
-    public String toString() {
-        return "ExportError{" +
-                       "message='" + message + '\'' +
-                       '}';
-    }
 }

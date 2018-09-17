@@ -102,4 +102,11 @@ public abstract class ProviderEntity extends IdentifiedEntity {
     protected String identity() {
         return MessageFormat.format("{0}[{1}]", getClass().getSimpleName(), getNetexId());
     }
+
+    @Override
+    public String toString() {
+        return super.toString() +
+                       ", provider=" + provider +
+                       ", netexId='" + netexId + '\'';
+    }
 }

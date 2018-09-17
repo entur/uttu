@@ -41,8 +41,12 @@ import no.entur.uttu.model.Network;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
+import no.entur.uttu.model.job.Export;
+import no.entur.uttu.model.job.ExportStatusEnumeration;
+import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.profile.Profile;
 import no.entur.uttu.repository.DataSpaceCleaner;
+import no.entur.uttu.repository.ExportRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
@@ -71,6 +75,9 @@ public class FlexibleLinesGraphQLSchema {
     private DateTimeScalar dateTimeScalar;
 
     @Autowired
+    private DataFetcher<Export> exportUpdater;
+
+    @Autowired
     private DataFetcher<FlexibleStopPlace> flexibleStopPlaceUpdater;
 
     @Autowired
@@ -84,6 +91,9 @@ public class FlexibleLinesGraphQLSchema {
 
     @Autowired
     private NetworkRepository networkRepository;
+
+    @Autowired
+    private ExportRepository exportRepository;
 
     @Autowired
     private FlexibleLineRepository flexibleLineRepository;
@@ -116,6 +126,9 @@ public class FlexibleLinesGraphQLSchema {
                                                        .build();
 
     private GraphQLEnumType dayOfWeekEnum = createEnum("DayOfWeekEnumeration", DayOfWeek.values(), (t -> t.name().toLowerCase()));
+    private GraphQLEnumType exportStatusEnum = createEnum("ExportStatusEnumeration", ExportStatusEnumeration.values(), (t -> t.name().toLowerCase()));
+    private GraphQLEnumType severityEnum = createEnum("SeverityEnumeration", SeverityEnumeration.values(), (t -> t.name().toLowerCase()));
+
     private GraphQLEnumType vehicleModeEnum;
     private GraphQLEnumType vehicleSubmodeEnum;
     private GraphQLEnumType flexibleLineTypeEnum = createEnum("FlexibleLineTypeEnumeration", FlexibleLineTypeEnumeration.values(), (t -> t.value()));
@@ -147,6 +160,8 @@ public class FlexibleLinesGraphQLSchema {
 
     private GraphQLObjectType bookingArrangementObjectType;
     private GraphQLObjectType contactObjectType;
+    private GraphQLObjectType exportObjectType;
+    private GraphQLObjectType exportMessageObjectType;
     public GraphQLSchema graphQLSchema;
 
 
@@ -337,9 +352,25 @@ public class FlexibleLinesGraphQLSchema {
                                          .build();
 
 
+        exportMessageObjectType = newObject().name("Message")
+                                          .field(newFieldDefinition().name(FIELD_SEVERITY).type(new GraphQLNonNull(severityEnum)))
+                                          .field(newFieldDefinition().name(FIELD_MESSAGE).type(new GraphQLNonNull(GraphQLString)))
+                                          .build();
+
+        exportObjectType = newObject(identifiedEntityObjectType).name("Export")
+                                   .field(newFieldDefinition().name(FIELD_NAME).type(GraphQLString))
+                                   .field(newFieldDefinition().name(FIELD_EXPORT_STATUS).type(exportStatusEnum))
+                                   .field(newFieldDefinition().name(FIELD_FROM_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                                   .field(newFieldDefinition().name(FIELD_TO_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                                   .field(newFieldDefinition().name(FIELD_MESSAGES).type(new GraphQLList(exportMessageObjectType)))
+                                   .build();
+
     }
 
     private GraphQLObjectType createQueryObject() {
+        GraphQLArgument idArgument = GraphQLArgument.newArgument().name(FIELD_ID)
+                                             .type(new GraphQLNonNull(GraphQLString))
+                                             .description("Id for entity").build();
 
         GraphQLObjectType queryType = newObject()
                                               .name("Queries")
@@ -347,18 +378,48 @@ public class FlexibleLinesGraphQLSchema {
                                               .field(newFieldDefinition()
                                                              .type(new GraphQLList(flexibleLineObjectType))
                                                              .name("flexibleLines")
-                                                             .description("Search for FlexibleLines")
+                                                             .description("List flexibleLines")
                                                              .dataFetcher(env -> flexibleLineRepository.findAll()))
+                                              .field(newFieldDefinition()
+                                                             .type(flexibleLineObjectType)
+                                                             .name("flexibleLine")
+                                                             .description("Get flexibleLine by id")
+                                                             .argument(idArgument)
+                                                             .dataFetcher(env -> flexibleLineRepository.getOne(env.getArgument(FIELD_ID))))
                                               .field(newFieldDefinition()
                                                              .type(new GraphQLList(flexibleStopPlaceObjectType))
                                                              .name("flexibleStopPlaces")
-                                                             .description("Search for FlexibleStopPlaces")
+                                                             .description("List flexibleStopPlaces")
                                                              .dataFetcher(env -> flexibleStopPlaceRepository.findAll()))
+                                              .field(newFieldDefinition()
+                                                             .type(flexibleStopPlaceObjectType)
+                                                             .name("flexibleStopPlace")
+                                                             .description("Get flexibleStopPlace by id")
+                                                             .argument(idArgument)
+                                                             .dataFetcher(env -> flexibleStopPlaceRepository.getOne(env.getArgument(FIELD_ID))))
                                               .field(newFieldDefinition()
                                                              .type(new GraphQLList(networkObjectType))
                                                              .name("networks")
-                                                             .description("Search for Networks")
+                                                             .description("List networks")
                                                              .dataFetcher(env -> networkRepository.findAll()))
+                                              .field(newFieldDefinition()
+                                                             .type(networkObjectType)
+                                                             .name("network")
+                                                             .description("Get network by id")
+                                                             .argument(idArgument)
+                                                             .dataFetcher(env -> networkRepository.getOne(env.getArgument(FIELD_ID))))
+                                              .field(newFieldDefinition()
+                                                             .type(new GraphQLList(exportObjectType))
+                                                             .name("exports")
+                                                             .description("Search for Networks")
+ //TODO filter by date
+                                                             .dataFetcher(env -> exportRepository.findAll()))
+                                              .field(newFieldDefinition()
+                                                             .type(exportObjectType)
+                                                             .name("export")
+                                                             .description("Get export by id")
+                                                             .argument(idArgument)
+                                                             .dataFetcher(env -> exportRepository.getOne(env.getArgument(FIELD_ID))))
                                               .build();
 
         return queryType;
@@ -512,6 +573,12 @@ public class FlexibleLinesGraphQLSchema {
                                                                .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                .build();
 
+        GraphQLInputObjectType exportInputType = newInputObject().name("ExportInput")
+                                                         .field(newInputObjectField().name(FIELD_NAME).type(GraphQLString))
+                                                         .field(newInputObjectField().name(FIELD_FROM_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                                                         .field(newInputObjectField().name(FIELD_TO_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                                                         .build();
+
 
         GraphQLObjectType mutationType = newObject()
                                                  .name("Mutations")
@@ -564,7 +631,14 @@ public class FlexibleLinesGraphQLSchema {
                                                                                   .name(FIELD_ID)
                                                                                   .type(new GraphQLNonNull(GraphQLString)))
                                                                 .dataFetcher(flexibleStopPlaceUpdater))
-
+                                                 .field(newFieldDefinition()
+                                                                .type(new GraphQLNonNull(exportObjectType))
+                                                                .name("export")
+                                                                .description("Start a new export")
+                                                                .argument(GraphQLArgument.newArgument()
+                                                                                  .name(FIELD_INPUT)
+                                                                                  .type(exportInputType))
+                                                                .dataFetcher(exportUpdater))
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(GraphQLString))
                                                                 .name("cleanDataSpace")

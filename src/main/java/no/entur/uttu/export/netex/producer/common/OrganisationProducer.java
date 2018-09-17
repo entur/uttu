@@ -15,10 +15,10 @@
 
 package no.entur.uttu.export.netex.producer.common;
 
-import no.entur.uttu.export.model.ExportError;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Network;
+import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.organisation.Organisation;
 import no.entur.uttu.organisation.OrganisationContact;
 import no.entur.uttu.organisation.OrganisationRegistry;
@@ -73,7 +73,7 @@ public class OrganisationProducer {
     private Authority mapAuthority(Long authorityRef, NetexExportContext context) {
         Organisation orgRegAuthority = organisationRegistry.getOrganisation(authorityRef);
         if (orgRegAuthority == null || orgRegAuthority.getAuthorityNetexId() == null) {
-            context.errors.add(new ExportError("Authority [id:{0}] not found", authorityRef));
+            context.addExportMessage(SeverityEnumeration.ERROR, "Authority [id:{0}] not found", authorityRef);
             return new Authority();
         }
         return populateNetexOrganisation(new Authority(), orgRegAuthority)
@@ -83,7 +83,7 @@ public class OrganisationProducer {
     private Operator mapOperator(Long operatorRef, NetexExportContext context) {
         Organisation orgRegOperator = organisationRegistry.getOrganisation(operatorRef);
         if (orgRegOperator == null || orgRegOperator.getOperatorNetexId() == null) {
-            context.errors.add(new ExportError("Operator [id:{0}] not found", operatorRef));
+            context.addExportMessage(SeverityEnumeration.ERROR, "Operator [id:{0}] not found", operatorRef);
             return new Operator();
         }
         return populateNetexOrganisation(new Operator(), orgRegOperator)

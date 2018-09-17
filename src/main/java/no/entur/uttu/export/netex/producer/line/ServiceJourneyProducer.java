@@ -15,7 +15,6 @@
 
 package no.entur.uttu.export.netex.producer.line;
 
-import no.entur.uttu.export.model.ExportError;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.export.netex.producer.common.OrganisationProducer;
@@ -24,6 +23,7 @@ import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.model.TimetabledPassingTime;
+import no.entur.uttu.model.job.SeverityEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.DayTypeRefStructure;
@@ -67,7 +67,7 @@ public class ServiceJourneyProducer {
             operatorRefStructure = organisationProducer.produceOperatorRef(local.getOperatorRef(), false, context);
         }
 
-        List<DayType> validDayTypes=local.getDayTypes().stream().filter(context::isValid).collect(Collectors.toList());
+        List<DayType> validDayTypes = local.getDayTypes().stream().filter(context::isValid).collect(Collectors.toList());
 
         DayTypeRefs_RelStructure dayTypeRefs_relStructure = new DayTypeRefs_RelStructure()
                                                                     .withDayTypeRef(validDayTypes.stream()
@@ -105,7 +105,7 @@ public class ServiceJourneyProducer {
         if (stopPointInJourneyPattern.isPresent()) {
             pointInJourneyPatternRef = objectFactory.wrapAsJAXBElement(objectFactory.populateRefStructure(new StopPointInJourneyPatternRefStructure(), stopPointInJourneyPattern.get().getRef(), true));
         } else {
-            context.errors.add(new ExportError("No corresponding StopPointInJourneyPattern found for TimetabledPassingTime [id:{}]", local.getNetexId()));
+            context.addExportMessage(SeverityEnumeration.ERROR, "No corresponding StopPointInJourneyPattern found for TimetabledPassingTime [id:{}]", local.getNetexId());
         }
 
         BigInteger arrivalDayOffset = local.getArrivalDayOffset() != 0 ? BigInteger.valueOf(local.getArrivalDayOffset()) : null;

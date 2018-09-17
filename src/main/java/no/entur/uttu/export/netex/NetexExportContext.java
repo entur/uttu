@@ -17,7 +17,6 @@ package no.entur.uttu.export.netex;
 
 
 import no.entur.uttu.export.model.AvailabilityPeriod;
-import no.entur.uttu.export.model.ExportError;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DestinationDisplay;
 import no.entur.uttu.model.FlexibleStopPlace;
@@ -26,9 +25,11 @@ import no.entur.uttu.model.Network;
 import no.entur.uttu.model.Notice;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.Ref;
+import no.entur.uttu.model.job.Export;
+import no.entur.uttu.model.job.ExportMessage;
+import no.entur.uttu.model.job.SeverityEnumeration;
 
 import java.time.Instant;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -40,10 +41,6 @@ public class NetexExportContext {
     private AvailabilityPeriod availabilityPeriod;
 
     public Provider provider;
-
-    private LocalDate fromDate;
-
-    private LocalDate toDate;
 
     public Instant publicationTimestamp;
 
@@ -58,8 +55,6 @@ public class NetexExportContext {
 
     public Set<Long> operatorRefs = new HashSet<>();
 
-    public Set<ExportError> errors = new HashSet<>();
-
     public Set<Notice> notices = new HashSet<>();
 
     public Set<DayType> dayTypes = new HashSet<>();
@@ -68,12 +63,12 @@ public class NetexExportContext {
 
     private Map<String, AtomicLong> idSequences = new HashMap<>();
 
+    private Export export;
 
-    public NetexExportContext(Provider provider, LocalDate fromDate, LocalDate toDate) {
-        this.provider = provider;
+    public NetexExportContext(Export export) {
         this.publicationTimestamp = Instant.now();
-        this.fromDate = fromDate;
-        this.toDate = toDate;
+        this.export = export;
+        this.provider = export.getProvider();
     }
 
     public void updateAvailabilityPeriod(AvailabilityPeriod newPeriod) {
@@ -104,6 +99,10 @@ public class NetexExportContext {
         if (entity == null) {
             return false;
         }
-        return entity.isValid(fromDate, toDate);
+        return entity.isValid(export.getFromDate(), export.getToDate());
+    }
+
+    public void addExportMessage(SeverityEnumeration severity, String message, Object... params) {
+        export.addMessage(new ExportMessage(severity, message, params));
     }
 }

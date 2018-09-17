@@ -20,9 +20,8 @@ import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.producer.common.NetexCommonFileProducer;
 import no.entur.uttu.export.netex.producer.line.NetexLineFileProducer;
 import no.entur.uttu.model.FlexibleLine;
-import no.entur.uttu.model.Provider;
+import no.entur.uttu.model.job.Export;
 import no.entur.uttu.repository.FlexibleLineRepository;
-import no.entur.uttu.repository.ProviderRepository;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +32,6 @@ import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -48,9 +46,6 @@ public class NetexExporter {
 
     @Autowired
     private NetexLineFileProducer netexLineFileProducer;
-
-    @Autowired
-    private ProviderRepository providerRepository;
 
     @Autowired
     private NetexCommonFileProducer commonFileProducer;
@@ -70,10 +65,9 @@ public class NetexExporter {
         }
     }
 
-    public NetexExportContext exportDataSet(String providerCode, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
-        LocalDate fromDate = LocalDate.now().minusDays(3);
-        LocalDate toDate = LocalDate.now().plusDays(180);
-        NetexExportContext exportContext = new NetexExportContext(getVerifiedProvider(providerCode), fromDate, toDate);
+    public void exportDataSet(Export export, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
+
+        NetexExportContext exportContext = new NetexExportContext(export);
 
         List<FlexibleLine> flexibleLines = flexibleLineRepository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
 
@@ -83,7 +77,6 @@ public class NetexExporter {
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
         marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
 
-        return exportContext;
     }
 
     private void marshalToFile(NetexFile lineFile, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
@@ -101,14 +94,6 @@ public class NetexExporter {
             throw new ExportException("Failed to marshal NeTEx XML to file: " + e.getMessage(), e);
         }
 
-
-    }
-
-    private Provider getVerifiedProvider(String providerCode) {
-        Provider provider = providerRepository.getOne(providerCode);
-        Preconditions.checkArgument(provider != null,
-                "Provider not found: %s", providerCode);
-        return provider;
     }
 
 }

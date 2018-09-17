@@ -13,24 +13,21 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.repository.generic;
+package no.entur.uttu.model.job;
 
-import no.entur.uttu.model.ProviderEntity;
-import org.springframework.data.repository.NoRepositoryBean;
-import org.springframework.data.repository.Repository;
+public enum SeverityEnumeration {
+    INFO("info"),
+    WARN("warn"),
+    ERROR("error");
 
-import java.util.List;
+    private final String value;
 
-@NoRepositoryBean
-public interface ProviderEntityRepository<T extends ProviderEntity> extends Repository<T, Long> {
+    SeverityEnumeration(String v) {
+        this.value = v;
+    }
 
-    List<T> findAll();
+    public String value() {
+        return this.value;
+    }
 
-    T getOne(String netexId);
-
-    <S extends T> S save(S entity);
-
-    T delete(String netexId);
-
-    void deleteAll();
 }

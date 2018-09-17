@@ -15,7 +15,6 @@
 
 package no.entur.uttu.export.netex.producer.line;
 
-import no.entur.uttu.export.model.ExportError;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
@@ -23,6 +22,7 @@ import no.entur.uttu.model.BookingArrangement;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
+import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.stopplace.StopPlaceRegistry;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
@@ -90,7 +90,7 @@ public class JourneyPatternProducer {
             stopRef = local.getFlexibleStopPlace().getRef();
         } else {
             if (!stopPlaceRegistry.isValidQuayRef(local.getQuayRef())) {
-                context.errors.add(new ExportError("{0} is not a valid quayRef", local.getQuayRef()));
+                context.addExportMessage(SeverityEnumeration.ERROR, "{0} is not a valid quayRef", local.getQuayRef());
             }
 
             context.quayRefs.add(local.getQuayRef());

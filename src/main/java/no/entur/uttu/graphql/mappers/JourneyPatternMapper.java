@@ -21,9 +21,7 @@ import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.stereotype.Component;
 
-import static no.entur.uttu.graphql.GraphQLNames.FIELD_DIRECTION_TYPE;
-import static no.entur.uttu.graphql.GraphQLNames.FIELD_POINTS_IN_SEQUENCE;
-import static no.entur.uttu.graphql.GraphQLNames.FIELD_SERVICE_JOURNEYS;
+import static no.entur.uttu.graphql.GraphQLNames.*;
 
 @Component
 public class JourneyPatternMapper extends AbstractProviderEntityMapper<JourneyPattern> {
