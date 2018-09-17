@@ -16,10 +16,11 @@
 package no.entur.uttu.export;
 
 import no.entur.uttu.export.blob.BlobStoreService;
-import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.DataSetProducer;
 import no.entur.uttu.export.netex.NetexExporter;
 import no.entur.uttu.model.job.Export;
+import no.entur.uttu.model.job.ExportMessage;
+import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.util.FileNameUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 
@@ -61,15 +61,16 @@ public class ExportService {
 
             InputStream dataSetStream = dataSetProducer.buildDataSet();
 
-
             String blobName = "outbound/netex/" + FileNameUtil.createDataSetFilename(export.getProvider());
             blobStoreService.uploadBlob(blobName, true, dataSetStream);
 
-            export.markAsFinished();
-        } catch (IOException ioe) {
-            throw new ExportException("Export failed with exception: " + ioe.getMessage(), ioe);
+        } catch (Exception e) {
+            ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, "Export failed with exception {0} : {1}", e.getClass().getSimpleName(), e.getMessage());
+            export.addMessage(msg);
+            logger.warn(msg.getMessage(), e);
         }
 
+        export.markAsFinished();
         logger.info("Completed {}", export);
     }
 

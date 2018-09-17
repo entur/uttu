@@ -79,7 +79,7 @@ public class NetexExporter {
 
     }
 
-    private void marshalToFile(NetexFile lineFile, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
+    private void marshalToFile(NetexFile file, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
         try {
             Marshaller marshaller = jaxbContext.createMarshaller();
 
@@ -88,8 +88,8 @@ public class NetexExporter {
             if (validateAgainstSchema) {
                 marshaller.setSchema(netexValidator.getSchema());
             }
-            OutputStream outputStream = dataSetProducer.addFile(lineFile.getFileName());
-            marshaller.marshal(lineFile.getPublicationDeliveryStructure(), outputStream);
+            OutputStream outputStream = dataSetProducer.addFile(file.getFileName());
+            marshaller.marshal(file.getPublicationDeliveryStructure(), outputStream);
         } catch (Exception e) {
             throw new ExportException("Failed to marshal NeTEx XML to file: " + e.getMessage(), e);
         }

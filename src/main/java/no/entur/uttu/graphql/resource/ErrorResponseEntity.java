@@ -13,18 +13,30 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.repository;
+package no.entur.uttu.graphql.resource;
 
-import no.entur.uttu.model.job.Export;
-import no.entur.uttu.repository.generic.ProviderEntityRepository;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.time.Instant;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
 import java.util.List;
 
-@Transactional(propagation = Propagation.REQUIRES_NEW)
-public interface ExportRepository extends ProviderEntityRepository<Export> {
+@XmlRootElement
+public class ErrorResponseEntity {
 
-    List<Export> findByCreatedAfter(Instant from);
+    public ErrorResponseEntity() {
+    }
+
+    public ErrorResponseEntity(String message) {
+        errors.add(new Error(message));
+    }
+
+    public List<Error> errors = new ArrayList<>();
+
+
+    public static class Error {
+        public String message;
+
+        public Error(String message) {
+            this.message = message;
+        }
+    }
 }

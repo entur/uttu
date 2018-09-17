@@ -46,7 +46,7 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
 
     @Override
     public void deleteAll() {
-        // TODO getting errors for cascade delete with batch statement, fetching all and deleting one by on for now
+        // getting errors for cascade delete with batch statement, fetching all and deleting one by on for now
         findAll().stream().forEach(this::delete);
 //        entityManager.createQuery("delete " + findAllQuery).setParameter("providerCode", Context.getVerifiedProviderCode()).executeUpdate();
     }

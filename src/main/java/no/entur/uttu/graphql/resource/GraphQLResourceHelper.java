@@ -68,7 +68,11 @@ public class GraphQLResourceHelper {
      * NRP-1992
      */
     public Response getGraphQLResponseInTransaction(String operationName, String query, Map<String, Object> variables) {
-        return transactionTemplate.execute((transactionStatus) -> getGraphQLResponse(operationName, query, variables, transactionStatus));
+        try {
+            return transactionTemplate.execute((transactionStatus) -> getGraphQLResponse(operationName, query, variables, transactionStatus));
+        } catch (Exception e) {
+            return Response.status(Response.Status.OK).entity(new ErrorResponseEntity(e.getMessage())).build();
+        }
     }
 
 
@@ -86,8 +90,7 @@ public class GraphQLResourceHelper {
             try {
                 variables = mapper.readValue(s, TypeFactory.defaultInstance().constructMapType(HashMap.class, String.class, Object.class));
             } catch (IOException e) {
-                HashMap<String, Object> content = new HashMap<>();
-                content.put("errors", e.getMessage());
+                ErrorResponseEntity content = new ErrorResponseEntity(e.getMessage());
                 return Response.status(Response.Status.BAD_REQUEST).entity(content).build();
             }
 
@@ -126,8 +129,7 @@ public class GraphQLResourceHelper {
 
         } catch (GraphQLException e) {
             logger.warn("Caught graphqlException. Setting rollback only", e);
-            res = Response.status(Response.Status.INTERNAL_SERVER_ERROR);
-
+            res = Response.status(getStatusCodeFromThrowable(e));
             content.put("errors", Arrays.asList(e));
             transactionStatus.setRollbackOnly();
         }
@@ -169,8 +171,6 @@ public class GraphQLResourceHelper {
         }).collect(Collectors.toList());
     }
 
-
-    // TODO from tiamat, do we need this? only if access control is invoked in graphql
     private Response.Status getStatusCodeFromThrowable(Throwable e) {
         Throwable rootCause = getRootCause(e);
 

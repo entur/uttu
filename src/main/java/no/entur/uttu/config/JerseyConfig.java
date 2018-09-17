@@ -19,6 +19,7 @@ import io.swagger.jaxrs.config.BeanConfig;
 import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.entur.uttu.graphql.resource.FlexibleLinesGraphQLResource;
+import no.entur.uttu.graphql.resource.GeneralExceptionMapper;
 import no.entur.uttu.graphql.resource.ProviderGraphQLResource;
 import no.entur.uttu.health.rest.HealthResource;
 import org.glassfish.jersey.server.ResourceConfig;
@@ -56,7 +57,7 @@ public class JerseyConfig {
 
         public FlexibleLinesAPI() {
             register(CorsResponseFilter.class);
-
+            register(GeneralExceptionMapper.class);
             register(FlexibleLinesGraphQLResource.class);
             register(ProviderGraphQLResource.class);
         }
@@ -67,6 +68,7 @@ public class JerseyConfig {
 
         public HealthConfig() {
             register(HealthResource.class);
+            register(GeneralExceptionMapper.class);
             configureSwagger();
         }
 

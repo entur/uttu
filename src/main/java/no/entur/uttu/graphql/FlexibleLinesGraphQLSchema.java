@@ -55,6 +55,10 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.time.DayOfWeek;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
@@ -419,9 +423,13 @@ public class FlexibleLinesGraphQLSchema {
                                               .field(newFieldDefinition()
                                                              .type(new GraphQLList(exportObjectType))
                                                              .name("exports")
-                                                             .description("Search for Networks")
-                                                             //TODO filter by date
-                                                             .dataFetcher(env -> exportRepository.findAll()))
+                                                             .argument(GraphQLArgument.newArgument()
+                                                                     .type(GraphQLInt)
+                                                                               .name("historicDays")
+                                                                               .defaultValue(30)
+                                                                               .description("Number historic to fetch data for"))
+                                                             .description("List exports")
+                                                             .dataFetcher(env -> exportRepository.findByCreatedAfter(OffsetDateTime.now().minusDays(env.getArgument("historicDays")).toInstant())))
                                               .field(newFieldDefinition()
                                                              .type(exportObjectType)
                                                              .name("export")
