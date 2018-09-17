@@ -437,6 +437,7 @@ public class NetexObjectFactory {
     }
 
     public Ref createScheduledStopPointRefFromQuayRef(String quayRef, NetexExportContext context) {
-        return new Ref(NetexIdProducer.updateIdPrefix(quayRef, context), VERSION_ONE);
+        Ref ref = new Ref(NetexIdProducer.updateIdPrefix(quayRef, context), VERSION_ONE);
+        return NetexIdProducer.replaceEntityName(ref, ScheduledStopPoint.class.getSimpleName());
     }
 }

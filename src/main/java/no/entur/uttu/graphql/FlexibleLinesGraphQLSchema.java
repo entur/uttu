@@ -145,6 +145,7 @@ public class FlexibleLinesGraphQLSchema {
     private GraphQLObjectType flexibleLineObjectType;
     private GraphQLObjectType flexibleStopPlaceObjectType;
     private GraphQLObjectType flexibleAreaObjectType;
+    private GraphQLObjectType hailAndRideAreaType;
 
     private GraphQLObjectType networkObjectType;
 
@@ -271,12 +272,19 @@ public class FlexibleLinesGraphQLSchema {
         flexibleAreaObjectType = newObject().name("FlexibleArea")
                                          .field(newFieldDefinition().name(FIELD_POLYGON).type(new GraphQLNonNull(geoJSONObjectType))
                                                         .dataFetcher(env -> ((FlexibleArea) env.getSource()).getPolygon()))
-                                         .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(vehicleModeEnum))
                                          .build();
+
+
+        hailAndRideAreaType = newObject().name("HailAndRideArea")
+                                      .field(newFieldDefinition().name(FIELD_START_QUAY_REF).type(new GraphQLNonNull(GraphQLString)))
+                                      .field(newFieldDefinition().name(FIELD_END_QUAY_REF).type(new GraphQLNonNull(GraphQLString)))
+                                      .build();
+
 
         flexibleStopPlaceObjectType = newObject(groupOfEntitiesObjectType).name("FlexibleStopPlace")
                                               .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(vehicleModeEnum))
-                                              .field(newFieldDefinition().name(FIELD_FLEXIBLE_AREA).type(new GraphQLNonNull(flexibleAreaObjectType)))
+                                              .field(newFieldDefinition().name(FIELD_FLEXIBLE_AREA).type(flexibleAreaObjectType))
+                                              .field(newFieldDefinition().name(FIELD_HAIL_AND_RIDE_AREA).type(hailAndRideAreaType))
                                               .build();
 
         operatingPeriod = newObject().name("OperatingPeriod")
@@ -412,7 +420,7 @@ public class FlexibleLinesGraphQLSchema {
                                                              .type(new GraphQLList(exportObjectType))
                                                              .name("exports")
                                                              .description("Search for Networks")
- //TODO filter by date
+                                                             //TODO filter by date
                                                              .dataFetcher(env -> exportRepository.findAll()))
                                               .field(newFieldDefinition()
                                                              .type(exportObjectType)
@@ -464,11 +472,18 @@ public class FlexibleLinesGraphQLSchema {
                                                            .name("FlexibleAreaInput")
                                                            .field(newInputObjectField().name(FIELD_POLYGON).type(new GraphQLNonNull(geoJSONInputType)))
                                                            .build();
+        GraphQLInputObjectType hailAndRideAreaInput = newInputObject(groupOfEntitiesInputType)
+                                                              .name("HailAndRideAreaInput")
+                                                              .field(newInputObjectField().name(FIELD_START_QUAY_REF).type(new GraphQLNonNull(GraphQLString)))
+                                                              .field(newInputObjectField().name(FIELD_END_QUAY_REF).type(new GraphQLNonNull(GraphQLString)))
+                                                              .build();
+
 
         GraphQLInputObjectType flexibleStopPlaceInputType = newInputObject(groupOfEntitiesInputType)
                                                                     .name("FlexibleStopPlaceInput")
-                                                                    .field(newInputObjectField().name(FIELD_FLEXIBLE_AREA).type(new GraphQLNonNull(flexibleAreaInput)))
                                                                     .field(newInputObjectField().name(FIELD_TRANSPORT_MODE).type(new GraphQLNonNull(vehicleModeEnum)))
+                                                                    .field(newInputObjectField().name(FIELD_FLEXIBLE_AREA).type(flexibleAreaInput))
+                                                                    .field(newInputObjectField().name(FIELD_HAIL_AND_RIDE_AREA).type(hailAndRideAreaInput))
                                                                     .build();
 
 

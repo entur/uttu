@@ -47,7 +47,11 @@ public class GraphQLNames {
 
     // FlexibleStopPlace
     public static final String FIELD_FLEXIBLE_AREA = "flexibleArea";
+    public static final String FIELD_HAIL_AND_RIDE_AREA = "hailAndRideArea";
     public static final String FIELD_POLYGON = "polygon";
+    public static final String FIELD_START_QUAY_REF = "startQuayRef";
+    public static final String FIELD_END_QUAY_REF = "endQuayRef";
+
 
     // Network
     public static final String FIELD_AUTHORITY_REF = "authorityRef";

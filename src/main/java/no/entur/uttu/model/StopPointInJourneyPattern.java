@@ -139,7 +139,7 @@ public class StopPointInJourneyPattern extends ProviderEntity {
     public void checkPersistable() {
         super.checkPersistable();
 
-        Preconditions.checkArgument(Boolean.TRUE.equals(forBoarding) || Boolean.TRUE.equals(forAlighting),
+        Preconditions.checkArgument(!Boolean.FALSE.equals(forBoarding) || !Boolean.FALSE.equals(forAlighting),
                 "%s allows neither boarding or alighting", identity());
 
         Preconditions.checkArgument(flexibleStopPlace != null ^ quayRef != null,

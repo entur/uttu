@@ -19,6 +19,8 @@ import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.BookingArrangement;
+import no.entur.uttu.model.FlexibleStopPlace;
+import no.entur.uttu.model.HailAndRideArea;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
@@ -85,15 +87,23 @@ public class JourneyPatternProducer {
 
         // Create ref to scheduledStopPoint referring to either a flexible stop place or a NSR QuayRef
         Ref stopRef;
-        if (local.getFlexibleStopPlace() != null) {
-            context.flexibleStopPlaces.add(local.getFlexibleStopPlace());
-            stopRef = local.getFlexibleStopPlace().getRef();
-        } else {
-            if (!stopPlaceRegistry.isValidQuayRef(local.getQuayRef())) {
-                context.addExportMessage(SeverityEnumeration.ERROR, "{0} is not a valid quayRef", local.getQuayRef());
+        FlexibleStopPlace flexibleStopPlace = local.getFlexibleStopPlace();
+        if (flexibleStopPlace != null) {
+            context.flexibleStopPlaces.add(flexibleStopPlace);
+            stopRef = flexibleStopPlace.getRef();
+
+            HailAndRideArea hailAndRideArea = flexibleStopPlace.getHailAndRideArea();
+            if (hailAndRideArea != null) {
+                addQuayRef(hailAndRideArea.getStartQuayRef(), context);
+                addQuayRef(hailAndRideArea.getEndQuayRef(), context);
+                Ref startQuayRef = objectFactory.createScheduledStopPointRefFromQuayRef(hailAndRideArea.getStartQuayRef(), context);
+                context.scheduledStopPointRefs.add(startQuayRef);
+                Ref endQuayRef = objectFactory.createScheduledStopPointRefFromQuayRef(hailAndRideArea.getEndQuayRef(), context);
+                context.scheduledStopPointRefs.add(endQuayRef);
             }
 
-            context.quayRefs.add(local.getQuayRef());
+        } else {
+            addQuayRef(local.getQuayRef(), context);
             stopRef = objectFactory.createScheduledStopPointRefFromQuayRef(local.getQuayRef(), context);
         }
 
@@ -111,6 +121,14 @@ public class JourneyPatternProducer {
                        .withOrder(BigInteger.valueOf(local.getOrder()))
                        .withDestinationDisplayRef(destinationDisplayRefStructure)
                        .withScheduledStopPointRef(scheduledStopPointRefStructure);
+    }
+
+    private void addQuayRef(String quayRef, NetexExportContext context) {
+        if (!stopPlaceRegistry.isValidQuayRef(quayRef)) {
+            context.addExportMessage(SeverityEnumeration.ERROR, "{0} is not a valid quayRef", quayRef);
+        }
+
+        context.quayRefs.add(quayRef);
     }
 
     private BookingArrangementsStructure mapBookingArrangement(BookingArrangement local) {

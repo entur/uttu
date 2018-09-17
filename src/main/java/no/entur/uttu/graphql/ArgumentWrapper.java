@@ -19,6 +19,7 @@ import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -57,16 +58,28 @@ public class ArgumentWrapper {
     }
 
     public <T, V> void apply(String name, Function<T, V> mapper, Consumer<V> func) {
-        T val = get(name);
-        if (val != null) {
-            func.accept(mapper.apply(val));
+        if (map.containsKey(name)) {
+            T val = get(name);
+            if (val != null) {
+                func.accept(mapper.apply(val));
+            } else {
+                func.accept(null);
+            }
         }
     }
 
     public <T, V> void applyList(String name, Function<T, V> mapper, Consumer<List<V>> func) {
-        T val = get(name);
-        if (val instanceof Collection) {
-            func.accept(((Collection<T>) val).stream().map(t -> mapper.apply(t)).collect(Collectors.toList()));
+        if (map.containsKey(name)) {
+            Object val = get(name);
+            if (val == null) {
+                val = new ArrayList<T>();
+            }
+
+            if (val instanceof Collection) {
+                func.accept(((Collection<T>) val).stream().map(t -> mapper.apply(t)).collect(Collectors.toList()));
+            } else {
+                throw new RuntimeException("Wrong datatype, expected Collection, got: " + val.getClass());
+            }
         }
     }
 

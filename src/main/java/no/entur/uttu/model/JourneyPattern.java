@@ -124,10 +124,10 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
         Preconditions.checkArgument(getPointsInSequence().get(0).getDestinationDisplay() != null,
                 "%s is missing destinationDisplay for first pointsInSequence", identity());
 
-        Preconditions.checkArgument(Boolean.TRUE.equals(getPointsInSequence().get(0).getForBoarding()),
+        Preconditions.checkArgument(!Boolean.FALSE.equals(getPointsInSequence().get(0).getForBoarding()),
                 "%s does not permit boarding on first pointsInSequence", identity());
 
-        Preconditions.checkArgument(Boolean.TRUE.equals(getPointsInSequence().get(getPointsInSequence().size() - 1).getForAlighting()),
+        Preconditions.checkArgument(!Boolean.FALSE.equals(getPointsInSequence().get(getPointsInSequence().size() - 1).getForAlighting()),
                 "%s does not permit alighting on last pointsInSequence", identity());
 
         getServiceJourneys().stream().forEach(ProviderEntity::checkPersistable);

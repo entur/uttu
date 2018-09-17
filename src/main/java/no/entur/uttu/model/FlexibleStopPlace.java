@@ -15,6 +15,8 @@
 
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -36,8 +38,10 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
     private VehicleModeEnumeration transportMode;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @NotNull
     private FlexibleArea flexibleArea;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    private HailAndRideArea hailAndRideArea;
 
     public FlexibleArea getFlexibleArea() {
         return flexibleArea;
@@ -47,11 +51,26 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
         this.flexibleArea = flexibleArea;
     }
 
+    public HailAndRideArea getHailAndRideArea() {
+        return hailAndRideArea;
+    }
+
+    public void setHailAndRideArea(HailAndRideArea hailAndRideArea) {
+        this.hailAndRideArea = hailAndRideArea;
+    }
+
     public VehicleModeEnumeration getTransportMode() {
         return transportMode;
     }
 
     public void setTransportMode(VehicleModeEnumeration transportMode) {
         this.transportMode = transportMode;
+    }
+
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+        Preconditions.checkArgument(flexibleArea != null ^ hailAndRideArea != null, "%s exactly one of flexibleArea and hailAndRideArea must be set", identity());
     }
 }

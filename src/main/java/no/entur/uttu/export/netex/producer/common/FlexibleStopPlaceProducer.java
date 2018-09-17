@@ -19,7 +19,10 @@ import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleStopPlace;
+import no.entur.uttu.model.HailAndRideArea;
 import org.rutebanken.netex.model.FlexibleStopPlace_VersionStructure;
+import org.rutebanken.netex.model.PointRefStructure;
+import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 import org.rutebanken.netex.model.VehicleModeEnumeration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -38,7 +41,13 @@ public class FlexibleStopPlaceProducer {
     }
 
     private org.rutebanken.netex.model.FlexibleStopPlace mapFlexibleStopPlace(FlexibleStopPlace localStopPlace, NetexExportContext context) {
-        org.rutebanken.netex.model.FlexibleArea netexArea = mapFlexibleArea(localStopPlace, context);
+        org.rutebanken.netex.model.FlexibleQuay_VersionStructure netexQuay;
+
+        if (localStopPlace.getFlexibleArea() != null) {
+            netexQuay = mapFlexibleArea(localStopPlace, context);
+        } else {
+            netexQuay = mapHailAndRideArea(localStopPlace, context);
+        }
 
         return new org.rutebanken.netex.model.FlexibleStopPlace()
                        .withId(localStopPlace.getNetexId())
@@ -47,12 +56,23 @@ public class FlexibleStopPlaceProducer {
                        .withDescription(objectFactory.createMultilingualString(localStopPlace.getDescription()))
                        .withTransportMode(objectFactory.mapEnum(localStopPlace.getTransportMode(), VehicleModeEnumeration.class))
                        .withPrivateCode(objectFactory.createPrivateCodeStructure(localStopPlace.getPrivateCode()))
-                       .withAreas(new FlexibleStopPlace_VersionStructure.Areas().withFlexibleAreaOrFlexibleAreaRefOrHailAndRideArea(netexArea));
+                       .withAreas(new FlexibleStopPlace_VersionStructure.Areas().withFlexibleAreaOrFlexibleAreaRefOrHailAndRideArea(netexQuay));
     }
 
     private org.rutebanken.netex.model.FlexibleArea mapFlexibleArea(FlexibleStopPlace flexibleStopPlace, NetexExportContext context) {
         FlexibleArea localArea = flexibleStopPlace.getFlexibleArea();
         return objectFactory.populateId(new org.rutebanken.netex.model.FlexibleArea(), flexibleStopPlace.getRef())
                        .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon(), context));
+    }
+
+    private org.rutebanken.netex.model.HailAndRideArea mapHailAndRideArea(FlexibleStopPlace flexibleStopPlace, NetexExportContext context) {
+        HailAndRideArea localArea = flexibleStopPlace.getHailAndRideArea();
+
+        PointRefStructure startPoint = objectFactory.populateRefStructure(new ScheduledStopPointRefStructure(), objectFactory.createScheduledStopPointRefFromQuayRef(localArea.getStartQuayRef(), context), true);
+        PointRefStructure endPoint = objectFactory.populateRefStructure(new ScheduledStopPointRefStructure(), objectFactory.createScheduledStopPointRefFromQuayRef(localArea.getEndQuayRef(), context), true);
+
+        return objectFactory.populateId(new org.rutebanken.netex.model.HailAndRideArea(), flexibleStopPlace.getRef())
+                       .withStartPointRef(startPoint)
+                       .withEndPointRef(endPoint);
     }
 }
