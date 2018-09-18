@@ -20,6 +20,8 @@ import org.junit.Test;
 
 import java.time.LocalTime;
 
+import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
+
 public class TimetabledPassingTimeTest {
 
     private static final LocalTime T0 = LocalTime.of(10, 0);
@@ -126,14 +128,6 @@ public class TimetabledPassingTimeTest {
         one.checkBeforeOther(two);
     }
 
-    private void assertCheckPersistableFails(TimetabledPassingTime entity) {
-        try {
-            entity.checkPersistable();
-            Assert.fail("Expected exception for non-persistable entity");
-        } catch (IllegalArgumentException iae) {
-            //  OK
-        }
-    }
 
     private void assertCheckBeforeOtherFails(TimetabledPassingTime one, TimetabledPassingTime two) {
         try {

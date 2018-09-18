@@ -22,6 +22,8 @@ import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 
+import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
+
 public class ServiceJourneyTest {
 
 
@@ -95,15 +97,6 @@ public class ServiceJourneyTest {
 
         last.setArrivalTime(first.getDepartureTime().minusMinutes(5));
         assertCheckPersistableFails(serviceJourney);
-    }
-
-    private void assertCheckPersistableFails(ServiceJourney serviceJourney) {
-        try {
-            serviceJourney.checkPersistable();
-            Assert.fail("Expected exception for non persistable entity");
-        } catch (Exception e) {
-            // OK
-        }
     }
 
     private ServiceJourney validServiceJourney() {

@@ -51,7 +51,6 @@ public class OperatingPeriod extends IdentifiedEntity {
         Preconditions.checkArgument(fromDate != null && toDate != null && !toDate.isBefore(fromDate), "fromDate (%s) cannot be later than toDate(%s)", fromDate, toDate);
     }
 
-
     public boolean isValid(LocalDate from, LocalDate to) {
         return !(fromDate.isAfter(to) || toDate.isBefore(from));
     }

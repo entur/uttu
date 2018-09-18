@@ -151,6 +151,8 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
     public void checkPersistable() {
         super.checkPersistable();
 
+        Preconditions.checkArgument(transportMode != null, "% transportMode not set", identity());
+        Preconditions.checkArgument(transportSubmode != null, "% transportSubmode not set", identity());
         Preconditions.checkArgument(Objects.equals(transportMode, transportSubmode.getVehicleMode()), "%s transportSubmode %s is valid for transportMode %s", identity(), transportSubmode.value(), transportMode.value());
 
         getJourneyPatterns().stream().forEach(ProviderEntity::checkPersistable);

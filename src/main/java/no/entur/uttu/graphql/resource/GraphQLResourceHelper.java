@@ -64,7 +64,7 @@ public class GraphQLResourceHelper {
 
     /**
      * Use programmatic transaction because graphql catches RuntimeExceptions.
-     * With multiple transaction interceptors (Transactional annotation), this causes the rolled back transaction (in case of errors) to be commed (? TODO from tiamat) by the outer transaction interceptor.
+     * With multiple transaction interceptors (Transactional annotation), this causes the rolled back transaction (in case of errors) to be committed by the outer transaction interceptor.
      * NRP-1992
      */
     public Response getGraphQLResponseInTransaction(String operationName, String query, Map<String, Object> variables) {

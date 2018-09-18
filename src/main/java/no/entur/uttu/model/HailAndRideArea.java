@@ -15,8 +15,11 @@
 
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+
 @Entity
 public class HailAndRideArea extends IdentifiedEntity {
 
@@ -40,5 +43,12 @@ public class HailAndRideArea extends IdentifiedEntity {
 
     public void setEndQuayRef(String endQuayRef) {
         this.endQuayRef = endQuayRef;
+    }
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+
+        Preconditions.checkArgument(startQuayRef != null && endQuayRef != null, "startQuayRef and endQuayRef must be set for HailAndRideArea");
     }
 }

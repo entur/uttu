@@ -63,8 +63,8 @@ public class DayType extends ProviderEntity {
         getDayTypeAssignments().stream().forEach(IdentifiedEntity::checkPersistable);
 
         if (CollectionUtils.isEmpty(daysOfWeek)) {
-            boolean includedPeriod = getDayTypeAssignments().stream().anyMatch(dta -> !Boolean.FALSE.equals(dta.getAvailable()) && dta.getOperatingPeriod() != null);
-            Preconditions.checkArgument(!includedPeriod, "%s has included OperatingPeriod without setting daysOfWeek", identity());
+            boolean includedPeriod = getDayTypeAssignments().stream().anyMatch(dta -> dta.getOperatingPeriod() != null);
+            Preconditions.checkArgument(!includedPeriod, "%s has OperatingPeriod without setting daysOfWeek", identity());
         }
     }
 
