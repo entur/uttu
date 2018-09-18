@@ -23,8 +23,7 @@ class NetworkGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrat
 
     @Test
     void createNetwork() {
-        //Calling GraphQL-api to merge StopPlaces
-        String graphQlJsonQuery = """
+        String query = """
  mutation mutateNetwork(\$network: NetworkInput!) {
   mutateNetwork(input: \$network) {
     id
@@ -41,7 +40,7 @@ class NetworkGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrat
             }
         }"""
 
-        executeGraphQL(graphQlJsonQuery, variables)
+        executeGraphQL(query, variables)
                 .body("data.mutateNetwork.id", startsWith("TST:Network"))
                 .body("data.mutateNetwork.name", equalTo("TestNetwork"))
                 .body("data.mutateNetwork.authorityRef", equalTo(22))
