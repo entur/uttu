@@ -28,7 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
@@ -55,16 +54,6 @@ public class NetexExporter {
     private NeTExValidator netexValidator;
 
 
-    @PostConstruct
-    public void init() {
-        try {
-            jaxbContext = newInstance(PublicationDeliveryStructure.class);
-            netexValidator = new NeTExValidator();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void exportDataSet(Export export, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
 
         NetexExportContext exportContext = new NetexExportContext(export);
@@ -80,7 +69,9 @@ public class NetexExporter {
     }
 
     private void marshalToFile(NetexFile file, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
+        assertInit();
         try {
+
             Marshaller marshaller = jaxbContext.createMarshaller();
 
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
@@ -94,6 +85,23 @@ public class NetexExporter {
             throw new ExportException("Failed to marshal NeTEx XML to file: " + e.getMessage(), e);
         }
 
+    }
+
+    private void assertInit() {
+        if (jaxbContext == null) {
+            try {
+                jaxbContext = newInstance(PublicationDeliveryStructure.class);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (netexValidator == null) {
+            try {
+                netexValidator = new NeTExValidator();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
 }
