@@ -26,6 +26,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -33,10 +34,10 @@ public class DayType extends ProviderEntity {
 
     @ElementCollection
     @Enumerated(EnumType.STRING)
-    private List<DayOfWeek> daysOfWeek;
+    private List<DayOfWeek> daysOfWeek = new ArrayList<>();
 
     @OneToMany(cascade = CascadeType.ALL)
-    private List<DayTypeAssignment> dayTypeAssignments;
+    private List<DayTypeAssignment> dayTypeAssignments = new ArrayList<>();
 
     public List<DayOfWeek> getDaysOfWeek() {
         return daysOfWeek;

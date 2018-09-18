@@ -142,6 +142,50 @@ public class TimetabledPassingTime extends ProviderEntity {
         this.latestArrivalDayOffset = latestArrivalDayOffset;
     }
 
+
+    public TimetabledPassingTime withEarliestDepartureTime(LocalTime earliestDepartureTime) {
+        this.earliestDepartureTime = earliestDepartureTime;
+        return this;
+    }
+
+    public TimetabledPassingTime withLatestArrivalTime(LocalTime latestArrivalTime) {
+        this.latestArrivalTime = latestArrivalTime;
+        return this;
+    }
+
+
+    public TimetabledPassingTime withDepartureTime(LocalTime departureTime) {
+        this.departureTime = departureTime;
+        return this;
+    }
+
+    public TimetabledPassingTime withArrivalTime(LocalTime arrivalTime) {
+        this.arrivalTime = arrivalTime;
+        return this;
+    }
+
+    public TimetabledPassingTime withArrivalDayOffset(int arrivalDayOffset) {
+        this.arrivalDayOffset = arrivalDayOffset;
+        return this;
+    }
+
+
+    public TimetabledPassingTime withDepartureDayOffset(int departureDayOffset) {
+        this.departureDayOffset = departureDayOffset;
+        return this;
+    }
+
+    public TimetabledPassingTime withEarliestDepartureDayOffset(int earliestDepartureDayOffset) {
+        this.earliestDepartureDayOffset = earliestDepartureDayOffset;
+        return this;
+    }
+
+    public TimetabledPassingTime withLatestArrivalDayOffset(int latestArrivalDayOffset) {
+        this.latestArrivalDayOffset = latestArrivalDayOffset;
+        return this;
+    }
+
+
     public List<Notice> getNotices() {
         return notices;
     }
@@ -151,16 +195,15 @@ public class TimetabledPassingTime extends ProviderEntity {
     }
 
 
-
     @Override
     public void checkPersistable() {
         super.checkPersistable();
         Preconditions.checkArgument(departureTime != null || arrivalTime != null || earliestDepartureTime != null || latestArrivalTime != null,
                 "%s must have at least one of the following fields set: arrivalTime, latestArrivalTime, departureTime or earliestDepartureTime", identity());
 
-        Preconditions.checkArgument(ValidationHelper.isNotAfter(departureTime, departureDayOffset, arrivalTime, arrivalDayOffset), "%s departureTime cannot be later than arrivalTime");
-        Preconditions.checkArgument(ValidationHelper.isNotAfter(earliestDepartureTime, earliestDepartureDayOffset, departureTime, departureDayOffset), "%s earliestDepartureTime cannot be later than departureTime");
-        Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, latestArrivalTime, latestArrivalDayOffset), "%s arrivalTime cannot be later than latestArrivalTime");
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, departureTime, departureDayOffset), "%s arrivalTime cannot be later than departureTime", identity());
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(earliestDepartureTime, earliestDepartureDayOffset, departureTime, departureDayOffset), "%s earliestDepartureTime cannot be later than departureTime", identity());
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, latestArrivalTime, latestArrivalDayOffset), "%s arrivalTime cannot be later than latestArrivalTime", identity());
     }
 
 
