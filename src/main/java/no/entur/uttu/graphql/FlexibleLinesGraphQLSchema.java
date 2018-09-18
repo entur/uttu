@@ -16,6 +16,7 @@
 package no.entur.uttu.graphql;
 
 import com.vividsolutions.jts.geom.Geometry;
+import graphql.Scalars;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLEnumType;
@@ -55,10 +56,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.time.DayOfWeek;
-import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.temporal.TemporalUnit;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
@@ -167,6 +165,9 @@ public class FlexibleLinesGraphQLSchema {
     private GraphQLObjectType contactObjectType;
     private GraphQLObjectType exportObjectType;
     private GraphQLObjectType exportMessageObjectType;
+
+    private GraphQLArgument idArgument;
+
     public GraphQLSchema graphQLSchema;
 
 
@@ -187,7 +188,7 @@ public class FlexibleLinesGraphQLSchema {
     private void initCommonTypes() {
         GraphQLFieldDefinition idFieldDefinition = newFieldDefinition()
                                                            .name(FIELD_ID)
-                                                           .type(new GraphQLNonNull(GraphQLString))
+                                                           .type(new GraphQLNonNull(GraphQLID))
                                                            .dataFetcher(env -> ((ProviderEntity) env.getSource()).getNetexId())
                                                            .build();
 
@@ -195,6 +196,11 @@ public class FlexibleLinesGraphQLSchema {
                                                       .name(FIELD_VERSION)
                                                       .type(new GraphQLNonNull(GraphQLString))
                                                       .build();
+
+        idArgument = GraphQLArgument.newArgument().name(FIELD_ID)
+                             .type(new GraphQLNonNull(GraphQLID))
+                             .description("Id for entity").build();
+
 
         identifiedEntityObjectType = newObject().name("IdentifiedEntity")
                                              .field(idFieldDefinition)
@@ -380,10 +386,6 @@ public class FlexibleLinesGraphQLSchema {
     }
 
     private GraphQLObjectType createQueryObject() {
-        GraphQLArgument idArgument = GraphQLArgument.newArgument().name(FIELD_ID)
-                                             .type(new GraphQLNonNull(GraphQLString))
-                                             .description("Id for entity").build();
-
         GraphQLObjectType queryType = newObject()
                                               .name("Queries")
                                               .description("Query and search for data")
@@ -424,7 +426,7 @@ public class FlexibleLinesGraphQLSchema {
                                                              .type(new GraphQLList(exportObjectType))
                                                              .name("exports")
                                                              .argument(GraphQLArgument.newArgument()
-                                                                     .type(GraphQLInt)
+                                                                               .type(GraphQLInt)
                                                                                .name("historicDays")
                                                                                .defaultValue(30)
                                                                                .description("Number historic to fetch data for"))
@@ -445,7 +447,7 @@ public class FlexibleLinesGraphQLSchema {
 
 
         GraphQLInputObjectType identifiedEntityInputType = newInputObject().name("IdentifiedEntityInput")
-                                                                   .field(newInputObjectField().name(FIELD_ID).type(GraphQLString))
+                                                                   .field(newInputObjectField().name(FIELD_ID).type(Scalars.GraphQLID))
                                                                    .field(newInputObjectField().name(FIELD_VERSION).type(GraphQLLong))
                                                                    .field(newInputObjectField().name(FIELD_CREATED_BY).type(GraphQLString))
                                                                    .field(newInputObjectField().name(FIELD_CREATED).type(dateTimeScalar.getDateTimeScalar()))
@@ -618,9 +620,7 @@ public class FlexibleLinesGraphQLSchema {
                                                                 .type(new GraphQLNonNull(networkObjectType))
                                                                 .name("deleteNetwork")
                                                                 .description("Delete an existing network")
-                                                                .argument(GraphQLArgument.newArgument()
-                                                                                  .name(FIELD_ID)
-                                                                                  .type(new GraphQLNonNull(GraphQLString)))
+                                                                .argument(idArgument)
                                                                 .dataFetcher(networkUpdater))
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(flexibleLineObjectType))
@@ -634,9 +634,7 @@ public class FlexibleLinesGraphQLSchema {
                                                                 .type(new GraphQLNonNull(flexibleLineObjectType))
                                                                 .name("deleteFlexibleLine")
                                                                 .description("Delete an existing flexibleLine")
-                                                                .argument(GraphQLArgument.newArgument()
-                                                                                  .name(FIELD_ID)
-                                                                                  .type(new GraphQLNonNull(GraphQLString)))
+                                                                .argument(idArgument)
                                                                 .dataFetcher(flexibleLineUpdater))
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(flexibleStopPlaceObjectType))
@@ -650,9 +648,7 @@ public class FlexibleLinesGraphQLSchema {
                                                                 .type(new GraphQLNonNull(flexibleStopPlaceObjectType))
                                                                 .name("deleteFlexibleStopPlace")
                                                                 .description("Delete an existing flexibleStopPlace")
-                                                                .argument(GraphQLArgument.newArgument()
-                                                                                  .name(FIELD_ID)
-                                                                                  .type(new GraphQLNonNull(GraphQLString)))
+                                                                .argument(idArgument)
                                                                 .dataFetcher(flexibleStopPlaceUpdater))
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(exportObjectType))

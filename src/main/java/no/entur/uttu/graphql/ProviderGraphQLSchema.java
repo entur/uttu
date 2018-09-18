@@ -32,6 +32,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import static graphql.Scalars.GraphQLID;
 import static graphql.Scalars.GraphQLLong;
 import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
@@ -75,7 +76,7 @@ public class ProviderGraphQLSchema {
 
     private void initCommonTypes() {
         identifiedEntityObjectType = newObject().name("IdentifiedEntity")
-                                             .field(newFieldDefinition().name(FIELD_ID).type(new GraphQLNonNull(GraphQLString)))
+                                             .field(newFieldDefinition().name(FIELD_ID).type(new GraphQLNonNull(GraphQLID)))
                                              .field(newFieldDefinition().name(FIELD_VERSION).type(new GraphQLNonNull(GraphQLString)))
                                              .field(newFieldDefinition().name(FIELD_CREATED_BY).type(new GraphQLNonNull(GraphQLString)))
                                              .field(newFieldDefinition().name(FIELD_CREATED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
@@ -120,7 +121,7 @@ public class ProviderGraphQLSchema {
 
 
         GraphQLInputObjectType identifiedEntityInputType = newInputObject().name("IdentifiedEntityInput")
-                                                                   .field(newInputObjectField().name(FIELD_ID).type(GraphQLString))
+                                                                   .field(newInputObjectField().name(FIELD_ID).type(GraphQLID))
                                                                    .field(newInputObjectField().name(FIELD_VERSION).type(GraphQLLong))
                                                                    .field(newInputObjectField().name(FIELD_CREATED_BY).type(GraphQLString))
                                                                    .field(newInputObjectField().name(FIELD_CREATED).type(dateTimeScalar.getDateTimeScalar()))
