@@ -36,14 +36,11 @@ public class ExportUpdater extends AbstractProviderEntityUpdater<Export> {
     }
 
 
-
-
     @Override
     protected Export saveEntity(DataFetchingEnvironment env) {
         Export export = super.saveEntity(env);
         exportService.exportDataSet(export);
 
-        repository.save(export);
-        return export;
+        return repository.save(export);
     }
 }

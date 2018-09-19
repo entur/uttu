@@ -20,8 +20,6 @@ import io.swagger.annotations.Api;
 import no.entur.uttu.graphql.ProviderGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.Consumes;
@@ -40,15 +38,11 @@ public class ProviderGraphQLResource {
     @Autowired
     private ProviderGraphQLSchema providerSchema;
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
     private GraphQLResourceHelper graphQLResourceHelper;
 
     @PostConstruct
     public void init() {
-        org.springframework.util.Assert.notNull(transactionManager, "The 'transactionManager' argument must not be null.");
-        graphQLResourceHelper = new GraphQLResourceHelper(GraphQL.newGraphQL(providerSchema.graphQLSchema).build(), new TransactionTemplate(transactionManager));
+        graphQLResourceHelper = new GraphQLResourceHelper(GraphQL.newGraphQL(providerSchema.graphQLSchema).build());
     }
 
 
@@ -65,7 +59,7 @@ public class ProviderGraphQLResource {
     @Consumes("application/graphql")
     @Produces(MediaType.APPLICATION_JSON)
     public Response executeProviderStatement(String query) {
-        return graphQLResourceHelper.getGraphQLResponseInTransaction("query", query, new HashMap<>());
+        return graphQLResourceHelper.getGraphQLResponse("query", query, new HashMap<>());
     }
 
 

@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
@@ -55,24 +53,8 @@ public class GraphQLResourceHelper {
 
     private GraphQL graphQL;
 
-    private TransactionTemplate transactionTemplate;
-
-    public GraphQLResourceHelper(GraphQL graphQL, TransactionTemplate transactionTemplate) {
+    public GraphQLResourceHelper(GraphQL graphQL) {
         this.graphQL = graphQL;
-        this.transactionTemplate = transactionTemplate;
-    }
-
-    /**
-     * Use programmatic transaction because graphql catches RuntimeExceptions.
-     * With multiple transaction interceptors (Transactional annotation), this causes the rolled back transaction (in case of errors) to be committed by the outer transaction interceptor.
-     * NRP-1992
-     */
-    public Response getGraphQLResponseInTransaction(String operationName, String query, Map<String, Object> variables) {
-        try {
-            return transactionTemplate.execute((transactionStatus) -> getGraphQLResponse(operationName, query, variables, transactionStatus));
-        } catch (Exception e) {
-            return Response.status(Response.Status.OK).entity(new ErrorResponseEntity(e.getMessage())).build();
-        }
     }
 
 
@@ -97,10 +79,10 @@ public class GraphQLResourceHelper {
         } else {
             variables = new HashMap<>();
         }
-        return getGraphQLResponseInTransaction((String) request.get("operationName"), (String) request.get("query"), variables);
+        return getGraphQLResponse((String) request.get("operationName"), (String) request.get("query"), variables);
     }
 
-    public Response getGraphQLResponse(String operationName, String query, Map<String, Object> variables, TransactionStatus transactionStatus) {
+    public Response getGraphQLResponse(String operationName, String query, Map<String, Object> variables) {
         Response.ResponseBuilder res = Response.status(Response.Status.OK);
         HashMap<String, Object> content = new HashMap<>();
         try {
@@ -117,7 +99,6 @@ public class GraphQLResourceHelper {
                 List<GraphQLError> errors = executionResult.getErrors();
                 if (errors.stream().anyMatch(error -> error.getErrorType().equals(ErrorType.DataFetchingException))) {
                     logger.info("Detected DataFetchingException from errors: {} Setting transaction to rollback only", errors);
-                    transactionStatus.setRollbackOnly();
                 }
 
                 content.put("errors", errors);
@@ -131,7 +112,6 @@ public class GraphQLResourceHelper {
             logger.warn("Caught graphqlException. Setting rollback only", e);
             res = Response.status(getStatusCodeFromThrowable(e));
             content.put("errors", Arrays.asList(e));
-            transactionStatus.setRollbackOnly();
         }
         removeErrorStacktraces(content);
         return res.entity(content).build();

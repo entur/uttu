@@ -46,15 +46,11 @@ public class FlexibleLinesGraphQLResource {
     @Autowired
     private FlexibleLinesGraphQLSchema flexibleLineSchema;
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
-
     private GraphQLResourceHelper graphQLResourceHelper;
 
     @PostConstruct
     public void init() {
-        org.springframework.util.Assert.notNull(transactionManager, "The 'transactionManager' argument must not be null.");
-        graphQLResourceHelper = new GraphQLResourceHelper(GraphQL.newGraphQL(flexibleLineSchema.graphQLSchema).build(), new TransactionTemplate(transactionManager));
+        graphQLResourceHelper = new GraphQLResourceHelper(GraphQL.newGraphQL(flexibleLineSchema.graphQLSchema).build());
     }
 
 
@@ -80,7 +76,7 @@ public class FlexibleLinesGraphQLResource {
     public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, String query) {
         Context.setProvider(providerCode);
         try {
-            return graphQLResourceHelper.getGraphQLResponseInTransaction("query", query, new HashMap<>());
+            return graphQLResourceHelper.getGraphQLResponse("query", query, new HashMap<>());
         } finally {
             Context.clear();
         }
