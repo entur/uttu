@@ -18,6 +18,7 @@ package no.entur.uttu.graphql
 import org.junit.Test
 
 import static org.hamcrest.Matchers.equalTo
+import static org.hamcrest.Matchers.hasSize
 import static org.hamcrest.Matchers.startsWith
 
 class FlexibleStopPlaceGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrationTest {
@@ -80,6 +81,8 @@ class FlexibleStopPlaceGraphQLIntegrationTest extends AbstractFlexibleLinesGraph
         executeGraphQL(createStopPlaceQuery, variables)
                 .body("data.mutateFlexibleStopPlace.id", startsWith("TST:FlexibleStopPlace"))
                 .body("data.mutateFlexibleStopPlace.name", equalTo("FlexibleAreaTest"))
+                .body("data.mutateFlexibleStopPlace.flexibleArea.polygon.type", equalTo("Polygon"))
+                .body("data.mutateFlexibleStopPlace.flexibleArea.polygon.coordinates", hasSize(4))
     }
 
     @Test
