@@ -18,13 +18,16 @@ package no.entur.uttu.model.job;
 import com.google.common.base.Preconditions;
 import no.entur.uttu.model.ProviderEntity;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 @Entity
@@ -40,8 +43,8 @@ public class Export extends ProviderEntity {
 
     private LocalDate toDate;
 
-    @OneToMany
-    private Set<ExportMessage> messages = new TreeSet<>();
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<ExportMessage> messages = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -56,7 +59,7 @@ public class Export extends ProviderEntity {
     }
 
     public void markAsFinished() {
-        if (!messages.isEmpty() && messages.iterator().next().getSeverity() != SeverityEnumeration.ERROR) {
+        if (messages.stream().anyMatch(m -> SeverityEnumeration.ERROR.equals(m.getSeverity()))) {
             exportStatus = ExportStatusEnumeration.FAILED;
         } else {
             exportStatus = ExportStatusEnumeration.SUCCESS;
@@ -64,16 +67,12 @@ public class Export extends ProviderEntity {
 
     }
 
-    public void setExportStatus(ExportStatusEnumeration exportStatus) {
-        this.exportStatus = exportStatus;
-    }
-
     public void addMessage(ExportMessage message) {
         this.messages.add(message);
     }
 
-    public Set<ExportMessage> getMessages() {
-        return messages;
+    public SortedSet<ExportMessage> getMessages() {
+        return new TreeSet<>(messages);
     }
 
     public LocalDate getFromDate() {

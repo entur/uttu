@@ -39,6 +39,9 @@ public class ExportMessage implements Comparable<ExportMessage> {
     @NotNull
     private String message;
 
+    private ExportMessage() {
+    }
+
     public ExportMessage(SeverityEnumeration severity, String message, Object... params) {
         Preconditions.checkArgument(severity != null, "Severity must be assigned");
         Preconditions.checkArgument(message != null, "Severity must be assigned");
@@ -59,10 +62,6 @@ public class ExportMessage implements Comparable<ExportMessage> {
 
     public Long getPk() {
         return pk;
-    }
-
-    public void setPk(Long pk) {
-        this.pk = pk;
     }
 
     public SeverityEnumeration getSeverity() {
