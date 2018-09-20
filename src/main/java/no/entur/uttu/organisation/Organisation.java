@@ -22,13 +22,13 @@ import java.util.Set;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Organisation {
-    private static final String NETEX_AUTHORITY_ID_REFEFRENCE_KEY = "netexAuthorityId";
-    private static final String NETEX_OPERATOR_ID_REFEFRENCE_KEY = "netexOperatorId";
-    private static final String NETEX_ID_REFEFRENCE_KEY = "netexId";
-    private static final String AUTHORITY_TYPE = "Authority";
-    private static final String OPERATOR_TYPE = "Operator";
+    public static final String NETEX_AUTHORITY_ID_REFEFRENCE_KEY = "netexAuthorityId";
+    public static final String NETEX_OPERATOR_ID_REFEFRENCE_KEY = "netexOperatorId";
+    public static final String NETEX_ID_REFEFRENCE_KEY = "netexId";
+    public static final String AUTHORITY_TYPE = "Authority";
+    public static final String OPERATOR_TYPE = "Operator";
 
-    private static final String COMPANY_NUMBER_REFERENCE_KEY = "companyNumber";
+    public static final String COMPANY_NUMBER_REFERENCE_KEY = "companyNumber";
     public long id;
     public String name;
     public String version;
