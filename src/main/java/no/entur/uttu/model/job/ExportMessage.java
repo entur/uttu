@@ -17,12 +17,14 @@ package no.entur.uttu.model.job;
 
 import com.google.common.base.Preconditions;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.text.MessageFormat;
 
 @Entity
@@ -37,6 +39,8 @@ public class ExportMessage implements Comparable<ExportMessage> {
     private SeverityEnumeration severity;
 
     @NotNull
+    @Column(length = 4000)
+    @Size(max = 4000)
     private String message;
 
     private ExportMessage() {
