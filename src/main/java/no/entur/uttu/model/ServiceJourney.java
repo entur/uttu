@@ -134,7 +134,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
     public void checkPersistable() {
         super.checkPersistable();
         Preconditions.checkArgument(getJourneyPattern().getPointsInSequence().size() == getPassingTimes().size(),
-                "%s must have same no of TimetabledPassingTimes as corresponding %s has no of StopPointInJourneyPattern", identity(), journeyPattern.identity());
+                "%s must have same no of passingTimes as corresponding %s has no of pointsInSequence", identity(), journeyPattern.identity());
 
         TimetabledPassingTime prevPassingTime = null;
         for (TimetabledPassingTime timetabledPassingTime : getPassingTimes()) {

@@ -102,15 +102,27 @@ public class NetexObjectFactory {
         PublicationDeliveryStructure.DataObjects dataObjects = objectFactory.createPublicationDeliveryStructureDataObjects();
         dataObjects.getCompositeFrameOrCommonFrame().add(objectFactory.createCompositeFrame(compositeFrame));
 
+        String participantRef = toNMTOKENString(exportContext.provider.getName());
         PublicationDeliveryStructure publicationDeliveryStructure = objectFactory.createPublicationDeliveryStructure()
                                                                             .withVersion(netexVersion)
                                                                             .withPublicationTimestamp(dateUtils.toExportLocalDateTime(exportContext.publicationTimestamp))
-                                                                            .withParticipantRef(exportContext.provider.getName())
+                                                                            .withParticipantRef(participantRef)
                                                                             .withDescription(createMultilingualString("Flexible lines"))
                                                                             .withDataObjects(dataObjects);
         return objectFactory.createPublicationDelivery(publicationDeliveryStructure);
     }
 
+
+    /**
+     * Make sure String value is a valid NMTOKEN value by replacing any white space chars with underscore
+     *
+     */
+    private String toNMTOKENString(String org) {
+        if (org==null) {
+            return "unknown";
+        }
+        return org.replace(' ','_');
+    }
 
     public <F extends Common_VersionFrameStructure> CompositeFrame createCompositeFrame(NetexExportContext context, AvailabilityPeriod availabilityPeriod, F... frames) {
         ValidityConditions_RelStructure validityConditionsStruct = objectFactory.createValidityConditions_RelStructure()

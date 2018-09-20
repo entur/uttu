@@ -333,7 +333,7 @@ public class FlexibleLinesGraphQLSchema {
                                            .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(GraphQLString))
                                            .field(newFieldDefinition().name(FIELD_OPERATOR_REF).type(GraphQLLong))
                                            .field(newFieldDefinition().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementObjectType))
-                                           .field(newFieldDefinition().name(FIELD_POINTS_IN_SEQUENCE).type(new GraphQLNonNull(new GraphQLList(timetabledPassingTimeObjectType))))
+                                           .field(newFieldDefinition().name(FIELD_PASSING_TIMES).type(new GraphQLNonNull(new GraphQLList(timetabledPassingTimeObjectType))))
                                            .field(newFieldDefinition().name(FIELD_DAY_TYPES).type(new GraphQLList(dayTypeObjectType)))
                                            .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                            .build();
@@ -562,7 +562,7 @@ public class FlexibleLinesGraphQLSchema {
                                                                  .field(newInputObjectField().name(FIELD_PUBLIC_CODE).type(GraphQLString))
                                                                  .field(newInputObjectField().name(FIELD_OPERATOR_REF).type(GraphQLLong))
                                                                  .field(newInputObjectField().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementInputType))
-                                                                 .field(newInputObjectField().name(FIELD_POINTS_IN_SEQUENCE).type(new GraphQLNonNull(new GraphQLList(timetabledPassingTimeInputType))))
+                                                                 .field(newInputObjectField().name(FIELD_PASSING_TIMES).type(new GraphQLNonNull(new GraphQLList(timetabledPassingTimeInputType))))
                                                                  .field(newInputObjectField().name(FIELD_DAY_TYPES).type(new GraphQLList(dayTypeInputType)))
                                                                  .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                  .build();

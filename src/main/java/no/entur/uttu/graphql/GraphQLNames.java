@@ -69,6 +69,9 @@ public class GraphQLNames {
     public static final String FIELD_DIRECTION_TYPE = "directionType";
     public static final String FIELD_SERVICE_JOURNEYS = "serviceJourneys";
 
+    // ServiceJourney
+    public static final String FIELD_PASSING_TIMES = "passingTimes";
+
     // DayType
     public static final String FIELD_DAY_TYPES = "dayTypes";
 

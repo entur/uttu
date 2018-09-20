@@ -21,9 +21,13 @@ import io.restassured.response.ValidatableResponse
 import no.entur.uttu.UttuIntegrationTest
 import org.junit.Before
 
+import java.time.LocalDate
+
 import static io.restassured.RestAssured.given
 
 abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTest {
+
+    protected static final LocalDate TODAY=LocalDate.now();
 
     @Before
     void configureRestAssured() {

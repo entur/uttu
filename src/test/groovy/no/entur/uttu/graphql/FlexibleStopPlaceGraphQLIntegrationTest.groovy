@@ -17,9 +17,7 @@ package no.entur.uttu.graphql
 
 import org.junit.Test
 
-import static org.hamcrest.Matchers.equalTo
-import static org.hamcrest.Matchers.hasSize
-import static org.hamcrest.Matchers.startsWith
+import static org.hamcrest.Matchers.*
 
 class FlexibleStopPlaceGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrationTest {
     String createStopPlaceQuery = """
@@ -42,67 +40,21 @@ class FlexibleStopPlaceGraphQLIntegrationTest extends AbstractFlexibleLinesGraph
          """
 
     @Test
-    void createFlexibleStopPlaceWithFlexibleArea() {
-
-
-        String variables = """    
-{
-  "flexibleStopPlace": {
-    "name": "FlexibleAreaTest",
-    "description": "flexible area desc",
-    "transportMode": "water",
-    "flexibleArea": {
-      "polygon": {
-        "coordinates": [
-          [
-            2.1,
-            3.3
-          ],
-          [
-            4.1,
-            5.2
-          ],
-          [
-            4.9,
-            5.9
-          ],
-          [
-            2.1,
-            3.3
-          ]
-        ],
-        "type": "Polygon"
-      }
-    }
-  }
-}
-        """
-
-        executeGraphQL(createStopPlaceQuery, variables)
+    void createFlexibleStopPlaceWithFlexibleAreaTest() {
+        String flexAreaName = "FlexibleAreaTest"
+        createFlexibleStopPlaceWithFlexibleArea(flexAreaName)
                 .body("data.mutateFlexibleStopPlace.id", startsWith("TST:FlexibleStopPlace"))
-                .body("data.mutateFlexibleStopPlace.name", equalTo("FlexibleAreaTest"))
+                .body("data.mutateFlexibleStopPlace.name", equalTo(flexAreaName))
                 .body("data.mutateFlexibleStopPlace.flexibleArea.polygon.type", equalTo("Polygon"))
                 .body("data.mutateFlexibleStopPlace.flexibleArea.polygon.coordinates", hasSize(4))
     }
 
     @Test
-    void createFlexibleStopPlaceWithHailAndRideArea() {
-
-
-        String variables = """    
-        {
-        "flexibleStopPlace": {
-        "name": "HailAndRideTest",
-
-        "description": "hail and ride desc",
-        "transportMode": "bus",
-        "hailAndRideArea": {"startQuayRef": "NSR:Quay:start","endQuayRef": "NSR:Quay:end"}
-    }
-        }"""
-
-        executeGraphQL(createStopPlaceQuery, variables)
+    void createFlexibleStopPlaceWithHailAndRideAreaTest() {
+        String hailAndRideTest = "HailAndRideTest"
+        createFlexibleStopPlaceWithHailAndRideArea(hailAndRideTest)
                 .body("data.mutateFlexibleStopPlace.id", startsWith("TST:FlexibleStopPlace"))
-                .body("data.mutateFlexibleStopPlace.name", equalTo("HailAndRideTest"))
+                .body("data.mutateFlexibleStopPlace.name", equalTo(hailAndRideTest))
                 .body("data.mutateFlexibleStopPlace.hailAndRideArea.startQuayRef", equalTo("NSR:Quay:start"))
                 .body("data.mutateFlexibleStopPlace.hailAndRideArea.endQuayRef", equalTo("NSR:Quay:end"))
     }

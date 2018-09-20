@@ -15,19 +15,29 @@
 
 package no.entur.uttu.stubs;
 
+import com.google.common.collect.Sets;
 import no.entur.uttu.organisation.Organisation;
 import no.entur.uttu.organisation.OrganisationRegistry;
 import org.springframework.stereotype.Component;
+
+import java.util.HashMap;
 
 @Component
 public class OrganisationRegistryStub implements OrganisationRegistry {
 
     @Override
     public Organisation getOrganisation(Long organisationId) {
-        Organisation organisation=new Organisation();
-        organisation.id=organisationId;
+        Organisation organisation = new Organisation();
+        organisation.id = organisationId;
 
-        // TODO need to diff between auth and operator?
+        organisation.types = Sets.newHashSet(Organisation.AUTHORITY_TYPE, Organisation.OPERATOR_TYPE);
+
+        organisation.references = new HashMap<>();
+        organisation.references.put(Organisation.NETEX_AUTHORITY_ID_REFEFRENCE_KEY, "TST:Authority:TstAuth");
+        organisation.references.put(Organisation.NETEX_OPERATOR_ID_REFEFRENCE_KEY, "TST:Operator:TstOper");
+
+        organisation.name="OrgName";
+        organisation.version="1";
         return organisation;
     }
 

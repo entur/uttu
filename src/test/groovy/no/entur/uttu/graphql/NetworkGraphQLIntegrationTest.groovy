@@ -15,34 +15,30 @@
 
 package no.entur.uttu.graphql
 
+import io.restassured.response.ValidatableResponse
 import org.junit.Test
 import static org.hamcrest.Matchers.*
 
 class NetworkGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrationTest {
 
+    String testNetworkName="TestNetwork"
 
     @Test
-    void createNetwork() {
-        String query = """
- mutation mutateNetwork(\$network: NetworkInput!) {
-  mutateNetwork(input: \$network) {
-    id
-    name
-    authorityRef
-  }
-  }
-                """
+    void createNetworkTest() {
+        ValidatableResponse rsp = createNetwork(testNetworkName)
 
-        String variables = """{
-            "network": {
-                "name": "TestNetwork",
-                "authorityRef": "22"
-            }
-        }"""
+        assertNetworkResponse(rsp,"mutateNetwork")
+        String id = getNetworkId(rsp)
 
-        executeGraphQL(query, variables)
-                .body("data.mutateNetwork.id", startsWith("TST:Network"))
-                .body("data.mutateNetwork.name", equalTo("TestNetwork"))
-                .body("data.mutateNetwork.authorityRef", equalTo(22))
+        String queryForNetwork = """ { network(id:"$id") { id, name, authorityRef }} """
+
+        assertNetworkResponse(executeGraphqQLQueryOnly(queryForNetwork), "network")
+    }
+
+
+    void assertNetworkResponse(ValidatableResponse rsp, String path) {
+        rsp.body("data. "+path+".id", startsWith("TST:Network"))
+                .body("data. "+path+".name", equalTo(testNetworkName))
+                .body("data. "+path+".authorityRef", equalTo(22))
     }
 }

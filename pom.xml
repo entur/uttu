@@ -78,7 +78,9 @@
         <fabric8.version>2.3.4</fabric8.version>
         <swagger-jersey2.version>1.5.16</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
+        <com.vividsolutions.version>1.13</com.vividsolutions.version>
 
+        <com.h2database.version>1.4.196</com.h2database.version>
         <groovy-all.version>2.4.15</groovy-all.version>
         <rest-assured.version>3.1.1</rest-assured.version>
         <graphql.version>9.2</graphql.version>
@@ -264,17 +266,30 @@
             <artifactId>hibernate-core</artifactId>
             <version>${hibernate.version}</version>
         </dependency>
+
+        <!-- https://mvnrepository.com/artifact/com.vividsolutions/jts -->
+        <dependency>
+            <groupId>com.vividsolutions</groupId>
+            <artifactId>jts</artifactId>
+            <version>${com.vividsolutions.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.opengeo</groupId>
             <artifactId>geodb</artifactId>
             <version>${geodb.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.vividsolutions</groupId>
+                    <artifactId>jts</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.geotools</groupId>
             <artifactId>gt-geojson</artifactId>
             <version>${geotools.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-tomcat8-adapter</artifactId>
@@ -314,6 +329,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <version>${com.h2database.version}</version>
             <scope>test</scope>
         </dependency>
 
