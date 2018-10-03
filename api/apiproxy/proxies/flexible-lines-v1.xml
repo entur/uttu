@@ -20,10 +20,18 @@
     <Flows/>
     <PostFlow name="PostFlow">
         <Request/>
-        <Response/>
+        <Response>
+            <Step>
+                <Name>flowCallout.generalStackdriverLoggingTeamRutedata</Name>
+            </Step>
+        </Response>
     </PostFlow>
     <PreFlow name="PreFlow">
         <Request>
+            <Step>
+                <FaultRules/>
+                <Name>flowCallout.globalIpBlacklistTeamRutedata</Name>
+            </Step>
             <Step>
                 <FaultRules/>
                 <Name>spikeArrest</Name>

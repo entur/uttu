@@ -20,7 +20,9 @@
    <Policies>
         <Policy>assignMessage.addCors</Policy>
         <Policy>flowCallout.getEnvironmentConfiguration</Policy>
-        <Policy>flowCalloutreplaceTargetUrl</Policy>
+        <Policy>flowCallout.generalStackdriverLoggingTeamRutedata</Policy>
+        <Policy>flowCallout.globalIpBlacklistTeamRutedata</Policy>
+        <Policy>flowCallout.replaceTargetUrl</Policy>
         <Policy>spikeArrest</Policy>
     </Policies>
     <ProxyEndpoints>
