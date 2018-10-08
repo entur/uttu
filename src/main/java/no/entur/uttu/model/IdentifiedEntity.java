@@ -36,7 +36,7 @@ public abstract class IdentifiedEntity {
 
     @Version
     @NotNull
-    protected Long version = 1l;
+    protected Long version;
 
     @NotNull
     protected Instant created;
