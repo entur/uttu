@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
@@ -42,6 +44,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@Component
 public class GraphQLResourceHelper {
     private static final Logger logger = LoggerFactory.getLogger(FlexibleLinesGraphQLResource.class);
 
@@ -51,14 +54,9 @@ public class GraphQLResourceHelper {
     private static final Set<Class<? extends RuntimeException>> RETHROW_EXCEPTION_TYPES
             = Sets.newHashSet(NotAuthenticatedException.class, NotAuthorizedException.class, AccessDeniedException.class, DataIntegrityViolationException.class);
 
-    private GraphQL graphQL;
 
-    public GraphQLResourceHelper(GraphQL graphQL) {
-        this.graphQL = graphQL;
-    }
-
-
-    public Response executeStatement(Map<String, Object> request) {
+    @Transactional
+    public Response executeStatement(GraphQL graphQL, Map<String, Object> request) {
         Map<String, Object> variables;
         if (request.get("variables") instanceof Map) {
             variables = (Map) request.get("variables");
@@ -79,10 +77,11 @@ public class GraphQLResourceHelper {
         } else {
             variables = new HashMap<>();
         }
-        return getGraphQLResponse((String) request.get("operationName"), (String) request.get("query"), variables);
+        return getGraphQLResponse(graphQL, (String) request.get("operationName"), (String) request.get("query"), variables);
     }
 
-    public Response getGraphQLResponse(String operationName, String query, Map<String, Object> variables) {
+    @Transactional
+    public Response getGraphQLResponse(GraphQL graphQL, String operationName, String query, Map<String, Object> variables) {
         Response.ResponseBuilder res = Response.status(Response.Status.OK);
         HashMap<String, Object> content = new HashMap<>();
         try {
@@ -113,11 +112,11 @@ public class GraphQLResourceHelper {
             res = Response.status(getStatusCodeFromThrowable(e));
             content.put("errors", Arrays.asList(e));
         }
-        removeErrorStacktraces(content);
+        removeErrorStackTraces(content);
         return res.entity(content).build();
     }
 
-    private void removeErrorStacktraces(Map<String, Object> content) {
+    private void removeErrorStackTraces(Map<String, Object> content) {
         if (content.containsKey("errors")) {
             @SuppressWarnings("unchecked")
             List<GraphQLError> errors = (List<GraphQLError>) content.get("errors");

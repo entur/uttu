@@ -38,11 +38,14 @@ public class ProviderGraphQLResource {
     @Autowired
     private ProviderGraphQLSchema providerSchema;
 
+    private GraphQL providerGraphQL;
+
+    @Autowired
     private GraphQLResourceHelper graphQLResourceHelper;
 
     @PostConstruct
     public void init() {
-        graphQLResourceHelper = new GraphQLResourceHelper(GraphQL.newGraphQL(providerSchema.graphQLSchema).build());
+        providerGraphQL = GraphQL.newGraphQL(providerSchema.graphQLSchema).build();
     }
 
 
@@ -51,7 +54,7 @@ public class ProviderGraphQLResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response executeProviderStatement(HashMap<String, Object> request) {
-        return graphQLResourceHelper.executeStatement(request);
+        return graphQLResourceHelper.executeStatement(providerGraphQL, request);
     }
 
 
@@ -59,7 +62,7 @@ public class ProviderGraphQLResource {
     @Consumes("application/graphql")
     @Produces(MediaType.APPLICATION_JSON)
     public Response executeProviderStatement(String query) {
-        return graphQLResourceHelper.getGraphQLResponse("query", query, new HashMap<>());
+        return graphQLResourceHelper.getGraphQLResponse(providerGraphQL, "query", query, new HashMap<>());
     }
 
 

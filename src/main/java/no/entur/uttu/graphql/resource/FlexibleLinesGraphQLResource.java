@@ -22,8 +22,6 @@ import no.entur.uttu.graphql.FlexibleLinesGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.Consumes;
@@ -46,11 +44,14 @@ public class FlexibleLinesGraphQLResource {
     @Autowired
     private FlexibleLinesGraphQLSchema flexibleLineSchema;
 
+    @Autowired
     private GraphQLResourceHelper graphQLResourceHelper;
+
+    private GraphQL flexibleLinesGraphQL;
 
     @PostConstruct
     public void init() {
-        graphQLResourceHelper = new GraphQLResourceHelper(GraphQL.newGraphQL(flexibleLineSchema.graphQLSchema).build());
+        flexibleLinesGraphQL = GraphQL.newGraphQL(flexibleLineSchema.graphQLSchema).build();
     }
 
 
@@ -62,7 +63,7 @@ public class FlexibleLinesGraphQLResource {
     public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
         Context.setProvider(providerCode);
         try {
-            return graphQLResourceHelper.executeStatement(request);
+            return graphQLResourceHelper.executeStatement(flexibleLinesGraphQL, request);
         } finally {
             Context.clear();
         }
@@ -76,7 +77,7 @@ public class FlexibleLinesGraphQLResource {
     public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, String query) {
         Context.setProvider(providerCode);
         try {
-            return graphQLResourceHelper.getGraphQLResponse("query", query, new HashMap<>());
+            return graphQLResourceHelper.getGraphQLResponse(flexibleLinesGraphQL, "query", query, new HashMap<>());
         } finally {
             Context.clear();
         }
