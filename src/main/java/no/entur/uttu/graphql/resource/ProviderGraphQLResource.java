@@ -20,6 +20,7 @@ import io.swagger.annotations.Api;
 import no.entur.uttu.graphql.ProviderGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.Consumes;
@@ -50,6 +51,7 @@ public class ProviderGraphQLResource {
     @SuppressWarnings("unchecked")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response executeProviderStatement(HashMap<String, Object> request) {
         return graphQLResourceHelper.executeStatement(request);
     }
@@ -58,6 +60,7 @@ public class ProviderGraphQLResource {
     @POST
     @Consumes("application/graphql")
     @Produces(MediaType.APPLICATION_JSON)
+    @Transactional
     public Response executeProviderStatement(String query) {
         return graphQLResourceHelper.getGraphQLResponse("query", query, new HashMap<>());
     }

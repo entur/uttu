@@ -22,8 +22,7 @@ import no.entur.uttu.graphql.FlexibleLinesGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.ws.rs.Consumes;
@@ -59,6 +58,7 @@ public class FlexibleLinesGraphQLResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
+    @Transactional
     public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
         Context.setProvider(providerCode);
         try {
@@ -73,6 +73,7 @@ public class FlexibleLinesGraphQLResource {
     @Consumes("application/graphql")
     @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
+    @Transactional
     public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, String query) {
         Context.setProvider(providerCode);
         try {
