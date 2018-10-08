@@ -20,7 +20,7 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Codespace;
-import no.entur.uttu.repository.CodeSpaceRepository;
+import no.entur.uttu.repository.CodespaceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -29,10 +29,10 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
 
 @Component
-public class CodeSpaceUpdater implements DataFetcher<Codespace> {
+public class CodespaceUpdater implements DataFetcher<Codespace> {
 
     @Autowired
-    private CodeSpaceRepository repository;
+    private CodespaceRepository repository;
 
     @Override
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")

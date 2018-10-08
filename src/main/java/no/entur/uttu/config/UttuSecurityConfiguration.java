@@ -50,6 +50,7 @@ public class UttuSecurityConfiguration extends KeycloakWebSecurityConfigurerAdap
         auth.authenticationProvider(keycloakAuthenticationProvider());
     }
 
+
     /**
      * Defines the session authentication strategy.
      */

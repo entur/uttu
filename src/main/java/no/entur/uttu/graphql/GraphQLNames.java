@@ -36,14 +36,14 @@ public class GraphQLNames {
     public static final String FIELD_FROM_DATE = "fromDate";
     public static final String FIELD_TO_DATE = "toDate";
 
-    // CodeSpace
+    // Codespace
     public static final String FIELD_XMLNS = "xmlns";
     public static final String FIELD_XMLNS_URL = "xmlnsUrl";
 
     // Provider
     public static final String FIELD_CODE = "code";
-    public static final String FIELD_CODE_SPACE = "codeSpace";
-    public static final String FIELD_CODE_SPACE_REF = "codeSpaceRef";
+    public static final String FIELD_CODE_SPACE = "codespace";
+    public static final String FIELD_CODE_SPACE_REF = "codespaceRef";
 
     // FlexibleStopPlace
     public static final String FIELD_FLEXIBLE_AREA = "flexibleArea";

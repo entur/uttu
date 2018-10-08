@@ -21,7 +21,7 @@ import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
-import no.entur.uttu.repository.CodeSpaceRepository;
+import no.entur.uttu.repository.CodespaceRepository;
 import no.entur.uttu.repository.ProviderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,7 +36,7 @@ public class ProviderUpdater implements DataFetcher<Provider> {
     @Autowired
     private ProviderRepository repository;
     @Autowired
-    private CodeSpaceRepository codeSpaceRepository;
+    private CodespaceRepository codespaceRepository;
 
     @Override
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
@@ -60,13 +60,13 @@ public class ProviderUpdater implements DataFetcher<Provider> {
     private void populateEntityFromInput(Provider entity, ArgumentWrapper input) {
         input.apply(FIELD_CODE, entity::setCode);
         input.apply(FIELD_NAME, entity::setName);
-        input.apply(FIELD_CODE_SPACE_REF, this::getVerifiedCodeSpace, entity::setCodespace);
+        input.apply(FIELD_CODE_SPACE_REF, this::getVerifiedCodespace, entity::setCodespace);
     }
 
-    private Codespace getVerifiedCodeSpace(Long codeSpaceId) {
-        Codespace codespace = codeSpaceRepository.getOne(codeSpaceId);
+    private Codespace getVerifiedCodespace(Long codespaceId) {
+        Codespace codespace = codespaceRepository.getOne(codespaceId);
         Preconditions.checkArgument(codespace != null,
-                "Codespace not found [pk=%s]", codeSpaceId);
+                "Codespace not found [pk=%s]", codespaceId);
         return codespace;
     }
 }

@@ -25,7 +25,7 @@ import graphql.schema.GraphQLSchema;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
-import no.entur.uttu.repository.CodeSpaceRepository;
+import no.entur.uttu.repository.CodespaceRepository;
 import no.entur.uttu.repository.ProviderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -47,12 +47,12 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
 @Component
 public class ProviderGraphQLSchema {
     @Autowired
-    private CodeSpaceRepository codeSpaceRepository;
+    private CodespaceRepository codespaceRepository;
 
     @Autowired
     private ProviderRepository providerRepository;
     @Autowired
-    private DataFetcher<Codespace> codeSpaceUpdater;
+    private DataFetcher<Codespace> codespaceUpdater;
     @Autowired
     private DataFetcher<Provider> providerUpdater;
 
@@ -62,7 +62,7 @@ public class ProviderGraphQLSchema {
     public GraphQLSchema graphQLSchema;
 
     private GraphQLObjectType identifiedEntityObjectType;
-    private GraphQLObjectType codeSpaceObjectType;
+    private GraphQLObjectType codespaceObjectType;
     private GraphQLObjectType providerObjectType;
 
     @PostConstruct
@@ -84,7 +84,7 @@ public class ProviderGraphQLSchema {
                                              .field(newFieldDefinition().name(FIELD_CHANGED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
                                              .build();
 
-        codeSpaceObjectType = newObject(identifiedEntityObjectType).name("Codespace")
+        codespaceObjectType = newObject(identifiedEntityObjectType).name("Codespace")
                                       .field(newFieldDefinition().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString)))
                                       .field(newFieldDefinition().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString)))
                                       .build();
@@ -92,7 +92,7 @@ public class ProviderGraphQLSchema {
         providerObjectType = newObject(identifiedEntityObjectType).name("Provider")
                                      .field(newFieldDefinition().name(FIELD_CODE).type(new GraphQLNonNull(GraphQLString)))
                                      .field(newFieldDefinition().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
-                                     .field(newFieldDefinition().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codeSpaceObjectType)))
+                                     .field(newFieldDefinition().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codespaceObjectType)))
                                      .build();
 
     }
@@ -103,10 +103,10 @@ public class ProviderGraphQLSchema {
                                               .name("Queries")
                                               .description("Query and search for data")
                                               .field(newFieldDefinition()
-                                                             .type(new GraphQLList(codeSpaceObjectType))
-                                                             .name("codeSpaces")
-                                                             .description("Search for CodeSpaces")
-                                                             .dataFetcher(env -> codeSpaceRepository.findAll()))
+                                                             .type(new GraphQLList(codespaceObjectType))
+                                                             .name("codespaces")
+                                                             .description("Search for Codespaces")
+                                                             .dataFetcher(env -> codespaceRepository.findAll()))
                                               .field(newFieldDefinition()
                                                              .type(new GraphQLList(providerObjectType))
                                                              .name("providers")
@@ -129,7 +129,7 @@ public class ProviderGraphQLSchema {
                                                                    .field(newInputObjectField().name(FIELD_CHANGED).type(dateTimeScalar.getDateTimeScalar()))
                                                                    .build();
 
-        GraphQLInputObjectType codeSpaceInputType = newInputObject(identifiedEntityInputType).name("CodeSpaceInput")
+        GraphQLInputObjectType codespaceInputType = newInputObject(identifiedEntityInputType).name("CodespaceInput")
                                                             .field(newInputObjectField().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString)))
                                                             .field(newInputObjectField().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString)))
                                                             .build();
@@ -137,20 +137,20 @@ public class ProviderGraphQLSchema {
         GraphQLInputObjectType providerInputType = newInputObject(identifiedEntityInputType).name("ProviderInput")
                                                            .field(newInputObjectField().name(FIELD_CODE).type(new GraphQLNonNull(GraphQLString)))
                                                            .field(newInputObjectField().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
-                                                           .field(newInputObjectField().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codeSpaceInputType)))
+                                                           .field(newInputObjectField().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codespaceInputType)))
                                                            .build();
 
         GraphQLObjectType mutationType = newObject()
                                                  .name("Mutations")
                                                  .description("Create and edit Provider data")
                                                  .field(newFieldDefinition()
-                                                                .type(new GraphQLNonNull(codeSpaceObjectType))
-                                                                .name("mutateCodeSpace")
+                                                                .type(new GraphQLNonNull(codespaceObjectType))
+                                                                .name("mutateCodespace")
                                                                 .description("Create new or update existing Codespace")
                                                                 .argument(GraphQLArgument.newArgument()
                                                                                   .name(FIELD_INPUT)
-                                                                                  .type(codeSpaceInputType))
-                                                                .dataFetcher(codeSpaceUpdater))
+                                                                                  .type(codespaceInputType))
+                                                                .dataFetcher(codespaceUpdater))
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(providerObjectType))
                                                                 .name("mutateProvider")
