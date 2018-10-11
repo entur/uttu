@@ -30,7 +30,7 @@ public class FileNameUtil {
     private static final String SECONDARY_SEPARATOR = "-";
 
     public static String createDataSetFilename(Provider provider) {
-        return "rb_" + provider.getCode().toLowerCase() + "_flexible_lines.zip";
+        return "rb_" + provider.getCode().toLowerCase() + "-flexible-lines.zip";
     }
 
     public static String createCommonFileFilename(Provider provider) {
