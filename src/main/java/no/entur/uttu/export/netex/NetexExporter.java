@@ -28,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
@@ -53,6 +54,10 @@ public class NetexExporter {
 
     private NeTExValidator netexValidator;
 
+    @PostConstruct
+    public void asyncInit() {
+        new Thread(() -> assertInit()).start();
+    }
 
     public void exportDataSet(Export export, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
 
