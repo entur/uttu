@@ -446,13 +446,14 @@ public class FlexibleLinesGraphQLSchema {
     private GraphQLObjectType createMutationObject() {
 
 
+        String ignoredInputFieldDesc="Value is ignored for mutation calls. Included for convenient copying of output to input with minimal modifications.";
         GraphQLInputObjectType identifiedEntityInputType = newInputObject().name("IdentifiedEntityInput")
                                                                    .field(newInputObjectField().name(FIELD_ID).type(Scalars.GraphQLID))
-                                                                   .field(newInputObjectField().name(FIELD_VERSION).type(GraphQLLong))
-                                                                   .field(newInputObjectField().name(FIELD_CREATED_BY).type(GraphQLString))
-                                                                   .field(newInputObjectField().name(FIELD_CREATED).type(dateTimeScalar.getDateTimeScalar()))
-                                                                   .field(newInputObjectField().name(FIELD_CHANGED_BY).type(GraphQLString))
-                                                                   .field(newInputObjectField().name(FIELD_CHANGED).type(dateTimeScalar.getDateTimeScalar()))
+                                                                   .field(newInputObjectField().name(FIELD_VERSION).type(GraphQLLong)).description(ignoredInputFieldDesc)
+                                                                   .field(newInputObjectField().name(FIELD_CREATED_BY).type(GraphQLString)).description(ignoredInputFieldDesc)
+                                                                   .field(newInputObjectField().name(FIELD_CREATED).type(dateTimeScalar.getDateTimeScalar())).description(ignoredInputFieldDesc)
+                                                                   .field(newInputObjectField().name(FIELD_CHANGED_BY).type(GraphQLString)).description(ignoredInputFieldDesc)
+                                                                   .field(newInputObjectField().name(FIELD_CHANGED).type(dateTimeScalar.getDateTimeScalar())).description(ignoredInputFieldDesc)
                                                                    .build();
 
         GraphQLInputObjectType groupOfEntitiesInputType = newInputObject(identifiedEntityInputType).name("GroupOfEntities")
