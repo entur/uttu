@@ -21,8 +21,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import static no.entur.uttu.model.Constraints.PROVIDER_UNIQUE_CODE;
+
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = "provider_code_index", columnNames = "code")})
+@Table(uniqueConstraints = {@UniqueConstraint(name = PROVIDER_UNIQUE_CODE, columnNames = "code")})
 public class Provider extends IdentifiedEntity {
     @NotNull
     private String code;

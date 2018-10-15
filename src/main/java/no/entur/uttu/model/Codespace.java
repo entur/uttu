@@ -20,10 +20,12 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import static no.entur.uttu.model.Constraints.CODESPACE_UNIQUE_XMLNS;
+
 @Entity
 @Table(
         uniqueConstraints = {
-                                    @UniqueConstraint(name = "codespace_xmlns", columnNames = {"xmlns"})}
+                                    @UniqueConstraint(name = CODESPACE_UNIQUE_XMLNS, columnNames = {"xmlns"})}
 )
 public class Codespace extends IdentifiedEntity {
 

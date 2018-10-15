@@ -27,10 +27,7 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
 @Entity
-@Table(
-        uniqueConstraints = {
-                                    @UniqueConstraint(name = "flexible_stop_place_unique_name_constraint", columnNames = {"provider_pk", "name"})}
-)
+@Table(uniqueConstraints = {@UniqueConstraint(name = Constraints.FLEXIBLE_STOP_PLACE_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
 public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
 
     @Enumerated(EnumType.STRING)

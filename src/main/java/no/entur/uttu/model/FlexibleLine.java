@@ -33,8 +33,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static no.entur.uttu.model.Constraints.FLEXIBLE_LINE_UNIQUE_NAME;
+
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = "flexible_lines_unique_name_constraint", columnNames = {"provider_pk", "name"})})
+@Table(uniqueConstraints = {@UniqueConstraint(name = FLEXIBLE_LINE_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
 public class FlexibleLine extends GroupOfEntities_VersionStructure {
 
     private String publicCode;

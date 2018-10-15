@@ -31,8 +31,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.entur.uttu.model.Constraints.SERVICE_JOURNEY_UNIQUE_NAME;
+
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = "service_journey_unique_name_constraint", columnNames = {"provider_pk", "name"})})
+@Table(uniqueConstraints = {@UniqueConstraint(name = SERVICE_JOURNEY_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
 public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     private String publicCode;

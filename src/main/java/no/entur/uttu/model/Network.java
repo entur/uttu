@@ -20,8 +20,10 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
+import static no.entur.uttu.model.Constraints.NETWORK_UNIQUE_NAME;
+
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = "network_name_index", columnNames = {"provider_pk", "name"})})
+@Table(uniqueConstraints = {@UniqueConstraint(name = NETWORK_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
 public class Network extends GroupOfEntities_VersionStructure {
 
     /**

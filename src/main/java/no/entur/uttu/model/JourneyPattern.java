@@ -32,8 +32,10 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+import static no.entur.uttu.model.Constraints.JOURNEY_PATTERN_UNIQUE_NAME;
+
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = "journey_pattern_unique_name_constraint", columnNames = {"provider_pk", "name"})})
+@Table(uniqueConstraints = {@UniqueConstraint(name = JOURNEY_PATTERN_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
 public class JourneyPattern extends GroupOfEntities_VersionStructure {
 
     @NotNull

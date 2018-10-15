@@ -29,8 +29,10 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
+import static no.entur.uttu.model.Constraints.STOP_POINT_IN_JOURNEY_PATTERN_UNIQUE_ORDER;
+
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = "stop_point_in_jp_unique_order_constraint", columnNames = {"journey_pattern_pk", "order_val"})})
+@Table(uniqueConstraints = {@UniqueConstraint(name = STOP_POINT_IN_JOURNEY_PATTERN_UNIQUE_ORDER, columnNames = {"journey_pattern_pk", "order_val"})})
 public class StopPointInJourneyPattern extends ProviderEntity {
 
     @ManyToOne
