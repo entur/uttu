@@ -202,16 +202,6 @@ public class FlexibleLinesGraphQLSchema {
                              .description("Id for entity").build();
 
 
-        identifiedEntityObjectType = newObject().name("IdentifiedEntity")
-                                             .field(idFieldDefinition)
-                                             .field(versionField)
-                                             .field(newFieldDefinition().name(FIELD_CREATED_BY).type(new GraphQLNonNull(GraphQLString)))
-                                             .field(newFieldDefinition().name(FIELD_CREATED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
-                                             .field(newFieldDefinition().name(FIELD_CHANGED_BY).type(new GraphQLNonNull(GraphQLString)))
-                                             .field(newFieldDefinition().name(FIELD_CHANGED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
-                                             .build();
-
-
         geoJSONObjectType = newObject()
                                     .name("GeoJSON")
                                     .description("Geometry-object as specified in the GeoJSON-standard (http://geojson.org/geojson-spec.html).")
@@ -444,7 +434,6 @@ public class FlexibleLinesGraphQLSchema {
     }
 
     private GraphQLObjectType createMutationObject() {
-
 
         String ignoredInputFieldDesc="Value is ignored for mutation calls. Included for convenient copying of output to input with minimal modifications.";
         GraphQLInputObjectType identifiedEntityInputType = newInputObject().name("IdentifiedEntityInput")

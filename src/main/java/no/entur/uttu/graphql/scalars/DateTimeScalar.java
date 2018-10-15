@@ -18,21 +18,18 @@ package no.entur.uttu.graphql.scalars;
 import graphql.language.StringValue;
 import graphql.schema.Coercing;
 import graphql.schema.GraphQLScalarType;
-import no.entur.uttu.config.ExportTimeZone;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 @Component
 public class DateTimeScalar {
 
+    private static final ZoneId UTC_TIME_ZONE = ZoneId.of("UTC");
 
-    @Autowired
-    private ExportTimeZone exportTimeZone;
-
-    public static final String EXAMPLE_DATE_TIME = "2017-04-23T18:25:43.511+0100";
+    public static final String EXAMPLE_DATE_TIME = "2017-04-23T18:25:43.511+0000";
 
     /**
      * Milliseconds and time zone offset is _REQUIRED_ in this scalar.
@@ -44,7 +41,7 @@ public class DateTimeScalar {
 
     private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern(DATE_TIME_PATTERN);
 
-    private static String DESCRIPTION= "Date time using the format: " + DATE_TIME_PATTERN + ". Example: "+EXAMPLE_DATE_TIME;
+    private static String DESCRIPTION = "Date time using the format: " + DATE_TIME_PATTERN + ". Example: " + EXAMPLE_DATE_TIME;
 
     private GraphQLScalarType graphQLDateScalar;
 
@@ -60,7 +57,7 @@ public class DateTimeScalar {
             @Override
             public String serialize(Object input) {
                 if (input instanceof Instant) {
-                    return (((Instant) input)).atZone(exportTimeZone.getDefaultTimeZoneId()).format(FORMATTER);
+                    return (((Instant) input)).atZone(UTC_TIME_ZONE).format(FORMATTER);
                 }
                 return null;
             }
