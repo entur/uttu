@@ -20,6 +20,7 @@
    <Policies>
         <Policy>assignMessage.addCors</Policy>
         <Policy>flowCallout.getEnvironmentConfiguration</Policy>
+        <Policy>flowCallout.generalStackdriverLogging</Policy>
         <Policy>flowCalloutreplaceTargetUrl</Policy>
         <Policy>spikeArrest</Policy>
     </Policies>

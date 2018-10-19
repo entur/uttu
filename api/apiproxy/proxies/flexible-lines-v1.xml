@@ -20,7 +20,11 @@
     <Flows/>
     <PostFlow name="PostFlow">
         <Request/>
-        <Response/>
+        <Response>
+            <Step>
+                <Name>flowCallout.generalStackdriverLogging</Name>
+            </Step>
+        </Response>
     </PostFlow>
     <PreFlow name="PreFlow">
         <Request>
