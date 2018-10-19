@@ -63,8 +63,6 @@ public class RouteProducer {
 
         String name = journeyPattern.getName();
         if (name == null) {
-            // Generate name from points
-            // TODO? must look up quayREf from NSR?
             name = journeyPattern.getFlexibleLine().getName();
         }
 

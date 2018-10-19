@@ -17,16 +17,16 @@ package no.entur.uttu.organisation;
 
 public interface OrganisationRegistry {
 
-    Organisation getOrganisation(Long organisationId);
+    Organisation getOrganisation(String organisationId);
 
     /**
      * Return provided operatorRef if valid, else throw exception.
      */
-    Long getVerifiedOperatorRef(Long operatorRef);
+    String getVerifiedOperatorRef(String operatorRef);
 
     /**
      * Return provided authorityRef if valid, else throw exception.
      */
-    Long getVerifiedAuthorityRef(Long authorityRef);
+    String getVerifiedAuthorityRef(String authorityRef);
 
 }

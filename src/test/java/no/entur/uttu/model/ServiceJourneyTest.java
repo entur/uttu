@@ -70,7 +70,7 @@ public class ServiceJourneyTest {
     public void checkPersistable_whenOperatorRefOnServiceJourney_thenSuccess() {
         ServiceJourney serviceJourney = validServiceJourney();
         serviceJourney.getJourneyPattern().getFlexibleLine().setOperatorRef(null);
-        serviceJourney.setOperatorRef(11l);
+        serviceJourney.setOperatorRef("11");
         serviceJourney.checkPersistable();
     }
 
@@ -112,7 +112,7 @@ public class ServiceJourneyTest {
     private JourneyPattern createJP(int size) {
         JourneyPattern journeyPattern = new JourneyPattern();
         journeyPattern.setFlexibleLine(new FlexibleLine());
-        journeyPattern.getFlexibleLine().setOperatorRef(34L);
+        journeyPattern.getFlexibleLine().setOperatorRef("34");
         for (int i = 0; i < size; i++) {
             StopPointInJourneyPattern spijp = new StopPointInJourneyPattern();
             journeyPattern.getPointsInSequence().add(spijp);

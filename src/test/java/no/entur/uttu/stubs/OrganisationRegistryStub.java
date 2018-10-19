@@ -26,7 +26,7 @@ import java.util.HashMap;
 public class OrganisationRegistryStub implements OrganisationRegistry {
 
     @Override
-    public Organisation getOrganisation(Long organisationId) {
+    public Organisation getOrganisation(String organisationId) {
         Organisation organisation = new Organisation();
         organisation.id = organisationId;
 
@@ -42,12 +42,12 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
     }
 
     @Override
-    public Long getVerifiedOperatorRef(Long operatorRef) {
+    public String getVerifiedOperatorRef(String operatorRef) {
         return operatorRef;
     }
 
     @Override
-    public Long getVerifiedAuthorityRef(Long authorityRef) {
+    public String getVerifiedAuthorityRef(String authorityRef) {
         return authorityRef;
     }
 }

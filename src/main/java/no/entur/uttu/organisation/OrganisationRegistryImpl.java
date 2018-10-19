@@ -36,7 +36,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    public Organisation getOrganisation(Long organisationId) {
+    public Organisation getOrganisation(String organisationId) {
         try {
             ResponseEntity<Organisation> rateResponse =
                     restTemplate.getForEntity(organisationRegistryUrl + organisationId,
@@ -51,7 +51,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     /**
      * Return provided operatorRef if valid, else throw exception.
      */
-    public Long getVerifiedOperatorRef(Long operatorRef) {
+    public String getVerifiedOperatorRef(String operatorRef) {
         if (operatorRef == null) {
             return null;
         }
@@ -64,7 +64,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     /**
      * Return provided authorityRef if valid, else throw exception.
      */
-    public Long getVerifiedAuthorityRef(Long authorityRef) {
+    public String getVerifiedAuthorityRef(String authorityRef) {
         if (authorityRef == null) {
             return null;
         }
