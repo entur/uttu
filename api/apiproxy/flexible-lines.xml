@@ -23,6 +23,7 @@
         <Policy>flowCallout.generalStackdriverLogging</Policy>
         <Policy>flowCalloutreplaceTargetUrl</Policy>
         <Policy>spikeArrest</Policy>
+        <Policy>flowCallout.generalSecurityHeaders</Policy>
     </Policies>
     <ProxyEndpoints>
         <ProxyEndpoint>flexible-lines-v1</ProxyEndpoint>
