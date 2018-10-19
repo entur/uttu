@@ -39,7 +39,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     private String publicCode;
 
-    private Long operatorRef;
+    private String operatorRef;
 
     @OneToOne(cascade = CascadeType.ALL)
     private BookingArrangement bookingArrangement;
@@ -94,11 +94,11 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
         this.publicCode = publicCode;
     }
 
-    public Long getOperatorRef() {
+    public String getOperatorRef() {
         return operatorRef;
     }
 
-    public void setOperatorRef(Long operatorRef) {
+    public void setOperatorRef(String operatorRef) {
         this.operatorRef = operatorRef;
     }
 

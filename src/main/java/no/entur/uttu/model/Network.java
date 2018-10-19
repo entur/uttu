@@ -30,13 +30,13 @@ public class Network extends GroupOfEntities_VersionStructure {
      * Reference to Authority in organisation registry.
      */
     @NotNull
-    private Long authorityRef;
+    private String authorityRef;
 
-    public Long getAuthorityRef() {
+    public String getAuthorityRef() {
         return authorityRef;
     }
 
-    public void setAuthorityRef(Long authorityRef) {
+    public void setAuthorityRef(String authorityRef) {
         this.authorityRef = authorityRef;
     }
 }

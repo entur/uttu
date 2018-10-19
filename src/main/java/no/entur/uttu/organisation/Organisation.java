@@ -29,7 +29,7 @@ public class Organisation {
     public static final String OPERATOR_TYPE = "Operator";
 
     public static final String COMPANY_NUMBER_REFERENCE_KEY = "companyNumber";
-    public long id;
+    public String id;
     public String name;
     public String version;
 

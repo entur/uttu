@@ -57,7 +57,7 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
     @ManyToOne
     private Network network;
 
-    private Long operatorRef;
+    private String operatorRef;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Notice> notices;
@@ -112,11 +112,11 @@ public class FlexibleLine extends GroupOfEntities_VersionStructure {
         this.network = network;
     }
 
-    public Long getOperatorRef() {
+    public String getOperatorRef() {
         return operatorRef;
     }
 
-    public void setOperatorRef(Long operatorRef) {
+    public void setOperatorRef(String operatorRef) {
         this.operatorRef = operatorRef;
     }
 
