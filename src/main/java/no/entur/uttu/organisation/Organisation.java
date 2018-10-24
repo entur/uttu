@@ -25,8 +25,8 @@ public class Organisation {
     public static final String NETEX_AUTHORITY_ID_REFEFRENCE_KEY = "netexAuthorityId";
     public static final String NETEX_OPERATOR_ID_REFEFRENCE_KEY = "netexOperatorId";
     public static final String NETEX_ID_REFEFRENCE_KEY = "netexId";
-    public static final String AUTHORITY_TYPE = "Authority";
-    public static final String OPERATOR_TYPE = "Operator";
+    public static final String AUTHORITY_TYPE = "authority";
+    public static final String OPERATOR_TYPE = "operator";
 
     public static final String COMPANY_NUMBER_REFERENCE_KEY = "companyNumber";
     public String id;
@@ -75,6 +75,7 @@ public class Organisation {
     public String getCompanyNumber() {
         if (references == null) {
             return null;
+
         }
         return references.get(COMPANY_NUMBER_REFERENCE_KEY);
     }
