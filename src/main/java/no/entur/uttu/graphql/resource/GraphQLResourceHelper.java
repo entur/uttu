@@ -31,7 +31,6 @@ import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
@@ -55,7 +54,6 @@ public class GraphQLResourceHelper {
             = Sets.newHashSet(NotAuthenticatedException.class, NotAuthorizedException.class, AccessDeniedException.class, DataIntegrityViolationException.class);
 
 
-    @Transactional
     public Response executeStatement(GraphQL graphQL, Map<String, Object> request) {
         Map<String, Object> variables;
         if (request.get("variables") instanceof Map) {
@@ -80,7 +78,6 @@ public class GraphQLResourceHelper {
         return getGraphQLResponse(graphQL, (String) request.get("operationName"), (String) request.get("query"), variables);
     }
 
-    @Transactional
     public Response getGraphQLResponse(GraphQL graphQL, String operationName, String query, Map<String, Object> variables) {
         Response.ResponseBuilder res = Response.status(Response.Status.OK);
         HashMap<String, Object> content = new HashMap<>();

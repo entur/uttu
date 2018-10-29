@@ -15,9 +15,12 @@
 
 package no.entur.uttu.graphql.fetchers;
 
+import com.google.common.base.Preconditions;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.FlexibleStopPlace;
+import no.entur.uttu.repository.StopPointInJourneyPatternRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,8 +28,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FlexibleStopPlaceUpdater extends AbstractProviderEntityUpdater<FlexibleStopPlace> {
 
+    @Autowired
+    private StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository;
+
     public FlexibleStopPlaceUpdater(AbstractProviderEntityMapper<FlexibleStopPlace> mapper, ProviderEntityRepository<FlexibleStopPlace> repository) {
         super(mapper, repository);
+    }
+
+    @Override
+    protected void verifyDeleteAllowed(String id) {
+        FlexibleStopPlace entity = repository.getOne(id);
+        if (entity != null) {
+            int noOfLines = stopPointInJourneyPatternRepository.countByFlexibleStopPlace(entity);
+            Preconditions.checkArgument(noOfLines == 0, "%s cannot be deleted as it is referenced by %s StopPointInJourneyPatterns(s)", entity.identity(), noOfLines);
+        }
+        super.verifyDeleteAllowed(id);
     }
 }
 

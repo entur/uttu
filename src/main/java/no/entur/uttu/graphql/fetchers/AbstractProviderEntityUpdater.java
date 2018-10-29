@@ -20,6 +20,7 @@ import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_INPUT;
@@ -36,6 +37,7 @@ public abstract class AbstractProviderEntityUpdater<T extends ProviderEntity> im
     }
 
     @Override
+    @Transactional
     public T get(DataFetchingEnvironment env) {
         if (env.getField().getName().startsWith("delete")) {
             return deleteEntity(env);
@@ -45,7 +47,9 @@ public abstract class AbstractProviderEntityUpdater<T extends ProviderEntity> im
     }
 
     protected T deleteEntity(DataFetchingEnvironment env) {
-        return repository.delete(env.getArgument(FIELD_ID));
+        String id = env.getArgument(FIELD_ID);
+        verifyDeleteAllowed(id);
+        return repository.delete(id);
     }
 
     protected T saveEntity(DataFetchingEnvironment env) {
@@ -55,4 +59,7 @@ public abstract class AbstractProviderEntityUpdater<T extends ProviderEntity> im
     }
 
 
+    protected void verifyDeleteAllowed(String id) {
+
+    }
 }

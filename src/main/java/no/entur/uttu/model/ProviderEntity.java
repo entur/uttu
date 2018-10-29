@@ -99,7 +99,7 @@ public abstract class ProviderEntity extends IdentifiedEntity {
     }
 
 
-    protected String identity() {
+    public String identity() {
         return MessageFormat.format("{0}[{1}]", getClass().getSimpleName(), getNetexId());
     }
 

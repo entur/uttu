@@ -26,11 +26,13 @@ import no.entur.uttu.repository.ProviderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import static no.entur.uttu.graphql.GraphQLNames.*;
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
 
 @Component
+@Transactional
 public class ProviderUpdater implements DataFetcher<Provider> {
 
     @Autowired
