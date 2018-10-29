@@ -15,6 +15,7 @@
 
 package no.entur.uttu.graphql
 
+import io.restassured.response.ValidatableResponse
 import org.junit.Test
 
 import static org.hamcrest.Matchers.*
@@ -38,15 +39,18 @@ class FlexibleStopPlaceGraphQLIntegrationTest extends AbstractFlexibleLinesGraph
   }
   }
          """
+    String flexAreaName = "FlexibleAreaTest"
 
     @Test
     void createFlexibleStopPlaceWithFlexibleAreaTest() {
-        String flexAreaName = "FlexibleAreaTest"
-        createFlexibleStopPlaceWithFlexibleArea(flexAreaName)
-                .body("data.mutateFlexibleStopPlace.id", startsWith("TST:FlexibleStopPlace"))
-                .body("data.mutateFlexibleStopPlace.name", equalTo(flexAreaName))
-                .body("data.mutateFlexibleStopPlace.flexibleArea.polygon.type", equalTo("Polygon"))
-                .body("data.mutateFlexibleStopPlace.flexibleArea.polygon.coordinates", hasSize(4))
+
+        ValidatableResponse response = createFlexibleStopPlaceWithFlexibleArea(flexAreaName)
+        assertFlexibleAreaResponse(response, "mutateFlexibleStopPlace")
+
+        String id = extractId(response, "mutateFlexibleStopPlace")
+        String queryForFlexibleArea = """ {flexibleStopPlace (id:"$id") {id name flexibleArea { polygon {type coordinates}}}}"""
+
+        assertFlexibleAreaResponse(executeGraphqQLQueryOnly(queryForFlexibleArea), "flexibleStopPlace");
     }
 
     @Test
@@ -59,6 +63,14 @@ class FlexibleStopPlaceGraphQLIntegrationTest extends AbstractFlexibleLinesGraph
                 .body("data.mutateFlexibleStopPlace.hailAndRideArea.endQuayRef", equalTo("NSR:Quay:end"))
     }
 
+
+    void assertFlexibleAreaResponse(ValidatableResponse rsp, String path) {
+        rsp.body("data." + path + ".id", startsWith("TST:FlexibleStopPlace"))
+                .body("data." + path + ".name", equalTo(flexAreaName))
+                .body("data." + path + ".flexibleArea.polygon.type", equalTo("Polygon"))
+                .body("data." + path + ".flexibleArea.polygon.coordinates", hasSize(4))
+
+    }
 
 }
 

@@ -31,6 +31,8 @@ import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.ws.rs.NotAuthorizedException;
 import javax.ws.rs.core.Response;
@@ -52,6 +54,15 @@ public class GraphQLResourceHelper {
      */
     private static final Set<Class<? extends RuntimeException>> RETHROW_EXCEPTION_TYPES
             = Sets.newHashSet(NotAuthenticatedException.class, NotAuthorizedException.class, AccessDeniedException.class, DataIntegrityViolationException.class);
+
+    private final TransactionTemplate transactionTemplate;
+
+
+    public GraphQLResourceHelper(PlatformTransactionManager transactionManager) {
+        org.springframework.util.Assert.notNull(transactionManager, "The 'transactionManager' argument must not be null.");
+        this.transactionTemplate = new TransactionTemplate(transactionManager);
+    }
+
 
 
     public Response executeStatement(GraphQL graphQL, Map<String, Object> request) {
@@ -79,38 +90,45 @@ public class GraphQLResourceHelper {
     }
 
     public Response getGraphQLResponse(GraphQL graphQL, String operationName, String query, Map<String, Object> variables) {
-        Response.ResponseBuilder res = Response.status(Response.Status.OK);
-        HashMap<String, Object> content = new HashMap<>();
-        try {
-            ExecutionInput executionInput = ExecutionInput.newExecutionInput()
-                                                    .query(query)
-                                                    .operationName(operationName)
-                                                    .context(null)
-                                                    .root(null)
-                                                    .variables(variables)
-                                                    .build();
-            ExecutionResult executionResult = graphQL.execute(executionInput);
+        return getGraphQLResponseInTransaction(graphQL, operationName, query, variables);
+    }
 
-            if (!executionResult.getErrors().isEmpty()) {
-                List<GraphQLError> errors = executionResult.getErrors();
-                if (errors.stream().anyMatch(error -> error.getErrorType().equals(ErrorType.DataFetchingException))) {
-                    logger.info("Detected DataFetchingException from errors: {} Setting transaction to rollback only", errors);
+    private Response getGraphQLResponseInTransaction(GraphQL graphQL, String operationName, String query, Map<String, Object> variables) {
+        return transactionTemplate.execute((transactionStatus) -> {
+            Response.ResponseBuilder res = Response.status(Response.Status.OK);
+            HashMap<String, Object> content = new HashMap<>();
+            try {
+                ExecutionInput executionInput = ExecutionInput.newExecutionInput()
+                                                        .query(query)
+                                                        .operationName(operationName)
+                                                        .context(null)
+                                                        .root(null)
+                                                        .variables(variables)
+                                                        .build();
+                ExecutionResult executionResult = graphQL.execute(executionInput);
+
+                if (!executionResult.getErrors().isEmpty()) {
+                    List<GraphQLError> errors = executionResult.getErrors();
+                    if (errors.stream().anyMatch(error -> error.getErrorType().equals(ErrorType.DataFetchingException))) {
+                        logger.info("Detected DataFetchingException from errors: {} Setting transaction to rollback only", errors);
+                        transactionStatus.setRollbackOnly();
+                    }
+
+                    content.put("errors", errors);
+                }
+                if (executionResult.getData() != null) {
+                    content.put("data", executionResult.getData());
                 }
 
-                content.put("errors", errors);
-            }
-            if (executionResult.getData() != null) {
-                content.put("data", executionResult.getData());
-            }
 
-
-        } catch (GraphQLException e) {
-            logger.warn("Caught graphqlException. Setting rollback only", e);
-            res = Response.status(getStatusCodeFromThrowable(e));
-            content.put("errors", Arrays.asList(e));
-        }
-        removeErrorStackTraces(content);
-        return res.entity(content).build();
+            } catch (GraphQLException e) {
+                logger.warn("Caught graphqlException. Setting rollback only", e);
+                res = Response.status(getStatusCodeFromThrowable(e));
+                content.put("errors", Arrays.asList(e));
+            }
+            removeErrorStackTraces(content);
+            return res.entity(content).build();
+        });
     }
 
     private void removeErrorStackTraces(Map<String, Object> content) {
