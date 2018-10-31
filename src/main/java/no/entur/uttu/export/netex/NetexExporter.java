@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 import static javax.xml.bind.JAXBContext.newInstance;
 
 @Component
-@Transactional(readOnly = true)
 public class NetexExporter {
 
     @Autowired
