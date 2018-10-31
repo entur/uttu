@@ -15,20 +15,22 @@
 
 package no.entur.uttu.graphql
 
+import io.restassured.response.ValidatableResponse
 import no.entur.uttu.model.job.ExportStatusEnumeration
 import org.junit.Test
+import org.xmlunit.validation.ValidationResult
 
 import java.time.LocalDate
 
-import static org.hamcrest.Matchers.equalTo
-import static org.hamcrest.Matchers.startsWith
+import static io.restassured.RestAssured.given
+import static org.hamcrest.Matchers.*
 
 class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrationTest {
 
 
     @Test
     void createExport() {
-        String name="ExportTest"
+        String name = "ExportTest"
         createFlexibleLine(name)
 
         String createExportQuery = """
@@ -37,6 +39,7 @@ class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrati
     id
     name
     exportStatus
+    downloadUrl
     messages {
         message
         severity
@@ -60,9 +63,22 @@ class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrati
 }
         """
 
-        executeGraphQL(createExportQuery, variables)
+        ValidatableResponse rsp = executeGraphQL(createExportQuery, variables)
                 .body("data.export.id", startsWith("TST:Export"))
                 .body("data.export.name", equalTo(name))
                 .body("data.export.exportStatus", equalTo(ExportStatusEnumeration.SUCCESS.value()))
+                .body("data.export.downloadUrl", startsWith("tst/export/"))
+
+
+        String downloadUrl = rsp.extract().body().path("data.export.downloadUrl")
+        given()
+                .port(port)
+                .when()
+                .get("/services/flexible-lines/" + downloadUrl)
+                .then()
+                .log().body()
+                .statusCode(200)
+                .body(not(isEmptyOrNullString()))
+
     }
 }

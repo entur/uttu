@@ -54,6 +54,10 @@ public class Export extends ProviderEntity {
         this.name = name;
     }
 
+    private String fileName;
+
+    private boolean dryRun;
+
     public ExportStatusEnumeration getExportStatus() {
         return exportStatus;
     }
@@ -91,6 +95,21 @@ public class Export extends ProviderEntity {
         this.toDate = toDate;
     }
 
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
+    }
+
+    public boolean isDryRun() {
+        return dryRun;
+    }
+
+    public void setDryRun(boolean dryRun) {
+        this.dryRun = dryRun;
+    }
 
     @Override
     public String toString() {

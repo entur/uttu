@@ -22,12 +22,14 @@ import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportMessage;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.util.FileNameUtil;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.time.LocalDate;
 
@@ -49,6 +51,11 @@ public class ExportService {
     @Value("${export.days.future.default:185}")
     private int futureDaysDefault;
 
+    @Value("${export.blob.folder:outbound/netex/}")
+    private String exportFolder = "outbound/netex/";
+
+
+
     public void exportDataSet(Export export) {
         setExportDefaults(export);
 
@@ -60,9 +67,17 @@ public class ExportService {
             exporter.exportDataSet(export, dataSetProducer, validateAgainstSchema);
 
             InputStream dataSetStream = dataSetProducer.buildDataSet();
+            byte[] bytes = IOUtils.toByteArray(dataSetStream);
+            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 
-            String blobName = "outbound/netex/" + FileNameUtil.createDataSetFilename(export.getProvider());
-            blobStoreService.uploadBlob(blobName, true, dataSetStream);
+            if (!export.isDryRun()) {
+                String blobName = exportFolder + FileNameUtil.createExportedDataSetFilename(export.getProvider());
+                blobStoreService.uploadBlob(blobName, true, bis);
+                bis.reset();
+            }
+            export.setFileName(exportFolder + FileNameUtil.createBackupDataSetFilename(export));
+            blobStoreService.uploadBlob(export.getFileName(), true, bis);
+
 
         } catch (Exception e) {
             ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, "Export failed with exception {0} : {1}", e.getClass().getSimpleName(), e.getMessage());

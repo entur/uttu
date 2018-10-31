@@ -126,4 +126,6 @@ public class GraphQLNames {
     public static final String FIELD_MESSAGES = "messages";
     public static final String FIELD_MESSAGE = "message";
     public static final String FIELD_SEVERITY = "severity";
+    public static final String FIELD_DRY_RUN = "dryRun";
+    public static final String FIELD_DOWNLOAD_URL = "downloadUrl";
 }

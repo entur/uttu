@@ -18,8 +18,11 @@ package no.entur.uttu.util;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.Provider;
+import no.entur.uttu.model.job.Export;
+import org.springframework.util.StringUtils;
 
 import java.text.StringCharacterIterator;
+import java.time.format.DateTimeFormatter;
 
 public class FileNameUtil {
 
@@ -29,8 +32,30 @@ public class FileNameUtil {
     private static final String MAIN_SEPARATOR = "_";
     private static final String SECONDARY_SEPARATOR = "-";
 
-    public static String createDataSetFilename(Provider provider) {
+    private static final String DATE_PATTERN = "yyyyMMdd";
+
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
+
+    public static String createExportedDataSetFilename(Provider provider) {
         return "rb_" + provider.getCode().toLowerCase() + "-flexible-lines.zip";
+    }
+
+    public static String createBackupDataSetFilename(Export export) {
+        StringBuilder fileNameBuilder = new StringBuilder(export.getProvider().getCode().toLowerCase());
+        fileNameBuilder.append(MAIN_SEPARATOR);
+
+        if (!StringUtils.isEmpty(export.getName())) {
+            fileNameBuilder.append(export.getName());
+            fileNameBuilder.append(MAIN_SEPARATOR);
+        }
+        fileNameBuilder.append(export.getFromDate().format(DATE_FORMATTER));
+        fileNameBuilder.append(SECONDARY_SEPARATOR);
+        fileNameBuilder.append(export.getToDate().format(DATE_FORMATTER));
+        fileNameBuilder.append(MAIN_SEPARATOR);
+        fileNameBuilder.append(export.getPk());
+
+        fileNameBuilder.append(".zip");
+        return fileNameBuilder.toString();
     }
 
     public static String createCommonFileFilename(Provider provider) {

@@ -50,6 +50,9 @@ public class GcsBlobStoreService implements BlobStoreService {
         BlobStoreHelper.uploadBlobWithRetry(storage, containerName, name, inputStream, makePublic);
     }
 
-
+    @Override
+    public InputStream downloadBlob(String name) {
+        return BlobStoreHelper.getBlob(storage, containerName, name);
+    }
 }
 

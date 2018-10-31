@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -45,6 +47,16 @@ public class LocalDiskBlobStoreService implements BlobStoreService {
 
             Files.copy(inputStream, fullPath);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public InputStream downloadBlob(String name) {
+        Path path = Paths.get(baseFolder).resolve(name);
+        try {
+            return new FileInputStream(path.toFile());
+        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

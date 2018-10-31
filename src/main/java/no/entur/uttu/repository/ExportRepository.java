@@ -27,4 +27,6 @@ import java.util.List;
 public interface ExportRepository extends ProviderEntityRepository<Export> {
 
     List<Export> findByCreatedAfter(Instant from);
+
+    Export findByNetexId(String netexId);
 }

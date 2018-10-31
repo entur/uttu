@@ -53,6 +53,7 @@ import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 import java.time.DayOfWeek;
@@ -370,6 +371,14 @@ public class FlexibleLinesGraphQLSchema {
                                    .field(newFieldDefinition().name(FIELD_EXPORT_STATUS).type(exportStatusEnum))
                                    .field(newFieldDefinition().name(FIELD_FROM_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
                                    .field(newFieldDefinition().name(FIELD_TO_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                                   .field(newFieldDefinition().name(FIELD_DRY_RUN).type(GraphQLBoolean))
+                                   .field(newFieldDefinition().name(FIELD_DOWNLOAD_URL).type(GraphQLString).dataFetcher(env -> {
+                                       Export export = env.getSource();
+                                       if (export == null | StringUtils.isEmpty(export.getFileName())) {
+                                           return null;
+                                       }
+                                       return export.getProvider().getCode().toLowerCase() + "/export/" + export.getNetexId() + "/download";
+                                   }))
                                    .field(newFieldDefinition().name(FIELD_MESSAGES).type(new GraphQLList(exportMessageObjectType)))
                                    .build();
 
@@ -592,6 +601,7 @@ public class FlexibleLinesGraphQLSchema {
                                                          .field(newInputObjectField().name(FIELD_NAME).type(GraphQLString))
                                                          .field(newInputObjectField().name(FIELD_FROM_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
                                                          .field(newInputObjectField().name(FIELD_TO_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                                                         .field(newInputObjectField().name(FIELD_DRY_RUN).type(GraphQLBoolean).defaultValue(Boolean.FALSE))
                                                          .build();
 
 
