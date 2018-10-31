@@ -55,7 +55,6 @@ public class ExportService {
     private String exportFolder = "outbound/netex/";
 
 
-
     public void exportDataSet(Export export) {
         setExportDefaults(export);
 
@@ -79,6 +78,10 @@ public class ExportService {
             blobStoreService.uploadBlob(export.getFileName(), true, bis);
 
 
+        } catch (IllegalArgumentException iae) {
+            ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getMessage());
+            export.addMessage(msg);
+            logger.info(export.identity() + " Export failed with exception: " + iae.getMessage(), iae);
         } catch (Exception e) {
             ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, "Export failed with exception {0} : {1}", e.getClass().getSimpleName(), e.getMessage());
             export.addMessage(msg);
