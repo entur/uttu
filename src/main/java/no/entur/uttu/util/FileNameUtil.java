@@ -27,7 +27,7 @@ import java.time.format.DateTimeFormatter;
 public class FileNameUtil {
 
 
-    private static final String COMMON_FILE_NAME_SUFFIX = "_shared_data.xml";
+    private static final String COMMON_FILE_NAME_SUFFIX = "_flexible_shared_data.xml";
 
     private static final String MAIN_SEPARATOR = "_";
     private static final String SECONDARY_SEPARATOR = "-";

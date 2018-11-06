@@ -56,9 +56,6 @@ import java.util.stream.Collectors;
 @Component
 public class NetexCommonFileProducer {
 
-    private static final String COMMON_FILE_NAME_SUFFIX = "_shared_data.xml";
-
-
     @Autowired
     private NetexObjectFactory objectFactory;
 
