@@ -425,7 +425,7 @@ public class FlexibleLinesGraphQLSchema {
                                                              .type(new GraphQLList(exportObjectType))
                                                              .name("exports")
                                                              .argument(GraphQLArgument.newArgument()
-                                                                               .type(GraphQLInt)
+                                                                               .type(GraphQLLong)
                                                                                .name("historicDays")
                                                                                .defaultValue(30)
                                                                                .description("Number historic to fetch data for"))
