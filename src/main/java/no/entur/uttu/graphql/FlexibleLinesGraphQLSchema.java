@@ -427,7 +427,7 @@ public class FlexibleLinesGraphQLSchema {
                                                              .argument(GraphQLArgument.newArgument()
                                                                                .type(GraphQLLong)
                                                                                .name("historicDays")
-                                                                               .defaultValue(30)
+                                                                               .defaultValue(30l)
                                                                                .description("Number historic to fetch data for"))
                                                              .description("List exports")
                                                              .dataFetcher(env -> exportRepository.findByCreatedAfter(OffsetDateTime.now().minusDays(env.getArgument("historicDays")).toInstant())))
