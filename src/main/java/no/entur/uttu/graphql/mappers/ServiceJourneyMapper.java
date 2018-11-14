@@ -57,6 +57,7 @@ public class ServiceJourneyMapper extends AbstractProviderEntityMapper<ServiceJo
 
     @Override
     protected void populateEntityFromInput(ServiceJourney entity, ArgumentWrapper input) {
+        input.apply(FIELD_NAME, entity::setName);
         input.apply(FIELD_PUBLIC_CODE, entity::setPublicCode);
         input.apply(FIELD_OPERATOR_REF, organisationRegistry::getVerifiedOperatorRef, entity::setOperatorRef);
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
