@@ -33,6 +33,7 @@ import no.entur.uttu.graphql.scalars.GeoJSONCoordinatesScalar;
 import no.entur.uttu.graphql.scalars.LocalTimeScalar;
 import no.entur.uttu.model.BookingAccessEnumeration;
 import no.entur.uttu.model.BookingMethodEnumeration;
+import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.DirectionTypeEnumeration;
 import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleLine;
@@ -295,7 +296,7 @@ public class FlexibleLinesGraphQLSchema {
 
 
         dayTypeAssignmentObjectType = newObject().name("DayTypeAssignment")
-                                              .field(newFieldDefinition().name(FIELD_IS_AVAILABLE).type(GraphQLBoolean))
+                                              .field(newFieldDefinition().name(FIELD_IS_AVAILABLE).dataFetcher(env -> ((DayTypeAssignment) env.getSource()).getAvailable()).type(GraphQLBoolean))
                                               .field(newFieldDefinition().name(FIELD_DATE).type(DateScalar.getGraphQLDateScalar()))
                                               .field(newFieldDefinition().name(FIELD_OPERATING_PERIOD).type(operatingPeriod))
                                               .build();
@@ -534,7 +535,7 @@ public class FlexibleLinesGraphQLSchema {
                                                                     .build();
 
 
-        GraphQLInputObjectType dayTypeInputType = newInputObject(groupOfEntitiesInputType).name("DayTypeInput")
+        GraphQLInputObjectType dayTypeInputType = newInputObject(identifiedEntityInputType).name("DayTypeInput")
                                                           .field(newInputObjectField().name(FIELD_DAYS_OF_WEEK).type(new GraphQLList(dayOfWeekEnum)))
                                                           .field(newInputObjectField().name(FIELD_DAY_TYPE_ASSIGNMENTS).type(new GraphQLNonNull(new GraphQLList(dayTypeAssignmentInputType))))
                                                           .build();

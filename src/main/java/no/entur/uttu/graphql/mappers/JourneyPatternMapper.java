@@ -24,7 +24,7 @@ import org.springframework.stereotype.Component;
 import static no.entur.uttu.graphql.GraphQLNames.*;
 
 @Component
-public class JourneyPatternMapper extends AbstractProviderEntityMapper<JourneyPattern> {
+public class JourneyPatternMapper extends AbstractGroupOfEntitiesMapper<JourneyPattern> {
 
 
     private ServiceJourneyMapper serviceJourneyMapper;
@@ -46,7 +46,6 @@ public class JourneyPatternMapper extends AbstractProviderEntityMapper<JourneyPa
 
     @Override
     protected void populateEntityFromInput(JourneyPattern entity, ArgumentWrapper input) {
-        input.apply(FIELD_NAME, entity::setName);
         input.apply(FIELD_DIRECTION_TYPE, entity::setDirectionType);
         input.applyList(FIELD_POINTS_IN_SEQUENCE, stopPointInJourneyPatternMapper::map, entity::setPointsInSequence);
         input.applyList(FIELD_SERVICE_JOURNEYS, serviceJourneyMapper::map, entity::setServiceJourneys);
