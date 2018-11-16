@@ -50,7 +50,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
-    private List<DayType> dayTypes = new ArrayList<>();
+    private final List<DayType> dayTypes = new ArrayList<>();
 
 
     @OneToMany(mappedBy = "serviceJourney", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -114,8 +114,11 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
         return dayTypes;
     }
 
-    public void setDayTypes(List<DayType> dayTypes) {
-        this.dayTypes = dayTypes;
+    public void updateDayTypes(List<DayType> dayTypes) {
+        this.dayTypes.clear();
+        if (dayTypes != null) {
+            this.dayTypes.addAll(dayTypes);
+        }
     }
 
     public List<Notice> getNotices() {

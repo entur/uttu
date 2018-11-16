@@ -61,7 +61,7 @@ public class ServiceJourneyMapper extends AbstractGroupOfEntitiesMapper<ServiceJ
         input.apply(FIELD_OPERATOR_REF, organisationRegistry::getVerifiedOperatorRef, entity::setOperatorRef);
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
         input.applyList(FIELD_PASSING_TIMES, timetabledPassingTimeMapper::map, entity::setPassingTimes);
-        input.applyList(FIELD_DAY_TYPES, dayTypeMapper::map, entity::setDayTypes);
+        input.applyList(FIELD_DAY_TYPES, dayTypeMapper::map, entity::updateDayTypes);
         input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
     }
 
