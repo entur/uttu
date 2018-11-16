@@ -30,10 +30,6 @@ public class Constraints {
 
     public static final String SERVICE_JOURNEY_UNIQUE_NAME = "service_journey_unique_name_constraint";
 
-    public static final String STOP_POINT_IN_JOURNEY_PATTERN_UNIQUE_ORDER = "stop_point_in_jp_unique_order_constraint";
-
-    public static final String TIMETABLED_PASSING_TIME_UNIQUE_ORDER = "timetabled_passing_time_unique_order_constraint";
-
     public static final String PROVIDER_UNIQUE_CODE = "provider_unique_code_constraint";
 
     public static final String CODESPACE_UNIQUE_XMLNS = "codespace_unique_xmlns_constraint";

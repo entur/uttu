@@ -65,9 +65,6 @@ public class DataIntegrityViolationExceptionMapper implements ExceptionMapper<Da
         errorMessagePerConstraintMap.put(Constraints.JOURNEY_PATTERN_UNIQUE_NAME, "A JourneyPattern with this name already exists");
         errorMessagePerConstraintMap.put(Constraints.SERVICE_JOURNEY_UNIQUE_NAME, "A ServiceJourney with this name already exists");
 
-        errorMessagePerConstraintMap.put(Constraints.STOP_POINT_IN_JOURNEY_PATTERN_UNIQUE_ORDER, "Multiple StopPointInJourneyPatterns with same 'order' for the same JourneyPattern");
-        errorMessagePerConstraintMap.put(Constraints.TIMETABLED_PASSING_TIME_UNIQUE_ORDER, "Multiple TimetabledPassingTimes with same 'order' for the same ServiceJourney");
-
         errorMessagePerConstraintMap.put(Constraints.CODESPACE_UNIQUE_XMLNS, "A Codespace with this xmlns already exists");
         errorMessagePerConstraintMap.put(Constraints.PROVIDER_UNIQUE_CODE, "A Provider with this code already exists");
     }
