@@ -23,17 +23,12 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import java.time.LocalTime;
 import java.util.List;
 
-import static no.entur.uttu.model.Constraints.TIMETABLED_PASSING_TIME_UNIQUE_ORDER;
-
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = TIMETABLED_PASSING_TIME_UNIQUE_ORDER, columnNames = {"service_journey_pk", "order_val"})})
 public class TimetabledPassingTime extends ProviderEntity {
 
     @NotNull
