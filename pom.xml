@@ -41,11 +41,11 @@
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <entur.helpers.version>0.0.4-SNAPSHOT</entur.helpers.version>
         <docker.maven.plugin.version>0.21.0</docker.maven.plugin.version>
-        <spring-boot-plugin.version>2.0.3.RELEASE</spring-boot-plugin.version>
-        <spring-boot.version>2.0.3.RELEASE</spring-boot.version>
+        <spring-boot-plugin.version>2.1.0.RELEASE</spring-boot-plugin.version>
+        <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
         <spring.security.version>5.0.7.RELEASE</spring.security.version>
         <postgresql.version>9.4-1201-jdbc41</postgresql.version>
-        <keycloak.version>4.1.0.Final</keycloak.version>
+        <keycloak.version>4.6.0.Final</keycloak.version>
 
         <!-- Docker & Fabric8 Configs -->
         <docker.from>eu.gcr.io/carbon-1287/java-base-image</docker.from>
@@ -62,8 +62,8 @@
         <assertj-core.version>3.11.1</assertj-core.version>
         <geodb.version>0.9</geodb.version>
         <geotools.version>20.0</geotools.version>
-        <hibernate-spatial.version>5.2.17.Final</hibernate-spatial.version>
-        <hibernate.version>5.2.17.Final</hibernate.version>
+        <hibernate-spatial.version>5.3.7.Final</hibernate-spatial.version>
+        <hibernate.version>5.3.7.Final</hibernate.version>
         <swagger-jersey2.version>1.5.21</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
         <com.vividsolutions.version>1.13</com.vividsolutions.version>
@@ -89,6 +89,16 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.3.0.1</version>
+        </dependency>
         <dependency>
             <groupId>org.entur</groupId>
             <artifactId>netex-java-model</artifactId>
