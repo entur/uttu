@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.rutebanken.superpom</groupId>
         <artifactId>superpom</artifactId>
-        <version>0.0.6</version>
+        <version>0.0.8-SNAPSHOT</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -48,7 +48,7 @@
         <keycloak.version>4.6.0.Final</keycloak.version>
 
         <!-- Docker & Fabric8 Configs -->
-        <docker.from>eu.gcr.io/carbon-1287/java-base-image</docker.from>
+        <docker.from>eu.gcr.io/carbon-1287/openjdk11-image</docker.from>
         <fabric8.dockerUser>carbon-1287/</fabric8.dockerUser>
         <docker.image>eu.gcr.io/${fabric8.dockerUser}${project.artifactId}:${project.version}</docker.image>
         <docker.cleanup>none</docker.cleanup>
@@ -272,6 +272,12 @@
             <groupId>org.geotools</groupId>
             <artifactId>gt-geojson</artifactId>
             <version>${geotools.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>tec.uom</groupId>
+                    <artifactId>uom-se</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
