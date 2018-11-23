@@ -23,13 +23,6 @@ SET row_security = off;
 CREATE EXTENSION IF NOT EXISTS plpgsql WITH SCHEMA pg_catalog;
 
 
---
--- TOC entry 3855 (class 0 OID 0)
--- Dependencies: 1
--- Name: EXTENSION plpgsql; Type: COMMENT; Schema: -; Owner:
---
-
-COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
@@ -38,15 +31,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 --
 
 CREATE EXTENSION IF NOT EXISTS postgis WITH SCHEMA public;
-
-
---
--- TOC entry 3856 (class 0 OID 0)
--- Dependencies: 2
--- Name: EXTENSION postgis; Type: COMMENT; Schema: -; Owner:
---
-
-COMMENT ON EXTENSION postgis IS 'PostGIS geometry, geography, and raster spatial types and functions';
 
 
 SET search_path = public, pg_catalog;
