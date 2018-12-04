@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
@@ -52,7 +53,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
      * Return provided operatorRef if valid, else throw exception.
      */
     public String getVerifiedOperatorRef(String operatorRef) {
-        if (operatorRef == null) {
+        if (StringUtils.isEmpty(operatorRef)) {
             return null;
         }
         Organisation organisation = getOrganisation(operatorRef);
@@ -65,7 +66,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
      * Return provided authorityRef if valid, else throw exception.
      */
     public String getVerifiedAuthorityRef(String authorityRef) {
-        if (authorityRef == null) {
+        if (StringUtils.isEmpty(authorityRef)) {
             return null;
         }
         Organisation organisation = getOrganisation(authorityRef);
