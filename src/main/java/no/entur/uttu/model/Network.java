@@ -15,6 +15,8 @@
 
 package no.entur.uttu.model;
 
+import com.google.common.base.Preconditions;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
@@ -38,5 +40,11 @@ public class Network extends GroupOfEntities_VersionStructure {
 
     public void setAuthorityRef(String authorityRef) {
         this.authorityRef = authorityRef;
+    }
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+        Preconditions.checkArgument(authorityRef != null, "% authorityRef not set", identity());
     }
 }
