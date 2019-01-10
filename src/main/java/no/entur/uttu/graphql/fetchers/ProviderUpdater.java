@@ -28,7 +28,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import static no.entur.uttu.graphql.GraphQLNames.*;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_CODE;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_CODE_SPACE_XMLNS;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_INPUT;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_NAME;
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
 
 @Component
@@ -62,13 +66,13 @@ public class ProviderUpdater implements DataFetcher<Provider> {
     private void populateEntityFromInput(Provider entity, ArgumentWrapper input) {
         input.apply(FIELD_CODE, entity::setCode);
         input.apply(FIELD_NAME, entity::setName);
-        input.apply(FIELD_CODE_SPACE_REF, this::getVerifiedCodespace, entity::setCodespace);
+        input.apply(FIELD_CODE_SPACE_XMLNS, this::getVerifiedCodespace, entity::setCodespace);
     }
 
-    private Codespace getVerifiedCodespace(Long codespaceId) {
-        Codespace codespace = codespaceRepository.getOne(codespaceId);
+    private Codespace getVerifiedCodespace(String xmlns) {
+        Codespace codespace = codespaceRepository.getOneByXmlns(xmlns);
         Preconditions.checkArgument(codespace != null,
-                "Codespace not found [pk=%s]", codespaceId);
+                "Codespace not found [xmlns=%s]", xmlns);
         return codespace;
     }
 }

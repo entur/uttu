@@ -16,7 +16,16 @@
 package no.entur.uttu.repository;
 
 import no.entur.uttu.model.Codespace;
-import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface CodespaceRepository extends JpaRepository<Codespace, Long> {
+import java.util.List;
+
+public interface CodespaceRepository {
+
+    Codespace getOne(Long id);
+
+    Codespace getOneByXmlns(String xmlns);
+
+    List<Codespace> findAll();
+
+    <S extends Codespace> S save(S entity);
 }

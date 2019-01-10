@@ -43,7 +43,7 @@ public class GraphQLNames {
     // Provider
     public static final String FIELD_CODE = "code";
     public static final String FIELD_CODE_SPACE = "codespace";
-    public static final String FIELD_CODE_SPACE_REF = "codespaceRef";
+    public static final String FIELD_CODE_SPACE_XMLNS = "codespaceXmlns";
 
     // FlexibleStopPlace
     public static final String FIELD_FLEXIBLE_AREA = "flexibleArea";

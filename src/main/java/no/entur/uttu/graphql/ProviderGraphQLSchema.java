@@ -121,7 +121,6 @@ public class ProviderGraphQLSchema {
 
         String ignoredInputFieldDesc="Value is ignored for mutation calls. Included for convenient copying of output to input with minimal modifications.";
         GraphQLInputObjectType identifiedEntityInputType = newInputObject().name("IdentifiedEntityInput")
-                                                                   .field(newInputObjectField().name(FIELD_ID).type(GraphQLID))
                                                                    .field(newInputObjectField().name(FIELD_VERSION).type(GraphQLLong)).description(ignoredInputFieldDesc)
                                                                    .field(newInputObjectField().name(FIELD_CREATED_BY).type(GraphQLString)).description(ignoredInputFieldDesc)
                                                                    .field(newInputObjectField().name(FIELD_CREATED).type(dateTimeScalar.getDateTimeScalar())).description(ignoredInputFieldDesc)
@@ -137,7 +136,7 @@ public class ProviderGraphQLSchema {
         GraphQLInputObjectType providerInputType = newInputObject(identifiedEntityInputType).name("ProviderInput")
                                                            .field(newInputObjectField().name(FIELD_CODE).type(new GraphQLNonNull(GraphQLString)))
                                                            .field(newInputObjectField().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
-                                                           .field(newInputObjectField().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codespaceInputType)))
+                                                           .field(newInputObjectField().name(FIELD_CODE_SPACE_XMLNS).type(new GraphQLNonNull(GraphQLString)))
                                                            .build();
 
         GraphQLObjectType mutationType = newObject()
