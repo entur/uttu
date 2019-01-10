@@ -26,6 +26,7 @@ import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
+import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.DurationScalar;
@@ -431,7 +432,7 @@ public class FlexibleLinesGraphQLSchema {
                                                                                .defaultValue(30l)
                                                                                .description("Number historic to fetch data for"))
                                                              .description("List exports")
-                                                             .dataFetcher(env -> exportRepository.findByCreatedAfter(OffsetDateTime.now().minusDays(env.getArgument("historicDays")).toInstant())))
+                                                             .dataFetcher(env -> exportRepository.findByCreatedAfterAndProviderCode(OffsetDateTime.now().minusDays(env.getArgument("historicDays")).toInstant(), Context.getProvider())))
                                               .field(newFieldDefinition()
                                                              .type(exportObjectType)
                                                              .name("export")

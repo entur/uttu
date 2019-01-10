@@ -26,7 +26,7 @@ import java.util.List;
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 public interface ExportRepository extends ProviderEntityRepository<Export> {
 
-    List<Export> findByCreatedAfter(Instant from);
+    List<Export> findByCreatedAfterAndProviderCode(Instant from, String provider);
 
-    Export findByNetexId(String netexId);
+    Export findByNetexIdAndProviderCode(String netexId,String provider);
 }

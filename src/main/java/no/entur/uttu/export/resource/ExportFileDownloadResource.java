@@ -56,7 +56,7 @@ public class ExportFileDownloadResource {
     public Response downloadExportFile(@PathParam("providerCode") String providerCode, @PathParam("id") String exportId) {
         Context.setProvider(providerCode);
         try {
-            Export export = exportRepository.findByNetexId(exportId);
+            Export export = exportRepository.findByNetexIdAndProviderCode(exportId, providerCode);
             if (export == null) {
                 throw new EntityNotFoundException("No export with id= " + exportId + " found");
             }
