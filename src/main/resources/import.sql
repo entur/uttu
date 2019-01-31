@@ -15,7 +15,7 @@ insert into codespace (pk,version, xmlns, xmlns_url,created,created_by,changed,c
 insert into codespace (pk,version, xmlns, xmlns_url,created,created_by,changed,changed_by)  values (nextval('codespace_seq'),1,'TRO','http://www.rutebanken.org/ns/tro', now(),'init',now(),'init');
 insert into codespace (pk,version, xmlns, xmlns_url,created,created_by,changed,changed_by)  values (nextval('codespace_seq'),1,'VKT','http://www.rutebanken.org/ns/vkt', now(),'init',now(),'init');
 insert into codespace (pk,version, xmlns, xmlns_url,created,created_by,changed,changed_by)  values (nextval('codespace_seq'),1,'OST','http://www.rutebanken.org/ns/ost', now(),'init',now(),'init');
-
+insert into codespace (pk,version, xmlns, xmlns_url,created,created_by,changed,changed_by)  values (nextval('codespace_seq'),1,'KOL','http://www.rutebanken.org/ns/kol', now(),'init',now(),'init');
 
 insert into provider (pk,version,code, name, codespace_pk,created,created_by,changed,changed_by) values  (nextval('provider_seq'),1,'nsb', 'NSB',(select pk from codespace where xmlns='NSB'), now(),'init',now(),'init');
 insert into provider (pk,version,code, name, codespace_pk,created,created_by,changed,changed_by) values  (nextval('provider_seq'),1, 'rut', 'Ruter',(select pk from codespace where xmlns='RUT'),now(),'init',now(),'init');
@@ -33,3 +33,4 @@ insert into provider (pk,version,code, name, codespace_pk,created,created_by,cha
 insert into provider (pk,version,code, name, codespace_pk,created,created_by,changed,changed_by) values  (nextval('provider_seq'),1, 'tro', 'Troms fylkeskommune',(select pk from codespace where xmlns='TRO'),now(),'init',now(),'init');
 insert into provider (pk,version,code, name, codespace_pk,created,created_by,changed,changed_by) values  (nextval('provider_seq'),1, 'vkt', 'Vestfold kollektivtrafikk',(select pk from codespace where xmlns='VKT'),now(),'init',now(),'init');
 insert into provider (pk,version,code, name, codespace_pk,created,created_by,changed,changed_by) values  (nextval('provider_seq'),1, 'ost', 'Østfold fylkeskommune',(select pk from codespace where xmlns='OST'),now(),'init',now(),'init');
+insert into provider (pk,version,code, name, codespace_pk,created,created_by,changed,changed_by) values  (nextval('provider_seq'),1, 'ost', 'Kolumbus(Rogaland)',(select pk from codespace where xmlns='OST'),now(),'init',now(),'init');
