@@ -118,10 +118,10 @@ public class NetexObjectFactory {
      *
      */
     private String toNMTOKENString(String org) {
-        if (org==null) {
+        if (org == null) {
             return "unknown";
         }
-        return org.replace(' ','_');
+        return org.replace(' ', '_').replace("(", "_").replace(")", "_");
     }
 
     public <F extends Common_VersionFrameStructure> CompositeFrame createCompositeFrame(NetexExportContext context, AvailabilityPeriod availabilityPeriod, F... frames) {
