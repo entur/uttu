@@ -40,12 +40,13 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <entur.helpers.version>0.0.4-SNAPSHOT</entur.helpers.version>
-        <docker.maven.plugin.version>0.21.0</docker.maven.plugin.version>
-        <spring-boot-plugin.version>2.1.0.RELEASE</spring-boot-plugin.version>
-        <spring-boot.version>2.1.0.RELEASE</spring-boot.version>
-        <spring.security.version>5.0.7.RELEASE</spring.security.version>
+        <docker.maven.plugin.version>0.28.0</docker.maven.plugin.version>
+        <spring-boot-plugin.version>2.1.2.RELEASE</spring-boot-plugin.version>
+        <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
+        <spring.security.version>5.0.11.RELEASE</spring.security.version>
         <postgresql.version>9.4-1201-jdbc41</postgresql.version>
         <keycloak.version>4.6.0.Final</keycloak.version>
+        <activemq-client.version>5.15.8</activemq-client.version>
 
         <!-- Docker & Fabric8 Configs -->
         <docker.from>eu.gcr.io/carbon-1287/openjdk11-base-image</docker.from>
@@ -343,6 +344,29 @@
             <version>${rest-assured.version}</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>javax.jms</groupId>
+            <artifactId>javax.jms-api</artifactId>
+            <version>2.0.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-client</artifactId>
+            <version>${activemq-client.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.activemq</groupId>
+            <artifactId>activemq-kahadb-store</artifactId>
+            <version>${activemq-client.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+
     </dependencies>
 
 
