@@ -17,6 +17,7 @@ package no.entur.uttu.graphql.fetchers;
 
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.export.ExportService;
+import no.entur.uttu.export.messaging.MessagingService;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
@@ -31,6 +32,9 @@ public class ExportUpdater extends AbstractProviderEntityUpdater<Export> {
     @Autowired
     private ExportService exportService;
 
+    @Autowired
+    private MessagingService messagingService;
+
     public ExportUpdater(AbstractProviderEntityMapper<Export> mapper, ProviderEntityRepository<Export> repository) {
         super(mapper, repository);
     }
@@ -39,7 +43,11 @@ public class ExportUpdater extends AbstractProviderEntityUpdater<Export> {
     @Override
     protected Export saveEntity(DataFetchingEnvironment env) {
         Export export = super.saveEntity(env);
+
+        // export dataset to the blob store
         exportService.exportDataSet(export);
+        // notify Marduk that a new export is available
+        messagingService.notifyExport(export.getProvider().getCode().toLowerCase());
 
         return repository.save(export);
     }
