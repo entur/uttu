@@ -54,8 +54,16 @@ public class ArgumentWrapper {
      * Ignore if reference field is not set in input.
      */
     public <T extends ProviderEntity> void applyReference(String name, ProviderEntityRepository<T> repository, Consumer<T> func) {
-        this.apply(name, reference -> func.accept(Optional.ofNullable(repository.getOne((String) reference)).orElseThrow(() -> new EntityNotFoundException("Referred entity not found: " + reference))));
+        this.apply(name, reference -> func.accept(resolveReference(repository, reference)));
     }
+
+    private <T extends ProviderEntity> T resolveReference(ProviderEntityRepository<T> repository, Object reference) {
+        if (reference == null) {
+            return null;
+        }
+        return Optional.ofNullable(repository.getOne((String) reference)).orElseThrow(() -> new EntityNotFoundException("Referred entity not found: " + reference));
+    }
+
 
     public <T, V> void apply(String name, Function<T, V> mapper, Consumer<V> func) {
         if (map.containsKey(name)) {
