@@ -21,7 +21,7 @@ import no.entur.uttu.export.netex.NetexExporter;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportMessage;
 import no.entur.uttu.model.job.SeverityEnumeration;
-import no.entur.uttu.util.FileNameUtil;
+import no.entur.uttu.util.ExportUtil;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,11 +70,11 @@ public class ExportService {
             ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 
             if (!export.isDryRun()) {
-                String blobName = exportFolder + FileNameUtil.createExportedDataSetFilename(export.getProvider());
+                String blobName = exportFolder + ExportUtil.createExportedDataSetFilename(export.getProvider());
                 blobStoreService.uploadBlob(blobName, true, bis);
                 bis.reset();
             }
-            export.setFileName(exportFolder + FileNameUtil.createBackupDataSetFilename(export));
+            export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
             blobStoreService.uploadBlob(export.getFileName(), true, bis);
 
 

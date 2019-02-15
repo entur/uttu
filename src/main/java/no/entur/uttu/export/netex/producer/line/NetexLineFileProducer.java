@@ -24,7 +24,7 @@ import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.ServiceJourney;
-import no.entur.uttu.util.FileNameUtil;
+import no.entur.uttu.util.ExportUtil;
 import org.rutebanken.netex.model.CompositeFrame;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
@@ -59,7 +59,7 @@ public class NetexLineFileProducer {
 
     public NetexFile toNetexFile(FlexibleLine line, NetexExportContext context) {
 
-        String fileName = FileNameUtil.createLineFilename(line);
+        String fileName = ExportUtil.createLineFilename(line);
 
         ServiceFrame serviceFrame = createServiceFrame(line, context);
         TimetableFrame timetableFrame = createTimetableFrame(line, context);
