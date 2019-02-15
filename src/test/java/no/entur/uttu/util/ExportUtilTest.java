@@ -22,12 +22,12 @@ import org.junit.Test;
 
 import java.time.LocalDate;
 
-public class FileNameUtilTest {
+public class ExportUtilTest {
 
     @Test
     public void testCreateBackupDataSetFilenameWithExportName(){
         Export export = createExport("t1");
-        String fileName=FileNameUtil.createBackupDataSetFilename(export);
+        String fileName= ExportUtil.createBackupDataSetFilename(export);
 
         Assert.assertEquals("tst_t1_20180115-20180520_null.zip",fileName);
 
@@ -36,7 +36,7 @@ public class FileNameUtilTest {
     @Test
     public void testCreateBackupDataSetFilenameWithEoutxportName(){
         Export export = createExport(null);
-        String fileName=FileNameUtil.createBackupDataSetFilename(export);
+        String fileName= ExportUtil.createBackupDataSetFilename(export);
 
         Assert.assertEquals("tst_20180115-20180520_null.zip",fileName);
 

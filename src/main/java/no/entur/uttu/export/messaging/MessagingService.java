@@ -1,5 +1,6 @@
 package no.entur.uttu.export.messaging;
 
+import no.entur.uttu.util.ExportUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,13 +40,15 @@ public class MessagingService {
                 @Override
                 public Message createMessage(Session session) throws JMSException {
                     Message message = session.createMessage();
-                    message.setStringProperty(CHOUETTE_REFERENTIAL,codespace);
+                    message.setStringProperty(CHOUETTE_REFERENTIAL, ExportUtil.getMigratedReferential(codespace));
                     return message;
                 }
             });
+            logger.debug("Sent export notification for codespace {}.", codespace);
+        } else {
+            logger.debug("Skipped export notification for codespace {}.", codespace);
         }
-        logger.debug("Sent export notification for codespace {}.", codespace);
-    }
 
+    }
 
 }
