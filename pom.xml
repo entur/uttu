@@ -56,7 +56,7 @@
 
         <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
         <docker.port.container.jolokia>8778</docker.port.container.jolokia>
-        <jackson-jaxrs-xml-provider.version>2.9.7</jackson-jaxrs-xml-provider.version>
+        <jackson-jaxrs-xml-provider.version>2.9.8</jackson-jaxrs-xml-provider.version>
 
         <flyway-core.version>5.2.1</flyway-core.version>
         <httpcomponents-fluent.version>4.5.3</httpcomponents-fluent.version>
@@ -65,7 +65,7 @@
         <geotools.version>20.0</geotools.version>
         <hibernate-spatial.version>5.3.7.Final</hibernate-spatial.version>
         <hibernate.version>5.3.7.Final</hibernate.version>
-        <swagger-jersey2.version>1.5.21</swagger-jersey2.version>
+        <swagger-jersey2.version>1.5.22</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
         <com.vividsolutions.version>1.13</com.vividsolutions.version>
 
@@ -131,7 +131,7 @@
         <dependency>
             <groupId>net.logstash.logback</groupId>
             <artifactId>logstash-logback-encoder</artifactId>
-            <version>5.2</version>
+            <version>5.3</version>
         </dependency>
 
         <dependency>
@@ -386,8 +386,7 @@
                                     <classpath refid="maven.test.classpath"/>
                                 </taskdef>
                                 <mkdir dir="${project.build.testOutputDirectory}"/>
-                                <groovyc destdir="${project.build.testOutputDirectory}"
-                                         srcdir="${basedir}/src/test/groovy/" listfiles="true">
+                                <groovyc destdir="${project.build.testOutputDirectory}" srcdir="${basedir}/src/test/groovy/" listfiles="true">
                                     <classpath refid="maven.test.classpath"/>
                                 </groovyc>
                             </tasks>
