@@ -24,7 +24,7 @@ import org.springframework.util.StringUtils;
 import java.text.StringCharacterIterator;
 import java.time.format.DateTimeFormatter;
 
-public class FileNameUtil {
+public class ExportUtil {
 
 
     private static final String COMMON_FILE_NAME_SUFFIX = "_flexible_shared_data.xml";
@@ -36,8 +36,15 @@ public class FileNameUtil {
 
     private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
 
+    // In Marduk providers are identified with their migrated provider referential, thus the codespace must be prefixed.
+    public static final String MIGRATED_PROVIDER_PREFIX = "rb_";
+
     public static String createExportedDataSetFilename(Provider provider) {
-        return "rb_" + provider.getCode().toLowerCase() + "-flexible-lines.zip";
+        return MIGRATED_PROVIDER_PREFIX + provider.getCode().toLowerCase() + "-flexible-lines.zip";
+    }
+
+    public static String getMigratedReferential(String codespace) {
+        return MIGRATED_PROVIDER_PREFIX + codespace;
     }
 
     public static String createBackupDataSetFilename(Export export) {
