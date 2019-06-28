@@ -45,7 +45,7 @@
         <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
         <spring.security.version>5.0.11.RELEASE</spring.security.version>
         <postgresql.version>9.4-1201-jdbc41</postgresql.version>
-        <keycloak.version>4.6.0.Final</keycloak.version>
+        <keycloak.version>5.0.0</keycloak.version>
         <activemq-client.version>5.15.8</activemq-client.version>
 
         <!-- Docker & Fabric8 Configs -->
