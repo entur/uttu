@@ -40,37 +40,28 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <entur.helpers.version>0.0.4-SNAPSHOT</entur.helpers.version>
-        <docker.maven.plugin.version>0.28.0</docker.maven.plugin.version>
-        <spring-boot-plugin.version>2.1.2.RELEASE</spring-boot-plugin.version>
-        <spring-boot.version>2.1.2.RELEASE</spring-boot.version>
-        <spring.security.version>5.0.11.RELEASE</spring.security.version>
-        <postgresql.version>9.4-1201-jdbc41</postgresql.version>
-        <keycloak.version>4.6.0.Final</keycloak.version>
-        <activemq-client.version>5.15.8</activemq-client.version>
-
-        <!-- Docker & Fabric8 Configs -->
-        <docker.from>eu.gcr.io/carbon-1287/openjdk11-base-image</docker.from>
-        <fabric8.dockerUser>carbon-1287/</fabric8.dockerUser>
-        <docker.image>eu.gcr.io/${fabric8.dockerUser}${project.artifactId}:${project.version}</docker.image>
-        <docker.cleanup>none</docker.cleanup>
+        <spring-boot-plugin.version>2.1.7.RELEASE</spring-boot-plugin.version>
+        <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+        <spring.security.version>5.1.6.RELEASE</spring.security.version>
+        <postgresql.version>42.2.6</postgresql.version>
+        <keycloak.version>4.8.3.Final</keycloak.version>
+        <activemq-client.version>5.15.10</activemq-client.version>
 
         <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
-        <docker.port.container.jolokia>8778</docker.port.container.jolokia>
-        <jackson-jaxrs-xml-provider.version>2.9.8</jackson-jaxrs-xml-provider.version>
+        <jackson-jaxrs-xml-provider.version>2.9.9</jackson-jaxrs-xml-provider.version>
 
-        <flyway-core.version>5.2.1</flyway-core.version>
-        <httpcomponents-fluent.version>4.5.3</httpcomponents-fluent.version>
+        <flyway-core.version>5.2.4</flyway-core.version>
         <assertj-core.version>3.11.1</assertj-core.version>
         <geodb.version>0.9</geodb.version>
-        <geotools.version>20.0</geotools.version>
-        <hibernate-spatial.version>5.3.7.Final</hibernate-spatial.version>
-        <hibernate.version>5.3.7.Final</hibernate.version>
-        <swagger-jersey2.version>1.5.22</swagger-jersey2.version>
+        <geotools.version>20.1</geotools.version>
+        <hibernate.version>5.4.4.Final</hibernate.version>
+        <hibernate-spatial.version>5.4.4.Final</hibernate-spatial.version>
+        <swagger-jersey2.version>1.5.23</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
         <com.vividsolutions.version>1.13</com.vividsolutions.version>
 
-        <com.h2database.version>1.4.196</com.h2database.version>
-        <groovy-all.version>2.5.6</groovy-all.version>
+        <com.h2database.version>1.4.199</com.h2database.version>
+        <groovy-all.version>2.5.8</groovy-all.version>
         <rest-assured.version>3.1.1</rest-assured.version>
         <graphql.version>11.0</graphql.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
@@ -225,7 +216,7 @@
         <dependency>
             <groupId>net.postgis</groupId>
             <artifactId>postgis-jdbc</artifactId>
-            <version>2.2.1</version>
+            <version>2.2.2</version>
         </dependency>
 
         <dependency>
@@ -411,31 +402,6 @@
                         </goals>
                     </execution>
                 </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>io.fabric8</groupId>
-                <artifactId>docker-maven-plugin</artifactId>
-                <version>${docker.maven.plugin.version}</version>
-                <configuration>
-                    <autoPull>always</autoPull>
-                    <images>
-                        <image>
-                            <name>${docker.image}</name>
-                            <build>
-                                <from>${docker.from}</from>
-                                <cleanup>${docker.cleanup}</cleanup>
-                                <assembly>
-                                    <basedir>/deployments</basedir>
-                                    <descriptorRef>artifact</descriptorRef>
-                                </assembly>
-                                <env>
-                                    <JAVA_APP_JAR>${project.build.finalName}.jar</JAVA_APP_JAR>
-                                </env>
-                            </build>
-                        </image>
-                    </images>
-                </configuration>
             </plugin>
         </plugins>
     </build>
