@@ -54,13 +54,13 @@
         <assertj-core.version>3.11.1</assertj-core.version>
         <geodb.version>0.9</geodb.version>
         <geotools.version>20.1</geotools.version>
-        <hibernate.version>5.4.4.Final</hibernate.version>
-        <hibernate-spatial.version>5.4.4.Final</hibernate-spatial.version>
+        <hibernate-spatial.version>5.3.11.Final</hibernate-spatial.version>
+        <hibernate.version>5.3.11.Final</hibernate.version>
         <swagger-jersey2.version>1.5.23</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
         <com.vividsolutions.version>1.13</com.vividsolutions.version>
 
-        <com.h2database.version>1.4.199</com.h2database.version>
+        <com.h2database.version>1.4.196</com.h2database.version>
         <groovy-all.version>2.5.8</groovy-all.version>
         <rest-assured.version>3.1.1</rest-assured.version>
         <graphql.version>11.0</graphql.version>
