@@ -17,11 +17,13 @@ package no.entur.uttu.model;
 
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Notice extends ProviderEntity {
 
     @NotNull
+    @Size(max = 4000)
     private String text;
 
     public String getText() {
