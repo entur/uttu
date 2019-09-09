@@ -134,12 +134,10 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     }
 
 
-
-
     ValidatableResponse createFlexibleLine(String name) {
         String networkId = getNetworkId(createNetwork(name))
-        String flexAreaStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithFlexibleArea(name+"FlexArea"))
-        String hailAndRideStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithHailAndRideArea(name+"HailAndRide"))
+        String flexAreaStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithFlexibleArea(name + "FlexArea"))
+        String hailAndRideStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithHailAndRideArea(name + "HailAndRide"))
 
         String variables = """
 {
@@ -229,6 +227,44 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
             ]
           }
         ]
+      },
+      {
+        "directionType": "inbound",
+        "pointsInSequence": [
+                {
+            "flexibleStopPlaceRef": "$hailAndRideStopPlaceId",
+             "destinationDisplay": {
+              "frontText": "direkte"
+            }
+        }
+        ,
+        
+        {
+            "quayRef": "NSR:Quay:3513"
+         }
+        ],
+        "serviceJourneys": [
+          {
+            "dayTypes": [
+              {
+                "dayTypeAssignments": [
+                  {
+                    "date": "$TODAY"
+                  }
+                ]
+              }
+            ],
+            "privateCode": "501",
+            "passingTimes": [
+              {
+                "departureTime": "18:00"
+              },
+              {
+                "arrivalTime": "18:30"
+              }
+            ]
+          }
+        ]
       }
     ]
   }
@@ -237,8 +273,6 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
 
         executeGraphQL(createFlexibleLineQuery, variables)
     }
-
-
 
 
     String fullFlexibleLineFieldSet = """

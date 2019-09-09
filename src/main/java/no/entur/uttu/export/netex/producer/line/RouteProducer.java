@@ -86,7 +86,7 @@ public class RouteProducer {
 
         context.routePointRefs.add(ref);
 
-        return objectFactory.populateId(new PointOnRoute(), ref)
+        return objectFactory.populateId(new PointOnRoute(), stopPoint.getRef())
                        .withOrder(BigInteger.valueOf(order))
                        .withPointRef(objectFactory.wrapRefStructure(new RoutePointRefStructure(), ref, false));
     }
