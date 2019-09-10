@@ -39,9 +39,9 @@
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
-        <entur.helpers.version>0.0.4-SNAPSHOT</entur.helpers.version>
-        <spring-boot-plugin.version>2.1.7.RELEASE</spring-boot-plugin.version>
-        <spring-boot.version>2.1.7.RELEASE</spring-boot.version>
+        <entur.helpers.version>0.0.6-SNAPSHOT</entur.helpers.version>
+        <spring-boot-plugin.version>2.1.8.RELEASE</spring-boot-plugin.version>
+        <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
         <spring.security.version>5.1.6.RELEASE</spring.security.version>
         <postgresql.version>42.2.6</postgresql.version>
         <keycloak.version>4.8.3.Final</keycloak.version>
@@ -50,7 +50,6 @@
         <gcp-storage.version>0.0.6-SNAPSHOT</gcp-storage.version>
 
         <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
-        <jackson-jaxrs-xml-provider.version>2.9.9</jackson-jaxrs-xml-provider.version>
 
         <flyway-core.version>5.2.4</flyway-core.version>
         <assertj-core.version>3.11.1</assertj-core.version>
@@ -142,7 +141,6 @@
         <dependency>
             <groupId>com.fasterxml.jackson.jaxrs</groupId>
             <artifactId>jackson-jaxrs-xml-provider</artifactId>
-            <version>${jackson-jaxrs-xml-provider.version}</version>
         </dependency>
 
         <dependency>
