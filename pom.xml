@@ -45,7 +45,9 @@
         <spring.security.version>5.1.6.RELEASE</spring.security.version>
         <postgresql.version>42.2.6</postgresql.version>
         <keycloak.version>4.8.3.Final</keycloak.version>
-        <activemq-client.version>5.15.10</activemq-client.version>
+
+        <entur-google-pubsub-version>0.0.6-SNAPSHOT</entur-google-pubsub-version>
+        <gcp-storage.version>0.0.6-SNAPSHOT</gcp-storage.version>
 
         <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
         <jackson-jaxrs-xml-provider.version>2.9.9</jackson-jaxrs-xml-provider.version>
@@ -184,7 +186,7 @@
         <dependency>
             <groupId>org.entur.helpers</groupId>
             <artifactId>gcp-storage</artifactId>
-            <version>${entur.helpers.version}</version>
+            <version>${gcp-storage.version}</version>
             <exclusions>
                 <exclusion>
                     <groupId>javax.servlet</groupId>
@@ -338,26 +340,16 @@
         </dependency>
 
         <dependency>
-            <groupId>javax.jms</groupId>
-            <artifactId>javax.jms-api</artifactId>
-            <version>2.0.1</version>
+            <groupId>org.entur.helpers</groupId>
+            <artifactId>entur-google-pubsub</artifactId>
+            <version>${entur-google-pubsub-version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.camel</groupId>
+                    <artifactId>camel-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-jms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-client</artifactId>
-            <version>${activemq-client.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.activemq</groupId>
-            <artifactId>activemq-kahadb-store</artifactId>
-            <version>${activemq-client.version}</version>
-            <scope>test</scope>
-        </dependency>
-
 
     </dependencies>
 
@@ -403,6 +395,33 @@
                     </execution>
                 </executions>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-pubsub-emulator</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <artifactItems>
+                        <artifactItem>
+                            <groupId>com.google.cloud</groupId>
+                            <artifactId>pubsub-emulator</artifactId>
+                            <version>0.1-SNAPSHOT</version>
+                            <type>jar</type>
+                            <overWrite>true</overWrite>
+                            <outputDirectory>${project.build.directory}/pubsub-emulator</outputDirectory>
+                        </artifactItem>
+                    </artifactItems>
+                </configuration>
+            </plugin>
+
         </plugins>
     </build>
 
