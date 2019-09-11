@@ -17,7 +17,6 @@ package no.entur.uttu.graphql.fetchers;
 
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.export.ExportService;
-import no.entur.uttu.export.messaging.MessagingService;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
