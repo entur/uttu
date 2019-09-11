@@ -40,7 +40,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <entur.helpers.version>0.0.6-SNAPSHOT</entur.helpers.version>
-        <spring-boot-plugin.version>2.1.8.RELEASE</spring-boot-plugin.version>
         <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
         <spring.security.version>5.1.6.RELEASE</spring.security.version>
         <postgresql.version>42.2.6</postgresql.version>
@@ -381,7 +380,7 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot-plugin.version}</version>
+                <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>no.entur.uttu.App</mainClass>
                 </configuration>
