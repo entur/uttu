@@ -18,6 +18,7 @@ package no.entur.uttu.config;
 
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.ProviderRepository;
+import org.rutebanken.helper.organisation.RoleAssignment;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -51,7 +52,11 @@ public class ProviderAuthenticationService {
         }
 
         return roleAssignmentExtractor.getRoleAssignmentsForUser(authentication).stream()
-                       .filter(ra -> role.equals(ra.r)).anyMatch(ra -> provider.getCodespace().getXmlns().equals(ra.o));
+                       .anyMatch(roleAssignment -> match(roleAssignment, role, provider));
+    }
+
+    private boolean match(RoleAssignment roleAssignment, String role, Provider provider) {
+        return role.equals(roleAssignment.getRole()) && provider.getCodespace().getXmlns().equals(roleAssignment.getOrganisation());
     }
 
 
