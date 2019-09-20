@@ -26,11 +26,12 @@ import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodespaceRepository;
-import no.entur.uttu.repository.ProviderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+
+import java.util.List;
 
 import static graphql.Scalars.GraphQLID;
 import static graphql.Scalars.GraphQLLong;
@@ -46,15 +47,18 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
  */
 @Component
 public class ProviderGraphQLSchema {
+
     @Autowired
     private CodespaceRepository codespaceRepository;
 
     @Autowired
-    private ProviderRepository providerRepository;
-    @Autowired
     private DataFetcher<Codespace> codespaceUpdater;
+
     @Autowired
     private DataFetcher<Provider> providerUpdater;
+
+    @Autowired
+    private DataFetcher<List<Provider>> providerFetcher;
 
     @Autowired
     private DateTimeScalar dateTimeScalar;
@@ -111,7 +115,7 @@ public class ProviderGraphQLSchema {
                                                              .type(new GraphQLList(providerObjectType))
                                                              .name("providers")
                                                              .description("Search for Providers")
-                                                             .dataFetcher(env -> providerRepository.findAll()))
+                                                             .dataFetcher(providerFetcher))
                                               .build();
 
         return queryType;

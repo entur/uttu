@@ -15,18 +15,10 @@
 
 package no.entur.uttu.repository;
 
-import no.entur.uttu.config.ProviderAuthenticationService;
 import no.entur.uttu.model.Provider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
-import org.springframework.security.access.prepost.PostFilter;
 import org.springframework.stereotype.Component;
-
 import javax.persistence.EntityManager;
-import java.util.List;
-
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
 
 @Component
 public class ProviderRepositoryImpl extends SimpleJpaRepository<Provider, Long> implements ProviderRepository {
@@ -36,12 +28,6 @@ public class ProviderRepositoryImpl extends SimpleJpaRepository<Provider, Long> 
     public ProviderRepositoryImpl(EntityManager entityManager) {
         super(Provider.class, entityManager);
         this.entityManager = entityManager;
-    }
-
-    @Override
-    @PostFilter("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',filterObject.getCode())")
-    public List<Provider> findAll() {
-        return super.findAll();
     }
 
     @Override
