@@ -16,12 +16,16 @@
 package no.entur.uttu.graphql
 
 import io.restassured.response.ValidatableResponse
+import no.entur.uttu.config.MockedRoleAssignmentExtractor
 import org.junit.Test
-import org.springframework.security.test.context.support.WithMockUser
+import org.rutebanken.helper.organisation.RoleAssignment
+import org.springframework.beans.factory.annotation.Autowired
 
 import static org.hamcrest.Matchers.*
 
 class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationTest {
+    @Autowired
+    MockedRoleAssignmentExtractor mockedRoleAssignmentExtractor;
 
     String getProvidersQuery = """
    query GetProviders {
@@ -36,9 +40,19 @@ class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationT
         return "/services/flexible-lines/providers/graphql"
     }
 
+    protected Properties getCredentials() {
+        Properties credentials = new Properties();
+        credentials.put("username", "user");
+        credentials.put("password", "secret");
+        return credentials;
+    }
+
     @Test
     void getProvidersTest() {
-        ValidatableResponse response = executeGraphqQLQueryOnly(getProvidersQuery)
+        mockedRoleAssignmentExtractor.setNextReturnedRoleAssignment(
+                RoleAssignment.builder().withRole("editRouteData").withOrganisation("TST").build()
+        );
+        ValidatableResponse response = executeGraphqQLQueryOnly(getProvidersQuery);
         response
             .body("data.providers", iterableWithSize(1))
     }

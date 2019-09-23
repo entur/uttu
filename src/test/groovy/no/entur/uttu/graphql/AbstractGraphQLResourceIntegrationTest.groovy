@@ -63,8 +63,10 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
     }
 
     protected ValidatableResponse executeGraphQL(String graphQlJsonQuery, int httpStatusCode) {
+        Properties credentials = getCredentials();
+
         return given()
-                .auth().preemptive().basic("spring", "secret")
+                .auth().preemptive().basic(credentials.get("username"), credentials.get("password"))
                 .port(port)
                 .contentType(ContentType.JSON)
                 .body(graphQlJsonQuery)
@@ -77,4 +79,11 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
     }
 
     protected abstract String getUrl();
+
+    protected Properties getCredentials() {
+        Properties credentials = new Properties();
+        credentials.put("username", "admin");
+        credentials.put("password", "topsecret");
+        return credentials;
+    }
 }
