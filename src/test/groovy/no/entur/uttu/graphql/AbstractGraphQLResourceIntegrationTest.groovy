@@ -64,6 +64,7 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
 
     protected ValidatableResponse executeGraphQL(String graphQlJsonQuery, int httpStatusCode) {
         return given()
+                .auth().preemptive().basic("spring", "secret")
                 .port(port)
                 .contentType(ContentType.JSON)
                 .body(graphQlJsonQuery)
@@ -76,5 +77,4 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
     }
 
     protected abstract String getUrl();
-
 }
