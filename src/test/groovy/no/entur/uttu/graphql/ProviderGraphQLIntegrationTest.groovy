@@ -41,17 +41,17 @@ class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationT
     }
 
     protected Properties getCredentials() {
-        Properties credentials = new Properties();
-        credentials.put("username", "user");
-        credentials.put("password", "secret");
-        return credentials;
+        Properties credentials = new Properties()
+        credentials.put("username", "user")
+        credentials.put("password", "secret")
+        return credentials
     }
 
     @Test
     void getProvidersTest() {
         mockedRoleAssignmentExtractor.setNextReturnedRoleAssignment(
                 RoleAssignment.builder().withRole("editRouteData").withOrganisation("TST").build()
-        );
+        )
         ValidatableResponse response = executeGraphqQLQueryOnly(getProvidersQuery);
         response
             .body("data.providers", iterableWithSize(1))
