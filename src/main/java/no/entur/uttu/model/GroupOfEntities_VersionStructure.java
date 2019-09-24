@@ -16,6 +16,7 @@
 package no.entur.uttu.model;
 
 import javax.persistence.MappedSuperclass;
+import javax.validation.constraints.Size;
 
 @MappedSuperclass
 public abstract class GroupOfEntities_VersionStructure
@@ -25,6 +26,7 @@ public abstract class GroupOfEntities_VersionStructure
 
     protected String shortName;
 
+    @Size(max = 4000)
     protected String description;
 
     protected String privateCode;

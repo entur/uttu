@@ -16,18 +16,21 @@
 package no.entur.uttu.model;
 
 import javax.persistence.Entity;
+import javax.validation.constraints.Size;
 
 @Entity
 public class Contact extends IdentifiedEntity {
-
+    @Size(max = 256)
     private String email;
-
+    @Size(max = 256)
     private String phone;
-
+    @Size(max = 256)
     private String url;
 
+    @Size(max = 256)
     private String contactPerson;
 
+    @Size(max = 4000)
     private String furtherDetails;
 
     public String getEmail() {
