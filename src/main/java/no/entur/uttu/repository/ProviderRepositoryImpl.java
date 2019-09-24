@@ -18,7 +18,6 @@ package no.entur.uttu.repository;
 import no.entur.uttu.model.Provider;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Component;
-
 import javax.persistence.EntityManager;
 
 @Component
