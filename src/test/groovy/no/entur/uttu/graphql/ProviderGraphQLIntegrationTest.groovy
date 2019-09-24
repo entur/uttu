@@ -21,8 +21,11 @@ import org.junit.Test
 import org.rutebanken.helper.organisation.RoleAssignment
 import org.springframework.beans.factory.annotation.Autowired
 
+import javax.annotation.concurrent.NotThreadSafe
+
 import static org.hamcrest.Matchers.*
 
+@NotThreadSafe
 class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationTest {
     @Autowired
     MockedRoleAssignmentExtractor mockedRoleAssignmentExtractor;
@@ -52,8 +55,24 @@ class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationT
         mockedRoleAssignmentExtractor.setNextReturnedRoleAssignment(
                 RoleAssignment.builder().withRole("editRouteData").withOrganisation("TST").build()
         )
-        ValidatableResponse response = executeGraphqQLQueryOnly(getProvidersQuery);
-        response
-            .body("data.providers", iterableWithSize(1))
+
+        executeGraphqQLQueryOnly(getProvidersQuery)
+                .body("data.providers", iterableWithSize(1))
+                .body("data.providers[0].code", equalTo("tst"))
+
+        mockedRoleAssignmentExtractor.reset()
+    }
+
+    @Test
+    void getMoreProvidersTest() {
+        mockedRoleAssignmentExtractor.setNextReturnedRoleAssignment(
+                RoleAssignment.builder().withRole("editRouteData").withOrganisation("FOO").build()
+        )
+
+        executeGraphqQLQueryOnly(getProvidersQuery)
+                .body("data.providers", iterableWithSize(1))
+                .body("data.providers[0].code", equalTo("foo"))
+
+        mockedRoleAssignmentExtractor.reset()
     }
 }

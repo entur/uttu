@@ -40,7 +40,6 @@ public class MockedRoleAssignmentExtractor implements RoleAssignmentExtractor {
             returnValue = RoleAssignmentListBuilder.builder().withAccessAllAreas().build();
         }
 
-        nextReturnedRoleAssignmentList = null;
         return returnValue;
 
     }
@@ -56,5 +55,9 @@ public class MockedRoleAssignmentExtractor implements RoleAssignmentExtractor {
 
     public void setNextReturnedRoleAssignment(RoleAssignment roleAssignment) {
         this.nextReturnedRoleAssignmentList = Arrays.asList(roleAssignment);
+    }
+
+    public void reset() {
+        nextReturnedRoleAssignmentList = null;
     }
 }
