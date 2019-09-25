@@ -79,7 +79,7 @@ public class JerseyConfig {
 
 
         private void configureSwagger() {
-            // Available at localhost:port/api/swagger.json
+            // Available at http://localhost:port/services/flexible-lines/rut/graphql
             this.register(ApiListingResource.class);
             this.register(SwaggerSerializers.class);
 
