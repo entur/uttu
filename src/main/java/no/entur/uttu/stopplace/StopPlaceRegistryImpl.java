@@ -46,8 +46,8 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
     @Value("${http.client.id:uttu}")
     private String clientId;
 
-    @Value("${stopplace.registry.url:https://api.entur.org/stop_places/1.0/graphql}")
-    private String stopPlaceRegistryUrl = "https://api.entur.org/stop_places/1.0/graphql";
+    @Value("${stopplace.registry.url:https://api.entur.io/stop-places/v1/graphql}")
+    private String stopPlaceRegistryUrl = "https://api.entur.io/stop-places/v1/graphql";
 
 
     public boolean isValidQuayRef(String quayRef) {
