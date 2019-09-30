@@ -133,8 +133,11 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         executeGraphQL(createStopPlaceQuery, variables)
     }
 
-
     ValidatableResponse createFlexibleLine(String name) {
+        return createFlexibleLine(name, '22');
+    }
+
+    ValidatableResponse createFlexibleLine(String name, String operatorRef) {
         String networkId = getNetworkId(createNetwork(name))
         String flexAreaStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithFlexibleArea(name + "FlexArea"))
         String hailAndRideStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithHailAndRideArea(name + "HailAndRide"))
@@ -146,7 +149,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     "publicCode": "pubCode",
     "description": "FlexibleLine desc",
     "privateCode": "privateCode",
-    "operatorRef": "22",
+    "operatorRef": "$operatorRef",
     "flexibleLineType": "flexibleAreasOnly",
     "networkRef": "$networkId",
     "transportMode": "bus",

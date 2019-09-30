@@ -58,7 +58,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
         }
         Organisation organisation = getOrganisation(operatorRef);
         Preconditions.checkArgument(organisation != null, "Organisation with ref %s not found in organisation registry", operatorRef);
-        Preconditions.checkArgument(organisation.getOperatorNetexId() != null, "Organisation with ref %s is not a valid operator", operatorRef);
+        OrganisationPreconditions.checkValidOperator(organisation, operatorRef);
         return operatorRef;
     }
 

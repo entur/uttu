@@ -32,4 +32,10 @@ class FlexibleLineGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLInt
                 .body("data.mutateFlexibleLine.journeyPatterns[0].serviceJourneys[0].passingTimes[0].departureTime", equalTo("16:00:00"))
 
     }
+
+    @Test
+    void createFlexibleLineWithInvalidOperator() {
+        createFlexibleLine(testFlexibleLineName, '6')
+            .body("errors[0].extensions.code", equalTo("INVALID_OPERATOR"))
+    }
 }
