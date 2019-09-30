@@ -69,9 +69,8 @@ class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrati
                 .body("data.export.exportStatus", equalTo(ExportStatusEnumeration.SUCCESS.value()))
                 .body("data.export.downloadUrl", startsWith("tst/export/"))
 
-
         String downloadUrl = rsp.extract().body().path("data.export.downloadUrl")
-        given()
+        authenticatedRequestSpecification()
                 .port(port)
                 .when()
                 .get("/services/flexible-lines/" + downloadUrl)

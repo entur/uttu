@@ -18,6 +18,7 @@ package no.entur.uttu.graphql
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import io.restassured.response.ValidatableResponse
+import io.restassured.specification.RequestSpecification
 import no.entur.uttu.UttuIntegrationTest
 import org.junit.Before
 
@@ -63,7 +64,7 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
     }
 
     protected ValidatableResponse executeGraphQL(String graphQlJsonQuery, int httpStatusCode) {
-        return given()
+        return authenticatedRequestSpecification()
                 .port(port)
                 .contentType(ContentType.JSON)
                 .body(graphQlJsonQuery)
@@ -75,6 +76,18 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
                 .assertThat()
     }
 
+    protected RequestSpecification authenticatedRequestSpecification() {
+        Properties credentials = getCredentials()
+        return given()
+            .auth().preemptive().basic(credentials.get("username"), credentials.get("password"))
+    }
+
     protected abstract String getUrl();
 
+    protected Properties getCredentials() {
+        Properties credentials = new Properties()
+        credentials.put("username", "admin")
+        credentials.put("password", "topsecret")
+        return credentials
+    }
 }
