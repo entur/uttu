@@ -16,15 +16,22 @@
 package no.entur.uttu.stopplace;
 
 import com.google.common.base.Preconditions;
+import no.entur.uttu.config.UttuSecurityConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 @Component
 public class StopPlaceRegistryImpl implements StopPlaceRegistry {
+
+    private static final Logger logger = LoggerFactory.getLogger(StopPlaceRegistryImpl.class);
+
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -50,11 +57,19 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
         if (!quayRef.contains(":Quay:")) {
             return false;
         }
-        String rsp =
-                restTemplate.exchange(stopPlaceRegistryUrl, HttpMethod.POST, createQueryHttpEntity(quayRef), String.class).getBody();
 
-        // Look for "id" field in response, indicating hit. To a void parsing response
-        return rsp != null && rsp.contains(SUCCESS_MATCHER);
+        try {
+            String rsp =
+                    restTemplate.exchange(stopPlaceRegistryUrl, HttpMethod.POST, createQueryHttpEntity(quayRef), String.class).getBody();
+
+            // Look for "id" field in response, indicating hit. To a void parsing response
+            return rsp != null && rsp.contains(SUCCESS_MATCHER);
+        } catch (RestClientException e) {
+            logger.warn("Error checking quay ref {}: {}", quayRef, e.getMessage());
+            return false;
+        }
+
+
     }
 
     /**
