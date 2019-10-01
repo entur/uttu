@@ -15,15 +15,16 @@
 
 package no.entur.uttu.util;
 
+import com.google.common.base.Strings;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import no.entur.uttu.error.CodedIllegalArgumentException;
 import no.entur.uttu.error.ErrorCodeEnumeration;
 
 public final class Preconditions {
-    public static void checkArgument(boolean expression, @Nullable Object errorMessage, ErrorCodeEnumeration errorCode) {
+    public static void checkArgument(boolean expression, ErrorCodeEnumeration errorCode, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) {
         if (!expression) {
             throw new CodedIllegalArgumentException(
-                    String.valueOf(errorMessage),
+                    Strings.lenientFormat(errorMessageTemplate, errorMessageArgs),
                     errorCode
             );
         }
