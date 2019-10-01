@@ -15,7 +15,7 @@
 
 package no.entur.uttu.graphql.mappers;
 
-import com.google.common.base.Preconditions;
+import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Provider;

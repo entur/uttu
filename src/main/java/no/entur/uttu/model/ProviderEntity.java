@@ -16,7 +16,7 @@
 package no.entur.uttu.model;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
+import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.config.Context;
 
 import javax.persistence.Column;

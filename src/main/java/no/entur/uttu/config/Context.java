@@ -15,7 +15,7 @@
 
 package no.entur.uttu.config;
 
-import com.google.common.base.Preconditions;
+import no.entur.uttu.util.Preconditions;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 

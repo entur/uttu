@@ -15,7 +15,9 @@
 
 package no.entur.uttu.organisation;
 
-import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
+import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.util.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,7 +60,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
         }
         Organisation organisation = getOrganisation(operatorRef);
         Preconditions.checkArgument(organisation != null, "Organisation with ref %s not found in organisation registry", operatorRef);
-        OrganisationPreconditions.checkValidOperator(organisation, operatorRef);
+        Preconditions.checkArgument(organisation.getOperatorNetexId() != null, Strings.lenientFormat("Organisation with ref %s is not a valid operator", operatorRef), ErrorCodeEnumeration.INVALID_OPERATOR);
         return operatorRef;
     }
 

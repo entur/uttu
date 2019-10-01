@@ -15,7 +15,7 @@
 
 package no.entur.uttu.export.netex;
 
-import com.google.common.base.Preconditions;
+import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.producer.common.NetexCommonFileProducer;
 import no.entur.uttu.export.netex.producer.line.NetexLineFileProducer;

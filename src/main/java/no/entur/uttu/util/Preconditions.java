@@ -13,20 +13,23 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.organisation;
+package no.entur.uttu.util;
 
-import com.google.common.base.Strings;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import no.entur.uttu.error.CodedIllegalArgumentException;
 import no.entur.uttu.error.ErrorCodeEnumeration;
 
-public final class OrganisationPreconditions {
-
-    public static void checkValidOperator(Organisation organisation, String authorityRef) {
-        if (organisation.getOperatorNetexId() == null) {
+public final class Preconditions {
+    public static void checkArgument(boolean expression, @Nullable Object errorMessage, ErrorCodeEnumeration errorCode) {
+        if (!expression) {
             throw new CodedIllegalArgumentException(
-                    Strings.lenientFormat("Organisation with ref %s is not a valid operator", authorityRef),
-                    ErrorCodeEnumeration.INVALID_OPERATOR
+                    String.valueOf(errorMessage),
+                    errorCode
             );
         }
+    }
+
+    public static void checkArgument(boolean expression, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) {
+        com.google.common.base.Preconditions.checkArgument(expression, errorMessageTemplate, errorMessageArgs);
     }
 }
