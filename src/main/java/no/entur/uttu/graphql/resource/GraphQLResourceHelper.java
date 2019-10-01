@@ -19,7 +19,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.TypeFactory;
 import com.google.common.collect.Sets;
 import graphql.ErrorType;
-import graphql.ExceptionWhileDataFetching;
 import graphql.ExecutionInput;
 import graphql.ExecutionResult;
 import graphql.GraphQL;
@@ -58,10 +57,13 @@ public class GraphQLResourceHelper {
 
     private final TransactionTemplate transactionTemplate;
 
+
     public GraphQLResourceHelper(PlatformTransactionManager transactionManager) {
         org.springframework.util.Assert.notNull(transactionManager, "The 'transactionManager' argument must not be null.");
         this.transactionTemplate = new TransactionTemplate(transactionManager);
     }
+
+
 
     public Response executeStatement(GraphQL graphQL, Map<String, Object> request) {
         Map<String, Object> variables;
@@ -112,14 +114,6 @@ public class GraphQLResourceHelper {
                         transactionStatus.setRollbackOnly();
                     }
 
-                    errors = errors
-                            .stream()
-                            .map(exception ->
-                                    exception instanceof ExceptionWhileDataFetching
-                                            ? new CodedGraphQLError((ExceptionWhileDataFetching)exception)
-                                            : exception)
-                            .collect(Collectors.toList());
-
                     content.put("errors", errors);
                 }
                 if (executionResult.getData() != null) {
@@ -159,7 +153,6 @@ public class GraphQLResourceHelper {
                 response.put("message", graphQLError.getMessage());
                 response.put("errorType", graphQLError.getErrorType());
                 response.put("locations", graphQLError.getLocations());
-                response.put("extensions", graphQLError.getExtensions());
                 response.put("path", graphQLError.getPath());
             } else {
                 if (e instanceof Exception) {
