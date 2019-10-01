@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.*
 class FlexibleLineGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrationTest {
 
     String testFlexibleLineName = "TestFlexibleLine"
+    String testFlexibleLineWithInvalidOperatorName = "TestFlexibleLineWithInvalidOperator"
 
     @Test
     void createFlexibleLineTest() {
@@ -35,7 +36,7 @@ class FlexibleLineGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLInt
 
     @Test
     void createFlexibleLineWithInvalidOperator() {
-        createFlexibleLine(testFlexibleLineName, '6')
+        createFlexibleLine(testFlexibleLineWithInvalidOperatorName, '6')
             .body("errors[0].extensions.code", equalTo("INVALID_OPERATOR"))
     }
 }

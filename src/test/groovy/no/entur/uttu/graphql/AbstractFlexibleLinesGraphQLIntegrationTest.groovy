@@ -20,7 +20,6 @@ import io.restassured.response.ValidatableResponse
 
 abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationTest {
 
-
     protected String getUrl() {
         return "/services/flexible-lines/tst/graphql"
     }
