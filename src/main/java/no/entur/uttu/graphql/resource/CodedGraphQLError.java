@@ -17,7 +17,7 @@ package no.entur.uttu.graphql.resource;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.execution.ExecutionPath;
-import no.entur.uttu.util.CodedIllegalArgumentException;
+import no.entur.uttu.util.CodedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -34,8 +34,8 @@ public class CodedGraphQLError extends ExceptionWhileDataFetching {
             extensions = new HashMap<>();
         }
 
-        if (this.getException() instanceof CodedIllegalArgumentException) {
-            extensions.put("code", ((CodedIllegalArgumentException) this.getException()).getCode());
+        if (this.getException() instanceof CodedException) {
+            extensions.put("code", ((CodedException) this.getException()).getCode());
         }
 
         return extensions;

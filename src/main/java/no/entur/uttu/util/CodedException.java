@@ -15,15 +15,6 @@
 
 package no.entur.uttu.util;
 
-public class CodedIllegalArgumentException extends IllegalArgumentException implements CodedException {
-    private final String code;
-
-    public CodedIllegalArgumentException(String message, String code) {
-        super(message);
-        this.code = code;
-    }
-
-    public String getCode() {
-        return code;
-    }
+public interface CodedException {
+    public String getCode();
 }
