@@ -16,17 +16,16 @@
 package no.entur.uttu.organisation;
 
 import com.google.common.base.Strings;
-import no.entur.uttu.util.CodedIllegalArgumentException;
+import no.entur.uttu.error.CodedIllegalArgumentException;
+import no.entur.uttu.error.ErrorCodeEnumeration;
 
 public final class OrganisationPreconditions {
-
-    public static final String INVALID_OPERATOR = "INVALID_OPERATOR";
 
     public static void checkValidOperator(Organisation organisation, String authorityRef) {
         if (organisation.getOperatorNetexId() == null) {
             throw new CodedIllegalArgumentException(
                     Strings.lenientFormat("Organisation with ref %s is not a valid operator", authorityRef),
-                    INVALID_OPERATOR
+                    ErrorCodeEnumeration.INVALID_OPERATOR
             );
         }
     }

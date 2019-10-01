@@ -82,6 +82,4 @@ public class FlexibleLinesGraphQLResource {
             Context.clear();
         }
     }
-
-
 }

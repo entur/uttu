@@ -13,8 +13,17 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.util;
+package no.entur.uttu.error;
 
-public interface CodedException {
-    public String getCode();
+public class CodedIllegalArgumentException extends IllegalArgumentException implements CodedException {
+    private final ErrorCodeEnumeration code;
+
+    public CodedIllegalArgumentException(String message, ErrorCodeEnumeration code) {
+        super(message);
+        this.code = code;
+    }
+
+    public ErrorCodeEnumeration getCode() {
+        return code;
+    }
 }

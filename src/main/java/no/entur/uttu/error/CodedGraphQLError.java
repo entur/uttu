@@ -13,11 +13,10 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.graphql.resource;
+package no.entur.uttu.error;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.execution.ExecutionPath;
-import no.entur.uttu.util.CodedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,7 +34,7 @@ public class CodedGraphQLError extends ExceptionWhileDataFetching {
         }
 
         if (this.getException() instanceof CodedException) {
-            extensions.put("code", ((CodedException) this.getException()).getCode());
+            extensions.put("code", ((CodedException) this.getException()).getCode().toString());
         }
 
         return extensions;

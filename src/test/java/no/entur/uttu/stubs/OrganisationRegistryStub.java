@@ -17,9 +17,9 @@ package no.entur.uttu.stubs;
 
 import com.google.common.collect.Sets;
 import no.entur.uttu.organisation.Organisation;
-import no.entur.uttu.organisation.OrganisationPreconditions;
 import no.entur.uttu.organisation.OrganisationRegistry;
-import no.entur.uttu.util.CodedIllegalArgumentException;
+import no.entur.uttu.error.CodedIllegalArgumentException;
+import no.entur.uttu.error.ErrorCodeEnumeration;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -50,7 +50,7 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
     @Override
     public String getVerifiedOperatorRef(String operatorRef) {
         if (!validOperators.contains(operatorRef)) {
-            throw new CodedIllegalArgumentException("", OrganisationPreconditions.INVALID_OPERATOR);
+            throw new CodedIllegalArgumentException("", ErrorCodeEnumeration.INVALID_OPERATOR);
         }
         return operatorRef;
     }
