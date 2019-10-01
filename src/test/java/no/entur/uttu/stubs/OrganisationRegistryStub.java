@@ -17,13 +17,19 @@ package no.entur.uttu.stubs;
 
 import com.google.common.collect.Sets;
 import no.entur.uttu.organisation.Organisation;
+import no.entur.uttu.organisation.OrganisationPreconditions;
 import no.entur.uttu.organisation.OrganisationRegistry;
+import no.entur.uttu.util.CodedIllegalArgumentException;
 import org.springframework.stereotype.Component;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 
 @Component
 public class OrganisationRegistryStub implements OrganisationRegistry {
+
+    private List<String> validOperators = Collections.singletonList("22");
 
     @Override
     public Organisation getOrganisation(String organisationId) {
@@ -43,6 +49,9 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
 
     @Override
     public String getVerifiedOperatorRef(String operatorRef) {
+        if (!validOperators.contains(operatorRef)) {
+            throw new CodedIllegalArgumentException("", OrganisationPreconditions.INVALID_OPERATOR);
+        }
         return operatorRef;
     }
 
