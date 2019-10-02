@@ -50,7 +50,7 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
     @Override
     public String getVerifiedOperatorRef(String operatorRef) {
         if (!validOperators.contains(operatorRef)) {
-            throw new CodedIllegalArgumentException("", ErrorCodeEnumeration.INVALID_OPERATOR);
+            throw new CodedIllegalArgumentException("", ErrorCodeEnumeration.ORGANISATION_NOT_VALID_OPERATOR);
         }
         return operatorRef;
     }

@@ -18,7 +18,7 @@ The extension appears in the response as follows (example is trimmed):
             "errors": [
                 {
                     "extensions": {
-                        "code": "INVALID_OPERATOR"
+                        "code": "ORGANISATION_NOT_VALID_OPERATOR"
                     }
                 }
             ]

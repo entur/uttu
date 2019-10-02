@@ -37,6 +37,6 @@ class FlexibleLineGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLInt
     @Test
     void createFlexibleLineWithInvalidOperator() {
         createFlexibleLine(testFlexibleLineWithInvalidOperatorName, '6')
-            .body("errors[0].extensions.code", equalTo("INVALID_OPERATOR"))
+            .body("errors[0].extensions.code", equalTo("ORGANISATION_NOT_VALID_OPERATOR"))
     }
 }

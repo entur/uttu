@@ -5,5 +5,5 @@ public enum ErrorCodeEnumeration {
     /**
      * Organisation is not a valid operator
      */
-    INVALID_OPERATOR
+    ORGANISATION_NOT_VALID_OPERATOR
 }
