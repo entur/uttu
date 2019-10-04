@@ -15,7 +15,7 @@
 
 package no.entur.uttu.graphql.fetchers;
 
-import com.google.common.base.Preconditions;
+import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.repository.StopPointInJourneyPatternRepository;

@@ -15,7 +15,7 @@
 
 package no.entur.uttu.model.job;
 
-import com.google.common.base.Preconditions;
+import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.model.ProviderEntity;
 
 import javax.persistence.CascadeType;

@@ -15,7 +15,7 @@
 
 package no.entur.uttu.repository.generic;
 
-import com.google.common.base.Preconditions;
+import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.model.ProviderEntity;
 import org.slf4j.Logger;
