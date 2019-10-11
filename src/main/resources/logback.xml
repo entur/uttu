@@ -28,7 +28,7 @@
                         <pattern>
                             {
                             "serviceContext": {
-                                "service": "marduk"
+                                "service": "uttu"
                             },
                             "message": "%message\n%ex{full}",
                             "severity": "%level",
