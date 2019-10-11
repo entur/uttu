@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.rutebanken.superpom</groupId>
         <artifactId>superpom</artifactId>
-        <version>0.0.8-SNAPSHOT</version>
+        <version>0.0.9-SNAPSHOT</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -37,59 +37,39 @@
     </scm>
 
     <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <entur.helpers.version>0.0.6-SNAPSHOT</entur.helpers.version>
-        <spring-boot.version>2.1.8.RELEASE</spring-boot.version>
-        <spring.security.version>5.1.6.RELEASE</spring.security.version>
-        <postgresql.version>42.2.6</postgresql.version>
         <keycloak.version>4.8.3.Final</keycloak.version>
 
         <entur-google-pubsub-version>0.0.6-SNAPSHOT</entur-google-pubsub-version>
         <gcp-storage.version>0.0.6-SNAPSHOT</gcp-storage.version>
 
-        <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
 
-        <flyway-core.version>5.2.4</flyway-core.version>
-        <assertj-core.version>3.11.1</assertj-core.version>
         <geodb.version>0.9</geodb.version>
         <geotools.version>20.1</geotools.version>
-        <hibernate-spatial.version>5.3.11.Final</hibernate-spatial.version>
         <hibernate.version>5.3.11.Final</hibernate.version>
         <swagger-jersey2.version>1.5.23</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
         <com.vividsolutions.version>1.13</com.vividsolutions.version>
 
-        <com.h2database.version>1.4.196</com.h2database.version>
         <groovy-all.version>2.5.8</groovy-all.version>
         <rest-assured.version>3.1.1</rest-assured.version>
         <graphql.version>11.0</graphql.version>
         <netex-java-model.version>1.0.9-SNAPSHOT</netex-java-model.version>
+        <com.h2database.version>1.4.196</com.h2database.version>
+
+        <guava.version>28.1-jre</guava.version>
+
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-dependencies</artifactId>
-                <version>${spring-boot.version}</version>
-                <type>pom</type>
-                <scope>import</scope>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
 
     <dependencies>
         <dependency>
             <groupId>javax.xml.bind</groupId>
             <artifactId>jaxb-api</artifactId>
-            <version>2.3.1</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
-            <version>2.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.entur</groupId>
@@ -105,7 +85,6 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>${flyway-core.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.jdo</groupId>
@@ -128,7 +107,6 @@
         <dependency>
             <groupId>org.codehaus.janino</groupId>
             <artifactId>janino</artifactId>
-            <version>3.0.7</version>
         </dependency>
 
         <dependency>
@@ -150,17 +128,14 @@
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-config</artifactId>
-            <version>${spring.security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-web</artifactId>
-            <version>${spring.security.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
-            <version>${spring.security.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -183,6 +158,16 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-jersey</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
+        <!--Used by Spring Actuator to expose metrics to Prometheus-->
+        <dependency>
+            <groupId>io.micrometer</groupId>
+            <artifactId>micrometer-registry-prometheus</artifactId>
         </dependency>
 
 
@@ -215,7 +200,6 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
-            <version>${postgresql.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
@@ -233,13 +217,13 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>27.0-jre</version>
+            <version>${guava.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-spatial</artifactId>
-            <version>${hibernate-spatial.version}</version>
+            <version>${hibernate.version}</version>
         </dependency>
 
         <dependency>
@@ -308,7 +292,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-test</artifactId>
-            <version>${spring-boot.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -323,7 +306,6 @@
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
-            <version>${assertj-core.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -346,16 +328,9 @@
             <groupId>org.entur.helpers</groupId>
             <artifactId>entur-google-pubsub</artifactId>
             <version>${entur-google-pubsub-version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.camel</groupId>
-                    <artifactId>camel-core</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
     </dependencies>
-
 
     <build>
         <plugins>
@@ -386,7 +361,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <version>${spring-boot.version}</version>
                 <configuration>
                     <mainClass>no.entur.uttu.App</mainClass>
                 </configuration>
@@ -409,20 +383,20 @@
                         <goals>
                             <goal>copy</goal>
                         </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.google.cloud</groupId>
+                                    <artifactId>pubsub-emulator</artifactId>
+                                    <version>0.1-SNAPSHOT</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/pubsub-emulator</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <artifactItems>
-                        <artifactItem>
-                            <groupId>com.google.cloud</groupId>
-                            <artifactId>pubsub-emulator</artifactId>
-                            <version>0.1-SNAPSHOT</version>
-                            <type>jar</type>
-                            <overWrite>true</overWrite>
-                            <outputDirectory>${project.build.directory}/pubsub-emulator</outputDirectory>
-                        </artifactItem>
-                    </artifactItems>
-                </configuration>
             </plugin>
 
         </plugins>
