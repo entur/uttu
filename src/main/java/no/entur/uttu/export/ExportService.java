@@ -15,6 +15,7 @@
 
 package no.entur.uttu.export;
 
+import no.entur.uttu.error.CodedIllegalArgumentException;
 import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.export.messaging.MessagingService;
 import no.entur.uttu.export.netex.DataSetProducer;
@@ -83,8 +84,10 @@ public class ExportService {
             }
             export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
             blobStoreService.uploadBlob(export.getFileName(), true, bis);
-
-
+        } catch (CodedIllegalArgumentException iae) {
+            ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getCode().toString());
+            export.addMessage(msg);
+            logger.info(export.identity() + " Export failed with exception: " + iae.getMessage(), iae);
         } catch (IllegalArgumentException iae) {
             ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getMessage());
             export.addMessage(msg);
