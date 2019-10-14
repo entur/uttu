@@ -15,6 +15,7 @@
 
 package no.entur.uttu.model.job;
 
+import no.entur.uttu.error.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.model.ProviderEntity;
 
@@ -126,7 +127,7 @@ public class Export extends ProviderEntity {
     @Override
     public void checkPersistable() {
         if (fromDate != null && toDate != null) {
-            Preconditions.checkArgument(!fromDate.isAfter(toDate), "%s fromDate(%s) cannot be after toDate(%s)", identity(), fromDate, toDate);
+            Preconditions.checkArgument(!fromDate.isAfter(toDate), ErrorCodeEnumeration.FROM_DATE_AFTER_TO_DATE,"%s fromDate(%s) cannot be after toDate(%s)", identity(), fromDate, toDate);
         }
     }
 }

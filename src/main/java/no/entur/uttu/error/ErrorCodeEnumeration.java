@@ -10,5 +10,10 @@ public enum ErrorCodeEnumeration {
     /**
      * Found no valid flexible lines in data space, while exporting
      */
-    NO_VALID_FLEXIBLE_LINES_IN_DATA_SPACE
+    NO_VALID_FLEXIBLE_LINES_IN_DATA_SPACE,
+
+    /**
+     * Logical error: Provided from date was after to date
+     */
+    FROM_DATE_AFTER_TO_DATE,
 }
