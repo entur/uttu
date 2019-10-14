@@ -5,5 +5,15 @@ public enum ErrorCodeEnumeration {
     /**
      * Organisation is not a valid operator
      */
-    ORGANISATION_NOT_VALID_OPERATOR
+    ORGANISATION_NOT_VALID_OPERATOR,
+
+    /**
+     * Found no valid flexible lines in data space, while exporting
+     */
+    NO_VALID_FLEXIBLE_LINES_IN_DATA_SPACE,
+
+    /**
+     * Logical error: Provided from date was after to date
+     */
+    FROM_DATE_AFTER_TO_DATE,
 }
