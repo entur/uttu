@@ -15,15 +15,28 @@
 
 package no.entur.uttu.error;
 
+import java.util.Map;
+
 public class CodedIllegalArgumentException extends IllegalArgumentException implements CodedException {
     private final ErrorCodeEnumeration code;
+    private Map<String, Object> metadata = null;
 
     public CodedIllegalArgumentException(String message, ErrorCodeEnumeration code) {
         super(message);
         this.code = code;
     }
 
+    public CodedIllegalArgumentException(String message, ErrorCodeEnumeration code, Map<String, Object> metadata) {
+        super(message);
+        this.code = code;
+        this.metadata = metadata;
+    }
+
     public ErrorCodeEnumeration getCode() {
         return code;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
     }
 }

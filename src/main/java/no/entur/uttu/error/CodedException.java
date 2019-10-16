@@ -15,6 +15,9 @@
 
 package no.entur.uttu.error;
 
+import java.util.Map;
+
 public interface CodedException {
     public ErrorCodeEnumeration getCode();
+    public Map<String, Object> getMetadata();
 }

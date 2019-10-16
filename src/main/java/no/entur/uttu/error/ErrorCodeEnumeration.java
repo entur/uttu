@@ -16,4 +16,9 @@ public enum ErrorCodeEnumeration {
      * Logical error: Provided from date was after to date
      */
     FROM_DATE_AFTER_TO_DATE,
+
+    /**
+     * Entity is referenced by other entities
+     */
+    ENTITY_IS_REFERENCED
 }

@@ -20,12 +20,24 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import no.entur.uttu.error.CodedIllegalArgumentException;
 import no.entur.uttu.error.ErrorCodeEnumeration;
 
+import java.util.Map;
+
 public final class Preconditions {
     public static void checkArgument(boolean expression, ErrorCodeEnumeration errorCode, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) {
         if (!expression) {
             throw new CodedIllegalArgumentException(
                     Strings.lenientFormat(errorMessageTemplate, errorMessageArgs),
                     errorCode
+            );
+        }
+    }
+
+    public static void checkArgument(boolean expression, ErrorCodeEnumeration errorCode, Map<String, Object> metadata, @Nullable String errorMessageTemplate, @Nullable Object... errorMesssageArgs) {
+        if (!expression) {
+            throw new CodedIllegalArgumentException(
+                    Strings.lenientFormat(errorMessageTemplate, errorMesssageArgs),
+                    errorCode,
+                    metadata
             );
         }
     }

@@ -35,6 +35,7 @@ public class CodedGraphQLError extends ExceptionWhileDataFetching {
 
         if (this.getException() instanceof CodedException) {
             extensions.put("code", ((CodedException) this.getException()).getCode().toString());
+            extensions.put("metadata", ((CodedException) this.getException()).getMetadata());
         }
 
         return extensions;
