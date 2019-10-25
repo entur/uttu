@@ -19,12 +19,7 @@ import java.util.Map;
 
 public class CodedIllegalArgumentException extends IllegalArgumentException implements CodedException {
     private final ErrorCodeEnumeration code;
-    private Map<String, Object> metadata = null;
-
-    public CodedIllegalArgumentException(String message, ErrorCodeEnumeration code) {
-        super(message);
-        this.code = code;
-    }
+    private final Map<String, Object> metadata;
 
     public CodedIllegalArgumentException(String message, ErrorCodeEnumeration code, Map<String, Object> metadata) {
         super(message);

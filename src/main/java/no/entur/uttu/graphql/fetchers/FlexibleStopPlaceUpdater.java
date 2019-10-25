@@ -15,6 +15,8 @@
 
 package no.entur.uttu.graphql.fetchers;
 
+import no.entur.uttu.error.CodedError;
+import no.entur.uttu.error.ConstraintViolationCodedError;
 import no.entur.uttu.error.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
@@ -43,10 +45,8 @@ public class FlexibleStopPlaceUpdater extends AbstractProviderEntityUpdater<Flex
         FlexibleStopPlace entity = repository.getOne(id);
         if (entity != null) {
             int noOfLines = stopPointInJourneyPatternRepository.countByFlexibleStopPlace(entity);
-            Map<String, Object> metadata = Map.of(
-                    "numberOfReferences", noOfLines
-            );
-            Preconditions.checkArgument(noOfLines == 0, ErrorCodeEnumeration.CONSTRAINT_VIOLATION, metadata, "%s cannot be deleted as it is referenced by %s StopPointInJourneyPatterns(s)", entity.identity(), noOfLines);
+            CodedError error = new ConstraintViolationCodedError(noOfLines);
+            Preconditions.checkArgument(noOfLines == 0, error, "%s cannot be deleted as it is referenced by %s StopPointInJourneyPatterns(s)", entity.identity(), noOfLines);
         }
         super.verifyDeleteAllowed(id);
     }

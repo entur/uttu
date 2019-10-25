@@ -16,6 +16,7 @@
 package no.entur.uttu.util;
 
 import com.google.common.base.Strings;
+import no.entur.uttu.error.CodedError;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import no.entur.uttu.error.CodedIllegalArgumentException;
 import no.entur.uttu.error.ErrorCodeEnumeration;
@@ -23,21 +24,12 @@ import no.entur.uttu.error.ErrorCodeEnumeration;
 import java.util.Map;
 
 public final class Preconditions {
-    public static void checkArgument(boolean expression, ErrorCodeEnumeration errorCode, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) {
+    public static void checkArgument(boolean expression, CodedError codedError, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) {
         if (!expression) {
             throw new CodedIllegalArgumentException(
                     Strings.lenientFormat(errorMessageTemplate, errorMessageArgs),
-                    errorCode
-            );
-        }
-    }
-
-    public static void checkArgument(boolean expression, ErrorCodeEnumeration errorCode, Map<String, Object> metadata, @Nullable String errorMessageTemplate, @Nullable Object... errorMesssageArgs) {
-        if (!expression) {
-            throw new CodedIllegalArgumentException(
-                    Strings.lenientFormat(errorMessageTemplate, errorMesssageArgs),
-                    errorCode,
-                    metadata
+                    codedError.getErrorCode(),
+                    codedError.getMetadata()
             );
         }
     }

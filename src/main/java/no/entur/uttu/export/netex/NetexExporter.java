@@ -15,6 +15,7 @@
 
 package no.entur.uttu.export.netex;
 
+import no.entur.uttu.error.CodedError;
 import no.entur.uttu.error.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.export.model.ExportException;
@@ -65,7 +66,7 @@ public class NetexExporter {
 
         List<FlexibleLine> flexibleLines = flexibleLineRepository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
 
-        Preconditions.checkArgument(!flexibleLines.isEmpty(), ErrorCodeEnumeration.NO_VALID_FLEXIBLE_LINES_IN_DATA_SPACE, "No valid FlexibleLines in data space");
+        Preconditions.checkArgument(!flexibleLines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_FLEXIBLE_LINES_IN_DATA_SPACE), "No valid FlexibleLines in data space");
 
         flexibleLines.stream().map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
