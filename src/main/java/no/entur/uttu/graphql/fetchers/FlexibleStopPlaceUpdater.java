@@ -44,9 +44,9 @@ public class FlexibleStopPlaceUpdater extends AbstractProviderEntityUpdater<Flex
         if (entity != null) {
             int noOfLines = stopPointInJourneyPatternRepository.countByFlexibleStopPlace(entity);
             Map<String, Object> metadata = Map.of(
-                    "noOfLines", noOfLines
+                    "numberOfReferences", noOfLines
             );
-            Preconditions.checkArgument(noOfLines == 0, ErrorCodeEnumeration.ENTITY_IS_REFERENCED, metadata, "%s cannot be deleted as it is referenced by %s StopPointInJourneyPatterns(s)", entity.identity(), noOfLines);
+            Preconditions.checkArgument(noOfLines == 0, ErrorCodeEnumeration.CONSTRAINT_VIOLATION, metadata, "%s cannot be deleted as it is referenced by %s StopPointInJourneyPatterns(s)", entity.identity(), noOfLines);
         }
         super.verifyDeleteAllowed(id);
     }

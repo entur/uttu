@@ -32,9 +32,9 @@ With metadata:
             "errors": [
                 {
                     "extensions": {
-                        "code": "ILLEGAL_DELETE_ENTITY_IS_REFERENCED",
+                        "code": "CONSTRAINT_VIOLATION",
                         "metadata": {
-                            "noOfLines": 1
+                            "numberOfReferences": 1
                          }
                     }
                 }

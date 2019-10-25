@@ -19,6 +19,9 @@ public enum ErrorCodeEnumeration {
 
     /**
      * Entity is referenced by other entities
+     *
+     * Metadata:
+     * - numberOfReferences
      */
-    ENTITY_IS_REFERENCED
+    CONSTRAINT_VIOLATION
 }
