@@ -1,4 +1,6 @@
-package no.entur.uttu.error;
+package no.entur.uttu.error.codederror;
+
+import no.entur.uttu.error.ErrorCodeEnumeration;
 
 import java.util.Map;
 
@@ -10,7 +12,7 @@ public class CodedError {
         return new CodedError(errorCode, null);
     }
 
-    public CodedError(ErrorCodeEnumeration errorCode, Map<String, Object> metadata) {
+    CodedError(ErrorCodeEnumeration errorCode, Map<String, Object> metadata) {
         this.errorCode = errorCode;
         this.metadata = metadata;
     }

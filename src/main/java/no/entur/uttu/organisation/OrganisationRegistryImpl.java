@@ -15,7 +15,7 @@
 
 package no.entur.uttu.organisation;
 
-import no.entur.uttu.error.CodedError;
+import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 import org.slf4j.Logger;

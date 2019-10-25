@@ -15,7 +15,7 @@
 
 package no.entur.uttu.export;
 
-import no.entur.uttu.error.CodedIllegalArgumentException;
+import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.export.messaging.MessagingService;
 import no.entur.uttu.export.netex.DataSetProducer;

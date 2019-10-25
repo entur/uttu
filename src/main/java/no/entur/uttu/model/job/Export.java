@@ -15,7 +15,7 @@
 
 package no.entur.uttu.model.job;
 
-import no.entur.uttu.error.CodedError;
+import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.model.ProviderEntity;

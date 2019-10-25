@@ -17,6 +17,7 @@ package no.entur.uttu.error;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.execution.ExecutionPath;
+import no.entur.uttu.error.codedexception.CodedException;
 
 import java.util.HashMap;
 import java.util.Map;

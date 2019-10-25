@@ -15,9 +15,8 @@
 
 package no.entur.uttu.graphql.fetchers;
 
-import no.entur.uttu.error.CodedError;
-import no.entur.uttu.error.ConstraintViolationCodedError;
-import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codederror.ConstraintViolationCodedError;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.FlexibleStopPlace;
@@ -26,8 +25,6 @@ import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Map;
 
 @Service("flexibleStopPlaceUpdater")
 @Transactional

@@ -15,7 +15,7 @@
 
 package no.entur.uttu.export.netex;
 
-import no.entur.uttu.error.CodedError;
+import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.export.model.ExportException;
@@ -28,7 +28,6 @@ import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;

@@ -13,7 +13,9 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.error;
+package no.entur.uttu.error.codedexception;
+
+import no.entur.uttu.error.ErrorCodeEnumeration;
 
 import java.util.Map;
 

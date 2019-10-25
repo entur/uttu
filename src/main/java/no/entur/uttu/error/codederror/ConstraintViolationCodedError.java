@@ -1,4 +1,7 @@
-package no.entur.uttu.error;
+package no.entur.uttu.error.codederror;
+
+import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.codederror.CodedError;
 
 import java.util.Map;
 

@@ -20,8 +20,7 @@ public enum ErrorCodeEnumeration {
     /**
      * Entity is referenced by other entities
      *
-     * Metadata:
-     * - numberOfReferences
+     * @see no.entur.uttu.error.codederror.ConstraintViolationCodedError
      */
     CONSTRAINT_VIOLATION
 }
