@@ -13,17 +13,29 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.error;
+package no.entur.uttu.error.codedexception;
+
+import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codedexception.CodedException;
+
+import java.util.Map;
 
 public class CodedIllegalArgumentException extends IllegalArgumentException implements CodedException {
     private final ErrorCodeEnumeration code;
+    private final Map<String, Object> metadata;
 
-    public CodedIllegalArgumentException(String message, ErrorCodeEnumeration code) {
+    public CodedIllegalArgumentException(String message, CodedError codedError) {
         super(message);
-        this.code = code;
+        this.code = codedError.getErrorCode();
+        this.metadata = codedError.getMetadata();
     }
 
     public ErrorCodeEnumeration getCode() {
         return code;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
     }
 }

@@ -13,8 +13,13 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.error;
+package no.entur.uttu.error.codedexception;
+
+import no.entur.uttu.error.ErrorCodeEnumeration;
+
+import java.util.Map;
 
 public interface CodedException {
     public ErrorCodeEnumeration getCode();
+    public Map<String, Object> getMetadata();
 }

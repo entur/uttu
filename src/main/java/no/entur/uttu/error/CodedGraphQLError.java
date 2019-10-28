@@ -17,6 +17,7 @@ package no.entur.uttu.error;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.execution.ExecutionPath;
+import no.entur.uttu.error.codedexception.CodedException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,6 +36,7 @@ public class CodedGraphQLError extends ExceptionWhileDataFetching {
 
         if (this.getException() instanceof CodedException) {
             extensions.put("code", ((CodedException) this.getException()).getCode().toString());
+            extensions.put("metadata", ((CodedException) this.getException()).getMetadata());
         }
 
         return extensions;

@@ -16,4 +16,11 @@ public enum ErrorCodeEnumeration {
      * Logical error: Provided from date was after to date
      */
     FROM_DATE_AFTER_TO_DATE,
+
+    /**
+     * Entity is referenced by other entities
+     *
+     * @see no.entur.uttu.error.codederror.ConstraintViolationCodedError
+     */
+    CONSTRAINT_VIOLATION
 }

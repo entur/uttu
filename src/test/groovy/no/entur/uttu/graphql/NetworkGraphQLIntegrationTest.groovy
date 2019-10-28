@@ -16,10 +16,7 @@
 package no.entur.uttu.graphql
 
 import io.restassured.response.ValidatableResponse
-import no.entur.uttu.config.MockedRoleAssignmentExtractor
 import org.junit.Test
-import org.rutebanken.helper.organisation.RoleAssignment
-import org.springframework.beans.factory.annotation.Autowired
 
 import static org.hamcrest.Matchers.*
 

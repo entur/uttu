@@ -12,6 +12,8 @@ http://localhost:11701/services/flexible-lines/rut/graphql
 
 Some errors are augmented with a code extension. See [ErrorCodeEnumeration](src/main/java/no/entur/uttu/error/ErrorCodeEnumeration.java) for complete list of codes.
 
+The code is optionally accompanied by a key-value metadata map under the `metadata` extension.
+
 The extension appears in the response as follows (example is trimmed):
 
         {
@@ -19,6 +21,21 @@ The extension appears in the response as follows (example is trimmed):
                 {
                     "extensions": {
                         "code": "ORGANISATION_NOT_VALID_OPERATOR"
+                    }
+                }
+            ]
+        }
+
+With metadata: 
+        
+        {
+            "errors": [
+                {
+                    "extensions": {
+                        "code": "CONSTRAINT_VIOLATION",
+                        "metadata": {
+                            "numberOfReferences": 1
+                         }
                     }
                 }
             ]
