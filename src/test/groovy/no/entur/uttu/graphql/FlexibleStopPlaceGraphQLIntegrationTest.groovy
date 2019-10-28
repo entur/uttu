@@ -16,29 +16,29 @@
 package no.entur.uttu.graphql
 
 import io.restassured.response.ValidatableResponse
+import no.entur.uttu.repository.StopPointInJourneyPatternRepository
+import no.entur.uttu.stubs.StopPointInJourneyPatternRepositoryStub
 import org.junit.Test
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest
+
+import javax.annotation.concurrent.NotThreadSafe
 
 import static org.hamcrest.Matchers.*
 
 class FlexibleStopPlaceGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrationTest {
-    String createStopPlaceQuery = """
- mutation mutateFlexibleStopPlace(\$flexibleStopPlace: FlexibleStopPlaceInput!) {
-  mutateFlexibleStopPlace(input: \$flexibleStopPlace) {
+
+    @Autowired
+    StopPointInJourneyPatternRepositoryStub stopPointInJourneyPatternRepository;
+
+    String deleteFlexibleStopPlaceMutation = """
+mutation deleteFlexibleStopPlace(\$id: ID!) {
+  deleteFlexibleStopPlace(id: \$id) {
     id
-    name
-    flexibleArea {
-      polygon {
-        type
-        coordinates
-      }
-    }
-    hailAndRideArea {
-      startQuayRef
-      endQuayRef 
-    }
   }
-  }
-         """
+}
+"""
+
     String flexAreaName = "FlexibleAreaTest"
 
     @Test
@@ -63,6 +63,16 @@ class FlexibleStopPlaceGraphQLIntegrationTest extends AbstractFlexibleLinesGraph
                 .body("data.mutateFlexibleStopPlace.hailAndRideArea.endQuayRef", equalTo("NSR:Quay:end"))
     }
 
+    @Test
+    void deleteFlexibleStopPlace() {
+        stopPointInJourneyPatternRepository.setNextCountByFlexibleStopPlace(1)
+        executeGraphQL(deleteFlexibleStopPlaceMutation, "{ \"id\": \"TST:FlexibleStopPlace:1\" }", 200)
+                .body("errors[0].extensions.code", equalTo("CONSTRAINT_VIOLATION"))
+                .body("errors[0].extensions.metadata.numberOfReferences", equalTo(1))
+        stopPointInJourneyPatternRepository.setNextCountByFlexibleStopPlace(0)
+        executeGraphQL(deleteFlexibleStopPlaceMutation, "{ \"id\": \"TST:FlexibleStopPlace:1\" }", 200)
+            .body("errors", nullValue())
+    }
 
     void assertFlexibleAreaResponse(ValidatableResponse rsp, String path) {
         rsp.body("data." + path + ".id", startsWith("TST:FlexibleStopPlace"))
