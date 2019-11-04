@@ -23,6 +23,7 @@ import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
+import no.entur.uttu.graphql.scalars.ProviderCodeScalar;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodespaceRepository;
@@ -94,7 +95,7 @@ public class ProviderGraphQLSchema {
                                       .build();
 
         providerObjectType = newObject(identifiedEntityObjectType).name("Provider")
-                                     .field(newFieldDefinition().name(FIELD_CODE).type(new GraphQLNonNull(GraphQLString)))
+                                     .field(newFieldDefinition().name(FIELD_CODE).type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE)))
                                      .field(newFieldDefinition().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
                                      .field(newFieldDefinition().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codespaceObjectType)))
                                      .build();
@@ -138,7 +139,7 @@ public class ProviderGraphQLSchema {
                                                             .build();
 
         GraphQLInputObjectType providerInputType = newInputObject(identifiedEntityInputType).name("ProviderInput")
-                                                           .field(newInputObjectField().name(FIELD_CODE).type(new GraphQLNonNull(GraphQLString)))
+                                                           .field(newInputObjectField().name(FIELD_CODE).type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE)))
                                                            .field(newInputObjectField().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
                                                            .field(newInputObjectField().name(FIELD_CODE_SPACE_XMLNS).type(new GraphQLNonNull(GraphQLString)))
                                                            .build();
