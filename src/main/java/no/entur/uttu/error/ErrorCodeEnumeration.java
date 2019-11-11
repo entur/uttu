@@ -8,6 +8,11 @@ public enum ErrorCodeEnumeration {
     ORGANISATION_NOT_VALID_OPERATOR,
 
     /**
+     * Service journey must have operator or inherit one from flexible line
+     */
+    MISSING_OPERATOR,
+
+    /**
      * Found no valid flexible lines in data space, while exporting
      */
     NO_VALID_FLEXIBLE_LINES_IN_DATA_SPACE,
