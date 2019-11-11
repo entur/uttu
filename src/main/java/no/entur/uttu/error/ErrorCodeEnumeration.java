@@ -27,5 +27,10 @@ public enum ErrorCodeEnumeration {
      *
      * @see no.entur.uttu.error.codederror.ConstraintViolationCodedError
      */
-    CONSTRAINT_VIOLATION
+    CONSTRAINT_VIOLATION,
+
+    /**
+     * Journey pattern does not meet requirement of minimum points in sequence
+     */
+    MINIMUM_POINTS_IN_SEQUENCE
 }

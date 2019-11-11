@@ -15,6 +15,8 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.util.Preconditions;
 
 import javax.persistence.CascadeType;
@@ -119,6 +121,7 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
         super.checkPersistable();
 
         Preconditions.checkArgument(getPointsInSequence().size() >= 2,
+                CodedError.fromErrorCode(ErrorCodeEnumeration.MINIMUM_POINTS_IN_SEQUENCE),
                 "%s does not have minimum of 2 pointsInSequence", identity());
 
         getPointsInSequence().stream().forEach(ProviderEntity::checkPersistable);
