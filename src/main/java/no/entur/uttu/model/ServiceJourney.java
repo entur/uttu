@@ -15,6 +15,8 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.util.Preconditions;
 
 import javax.persistence.CascadeType;
@@ -158,6 +160,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
                 "%s Last TimetablePassingTime in ServiceJourney %s must have at least one of the following fields set: arrivalTime, latestArrivalTime", prevPassingTime.identity(), this.identity());
 
         Preconditions.checkArgument(operatorRef != null || getJourneyPattern().getFlexibleLine().getOperatorRef() != null,
+                CodedError.fromErrorCode(ErrorCodeEnumeration.MISSING_OPERATOR),
                 "%s has operator set on neither ServiceJourney or FlexibleLine", identity());
 
         getDayTypes().stream().forEach(IdentifiedEntity::checkPersistable);
