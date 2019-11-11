@@ -15,9 +15,12 @@
 
 package no.entur.uttu.graphql.resource;
 
+import no.entur.uttu.error.codederror.CodedError;
+
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @XmlRootElement
 public class ErrorResponseEntity {
@@ -29,14 +32,30 @@ public class ErrorResponseEntity {
         errors.add(new Error(message));
     }
 
+    public ErrorResponseEntity(String message, CodedError codedError) {
+        errors.add(
+            new Error(message,
+                    Map.of("code", codedError.getErrorCode(),
+                            "metadata", codedError.getMetadata()
+                    )
+            )
+        );
+    }
+
     public List<Error> errors = new ArrayList<>();
 
 
     public static class Error {
         public String message;
+        public Map<String, Object> extensions;
 
         public Error(String message) {
             this.message = message;
+        }
+
+        public Error(String message, Map<String, Object> extensions) {
+            this.message = message;
+            this.extensions = extensions;
         }
     }
 }

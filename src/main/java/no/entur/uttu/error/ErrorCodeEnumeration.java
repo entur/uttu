@@ -1,5 +1,8 @@
 package no.entur.uttu.error;
 
+import no.entur.uttu.error.codederror.EntityHasReferencesCodedError;
+import no.entur.uttu.error.codederror.ConstraintViolationCodedError;
+
 public enum ErrorCodeEnumeration {
 
     /**
@@ -25,12 +28,19 @@ public enum ErrorCodeEnumeration {
     /**
      * Entity is referenced by other entities
      *
-     * @see no.entur.uttu.error.codederror.ConstraintViolationCodedError
+     * @see EntityHasReferencesCodedError
      */
-    CONSTRAINT_VIOLATION,
+    ENTITY_IS_REFERENCED,
 
     /**
      * Journey pattern does not meet requirement of minimum points in sequence
      */
-    MINIMUM_POINTS_IN_SEQUENCE
+    MINIMUM_POINTS_IN_SEQUENCE,
+
+    /**
+     * Encountered a database constraint violation
+     *
+     * @see ConstraintViolationCodedError
+     */
+    CONSTRAINT_VIOLATION,
 }
