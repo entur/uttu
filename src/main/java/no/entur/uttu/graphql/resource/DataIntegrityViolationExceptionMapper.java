@@ -15,14 +15,12 @@
 
 package no.entur.uttu.graphql.resource;
 
-import no.entur.uttu.error.ErrorCodeEnumeration;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codederror.ConstraintViolationCodedError;
 import no.entur.uttu.model.Constraints;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
 
-import javax.validation.Constraint;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.ext.ExceptionMapper;
 import javax.ws.rs.ext.Provider;
@@ -50,8 +48,11 @@ public class DataIntegrityViolationExceptionMapper implements ExceptionMapper<Da
                 errorMsg = constraintViolationException.getConstraintName();
             }
 
+            CodedError codedError = new ConstraintViolationCodedError(constraintViolationException.getConstraintName());
+            ErrorResponseEntity errorResponseEntity = new ErrorResponseEntity(errorMsg, codedError);
+
             return Response.status(Response.Status.OK)
-                    .entity(new ErrorResponseEntity(errorMsg, new ConstraintViolationCodedError(constraintViolationException.getConstraintName())))
+                    .entity(errorResponseEntity)
                     .build();
         }
 

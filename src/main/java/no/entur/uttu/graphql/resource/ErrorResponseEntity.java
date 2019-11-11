@@ -36,6 +36,7 @@ public class ErrorResponseEntity {
         errors.add(
             new Error(message,
                     Map.of("code", codedError.getErrorCode(),
+                            "subCode", codedError.getSubCode(),
                             "metadata", codedError.getMetadata()
                     )
             )

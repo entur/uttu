@@ -1,9 +1,10 @@
-package no.entur.uttu.error;
+package no.entur.uttu.error.codes;
 
+import no.entur.uttu.error.ErrorCode;
 import no.entur.uttu.error.codederror.EntityHasReferencesCodedError;
 import no.entur.uttu.error.codederror.ConstraintViolationCodedError;
 
-public enum ErrorCodeEnumeration {
+public enum ErrorCodeEnumeration implements ErrorCode {
 
     /**
      * Organisation is not a valid operator

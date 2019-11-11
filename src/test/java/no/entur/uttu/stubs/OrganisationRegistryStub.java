@@ -20,7 +20,7 @@ import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.organisation.Organisation;
 import no.entur.uttu.organisation.OrganisationRegistry;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
-import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
