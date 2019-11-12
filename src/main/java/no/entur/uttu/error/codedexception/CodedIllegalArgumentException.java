@@ -20,6 +20,7 @@ import no.entur.uttu.error.SubCode;
 import no.entur.uttu.error.codederror.CodedError;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class CodedIllegalArgumentException extends IllegalArgumentException implements CodedException {
     private final ErrorCode code;
@@ -33,12 +34,12 @@ public class CodedIllegalArgumentException extends IllegalArgumentException impl
         this.metadata = codedError.getMetadata();
     }
 
-    public ErrorCode getCode() {
-        return code;
+    public String getCode() {
+        return Optional.ofNullable(code).map(ErrorCode::toString).orElse(null);
     }
 
-    public SubCode getSubCode() {
-        return subCode;
+    public String getSubCode() {
+        return Optional.ofNullable(subCode).map(SubCode::toString).orElse(null);
     }
 
     public Map<String, Object> getMetadata() {

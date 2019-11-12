@@ -21,7 +21,7 @@ import no.entur.uttu.error.SubCode;
 import java.util.Map;
 
 public interface CodedException {
-    public ErrorCode getCode();
-    public SubCode getSubCode();
+    public String getCode();
+    public String getSubCode();
     public Map<String, Object> getMetadata();
 }
