@@ -1,5 +1,7 @@
 package no.entur.uttu.error.codederror;
 
+import no.entur.uttu.error.ErrorCode;
+import no.entur.uttu.error.SubCode;
 import no.entur.uttu.error.codes.ConstraintSubCodeEnumeration;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.model.Constraints;
@@ -17,10 +19,12 @@ public class ConstraintViolationCodedError extends CodedError {
             Constraints.CODESPACE_UNIQUE_XMLNS, ConstraintSubCodeEnumeration.CODESPACE_UNIQUE_XMLNS
     );
 
-    public ConstraintViolationCodedError(String constraintName) {
-        super(ErrorCodeEnumeration.CONSTRAINT_VIOLATION,
-            getConstraint(constraintName)
-        );
+    public static ConstraintViolationCodedError fromConstraintName(String constraintName) {
+        return new ConstraintViolationCodedError(constraintName);
+    }
+
+    private ConstraintViolationCodedError(String constraintName) {
+        super(ErrorCodeEnumeration.CONSTRAINT_VIOLATION, getConstraint(constraintName), null);
     }
 
     private static ConstraintSubCodeEnumeration getConstraint(String constraintName) {

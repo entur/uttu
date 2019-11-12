@@ -48,7 +48,7 @@ public class DataIntegrityViolationExceptionMapper implements ExceptionMapper<Da
                 errorMsg = constraintViolationException.getConstraintName();
             }
 
-            CodedError codedError = new ConstraintViolationCodedError(constraintViolationException.getConstraintName());
+            CodedError codedError = ConstraintViolationCodedError.fromConstraintName(constraintViolationException.getConstraintName());
             ErrorResponseEntity errorResponseEntity = new ErrorResponseEntity(errorMsg, codedError);
 
             return Response.status(Response.Status.OK)

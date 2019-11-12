@@ -13,18 +13,8 @@ public class CodedError {
     public static CodedError fromErrorCode(ErrorCode errorCode) {
         return new CodedError(errorCode, null, null);
     }
-
-    CodedError(ErrorCode errorCode, SubCode subCode) {
-        this.errorCode = errorCode;
-        this.subCode = subCode;
-        this.metadata = Map.of();
-    }
-
-    CodedError(ErrorCode errorCode, Map<String, Object> metadata) {
-        this.errorCode = errorCode;
-        this.subCode = null;
-        this.metadata = metadata;
-    }
+    public static CodedError fromErrorCode(ErrorCode errorCode, SubCode subCode) { return new CodedError(errorCode, subCode, null);}
+    public static CodedError fromErrorCode(ErrorCode errorCode, SubCode subCode, Map<String, Object> metadata) { return new CodedError(errorCode, subCode, metadata);}
 
     CodedError(ErrorCode errorCode, SubCode subCode, Map<String, Object> metadata) {
         this.errorCode = errorCode;
