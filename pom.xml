@@ -39,7 +39,7 @@
     <properties>
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <entur.helpers.version>0.0.6-SNAPSHOT</entur.helpers.version>
-        <keycloak.version>5.0.0</keycloak.version>
+        <keycloak.version>6.0.1</keycloak.version>
 
         <entur-google-pubsub-version>0.0.6-SNAPSHOT</entur-google-pubsub-version>
         <gcp-storage.version>0.0.6-SNAPSHOT</gcp-storage.version>
