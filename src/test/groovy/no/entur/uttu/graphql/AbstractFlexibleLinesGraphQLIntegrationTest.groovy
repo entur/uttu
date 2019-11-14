@@ -136,11 +136,15 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         return createFlexibleLine(name, '22');
     }
 
+
     ValidatableResponse createFlexibleLine(String name, String operatorRef) {
         String networkId = getNetworkId(createNetwork(name))
         String flexAreaStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithFlexibleArea(name + "FlexArea"))
         String hailAndRideStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithHailAndRideArea(name + "HailAndRide"))
+        return createFlexibleLine(name, operatorRef, networkId, flexAreaStopPlaceId, hailAndRideStopPlaceId)
+    }
 
+    ValidatableResponse createFlexibleLine(String name, String operatorRef, String networkId, String flexAreaStopPlaceId, String hailAndRideStopPlaceId) {
         String variables = """
 {
   "flexibleLine": {

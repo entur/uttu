@@ -39,4 +39,18 @@ class FlexibleLineGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLInt
         createFlexibleLine(testFlexibleLineWithInvalidOperatorName, '6')
             .body("errors[0].extensions.code", equalTo("ORGANISATION_NOT_VALID_OPERATOR"))
     }
+
+    @Test
+    void createFlexibleLineWithExistingName() {
+        String name = "foobar"
+        String operatorRef = "22"
+        String networkId = getNetworkId(createNetwork(name))
+        String flexAreaStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithFlexibleArea(name + "FlexArea"))
+        String hailAndRideStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithHailAndRideArea(name + "HailAndRide"))
+        createFlexibleLine(name, operatorRef, networkId, flexAreaStopPlaceId, hailAndRideStopPlaceId)
+        createFlexibleLine(name, operatorRef, networkId, flexAreaStopPlaceId, hailAndRideStopPlaceId)
+            .body("errors[0].extensions.code", equalTo("CONSTRAINT_VIOLATION"))
+        // the following works with postgres, but not with h2:
+        //       .body("errors[0].extensions.subCode", equalTo("FLEXIBLE_LINE_UNIQUE_NAME"))
+    }
 }
