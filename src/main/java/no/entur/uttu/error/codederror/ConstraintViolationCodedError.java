@@ -1,7 +1,5 @@
 package no.entur.uttu.error.codederror;
 
-import no.entur.uttu.error.ErrorCode;
-import no.entur.uttu.error.SubCode;
 import no.entur.uttu.error.codes.ConstraintSubCodeEnumeration;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.model.Constraints;
