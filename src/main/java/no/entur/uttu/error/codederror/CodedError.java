@@ -3,6 +3,7 @@ package no.entur.uttu.error.codederror;
 import no.entur.uttu.error.ErrorCode;
 import no.entur.uttu.error.SubCode;
 
+import java.util.HashMap;
 import java.util.Map;
 
 public class CodedError {
@@ -32,5 +33,13 @@ public class CodedError {
 
     public Map<String, Object> getMetadata() {
         return metadata;
+    }
+
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("code", errorCode);
+        map.put("subCode", subCode);
+        map.put("metadata", metadata);
+        return map;
     }
 }

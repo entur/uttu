@@ -33,18 +33,10 @@ public class ErrorResponseEntity {
     }
 
     public ErrorResponseEntity(String message, CodedError codedError) {
-        errors.add(
-            new Error(message,
-                    Map.of("code", codedError.getErrorCode(),
-                            "subCode", codedError.getSubCode(),
-                            "metadata", codedError.getMetadata()
-                    )
-            )
-        );
+        errors.add(new Error(message, codedError.toMap()));
     }
 
     public List<Error> errors = new ArrayList<>();
-
 
     public static class Error {
         public String message;
