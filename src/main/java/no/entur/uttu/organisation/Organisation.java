@@ -24,7 +24,6 @@ import java.util.Set;
 public class Organisation {
     public static final String NETEX_AUTHORITY_ID_REFEFRENCE_KEY = "netexAuthorityId";
     public static final String NETEX_OPERATOR_ID_REFEFRENCE_KEY = "netexOperatorId";
-    public static final String NETEX_ID_REFEFRENCE_KEY = "netexId";
     public static final String AUTHORITY_TYPE = "authority";
     public static final String OPERATOR_TYPE = "operator";
 
@@ -46,12 +45,7 @@ public class Organisation {
             return null;
         }
 
-        String netexId = references.get(NETEX_AUTHORITY_ID_REFEFRENCE_KEY);
-        if (netexId == null) {
-            netexId = references.get(NETEX_ID_REFEFRENCE_KEY);
-
-        }
-        return netexId;
+        return references.get(NETEX_AUTHORITY_ID_REFEFRENCE_KEY);
     }
 
     public String getOperatorNetexId() {
@@ -59,16 +53,7 @@ public class Organisation {
             return null;
         }
 
-        String netexId = references.get(NETEX_OPERATOR_ID_REFEFRENCE_KEY);
-
-        if (netexId == null) {
-            netexId = references.get(NETEX_ID_REFEFRENCE_KEY);
-            if (netexId != null && netexId.contains(":Authority:")) {
-                // TODO tmp hack until operator netex refs are registered in org reg.
-                netexId = netexId.replaceFirst(":Authority:", ":Operator:");
-            }
-        }
-        return netexId;
+        return references.get(NETEX_OPERATOR_ID_REFEFRENCE_KEY);
     }
 
 
