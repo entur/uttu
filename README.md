@@ -32,7 +32,7 @@ With metadata:
             "errors": [
                 {
                     "extensions": {
-                        "code": "CONSTRAINT_VIOLATION",
+                        "code": "ENTITY_IS_REFERENCED",
                         "metadata": {
                             "numberOfReferences": 1
                          }

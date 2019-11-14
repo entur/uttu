@@ -15,24 +15,31 @@
 
 package no.entur.uttu.error.codedexception;
 
-import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.ErrorCode;
+import no.entur.uttu.error.SubCode;
 import no.entur.uttu.error.codederror.CodedError;
-import no.entur.uttu.error.codedexception.CodedException;
 
 import java.util.Map;
+import java.util.Optional;
 
 public class CodedIllegalArgumentException extends IllegalArgumentException implements CodedException {
-    private final ErrorCodeEnumeration code;
+    private final ErrorCode code;
+    private final SubCode subCode;
     private final Map<String, Object> metadata;
 
     public CodedIllegalArgumentException(String message, CodedError codedError) {
         super(message);
         this.code = codedError.getErrorCode();
+        this.subCode = codedError.getSubCode();
         this.metadata = codedError.getMetadata();
     }
 
-    public ErrorCodeEnumeration getCode() {
-        return code;
+    public String getCode() {
+        return Optional.ofNullable(code).map(ErrorCode::toString).orElse(null);
+    }
+
+    public String getSubCode() {
+        return Optional.ofNullable(subCode).map(SubCode::toString).orElse(null);
     }
 
     public Map<String, Object> getMetadata() {

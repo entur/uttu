@@ -67,7 +67,7 @@ mutation deleteFlexibleStopPlace(\$id: ID!) {
     void deleteFlexibleStopPlace() {
         stopPointInJourneyPatternRepository.setNextCountByFlexibleStopPlace(1)
         executeGraphQL(deleteFlexibleStopPlaceMutation, "{ \"id\": \"TST:FlexibleStopPlace:1\" }", 200)
-                .body("errors[0].extensions.code", equalTo("CONSTRAINT_VIOLATION"))
+                .body("errors[0].extensions.code", equalTo("ENTITY_IS_REFERENCED"))
                 .body("errors[0].extensions.metadata.numberOfReferences", equalTo(1))
         stopPointInJourneyPatternRepository.setNextCountByFlexibleStopPlace(0)
         executeGraphQL(deleteFlexibleStopPlaceMutation, "{ \"id\": \"TST:FlexibleStopPlace:1\" }", 200)

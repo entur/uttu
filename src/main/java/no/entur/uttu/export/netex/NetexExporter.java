@@ -16,7 +16,7 @@
 package no.entur.uttu.export.netex;
 
 import no.entur.uttu.error.codederror.CodedError;
-import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.producer.common.NetexCommonFileProducer;

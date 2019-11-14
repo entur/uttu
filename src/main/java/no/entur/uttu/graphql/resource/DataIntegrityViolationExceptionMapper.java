@@ -15,6 +15,8 @@
 
 package no.entur.uttu.graphql.resource;
 
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codederror.ConstraintViolationCodedError;
 import no.entur.uttu.model.Constraints;
 import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -45,16 +47,22 @@ public class DataIntegrityViolationExceptionMapper implements ExceptionMapper<Da
             if (errorMsg == null) {
                 errorMsg = constraintViolationException.getConstraintName();
             }
+
+            CodedError codedError = ConstraintViolationCodedError.fromConstraintName(constraintViolationException.getConstraintName());
+            ErrorResponseEntity errorResponseEntity = new ErrorResponseEntity(errorMsg, codedError);
+
+            return Response.status(Response.Status.OK)
+                    .entity(errorResponseEntity)
+                    .build();
         }
 
         if (errorMsg == null) {
             errorMsg = e.getMessage();
         }
 
-        return Response.status(Response.Status.BAD_REQUEST)
+        return Response.status(Response.Status.OK)
                        .entity(new ErrorResponseEntity(errorMsg))
                        .build();
-
     }
 
 

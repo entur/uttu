@@ -15,7 +15,7 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.error.ErrorCodeEnumeration;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.util.Preconditions;
 
