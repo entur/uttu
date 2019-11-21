@@ -232,6 +232,11 @@
             <version>${hibernate.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+        </dependency>
+
         <!-- https://mvnrepository.com/artifact/com.vividsolutions/jts -->
         <dependency>
             <groupId>com.vividsolutions</groupId>
