@@ -24,7 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = UttuTestApp.class)
-@ActiveProfiles({"geodb", "local-blobstore", "google-pubsub-emulator"})
+@ActiveProfiles({"geodb", "local", "google-pubsub-emulator"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public abstract class UttuIntegrationTest {
 
