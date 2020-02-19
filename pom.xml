@@ -29,7 +29,7 @@
     <packaging>jar</packaging>
 
     <name>uttu</name>
-    <description>Back end for Flexible Line with Flexible Areas timetable data editor and export module</description>
+    <description>Backend for Flexible Transport Editor</description>
 
     <scm>
         <connection>scm:git:ssh://git@github.com/entur/uttu.git</connection>
@@ -37,13 +37,15 @@
     </scm>
 
     <properties>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
+
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <entur.helpers.version>0.0.6-SNAPSHOT</entur.helpers.version>
         <keycloak.version>5.0.0</keycloak.version>
 
         <entur-google-pubsub-version>0.0.6-SNAPSHOT</entur-google-pubsub-version>
         <gcp-storage.version>0.0.6-SNAPSHOT</gcp-storage.version>
-
 
         <geodb.version>0.9</geodb.version>
         <geotools.version>20.1</geotools.version>
@@ -59,7 +61,6 @@
         <com.h2database.version>1.4.196</com.h2database.version>
 
         <guava.version>28.1-jre</guava.version>
-
     </properties>
 
     <dependencies>
@@ -151,7 +152,6 @@
                     <groupId>org.hibernate</groupId>
                     <artifactId>hibernate-core</artifactId>
                 </exclusion>
-
             </exclusions>
         </dependency>
 
@@ -334,7 +334,6 @@
             <artifactId>entur-google-pubsub</artifactId>
             <version>${entur-google-pubsub-version}</version>
         </dependency>
-
     </dependencies>
 
     <build>
@@ -363,11 +362,15 @@
                     </execution>
                 </executions>
             </plugin>
+
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
                     <mainClass>no.entur.uttu.App</mainClass>
+                    <profiles>
+                        <profile>local</profile>
+                    </profiles>
                 </configuration>
                 <executions>
                     <execution>
@@ -404,7 +407,35 @@
                 </executions>
             </plugin>
 
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.7</version>
+                <configuration>
+                    <generateBackupPoms>false</generateBackupPoms>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>${maven-enforcer-plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>enforce</id>
+                        <goals>
+                            <goal>enforce</goal>
+                        </goals>
+                        <configuration>
+                            <rules combine.children="append">
+                                <requireMavenVersion>
+                                    <version>3</version>
+                                </requireMavenVersion>
+                            </rules>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
-
 </project>

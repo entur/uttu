@@ -43,6 +43,17 @@
                 </providers>
             </encoder>
         </appender>
+
+        <springProfile name="local">
+            <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                    <Pattern>
+                        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{70} - %msg%n
+                    </Pattern>
+                </layout>
+            </appender>
+        </springProfile>
+
         <logger name="com" level="INFO"/>
         <logger name="no" level="INFO"/>
         <logger name="org" level="INFO"/>
