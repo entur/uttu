@@ -10,6 +10,8 @@ https://api.dev.entur.io/timetable-admin/v1/flexible-lines/providers/graphql
 You need Java 11, Maven 3 or higher, and a `settings.xml`-file that gives you access to the internal repo (ask a friend).
 
 ### Database
+
+#### Via local installation of database
 Install Postgres, either via [brew](https://gist.github.com/ibraheem4/ce5ccd3e4d7a65589ce84f2a3b7c23a3), [postgresapp.com](http://postgresapp.com/),
 or [postgresql.org](https://www.postgresql.org/download/).
 
@@ -22,6 +24,21 @@ Create uttu user: `createuser -s uttu` (you might also have to create a `postgre
 Run the [migrations](src/main/resources/db.migration) in order.
 
 Run the initial [data import](src/main/resources/import.sql)
+
+#### Via Docker
+
+Install Docker.
+
+```bash
+docker run --name=uttu -d -e POSTGRES_USER=uttu -e POSTGRES_PASS=uttu -e POSTGRES_DBNAME=uttu -e ALLOW_IP_RANGE=0.0.0.0/0 -p 5432:5432 -v db_local:/var/lib/postgresql --restart=always kartoza/postgis:9.6-2.4
+```
+
+Now a Docker container is running in the background. Check its status with `docker ps`.
+
+To stop, find its ID from `docker ps`, and run `docker stop theid` (beginning of hash). To restart it, find the ID from `docker container list` and run `docker restart theid`.
+
+Run the [script](./src/main/resources/db_init.sh).
+
 
 ### Run
 **IntelliJ**: Right-click on `App.java` and choose Run (or Cmd+Shift+F10). Open Run -> Edit configurations, choose the
