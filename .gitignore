@@ -88,5 +88,8 @@ fabric.properties
 # Editor-based Rest Client
 .idea/httpRequests
 
-.gitignore
 .idea/
+*.iml
+target
+files
+dataset.zip
