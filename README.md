@@ -24,7 +24,7 @@ Create uttu database: `createdb uttu`
 
 Create uttu user: `createuser -s uttu` (you might also have to create a `postgres` user)
 
-Run the [migrations](src/main/resources/db.migration) in order.
+Run the [script](./src/main/resources/db_init.sh)
 
 Run the initial [data import](src/main/resources/import.sql)
 
