@@ -16,7 +16,10 @@ Install Postgres, either via [brew](https://gist.github.com/ibraheem4/ce5ccd3e4d
 or [postgresql.org](https://www.postgresql.org/download/).
 
 For brew install, also install PostGIS: `brew install postgis` (should be included in Postgres.app and EnterpriseDB Postgres installations).
-
+Create folder for database `mkdir db`
+Initialise database `initdb ./db`
+Start db service: `pg_ctl -D ./db/ -l logfile start`
+Create db with your username: `createdb `whoami``
 Create uttu database: `createdb uttu`
 
 Create uttu user: `createuser -s uttu` (you might also have to create a `postgres` user)
@@ -84,4 +87,3 @@ With metadata:
                 }
             ]
         }
-
