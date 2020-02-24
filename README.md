@@ -26,7 +26,6 @@ Create uttu user: `createuser -s uttu` (you might also have to create a `postgre
 
 Run the [script](./src/main/resources/db_init.sh)
 
-Run the initial [data import](src/main/resources/import.sql)
 
 #### Via Docker
 
