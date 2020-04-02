@@ -63,11 +63,11 @@ public class RouteProducer {
 
         String name = journeyPattern.getName();
         if (name == null) {
-            name = journeyPattern.getFlexibleLine().getName();
+            name = journeyPattern.getLine().getName();
         }
 
         JAXBElement<LineRefStructure> lineRef = objectFactory.wrapAsJAXBElement(
-                objectFactory.populateRefStructure(new FlexibleLineRefStructure(), journeyPattern.getFlexibleLine().getRef(), true));
+                objectFactory.populateRefStructure(new FlexibleLineRefStructure(), journeyPattern.getLine().getRef(), true));
 
         return objectFactory.populateId(new Route(), journeyPattern.getRef())
                        .withLineRef(lineRef)

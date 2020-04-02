@@ -69,7 +69,7 @@ public class DataIntegrityViolationExceptionMapper implements ExceptionMapper<Da
     private void init() {
         errorMessagePerConstraintMap.put(Constraints.NETWORK_UNIQUE_NAME, "A Network with this name already exists");
         errorMessagePerConstraintMap.put(Constraints.FLEXIBLE_STOP_PLACE_UNIQUE_NAME, "A FlexibleStopPlace with this name already exists");
-        errorMessagePerConstraintMap.put(Constraints.FLEXIBLE_LINE_UNIQUE_NAME, "A FlexibleLine with this name already exists");
+        errorMessagePerConstraintMap.put(Constraints.LINE_UNIQUE_NAME, "A line with this name already exists");
         errorMessagePerConstraintMap.put(Constraints.JOURNEY_PATTERN_UNIQUE_NAME, "A JourneyPattern with this name already exists");
         errorMessagePerConstraintMap.put(Constraints.SERVICE_JOURNEY_UNIQUE_NAME, "A ServiceJourney with this name already exists");
 

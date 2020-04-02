@@ -159,7 +159,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
         Preconditions.checkArgument(prevPassingTime.getArrivalTime() != null || prevPassingTime.getLatestArrivalTime() != null,
                 "%s Last TimetablePassingTime in ServiceJourney %s must have at least one of the following fields set: arrivalTime, latestArrivalTime", prevPassingTime.identity(), this.identity());
 
-        Preconditions.checkArgument(operatorRef != null || getJourneyPattern().getFlexibleLine().getOperatorRef() != null,
+        Preconditions.checkArgument(operatorRef != null || getJourneyPattern().getLine().getOperatorRef() != null,
                 CodedError.fromErrorCode(ErrorCodeEnumeration.MISSING_OPERATOR),
                 "%s has operator set on neither ServiceJourney or FlexibleLine", identity());
 
