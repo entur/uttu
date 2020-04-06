@@ -15,7 +15,12 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.error.ErrorCode;
+import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import org.junit.Assert;
+
+import static org.junit.Assert.assertEquals;
 
 public class ModelTestUtil
 {
@@ -27,6 +32,15 @@ public class ModelTestUtil
             Assert.fail("Expected exception for non-persistable entity");
         } catch (IllegalArgumentException iae) {
             //  OK
+        }
+    }
+
+    public static void assertCheckPersistableFailsWithErrorCode(IdentifiedEntity entity, ErrorCodeEnumeration code) {
+        try {
+            entity.checkPersistable();
+            Assert.fail("Expected exception for non-persistable entity");
+        } catch (CodedIllegalArgumentException iae) {
+            assertEquals(code.toString(), iae.getCode());
         }
     }
 }

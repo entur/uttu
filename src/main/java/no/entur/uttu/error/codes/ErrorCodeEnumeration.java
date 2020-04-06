@@ -44,4 +44,9 @@ public enum ErrorCodeEnumeration implements ErrorCode {
      * @see ConstraintViolationCodedError
      */
     CONSTRAINT_VIOLATION,
+
+    /**
+     * StopPointInPattern on fixed lines may only have quayRef not flexibleStopPlace
+     */
+    FLEXIBLE_STOP_PLACE_NOT_ALLOWED
 }
