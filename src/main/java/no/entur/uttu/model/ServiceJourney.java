@@ -161,7 +161,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
         Preconditions.checkArgument(operatorRef != null || getJourneyPattern().getLine().getOperatorRef() != null,
                 CodedError.fromErrorCode(ErrorCodeEnumeration.MISSING_OPERATOR),
-                "%s has operator set on neither ServiceJourney or FlexibleLine", identity());
+                "%s has operator set on neither ServiceJourney or Line", identity());
 
         getDayTypes().stream().forEach(IdentifiedEntity::checkPersistable);
 
