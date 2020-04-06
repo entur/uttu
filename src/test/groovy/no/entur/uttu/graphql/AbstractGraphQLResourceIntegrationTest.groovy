@@ -15,6 +15,7 @@
 
 package no.entur.uttu.graphql
 
+import graphql.Assert
 import io.restassured.RestAssured
 import io.restassured.http.ContentType
 import io.restassured.response.ValidatableResponse
@@ -34,6 +35,36 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
     void configureRestAssured() {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = port
+    }
+
+    ValidatableResponse createNetwork(String name) {
+        String query = """
+             mutation mutateNetwork(\$network: NetworkInput!) {
+              mutateNetwork(input: \$network) {
+                id
+                name
+                authorityRef
+              }
+             }"""
+
+        String variables = """{
+            "network": {
+                "name": "$name",
+                "authorityRef": "22"
+            }
+        }"""
+
+        executeGraphQL(query, variables)
+    }
+
+    String getNetworkId(ValidatableResponse response) {
+        extractId(response, "mutateNetwork")
+    }
+
+    String extractId(ValidatableResponse response, String path) {
+        String id = response.extract().body().path("data." + path + ".id")
+        Assert.assertNotNull(id)
+        id
     }
 
     protected ValidatableResponse executeGraphQL(String query, String variables) {

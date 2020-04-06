@@ -24,41 +24,9 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         return "/services/flexible-lines/tst/graphql"
     }
 
-    String getNetworkId(ValidatableResponse response) {
-        extractId(response, "mutateNetwork")
-    }
-
-    String extractId(ValidatableResponse response, String path) {
-        String id = response.extract().body().path("data." + path + ".id")
-        Assert.assertNotNull(id)
-        id
-    }
-
     String getFlexibleStopPlaceId(ValidatableResponse response) {
         extractId(response, "mutateFlexibleStopPlace")
     }
-
-    ValidatableResponse createNetwork(String name) {
-        String query = """
- mutation mutateNetwork(\$network: NetworkInput!) {
-  mutateNetwork(input: \$network) {
-    id
-    name
-    authorityRef
-  }
-  }
-                """
-
-        String variables = """{
-            "network": {
-                "name": "$name",
-                "authorityRef": "22"
-            }
-        }"""
-
-        executeGraphQL(query, variables)
-    }
-
 
     String createStopPlaceQuery = """
  mutation mutateFlexibleStopPlace(\$flexibleStopPlace: FlexibleStopPlaceInput!) {
