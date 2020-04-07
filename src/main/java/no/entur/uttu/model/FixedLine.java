@@ -10,6 +10,13 @@ import static no.entur.uttu.error.codes.ErrorCodeEnumeration.FLEXIBLE_STOP_PLACE
 @Entity
 public class FixedLine extends Line {
 
+    private static final String NETEX_NAME = "Line";
+
+    @Override
+    public String getNetexName() {
+        return NETEX_NAME;
+    }
+
     @Override
     public void checkPersistable() {
         super.checkPersistable();

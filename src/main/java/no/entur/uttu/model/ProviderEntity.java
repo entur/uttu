@@ -65,7 +65,11 @@ public abstract class ProviderEntity extends IdentifiedEntity {
 
     @PrePersist
     public void setNetexIdIfMissing() {
-        this.setNetexId(Joiner.on(":").join(getProvider().getCodespace().getXmlns(), this.getClass().getSimpleName(), UUID.randomUUID()));
+        this.setNetexId(Joiner.on(":").join(getProvider().getCodespace().getXmlns(), getNetexName(), UUID.randomUUID()));
+    }
+
+    public String getNetexName() {
+        return this.getClass().getSimpleName();
     }
 
 
