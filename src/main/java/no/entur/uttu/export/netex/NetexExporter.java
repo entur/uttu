@@ -18,7 +18,9 @@ package no.entur.uttu.export.netex;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.model.FixedLine;
+import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.repository.FixedLineRepository;
+import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.producer.common.NetexCommonFileProducer;
@@ -37,6 +39,7 @@ import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static javax.xml.bind.JAXBContext.newInstance;
 
@@ -68,17 +71,22 @@ public class NetexExporter {
 
         NetexExportContext exportContext = new NetexExportContext(export);
 
-        List<FlexibleLine> flexibleLines = flexibleLineRepository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
-        List<FixedLine> fixedLines = fixedLineRepository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
+        List<FlexibleLine> flexibleLines = findAllValidEntitiesFromRepository(flexibleLineRepository, exportContext);
+        List<FixedLine> fixedLines = findAllValidEntitiesFromRepository(fixedLineRepository, exportContext);
 
         Preconditions.checkArgument(!flexibleLines.isEmpty() || !fixedLines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
 
-        flexibleLines.stream().map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
+        Stream.concat(
+                flexibleLines.stream(),
+                fixedLines.stream()
+        ).map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
-        fixedLines.stream().map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
-                .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
-        marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
 
+        marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
+    }
+
+    private <T extends ProviderEntity> List<T> findAllValidEntitiesFromRepository(ProviderEntityRepository<T> repository, NetexExportContext exportContext) {
+        return repository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
     }
 
     private void marshalToFile(NetexFile file, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
