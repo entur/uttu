@@ -17,6 +17,7 @@ package no.entur.uttu.export.netex.producer.line;
 
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
+import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Line;
@@ -29,6 +30,7 @@ import org.rutebanken.netex.model.PointOnRoute;
 import org.rutebanken.netex.model.PointsOnRoute_RelStructure;
 import org.rutebanken.netex.model.Route;
 import org.rutebanken.netex.model.RoutePointRefStructure;
+import org.rutebanken.netex.model.VersionOfObjectRefStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -61,14 +63,21 @@ public class RouteProducer {
                 mapPointOnRoute(lastStopPointInJP, 2, context)
         );
 
+        Line line = journeyPattern.getLine();
 
         String name = journeyPattern.getName();
         if (name == null) {
-            name = journeyPattern.getLine().getName();
+            name = line.getName();
+        }
+
+        LineRefStructure lineRefStructure = new LineRefStructure();
+
+        if (line instanceof FlexibleLine) {
+            lineRefStructure = new FlexibleLineRefStructure();
         }
 
         JAXBElement<LineRefStructure> lineRef = objectFactory.wrapAsJAXBElement(
-                objectFactory.populateRefStructure(new FlexibleLineRefStructure(), journeyPattern.getLine().getRef(), true));
+                objectFactory.populateRefStructure(lineRefStructure, journeyPattern.getLine().getRef(), true));
 
         return objectFactory.populateId(new Route(), journeyPattern.getRef())
                        .withLineRef(lineRef)
