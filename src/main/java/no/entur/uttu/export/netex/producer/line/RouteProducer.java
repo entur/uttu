@@ -19,6 +19,7 @@ import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
+import no.entur.uttu.model.Line;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import org.rutebanken.netex.model.DirectionTypeEnumeration;
@@ -42,7 +43,7 @@ public class RouteProducer {
     @Autowired
     private NetexObjectFactory objectFactory;
 
-    public List<Route> produce(FlexibleLine line, NetexExportContext context) {
+    public List<Route> produce(Line line, NetexExportContext context) {
         return line.getJourneyPatterns().stream().map(jp -> mapRoute(jp, context)).collect(Collectors.toList());
     }
 

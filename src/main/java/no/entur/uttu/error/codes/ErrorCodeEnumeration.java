@@ -17,9 +17,9 @@ public enum ErrorCodeEnumeration implements ErrorCode {
     MISSING_OPERATOR,
 
     /**
-     * Found no valid flexible lines in data space, while exporting
+     * Found no valid lines in data space, while exporting
      */
-    NO_VALID_FLEXIBLE_LINES_IN_DATA_SPACE,
+    NO_VALID_LINES_IN_DATA_SPACE,
 
     /**
      * Logical error: Provided from date was after to date

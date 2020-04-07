@@ -17,6 +17,8 @@ package no.entur.uttu.export.netex;
 
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
+import no.entur.uttu.model.FixedLine;
+import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.producer.common.NetexCommonFileProducer;
@@ -45,6 +47,9 @@ public class NetexExporter {
     private FlexibleLineRepository flexibleLineRepository;
 
     @Autowired
+    private FixedLineRepository fixedLineRepository;
+
+    @Autowired
     private NetexLineFileProducer netexLineFileProducer;
 
     @Autowired
@@ -64,10 +69,13 @@ public class NetexExporter {
         NetexExportContext exportContext = new NetexExportContext(export);
 
         List<FlexibleLine> flexibleLines = flexibleLineRepository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
+        List<FixedLine> fixedLines = fixedLineRepository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
 
-        Preconditions.checkArgument(!flexibleLines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_FLEXIBLE_LINES_IN_DATA_SPACE), "No valid FlexibleLines in data space");
+        Preconditions.checkArgument(!flexibleLines.isEmpty() || !fixedLines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
 
         flexibleLines.stream().map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
+                .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
+        fixedLines.stream().map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
         marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
 

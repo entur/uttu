@@ -34,7 +34,7 @@ public class ExportUtilTest {
     }
 
     @Test
-    public void testCreateBackupDataSetFilenameWithEoutxportName(){
+    public void testCreateBackupDataSetFilenameWithOutExportName(){
         Export export = createExport(null);
         String fileName= ExportUtil.createBackupDataSetFilename(export);
 
