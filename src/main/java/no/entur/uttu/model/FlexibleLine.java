@@ -15,12 +15,20 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.export.netex.NetexExportContext;
+import no.entur.uttu.export.netex.producer.line.LineProducerVisitor;
+import no.entur.uttu.export.netex.producer.line.RouteProducerVisitor;
+import org.rutebanken.netex.model.LineRefStructure;
+import org.rutebanken.netex.model.Line_VersionStructure;
+import org.rutebanken.netex.model.NoticeAssignment;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Entity
 public class FlexibleLine extends Line {
@@ -46,5 +54,15 @@ public class FlexibleLine extends Line {
 
     public void setBookingArrangement(BookingArrangement bookingArrangement) {
         this.bookingArrangement = bookingArrangement;
+    }
+
+    @Override
+    public Line_VersionStructure accept(LineProducerVisitor visitor, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
+        return visitor.visitFlexibleLine(this, noticeAssignments, context);
+    }
+
+    @Override
+    public LineRefStructure accept(RouteProducerVisitor visitor) {
+        return visitor.visitFlexibleLine(this);
     }
 }

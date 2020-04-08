@@ -16,8 +16,7 @@
 package no.entur.uttu.util;
 
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
-import no.entur.uttu.model.FlexibleLine;
-import no.entur.uttu.model.Line;
+import no.entur.uttu.export.netex.producer.line.Line;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.job.Export;
 import org.springframework.util.StringUtils;

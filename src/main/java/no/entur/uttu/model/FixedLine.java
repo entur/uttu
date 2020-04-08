@@ -16,9 +16,17 @@
 package no.entur.uttu.model;
 
 import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.export.netex.NetexExportContext;
+import no.entur.uttu.export.netex.producer.line.LineProducerVisitor;
+import no.entur.uttu.export.netex.producer.line.RouteProducerVisitor;
 import no.entur.uttu.util.Preconditions;
+import org.rutebanken.netex.model.LineRefStructure;
+import org.rutebanken.netex.model.Line_VersionStructure;
+import org.rutebanken.netex.model.NoticeAssignment;
 
 import javax.persistence.Entity;
+
+import java.util.List;
 
 import static no.entur.uttu.error.codes.ErrorCodeEnumeration.FLEXIBLE_STOP_PLACE_NOT_ALLOWED;
 
@@ -48,5 +56,15 @@ public class FixedLine extends Line {
                     jp.name
             );
         });
+    }
+
+    @Override
+    public Line_VersionStructure accept(LineProducerVisitor visitor, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
+        return visitor.visitFixedLine(this, noticeAssignments, context);
+    }
+
+    @Override
+    public LineRefStructure accept(RouteProducerVisitor visitor) {
+        return visitor.visitFixedLine(this);
     }
 }

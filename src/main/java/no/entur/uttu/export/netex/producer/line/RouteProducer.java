@@ -20,7 +20,6 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
-import no.entur.uttu.model.Line;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import org.rutebanken.netex.model.DirectionTypeEnumeration;
@@ -40,7 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class RouteProducer {
+public class RouteProducer implements RouteProducerVisitor {
 
     @Autowired
     private NetexObjectFactory objectFactory;
@@ -63,18 +62,14 @@ public class RouteProducer {
                 mapPointOnRoute(lastStopPointInJP, 2, context)
         );
 
-        Line line = journeyPattern.getLine();
+        no.entur.uttu.model.Line line = journeyPattern.getLine();
 
         String name = journeyPattern.getName();
         if (name == null) {
             name = line.getName();
         }
 
-        LineRefStructure lineRefStructure = new LineRefStructure();
-
-        if (line instanceof FlexibleLine) {
-            lineRefStructure = new FlexibleLineRefStructure();
-        }
+        LineRefStructure lineRefStructure = line.accept(this);
 
         JAXBElement<LineRefStructure> lineRef = objectFactory.wrapAsJAXBElement(
                 objectFactory.populateRefStructure(lineRefStructure, journeyPattern.getLine().getRef(), true));
@@ -84,6 +79,16 @@ public class RouteProducer {
                        .withName(objectFactory.createMultilingualString(name))
                        .withDirectionType(objectFactory.mapEnum(journeyPattern.getDirectionType(), DirectionTypeEnumeration.class))
                        .withPointsInSequence(pointsOnRoute_relStructure);
+    }
+
+    @Override
+    public LineRefStructure visitFlexibleLine(FlexibleLine flexibleLine) {
+        return new FlexibleLineRefStructure();
+    }
+
+    @Override
+    public LineRefStructure visitFixedLine(FixedLine fixedLine) {
+        return new LineRefStructure();
     }
 
     private PointOnRoute mapPointOnRoute(StopPointInJourneyPattern stopPoint, int order, NetexExportContext context) {
