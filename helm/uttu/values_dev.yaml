@@ -1,0 +1,9 @@
+env: dev
+
+sql:
+  instance: carbon-1287:europe-west1:uttu-db-1=tcp:5432
+
+configMap:
+  organisationRegistryUrl: https://api.dev.entur.io/organisations/v1/register/organisations/
+  projectId: carbon-1287
+  keycloakUrl: https://kc-dev.devstage.entur.io/auth
