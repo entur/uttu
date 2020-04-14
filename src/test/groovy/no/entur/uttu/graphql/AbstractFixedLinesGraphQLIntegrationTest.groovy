@@ -28,7 +28,7 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
         String networkId = getNetworkId(createNetwork(name))
 
         String query = """
-            mutation MutatFixedLine(\$input: FixedLineInput!) {
+            mutation MutateFixedLine(\$input: FixedLineInput!) {
                 mutateFixedLine(input: \$input) {
                     id
                     name
