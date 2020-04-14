@@ -1,5 +1,6 @@
 terraform {
-  backend = "gcs"
-  bucket = "entur-system-tf-backend-ror"
-  prefix = "gcp/ror/uttu"
+  backend "gcs" {
+    bucket = "entur-system-tf-backend-ror"
+    prefix = "gcp/ror/uttu"
+  }
 }
