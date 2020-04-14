@@ -36,6 +36,7 @@ import no.entur.uttu.model.BookingAccessEnumeration;
 import no.entur.uttu.model.BookingMethodEnumeration;
 import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.DirectionTypeEnumeration;
+import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.FlexibleLineTypeEnumeration;
@@ -50,6 +51,7 @@ import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.profile.Profile;
 import no.entur.uttu.repository.DataSpaceCleaner;
 import no.entur.uttu.repository.ExportRepository;
+import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
@@ -89,6 +91,9 @@ public class FlexibleLinesGraphQLSchema {
     private DataFetcher<FlexibleLine> flexibleLineUpdater;
 
     @Autowired
+    private DataFetcher<FixedLine> fixedLineUpdater;
+
+    @Autowired
     private DataFetcher<Network> networkUpdater;
 
     @Autowired
@@ -102,6 +107,9 @@ public class FlexibleLinesGraphQLSchema {
 
     @Autowired
     private FlexibleLineRepository flexibleLineRepository;
+
+    @Autowired
+    private FixedLineRepository fixedLineRepository;
 
     @Autowired
     private DataSpaceCleaner dataSpaceCleaner;
@@ -147,6 +155,7 @@ public class FlexibleLinesGraphQLSchema {
     private GraphQLObjectType geoJSONObjectType;
     private GraphQLObjectType identifiedEntityObjectType;
     private GraphQLObjectType groupOfEntitiesObjectType;
+    private GraphQLObjectType fixedLineObjectType;
     private GraphQLObjectType flexibleLineObjectType;
     private GraphQLObjectType flexibleStopPlaceObjectType;
     private GraphQLObjectType flexibleAreaObjectType;
@@ -349,7 +358,6 @@ public class FlexibleLinesGraphQLSchema {
                                            .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                            .build();
 
-
         flexibleLineObjectType = newObject(groupOfEntitiesObjectType).name("FlexibleLine")
                                          .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(new GraphQLNonNull(GraphQLString)))
                                          .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(new GraphQLNonNull(vehicleModeEnum)))
@@ -362,6 +370,15 @@ public class FlexibleLinesGraphQLSchema {
                                          .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                                          .build();
 
+        fixedLineObjectType = newObject(groupOfEntitiesObjectType).name("FixedLine")
+                                        .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(new GraphQLNonNull(GraphQLString)))
+                                        .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(new GraphQLNonNull(vehicleModeEnum)))
+                                        .field(newFieldDefinition().name(FIELD_TRANSPORT_SUBMODE).type(new GraphQLNonNull(vehicleSubmodeEnum)))
+                                        .field(newFieldDefinition().name(FIELD_NETWORK).type(new GraphQLNonNull(networkObjectType)))
+                                        .field(newFieldDefinition().name(FIELD_OPERATOR_REF).type(GraphQLString))
+                                        .field(newFieldDefinition().name(FIELD_JOURNEY_PATTERNS).type(new GraphQLNonNull(new GraphQLList(journeyPatternObjectType))))
+                                        .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
+                                        .build();
 
         exportMessageObjectType = newObject().name("Message")
                                           .field(newFieldDefinition().name(FIELD_SEVERITY).type(new GraphQLNonNull(severityEnum)))
@@ -401,6 +418,17 @@ public class FlexibleLinesGraphQLSchema {
                                                              .description("Get flexibleLine by id")
                                                              .argument(idArgument)
                                                              .dataFetcher(env -> flexibleLineRepository.getOne(env.getArgument(FIELD_ID))))
+                                              .field(newFieldDefinition()
+                                                             .type(new GraphQLList(fixedLineObjectType))
+                                                             .name("fixedLines")
+                                                             .description("List fixed lines")
+                                                             .dataFetcher(env -> fixedLineRepository.findAll()))
+                                              .field(newFieldDefinition()
+                                                            .type(fixedLineObjectType)
+                                                            .name("fixedLine")
+                                                            .description("Get fixedLine by id")
+                                                            .argument(idArgument)
+                                                            .dataFetcher(env -> fixedLineRepository.getOne(env.getArgument(FIELD_ID))))
                                               .field(newFieldDefinition()
                                                              .type(new GraphQLList(flexibleStopPlaceObjectType))
                                                              .name("flexibleStopPlaces")
@@ -599,6 +627,16 @@ public class FlexibleLinesGraphQLSchema {
                                                                .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                                                                .build();
 
+        GraphQLInputObjectType fixedLineInputType = newInputObject(groupOfEntitiesInputType).name("FixedLineInput")
+                .field(newInputObjectField().name(FIELD_PUBLIC_CODE).type(new GraphQLNonNull(GraphQLString)))
+                .field(newInputObjectField().name(FIELD_TRANSPORT_MODE).type(new GraphQLNonNull(vehicleModeEnum)))
+                .field(newInputObjectField().name(FIELD_TRANSPORT_SUBMODE).type(new GraphQLNonNull(vehicleSubmodeEnum)))
+                .field(newInputObjectField().name(FIELD_NETWORK_REF).type(new GraphQLNonNull(GraphQLString)))
+                .field(newInputObjectField().name(FIELD_OPERATOR_REF).type(GraphQLString))
+                .field(newInputObjectField().name(FIELD_JOURNEY_PATTERNS).type(new GraphQLNonNull(new GraphQLList(journeyPatternInputType))))
+                .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
+                .build();
+
         GraphQLInputObjectType exportInputType = newInputObject().name("ExportInput")
                                                          .field(newInputObjectField().name(FIELD_NAME).type(GraphQLString))
                                                          .field(newInputObjectField().name(FIELD_FROM_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
@@ -638,6 +676,20 @@ public class FlexibleLinesGraphQLSchema {
                                                                 .description("Delete an existing flexibleLine")
                                                                 .argument(idArgument)
                                                                 .dataFetcher(flexibleLineUpdater))
+                                                .field(newFieldDefinition()
+                                                        .type(new GraphQLNonNull(fixedLineObjectType))
+                                                        .name("mutateFixedLine")
+                                                        .description("Create new or update existing fixedLine")
+                                                        .argument(GraphQLArgument.newArgument()
+                                                                .name(FIELD_INPUT)
+                                                                .type(fixedLineInputType))
+                                                        .dataFetcher(fixedLineUpdater))
+                                                .field(newFieldDefinition()
+                                                        .type(new GraphQLNonNull(fixedLineObjectType))
+                                                        .name("deleteFixedLine")
+                                                        .description("Delete an existing fixedLine")
+                                                        .argument(idArgument)
+                                                        .dataFetcher(fixedLineUpdater))
                                                  .field(newFieldDefinition()
                                                                 .type(new GraphQLNonNull(flexibleStopPlaceObjectType))
                                                                 .name("mutateFlexibleStopPlace")
@@ -675,4 +727,3 @@ public class FlexibleLinesGraphQLSchema {
     }
 
 }
-

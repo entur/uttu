@@ -22,7 +22,7 @@ public class Constraints {
 
     public static final String FLEXIBLE_STOP_PLACE_UNIQUE_NAME = "flexible_stop_place_unique_name_constraint";
 
-    public static final String FLEXIBLE_LINE_UNIQUE_NAME = "flexible_line_unique_name_constrain";
+    public static final String LINE_UNIQUE_NAME = "line_unique_name_constraint";
 
     public static final String JOURNEY_PATTERN_UNIQUE_NAME = "journey_pattern_unique_name_constraint";
 

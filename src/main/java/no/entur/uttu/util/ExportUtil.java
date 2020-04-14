@@ -16,7 +16,7 @@
 package no.entur.uttu.util;
 
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
-import no.entur.uttu.model.FlexibleLine;
+import no.entur.uttu.export.netex.producer.line.Line;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.job.Export;
 import org.springframework.util.StringUtils;
@@ -69,7 +69,7 @@ public class ExportUtil {
         return "_" + provider.getCodespace().getXmlns().toUpperCase() + COMMON_FILE_NAME_SUFFIX;
     }
 
-    public static String createLineFilename(FlexibleLine line) {
+    public static String createLineFilename(Line line) {
         StringBuilder b = new StringBuilder();
         b.append(NetexIdProducer.getObjectIdPrefix(line.getNetexId()));
         b.append(MAIN_SEPARATOR);

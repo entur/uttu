@@ -15,54 +15,56 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.line.LineProducerVisitor;
 import no.entur.uttu.export.netex.producer.line.RouteProducerVisitor;
+import no.entur.uttu.util.Preconditions;
 import org.rutebanken.netex.model.LineRefStructure;
 import org.rutebanken.netex.model.Line_VersionStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
-import javax.validation.constraints.NotNull;
+
 import java.util.List;
 
+import static no.entur.uttu.error.codes.ErrorCodeEnumeration.FLEXIBLE_STOP_PLACE_NOT_ALLOWED;
+
 @Entity
-public class FlexibleLine extends Line {
+public class FixedLine extends Line {
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private FlexibleLineTypeEnumeration flexibleLineType;
+    private static final String NETEX_NAME = "Line";
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private BookingArrangement bookingArrangement;
-
-    public FlexibleLineTypeEnumeration getFlexibleLineType() {
-        return flexibleLineType;
+    @Override
+    public String getNetexName() {
+        return NETEX_NAME;
     }
 
-    public void setFlexibleLineType(FlexibleLineTypeEnumeration flexibleLineType) {
-        this.flexibleLineType = flexibleLineType;
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+
+        this.getJourneyPatterns().forEach(this::checkPersistableStopPointInPatterns);
     }
 
-    public BookingArrangement getBookingArrangement() {
-        return bookingArrangement;
-    }
-
-    public void setBookingArrangement(BookingArrangement bookingArrangement) {
-        this.bookingArrangement = bookingArrangement;
+    private void checkPersistableStopPointInPatterns(JourneyPattern jp) {
+        jp.getPointsInSequence().forEach(v -> {
+            Preconditions.checkArgument(
+                    v.getFlexibleStopPlace() == null,
+                    CodedError.fromErrorCode(FLEXIBLE_STOP_PLACE_NOT_ALLOWED),
+                    "Tried to set flexible stop place on StopPointInPattern on a fixed line journey pattern: %s",
+                    jp.name
+            );
+        });
     }
 
     @Override
     public Line_VersionStructure accept(LineProducerVisitor visitor, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
-        return visitor.visitFlexibleLine(this, noticeAssignments, context);
+        return visitor.visitFixedLine(this, noticeAssignments, context);
     }
 
     @Override
     public LineRefStructure accept(RouteProducerVisitor visitor) {
-        return visitor.visitFlexibleLine(this);
+        return visitor.visitFixedLine(this);
     }
 }

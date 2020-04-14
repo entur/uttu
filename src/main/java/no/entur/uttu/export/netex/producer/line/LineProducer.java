@@ -20,12 +20,12 @@ import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.export.netex.producer.common.OrganisationProducer;
 import no.entur.uttu.model.BookingArrangement;
-import no.entur.uttu.model.FlexibleLine;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.FlexibleLineRefStructure;
 import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
+import org.rutebanken.netex.model.Line_VersionStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
 import org.rutebanken.netex.model.PurchaseWhenEnumeration;
@@ -35,7 +35,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class FlexibleLineProducer {
+public class LineProducer implements LineProducerVisitor {
 
     @Autowired
     private NetexObjectFactory objectFactory;
@@ -46,21 +46,38 @@ public class FlexibleLineProducer {
     @Autowired
     private OrganisationProducer organisationProducer;
 
-    public org.rutebanken.netex.model.FlexibleLine produce(FlexibleLine local, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
+
+    public org.rutebanken.netex.model.Line_VersionStructure produce(Line line, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
+        return line.accept(this, noticeAssignments, context);
+    }
+
+    @Override
+    public Line_VersionStructure visitFixedLine(no.entur.uttu.model.FixedLine fixedLine, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
+        org.rutebanken.netex.model.Line netex = new org.rutebanken.netex.model.Line();
+        mapCommon(fixedLine, netex, noticeAssignments, context);
+        return NetexIdProducer.copyIdAndVersion(netex, fixedLine);
+    }
+
+    @Override
+    public Line_VersionStructure visitFlexibleLine(no.entur.uttu.model.FlexibleLine flexibleLine, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
         org.rutebanken.netex.model.FlexibleLine netex = new org.rutebanken.netex.model.FlexibleLine();
 
+        netex.setFlexibleLineType(objectFactory.mapEnum(flexibleLine.getFlexibleLineType(), FlexibleLineTypeEnumeration.class));
+        mapCommon(flexibleLine, netex, noticeAssignments, context);
+        mapBookingArrangements(flexibleLine.getBookingArrangement(), netex);
+
+        return NetexIdProducer.copyIdAndVersion(netex, flexibleLine);
+    }
+
+    protected void mapCommon(no.entur.uttu.model.Line local, org.rutebanken.netex.model.Line_VersionStructure netex, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
         netex.setName(objectFactory.createMultilingualString(local.getName()));
         netex.setPrivateCode(objectFactory.createPrivateCodeStructure(local.getPrivateCode()));
 
-        netex.setFlexibleLineType(objectFactory.mapEnum(local.getFlexibleLineType(), FlexibleLineTypeEnumeration.class));
         netex.setTransportMode(objectFactory.mapEnum(local.getTransportMode(), AllVehicleModesOfTransportEnumeration.class));
         netex.setTransportSubmode(objectFactory.mapTransportSubmodeStructure(local.getTransportSubmode()));
 
         netex.setPublicCode(local.getPublicCode());
         netex.setDescription(objectFactory.createMultilingualString(local.getDescription()));
-
-        mapBookingArrangements(local.getBookingArrangement(), netex);
-
 
         if (local.getOperatorRef() != null) {
             netex.setOperatorRef(organisationProducer.produceOperatorRef(local.getOperatorRef(), false, context));
@@ -72,8 +89,6 @@ public class FlexibleLineProducer {
 
         noticeAssignments.addAll(objectFactory.createNoticeAssignments(local, FlexibleLineRefStructure.class, local.getNotices(), context));
         context.notices.addAll(local.getNotices());
-
-        return NetexIdProducer.copyIdAndVersion(netex, local);
     }
 
     protected void mapBookingArrangements(BookingArrangement local, org.rutebanken.netex.model.FlexibleLine netex) {

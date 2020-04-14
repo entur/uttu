@@ -17,6 +17,7 @@ package no.entur.uttu.export.netex.producer.line;
 
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
+import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
@@ -28,6 +29,7 @@ import org.rutebanken.netex.model.PointOnRoute;
 import org.rutebanken.netex.model.PointsOnRoute_RelStructure;
 import org.rutebanken.netex.model.Route;
 import org.rutebanken.netex.model.RoutePointRefStructure;
+import org.rutebanken.netex.model.VersionOfObjectRefStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -37,12 +39,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class RouteProducer {
+public class RouteProducer implements RouteProducerVisitor {
 
     @Autowired
     private NetexObjectFactory objectFactory;
 
-    public List<Route> produce(FlexibleLine line, NetexExportContext context) {
+    public List<Route> produce(Line line, NetexExportContext context) {
         return line.getJourneyPatterns().stream().map(jp -> mapRoute(jp, context)).collect(Collectors.toList());
     }
 
@@ -60,20 +62,33 @@ public class RouteProducer {
                 mapPointOnRoute(lastStopPointInJP, 2, context)
         );
 
+        no.entur.uttu.model.Line line = journeyPattern.getLine();
 
         String name = journeyPattern.getName();
         if (name == null) {
-            name = journeyPattern.getFlexibleLine().getName();
+            name = line.getName();
         }
 
+        LineRefStructure lineRefStructure = line.accept(this);
+
         JAXBElement<LineRefStructure> lineRef = objectFactory.wrapAsJAXBElement(
-                objectFactory.populateRefStructure(new FlexibleLineRefStructure(), journeyPattern.getFlexibleLine().getRef(), true));
+                objectFactory.populateRefStructure(lineRefStructure, journeyPattern.getLine().getRef(), true));
 
         return objectFactory.populateId(new Route(), journeyPattern.getRef())
                        .withLineRef(lineRef)
                        .withName(objectFactory.createMultilingualString(name))
                        .withDirectionType(objectFactory.mapEnum(journeyPattern.getDirectionType(), DirectionTypeEnumeration.class))
                        .withPointsInSequence(pointsOnRoute_relStructure);
+    }
+
+    @Override
+    public LineRefStructure visitFlexibleLine(FlexibleLine flexibleLine) {
+        return new FlexibleLineRefStructure();
+    }
+
+    @Override
+    public LineRefStructure visitFixedLine(FixedLine fixedLine) {
+        return new LineRefStructure();
     }
 
     private PointOnRoute mapPointOnRoute(StopPointInJourneyPattern stopPoint, int order, NetexExportContext context) {

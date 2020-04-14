@@ -40,9 +40,8 @@ import static no.entur.uttu.model.Constraints.JOURNEY_PATTERN_UNIQUE_NAME;
 @Table(uniqueConstraints = {@UniqueConstraint(name = JOURNEY_PATTERN_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
 public class JourneyPattern extends GroupOfEntities_VersionStructure {
 
-    @NotNull
     @ManyToOne
-    private FlexibleLine flexibleLine;
+    private @NotNull Line line;
 
     @OneToMany(mappedBy = "journeyPattern", cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
@@ -59,12 +58,12 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Notice> notices;
 
-    public FlexibleLine getFlexibleLine() {
-        return flexibleLine;
+    public @NotNull Line getLine() {
+        return line;
     }
 
-    public void setFlexibleLine(FlexibleLine flexibleLine) {
-        this.flexibleLine = flexibleLine;
+    public void setLine(Line line) {
+        this.line = line;
     }
 
     public List<ServiceJourney> getServiceJourneys() {
