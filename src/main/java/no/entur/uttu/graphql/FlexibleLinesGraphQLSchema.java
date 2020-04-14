@@ -426,7 +426,7 @@ public class FlexibleLinesGraphQLSchema {
                                               .field(newFieldDefinition()
                                                             .type(fixedLineObjectType)
                                                             .name("fixedLine")
-                                                            .description("Get fixedLione by id")
+                                                            .description("Get fixedLine by id")
                                                             .argument(idArgument)
                                                             .dataFetcher(env -> fixedLineRepository.getOne(env.getArgument(FIELD_ID))))
                                               .field(newFieldDefinition()
@@ -727,4 +727,3 @@ public class FlexibleLinesGraphQLSchema {
     }
 
 }
-
