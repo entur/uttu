@@ -13,7 +13,7 @@ data:
 
     # gcs
     blobstore.gcs.project.id={{ .Values.configMap.projectId }}
-    blobstore.gcs.credential.path=/etc/uttu/uttu-service-account.json
+    blobstore.gcs.credential.path=/etc/uttu/credentials.json
     blobstore.gcs.container.name=marduk-exchange
 
     # pubsub
