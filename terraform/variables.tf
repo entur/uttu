@@ -18,13 +18,18 @@ variable "labels" {
 }
 
 variable "service_account_cloudsql_role" {
-  description = "Role of the Service Account - more about roles https://cloud.google.com/pubsub/docs/access-control"
+  description = "cloudsql client role"
   default     = "roles/cloudsql.client"
 }
 
 variable "service_account_pubsub_role" {
-  description = "Role of the Service Account - more about roles https://cloud.google.com/pubsub/docs/access-control"
+  description = "pubsub editor role"
   default     = "roles/pubsub.editor"
+}
+
+variable "service_account_blobstore_role" {
+  description = "storage objects create role"
+  default     = "roles/storage.objects.create"
 }
 
 variable "load_config_file" {
