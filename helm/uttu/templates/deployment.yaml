@@ -79,7 +79,7 @@ spec:
             - name: {{ .Values.mardukPubsubKey.name }}
               mountPath: {{ .Values.mardukPubsubKey.mounthPath }}
               subPath: {{ .Values.mardukPubsubKey.subPath }}
-              readOnly: {{ .Values.mardkukPubsubKey.readOnly }}
+              readOnly: {{ .Values.mardukPubsubKey.readOnly }}
             - mountPath: /etc/application-config
               name: application-config
               readOnly: true
