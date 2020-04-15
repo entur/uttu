@@ -27,9 +27,9 @@ variable "service_account_pubsub_role" {
   default     = "roles/pubsub.editor"
 }
 
-variable "service_account_blobstore_role" {
+variable "service_account_storage_role" {
   description = "storage objects create role"
-  default     = "roles/storage.objects.create"
+  default     = "roles/storage.objectCreator"
 }
 
 variable "load_config_file" {

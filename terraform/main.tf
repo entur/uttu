@@ -30,7 +30,7 @@ resource "google_project_iam_member" "uttu_pubsub_iam_member" {
 
 resource "google_project_iam_member" "uttu_blobstore_iam_member" {
   project = var.gcp_project
-  role    = var.service_account_blobstore_role
+  role    = var.service_account_storage_role
   member = "serviceAccount:${google_service_account.uttu_service_account.email}"
 }
 
