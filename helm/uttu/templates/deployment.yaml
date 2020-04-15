@@ -117,6 +117,9 @@ spec:
         - name: {{ .Values.secretMount.name }}
           secret:
             secretName: {{ .Values.secretMount.secretName }}
+        - name: {{ .Values.mardukPubsubKey.secretName }}
+          secret:
+            secretName: {{ .Values.mardukPubsubKey.secretName }}
         - name: application-config
           configMap:
             name: {{ .Values.configMapMount.name }}

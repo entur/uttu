@@ -54,6 +54,6 @@ resource "kubernetes_secret" "ror-uttu-marduk-pubsub-key" {
   }
 
   data = {
-    "password" = var.ror-uttu-db-password
+    "marduk-pubsub-credentials.json" = var.ror-uttu-marduk-pubsub-key
   }
 }
