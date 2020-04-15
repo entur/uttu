@@ -18,7 +18,7 @@ data:
 
     # pubsub
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.projectId }}
-    spring.cloud.gcp.pubsub.credentials.location=file:/etc/marduk-pubsub-account/marduk-pubsub-credentials.json
+    spring.cloud.gcp.pubsub.credentials.location=file:/etc/uttu/credentials.json
     spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30
     spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000

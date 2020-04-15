@@ -21,13 +21,6 @@ secretMount:
   secretName: ror-uttu-sa-key
   readOnly: true
 
-mardukPubsubKey:
-  name: marduk-pubsub-key
-  mountPath: /etc/marduk-pubsub-account/marduk-pubsub-credentials.json
-  subPath: marduk-pubsub-credentials.json
-  secretName: ror-uttu-marduk-pubsub-key
-  readOnly: true
-
 configMapMount:
   name: uttu-config
 

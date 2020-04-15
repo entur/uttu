@@ -22,6 +22,11 @@ variable "service_account_cloudsql_role" {
   default     = "roles/cloudsql.client"
 }
 
+variable "service_account_pubsub_role" {
+  description = "Role of the Service Account - more about roles https://cloud.google.com/pubsub/docs/access-control"
+  default     = "roles/pubsub.editor"
+}
+
 variable "load_config_file" {
   description = "Do not load kube config file"
   default     = false
@@ -29,8 +34,4 @@ variable "load_config_file" {
 
 variable ror-uttu-db-password {
   description = "Uttu database password"
-}
-
-variable ror-uttu-marduk-pubsub-key {
-  description = "Marduk pubsub key"
 }

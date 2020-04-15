@@ -16,9 +16,15 @@ resource "google_service_account" "uttu_service_account" {
   project = var.gcp_project
 }
 
-resource "google_project_iam_member" "project" {
+resource "google_project_iam_member" "uttu_cloudsql_iam_member" {
   project = var.gcp_project
   role    = var.service_account_cloudsql_role
+  member = "serviceAccount:${google_service_account.uttu_service_account.email}"
+}
+
+resource "google_project_iam_member" "uttu_pubsub_iam_member" {
+  project = var.gcp_project
+  role    = var.service_account_pubsub_role
   member = "serviceAccount:${google_service_account.uttu_service_account.email}"
 }
 
@@ -44,16 +50,5 @@ resource "kubernetes_secret" "ror-uttu-db-password" {
 
   data = {
     "password" = var.ror-uttu-db-password
-  }
-}
-
-resource "kubernetes_secret" "ror-uttu-marduk-pubsub-key" {
-  metadata {
-    name      = "${var.labels.team}-${var.labels.app}-marduk-pubsub-key"
-    namespace = var.kube_namespace
-  }
-
-  data = {
-    "marduk-pubsub-credentials.json" = var.ror-uttu-marduk-pubsub-key
   }
 }

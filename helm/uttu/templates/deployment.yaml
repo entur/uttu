@@ -76,10 +76,6 @@ spec:
               mountPath: {{ .Values.secretMount.mountPath }}
               subPath: {{ .Values.secretMount.subPath }}
               readOnly: {{ .Values.secretMount.readOnly }}
-            - name: {{ .Values.mardukPubsubKey.name }}
-              mountPath: {{ .Values.mardukPubsubKey.mounthPath }}
-              subPath: {{ .Values.mardukPubsubKey.subPath }}
-              readOnly: {{ .Values.mardukPubsubKey.readOnly }}
             - mountPath: /etc/application-config
               name: application-config
               readOnly: true
@@ -121,9 +117,6 @@ spec:
         - name: {{ .Values.secretMount.name }}
           secret:
             secretName: {{ .Values.secretMount.secretName }}
-        - name: {{ .Values.mardukPubsubKey.name }}
-          secret:
-            secretName: {{ .Values.mardukPubsubKey.secretName }}
         - name: application-config
           configMap:
             name: {{ .Values.configMapMount.name }}
