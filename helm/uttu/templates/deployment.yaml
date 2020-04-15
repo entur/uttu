@@ -41,6 +41,8 @@ spec:
           volumeMounts:
             - mountPath: /etc/uttu
               name: {{ .Values.secretMount.name }}
+            - mountPath: /etc/marduk-pubsub-account
+              name: {{ .Values.mardukPubsubKey.name }}
           lifecycle:
             preStop:
               exec:
@@ -76,6 +78,10 @@ spec:
               mountPath: {{ .Values.secretMount.mountPath }}
               subPath: {{ .Values.secretMount.subPath }}
               readOnly: {{ .Values.secretMount.readOnly }}
+            - name: {{ .Values.mardukPubsubKey.name }}
+              mountPath: {{ .Values.mardukPubsubKey.mounthPath }}
+              subPath: {{ .Values.mardukPubsubKey.subPath }}
+              readOnly: {{ .Values.mardkukPubsubKey.readOnly }}
             - mountPath: /etc/application-config
               name: application-config
               readOnly: true
