@@ -32,6 +32,11 @@ variable "service_account_storage_role" {
   default     = "roles/storage.objectCreator"
 }
 
+variable "storage_bucket_name" {
+  description = "name of storage bucket for exports"
+  default     = "marduk-exchange"
+}
+
 variable "load_config_file" {
   description = "Do not load kube config file"
   default     = false
