@@ -30,3 +30,7 @@ variable "load_config_file" {
 variable ror-uttu-db-password {
   description = "Uttu database password"
 }
+
+variable ror-uttu-marduk-pubsub-key {
+  description = "Marduk pubsub key"
+}

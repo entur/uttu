@@ -46,3 +46,14 @@ resource "kubernetes_secret" "ror-uttu-db-password" {
     "password" = var.ror-uttu-db-password
   }
 }
+
+resource "kubernetes_secret" "ror-uttu-marduk-pubsub-key" {
+  metadata {
+    name      = "${var.labels.team}-${var.labels.app}-marduk-pubsub-key"
+    namespace = var.kube_namespace
+  }
+
+  data = {
+    "password" = var.ror-uttu-db-password
+  }
+}
