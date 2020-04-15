@@ -27,6 +27,11 @@ variable "service_account_pubsub_role" {
   default     = "roles/pubsub.editor"
 }
 
+variable "pubsub_topic" {
+  description = "pubsub topic for publishing export notifications"
+  default     = "ChouetteMergeWithFlexibleLinesQueue"
+}
+
 variable "service_account_storage_role" {
   description = "storage objects create role"
   default     = "roles/storage.objectCreator"
