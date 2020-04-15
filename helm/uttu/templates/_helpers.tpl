@@ -32,6 +32,5 @@ chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 release: {{ .Release.Name }}
 team: ror
 slack: talk-ror
-type: nsr
 namespace: {{ .Release.Namespace }}
 {{- end }}
