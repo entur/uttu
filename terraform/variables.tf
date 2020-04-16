@@ -34,7 +34,7 @@ variable "pubsub_topic" {
 
 variable "service_account_storage_role" {
   description = "storage objects create role"
-  default     = "roles/storage.objectCreator"
+  default     = "roles/storage.objectAdmin"
 }
 
 variable "storage_bucket_name" {
