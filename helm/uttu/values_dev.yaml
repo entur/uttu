@@ -7,3 +7,6 @@ configMap:
   organisationRegistryUrl: https://api.dev.entur.io/organisations/v1/register/organisations/
   projectId: carbon-1287
   keycloakUrl: https://kc-dev.devstage.entur.io/auth
+  blobstoreContainerName: marduk-exchange
+  logLevel: DEBUG
+  flywayTable: schema_version

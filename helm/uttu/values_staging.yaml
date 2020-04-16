@@ -1,0 +1,20 @@
+env: dev
+
+resources:
+  cpuLimit: 500m
+  memLimit: 2000Mi
+  cpuRequest: 200m
+  memRequest: 1500Mi
+  xss: 1024m
+  xmx: 1000m
+
+sql:
+  instance: radon-1287:europe-west1:uttu-db-1=tcp:5432
+
+configMap:
+  organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations/
+  projectId: radon-1287
+  keycloakUrl: https://kc-stage.devstage.entur.io/auth
+  blobstoreContainerName: marduk-exchange-stage
+  logLevel: INFO
+  flywayTable: flyway_schema_history

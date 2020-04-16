@@ -14,7 +14,7 @@ data:
     # gcs
     blobstore.gcs.project.id={{ .Values.configMap.projectId }}
     blobstore.gcs.credential.path=/etc/uttu/credentials.json
-    blobstore.gcs.container.name=marduk-exchange
+    blobstore.gcs.container.name={{ .Values.configMap.blobstoreContainerName }}
 
     # pubsub
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.projectId }}
@@ -33,7 +33,7 @@ data:
     spring.datasource.url=jdbc:postgresql://localhost:5432/uttu
     spring.datasource.platform=postgres
     spring.datasource.username=uttu
-    spring.flyway.table=schema_version
+    spring.flyway.table={{ .Values.configMap.flywayTable }}
 
     # Keycloak
     authorization.enabled=true
@@ -45,7 +45,7 @@ data:
     spring.main.allow-bean-definition-overriding=true
 
     # Logging
-    logging.level.no.entur.uttu=DEBUG
+    logging.level.no.entur.uttu={{ .Values.configMap.logLevel }}
     logging.level.no.entur.uttu.health.rest.HealthResource=INFO
 
     # Profile
