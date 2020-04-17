@@ -51,6 +51,9 @@ public class ExportService {
     @Value("${export.working.folder:tmp}")
     private String workingFolder;
 
+    @Value("${export.working.dataset-file-path:dataset.zip}")
+    private String datasetFilePath;
+
     @Value("${export.days.historic.default:2}")
     private int historicDaysDefault;
 
@@ -66,7 +69,7 @@ public class ExportService {
 
         logger.info("Starting {}", export);
 
-        try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
+        try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder, datasetFilePath)) {
 
             boolean validateAgainstSchema = true;
             exporter.exportDataSet(export, dataSetProducer, validateAgainstSchema);

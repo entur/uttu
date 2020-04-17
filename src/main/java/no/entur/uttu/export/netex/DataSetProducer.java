@@ -36,18 +36,17 @@ import java.util.zip.ZipOutputStream;
  */
 public class DataSetProducer implements Closeable {
 
-    private static final String DATA_SET_FILE = "dataset.zip";
-
     private static final String DATA_SET_CONTENT_FOLDER = "content";
+
+    private String datasetFilePath;
 
     private Path tmpFolder;
 
     private Path contentFolder;
 
-    public DataSetProducer(String workingFolder) {
+    public DataSetProducer(String workingFolder, String datasetFilePath) {
         try {
-
-
+            this.datasetFilePath = datasetFilePath;
             tmpFolder = Files.createDirectories(Paths.get(workingFolder, String.valueOf(System.currentTimeMillis())));
             contentFolder = Files.createDirectory(tmpFolder.resolve(DATA_SET_CONTENT_FOLDER));
         } catch (IOException ioe) {
@@ -66,7 +65,7 @@ public class DataSetProducer implements Closeable {
     public InputStream buildDataSet() {
         try {
 
-            File dataSetFile = zipFilesInFolder(contentFolder, DATA_SET_FILE);
+            File dataSetFile = zipFilesInFolder(contentFolder, datasetFilePath);
             return new FileInputStream(dataSetFile);
         } catch (IOException ioe) {
             throw new ExportException("Failed to build data set: " + ioe.getMessage(), ioe);
