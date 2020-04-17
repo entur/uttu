@@ -10,6 +10,8 @@ data:
     organisation.registry.url={{ .Values.configMap.organisationRegistryUrl }}
     export.notify.enabled=true
     export.notify.queue.name=ChouetteMergeWithFlexibleLinesQueue
+    export.working.folder=/tmp/export
+    export.working.dataset-file-path=/tmp/export/dataset.zip
 
     # gcs
     blobstore.gcs.project.id={{ .Values.configMap.projectId }}
