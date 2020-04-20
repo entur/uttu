@@ -36,7 +36,11 @@ aliases:
 - &sonar-scan
   name: Sonar scan
   command: |
-    mvn -s /tools/m2/settings.xml org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report sonar:sonar \
+    mvn -s /tools/m2/settings.xml \
+      org.jacoco:jacoco-maven-plugin:prepare-agent verify \
+      org.jacoco:jacoco-maven-plugin:report sonar:sonar \
+      -Dmaven.main.skip \
+      -DskipTests \
       -Dsonar.projectKey=entur_${CIRCLE_PROJECT_REPONAME} \
       -Dsonar.organization=${SONAR_ORG} \
       -Dsonar.projectName=${CIRCLE_PROJECT_REPONAME} \
