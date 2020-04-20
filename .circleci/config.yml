@@ -36,7 +36,11 @@ aliases:
 - &sonar-scan
   name: Sonar scan
   command: |
-    mvn org.jacoco:jacoco-maven-plugin:prepare-agent verify org.jacoco:jacoco-maven-plugin:report sonar:sonar \
+    mvn -s /tools/m2/settings.xml \
+      org.jacoco:jacoco-maven-plugin:prepare-agent verify \
+      org.jacoco:jacoco-maven-plugin:report sonar:sonar \
+      -Dmaven.main.skip \
+      -DskipTests \
       -Dsonar.projectKey=entur_${CIRCLE_PROJECT_REPONAME} \
       -Dsonar.organization=${SONAR_ORG} \
       -Dsonar.projectName=${CIRCLE_PROJECT_REPONAME} \
@@ -63,6 +67,7 @@ jobs:
         key: dep-cache-{{ checksum "pom.xml" }}
     # Cannot use -o because of snapshot dependencies.
     - run: mvn install -s /tools/m2/settings.xml
+    - run: *sonar-scan
     - run:
         name: Save test results
         command: |
@@ -101,9 +106,6 @@ jobs:
     - run: *docker-login
     - run: *read-image-version
     - run: *docker-build-and-push
-  sonar:
-    steps:
-      - run: *sonar-scan
 
 workflows:
   version: 2
@@ -111,8 +113,6 @@ workflows:
     jobs:
     - build:
         context: org-carbon
-    - sonar:
-        context: global
     - deploy-docker:
         context: org-carbon
         requires:
