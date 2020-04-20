@@ -20,7 +20,6 @@ import org.apache.commons.io.FileUtils;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,6 +27,7 @@ import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -35,8 +35,6 @@ import java.util.zip.ZipOutputStream;
  * Build zip file.
  */
 public class DataSetProducer implements Closeable {
-
-    private static final String DATA_SET_FILE = "dataset.zip";
 
     private static final String DATA_SET_CONTENT_FOLDER = "content";
 
@@ -46,8 +44,6 @@ public class DataSetProducer implements Closeable {
 
     public DataSetProducer(String workingFolder) {
         try {
-
-
             tmpFolder = Files.createDirectories(Paths.get(workingFolder, String.valueOf(System.currentTimeMillis())));
             contentFolder = Files.createDirectory(tmpFolder.resolve(DATA_SET_CONTENT_FOLDER));
         } catch (IOException ioe) {
@@ -65,9 +61,9 @@ public class DataSetProducer implements Closeable {
 
     public InputStream buildDataSet() {
         try {
-
-            File dataSetFile = zipFilesInFolder(contentFolder, DATA_SET_FILE);
-            return new FileInputStream(dataSetFile);
+            File datasetFile = File.createTempFile("dataset", ".zip", contentFolder.toFile());
+            zipFilesInFolder(contentFolder, datasetFile);
+            return Files.newInputStream(datasetFile.toPath(), StandardOpenOption.DELETE_ON_CLOSE);
         } catch (IOException ioe) {
             throw new ExportException("Failed to build data set: " + ioe.getMessage(), ioe);
         }
@@ -75,16 +71,14 @@ public class DataSetProducer implements Closeable {
 
 
     // Find impl in lib?
-    private File zipFilesInFolder(Path folder, String targetFilePath) throws IOException {
-        FileOutputStream out = new FileOutputStream(new File(targetFilePath));
+    private void zipFilesInFolder(Path folder, File targetFile) throws IOException {
+        FileOutputStream out = new FileOutputStream(targetFile);
         ZipOutputStream outZip = new ZipOutputStream(out);
 
         Files.walk(folder).filter(Files::isRegularFile).forEach(path -> addToZipFile(path, outZip));
 
         outZip.close();
         out.close();
-
-        return new File(targetFilePath);
     }
 
     private void addToZipFile(Path file, ZipOutputStream zos) {
