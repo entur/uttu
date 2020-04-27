@@ -17,13 +17,13 @@ resource "google_service_account" "uttu_service_account" {
 }
 
 resource "google_project_iam_member" "uttu_cloudsql_iam_member" {
-  project = var.cloudsql_project
+  project = var.gcp_project
   role    = var.service_account_cloudsql_role
   member = "serviceAccount:${google_service_account.uttu_service_account.email}"
 }
 
 resource "google_pubsub_topic_iam_member" "uttu_pubsub_iam_member" {
-  project = var.pubsub_project
+  project = var.gcp_project
   topic = var.pubsub_topic
   role = var.service_account_pubsub_role
   member = "serviceAccount:${google_service_account.uttu_service_account.email}"
@@ -31,7 +31,6 @@ resource "google_pubsub_topic_iam_member" "uttu_pubsub_iam_member" {
 
 resource "google_storage_bucket_iam_member" "uttu_storage_iam_member" {
   bucket = var.storage_bucket_name
-  project = var.storage_bucket_project
   role = var.service_account_storage_role
   member = "serviceAccount:${google_service_account.uttu_service_account.email}"
 }

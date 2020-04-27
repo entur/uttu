@@ -5,9 +5,8 @@ sql:
 
 configMap:
   organisationRegistryUrl: https://api.dev.entur.io/organisations/v1/register/organisations/
+  projectId: carbon-1287
   keycloakUrl: https://kc-dev.devstage.entur.io/auth
-  pubsubProjectId: carbon-1287
-  blobstoreProjectId: carbon-1287
   blobstoreContainerName: marduk-exchange
   logLevel: DEBUG
   flywayTable: schema_version

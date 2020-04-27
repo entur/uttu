@@ -17,11 +17,6 @@ variable "labels" {
   }
 }
 
-variable "cloudsql_project" {
-  description = "GCP project of sql database"
-  default = var.gcp_project
-}
-
 variable "service_account_cloudsql_role" {
   description = "cloudsql client role"
   default     = "roles/cloudsql.client"
@@ -37,11 +32,6 @@ variable "pubsub_topic" {
   default     = "ChouetteMergeWithFlexibleLinesQueue"
 }
 
-variable "pubsub_project" {
-  description = "GCP project of pubsub topic"
-  default = var.gcp_project
-}
-
 variable "service_account_storage_role" {
   description = "storage objects create role"
   default     = "roles/storage.objectAdmin"
@@ -50,11 +40,6 @@ variable "service_account_storage_role" {
 variable "storage_bucket_name" {
   description = "name of storage bucket for exports"
   default     = "marduk-exchange"
-}
-
-variable "storage_bucket_project" {
-  description = "GCP project of storage bucket"
-  default = var.gcp_project
 }
 
 variable "load_config_file" {
