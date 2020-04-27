@@ -19,6 +19,7 @@ variable "labels" {
 
 variable "cloudsql_project" {
   description = "GCP project of sql database"
+  default = var.gcp_project
 }
 
 variable "service_account_cloudsql_role" {
@@ -38,6 +39,7 @@ variable "pubsub_topic" {
 
 variable "pubsub_project" {
   description = "GCP project of pubsub topic"
+  default = var.gcp_project
 }
 
 variable "service_account_storage_role" {
@@ -52,6 +54,7 @@ variable "storage_bucket_name" {
 
 variable "storage_bucket_project" {
   description = "GCP project of storage bucket"
+  default = var.gcp_project
 }
 
 variable "load_config_file" {
