@@ -60,7 +60,7 @@ resource "kubernetes_secret" "ror-uttu-db-password" {
   }
 }
 
-resource "google_sql_database_instance" "db-instance" {
+resource "google_sql_database_instance" "db_instance" {
   name = "uttu-db"
   region = "europe-west1"
   settings {
@@ -72,13 +72,13 @@ resource "google_sql_database_instance" "db-instance" {
 
 resource "google_sql_database" "db" {
   name = "uttu"
-  instance = google_sql_database_instance.db-instance
+  instance = google_sql_database_instance.db_instance.name
   count = var.entur_env ? 1 : 0
 }
 
 resource "google_sql_user" "db-user" {
   name = "uttu"
-  instance = google_sql_database_instance.db-instance
+  instance = google_sql_database_instance.db_instance.name
   password = var.ror-uttu-db-password
   count = var.entur_env ? 1 : 0
 }
