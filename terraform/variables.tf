@@ -50,10 +50,6 @@ variable "storage_bucket_name" {
   default     = "marduk-exchange"
 }
 
-variable "storage_bucket_project" {
-  description = "GCP project of storage bucket"
-}
-
 variable "load_config_file" {
   description = "Do not load kube config file"
   default     = false

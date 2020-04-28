@@ -31,7 +31,6 @@ resource "google_pubsub_topic_iam_member" "uttu_pubsub_iam_member" {
 
 resource "google_storage_bucket_iam_member" "uttu_storage_iam_member" {
   bucket = var.storage_bucket_name
-  project = var.storage_bucket_project
   role = var.service_account_storage_role
   member = "serviceAccount:${google_service_account.uttu_service_account.email}"
 }
