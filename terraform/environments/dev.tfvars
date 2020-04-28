@@ -3,3 +3,4 @@ kube_namespace = "dev"
 cloudsql_project = "carbon-1287"
 pubsub_project = "carbon-1287"
 storage_bucket_name = "marduk-exchange"
+entur_env = true
