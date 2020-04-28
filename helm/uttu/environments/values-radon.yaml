@@ -1,5 +1,7 @@
 env: staging
 
+replicas: 0
+
 resources:
   cpuLimit: 500m
   memLimit: 2000Mi
