@@ -13,4 +13,5 @@ configMap:
   flywayTable: schema_version
 
 ingress:
-  enabled: false
+  enabled: true
+  devIp: 35.205.134.173
