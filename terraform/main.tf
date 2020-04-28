@@ -73,12 +73,14 @@ resource "google_sql_database_instance" "db_instance" {
 
 resource "google_sql_database" "db" {
   name = "uttu"
+  project = var.gcp_project
   instance = google_sql_database_instance.db_instance[0].name
   count = var.entur_env ? 1 : 0
 }
 
 resource "google_sql_user" "db-user" {
   name = "uttu"
+  project = var.gcp_project
   instance = google_sql_database_instance.db_instance[0].name
   password = var.ror-uttu-db-password
   count = var.entur_env ? 1 : 0
