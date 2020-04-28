@@ -62,6 +62,7 @@ resource "kubernetes_secret" "ror-uttu-db-password" {
 
 resource "google_sql_database_instance" "db_instance" {
   name = "uttu-db"
+  project = var.gcp_project
   region = "europe-west1"
   settings {
     tier = var.db_tier
