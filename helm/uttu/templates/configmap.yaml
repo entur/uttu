@@ -13,12 +13,12 @@ data:
     export.working.folder=/tmp/export
 
     # gcs
-    blobstore.gcs.project.id={{ .Values.configMap.projectId }}
+    blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
     blobstore.gcs.credential.path=/etc/uttu/credentials.json
     blobstore.gcs.container.name={{ .Values.configMap.blobstoreContainerName }}
 
     # pubsub
-    spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.projectId }}
+    spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}
     spring.cloud.gcp.pubsub.credentials.location=file:/etc/uttu/credentials.json
     spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30
