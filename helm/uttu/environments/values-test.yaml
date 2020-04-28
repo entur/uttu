@@ -21,4 +21,5 @@ configMap:
   flywayTable: flyway_schema_history
 
 ingress:
-  enabled: false
+  enabled: true
+  stagingIp: 130.211.80.129
