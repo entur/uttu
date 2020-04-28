@@ -55,6 +55,16 @@ variable "load_config_file" {
   default     = false
 }
 
+variable "db_tier" {
+  description = "Database instance tier"
+  default = "db-g1-small"
+}
+
+variable entur_env {
+  description = "Whether deployment is to new entur environments"
+  default = false
+}
+
 variable ror-uttu-db-password {
   description = "Uttu database password"
 }
