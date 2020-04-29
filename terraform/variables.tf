@@ -60,6 +60,11 @@ variable "db_tier" {
   default = "db-g1-small"
 }
 
+variable "db_backup_enabled" {
+  description = "Enabled automated db backup"
+  default = false
+}
+
 variable entur_env {
   description = "Whether deployment is to new entur environments"
   default = false

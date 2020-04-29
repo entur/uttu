@@ -1,6 +1,6 @@
 env: production
 
-replicas: 2
+replicas: 0
 
 resources:
   cpuLimit: 500m
@@ -21,3 +21,6 @@ configMap:
   blobstoreContainerName: marduk-exchange-production
   logLevel: INFO
   flywayTable: flyway_schema_history
+
+ingress:
+  enabled: false
