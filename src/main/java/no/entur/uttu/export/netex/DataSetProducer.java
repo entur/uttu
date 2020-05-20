@@ -75,10 +75,17 @@ public class DataSetProducer implements Closeable {
         FileOutputStream out = new FileOutputStream(targetFile);
         ZipOutputStream outZip = new ZipOutputStream(out);
 
-        Files.walk(folder).filter(Files::isRegularFile).forEach(path -> addToZipFile(path, outZip));
+        Files.walk(folder)
+                .filter(Files::isRegularFile)
+                .filter(path -> filterExcludeTargetFileFromArchive(path, targetFile))
+                .forEach(path -> addToZipFile(path, outZip));
 
         outZip.close();
         out.close();
+    }
+
+    private boolean filterExcludeTargetFileFromArchive(Path path, File targetFile) {
+        return !path.getFileName().toFile().getName().equals(targetFile.getName());
     }
 
     private void addToZipFile(Path file, ZipOutputStream zos) {
