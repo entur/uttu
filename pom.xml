@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.rutebanken.superpom</groupId>
         <artifactId>superpom</artifactId>
-        <version>0.0.9-SNAPSHOT</version>
+        <version>1.0.11</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -40,12 +40,14 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
 
+        <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
+
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
-        <entur.helpers.version>0.0.6-SNAPSHOT</entur.helpers.version>
+        <entur.helpers.version>1.0.22</entur.helpers.version>
         <keycloak.version>5.0.0</keycloak.version>
 
-        <entur-google-pubsub-version>0.0.6-SNAPSHOT</entur-google-pubsub-version>
-        <gcp-storage.version>0.0.6-SNAPSHOT</gcp-storage.version>
+        <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
+        <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
 
         <geodb.version>0.9</geodb.version>
         <geotools.version>20.1</geotools.version>
@@ -381,32 +383,6 @@
                         <goals>
                             <goal>repackage</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-pubsub-emulator</id>
-                        <phase>test-compile</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.google.cloud</groupId>
-                                    <artifactId>pubsub-emulator</artifactId>
-                                    <version>0.1-SNAPSHOT</version>
-                                    <type>jar</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>${project.build.directory}/pubsub-emulator</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>
