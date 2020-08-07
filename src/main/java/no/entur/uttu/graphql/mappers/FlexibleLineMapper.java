@@ -16,15 +16,12 @@
 package no.entur.uttu.graphql.mappers;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
+import no.entur.uttu.graphql.GraphQLNames;
 import no.entur.uttu.model.FlexibleLine;
-import no.entur.uttu.organisation.OrganisationRegistry;
-import no.entur.uttu.repository.NetworkRepository;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import static no.entur.uttu.graphql.GraphQLNames.*;
 
 @Component
 public class FlexibleLineMapper extends LineMapper<FlexibleLine> {
@@ -32,7 +29,7 @@ public class FlexibleLineMapper extends LineMapper<FlexibleLine> {
     @Autowired
     private BookingArrangementMapper bookingArrangementMapper;
 
-    public FlexibleLineMapper(ProviderRepository providerRepository, ProviderEntityRepository<FlexibleLine> repository, BookingArrangementMapper bookingArrangementMapper) {
+    public FlexibleLineMapper(ProviderRepository providerRepository, ProviderEntityRepository<FlexibleLine> repository) {
         super(providerRepository, repository);
     }
 
@@ -44,7 +41,7 @@ public class FlexibleLineMapper extends LineMapper<FlexibleLine> {
     @Override
     protected void populateEntityFromInput(FlexibleLine entity, ArgumentWrapper input) {
         super.populateEntityFromInput(entity, input);
-        input.apply(FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineType);
-        input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
+        input.apply(GraphQLNames.FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineType);
+        input.apply(GraphQLNames.FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
     }
 }
