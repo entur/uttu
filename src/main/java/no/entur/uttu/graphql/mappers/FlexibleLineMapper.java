@@ -28,6 +28,7 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
 
 @Component
 public class FlexibleLineMapper extends LineMapper<FlexibleLine> {
+
     @Autowired
     private BookingArrangementMapper bookingArrangementMapper;
 
@@ -46,6 +47,4 @@ public class FlexibleLineMapper extends LineMapper<FlexibleLine> {
         input.apply(FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineType);
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
     }
-
-
 }
