@@ -161,8 +161,7 @@ public class LinesGraphQLSchema {
     private GraphQLObjectType exportObjectType;
 
     private GraphQLArgument idArgument;
-
-    public GraphQLSchema graphQLSchema;
+    private GraphQLSchema graphQLSchema;
 
     @PostConstruct
     public void init() {
@@ -175,6 +174,10 @@ public class LinesGraphQLSchema {
                 .query(createQueryObject())
                 .mutation(createMutationObject())
                 .build();
+    }
+
+    public GraphQLSchema getGraphQLSchema() {
+        return graphQLSchema;
     }
 
     private void initCommonTypes() {

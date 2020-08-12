@@ -52,7 +52,7 @@ public class LinesGraphQLResource {
 
     @PostConstruct
     public void init() {
-        linesGraphQL = GraphQL.newGraphQL(linesSchema.graphQLSchema).build();
+        linesGraphQL = GraphQL.newGraphQL(linesSchema.getGraphQLSchema()).build();
     }
 
     @POST
