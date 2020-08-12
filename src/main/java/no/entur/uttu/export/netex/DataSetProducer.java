@@ -28,6 +28,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -72,16 +73,12 @@ public class DataSetProducer implements Closeable {
 
     // Find impl in lib?
     private void zipFilesInFolder(Path folder, File targetFile) throws IOException {
-        FileOutputStream out = new FileOutputStream(targetFile);
-        ZipOutputStream outZip = new ZipOutputStream(out);
-
-        Files.walk(folder)
+        try (Stream<Path> files = Files.walk(folder); FileOutputStream out = new FileOutputStream(targetFile); ZipOutputStream outZip = new ZipOutputStream(out)) {
+            files
                 .filter(Files::isRegularFile)
                 .filter(path -> filterExcludeTargetFileFromArchive(path, targetFile))
                 .forEach(path -> addToZipFile(path, outZip));
-
-        outZip.close();
-        out.close();
+        }
     }
 
     private boolean filterExcludeTargetFileFromArchive(Path path, File targetFile) {
@@ -89,8 +86,7 @@ public class DataSetProducer implements Closeable {
     }
 
     private void addToZipFile(Path file, ZipOutputStream zos) {
-        try {
-            InputStream fis = Files.newInputStream(file);
+        try (InputStream fis = Files.newInputStream(file);) {
             ZipEntry zipEntry = new ZipEntry(file.getFileName().toString());
             zos.putNextEntry(zipEntry);
 
@@ -101,7 +97,6 @@ public class DataSetProducer implements Closeable {
             }
 
             zos.closeEntry();
-            fis.close();
         } catch (IOException ioe) {
             throw new ExportException("Failed to add file to zip: " + ioe.getMessage(), ioe);
         }
