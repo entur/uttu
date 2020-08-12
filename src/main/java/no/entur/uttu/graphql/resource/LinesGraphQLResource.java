@@ -32,6 +32,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
@@ -59,7 +60,7 @@ public class LinesGraphQLResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
-    public Response executeLinesStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
+    public Response executeLinesStatement(@PathParam("providerCode") String providerCode, Map<String, Object> request) {
         Context.setProvider(providerCode);
         try {
             return graphQLResourceHelper.executeStatement(linesGraphQL, request);
