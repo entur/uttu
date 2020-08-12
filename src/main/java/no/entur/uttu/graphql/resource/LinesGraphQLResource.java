@@ -18,7 +18,7 @@ package no.entur.uttu.graphql.resource;
 import graphql.GraphQL;
 import io.swagger.annotations.Api;
 import no.entur.uttu.config.Context;
-import no.entur.uttu.graphql.FlexibleLinesGraphQLSchema;
+import no.entur.uttu.graphql.LinesGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -39,45 +39,43 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 @Component
 @Api
 @Path("/{providerCode}/graphql")
-public class FlexibleLinesGraphQLResource {
+public class LinesGraphQLResource {
 
     @Autowired
-    private FlexibleLinesGraphQLSchema flexibleLineSchema;
+    private LinesGraphQLSchema timetableEditorSchema;
 
     @Autowired
     private GraphQLResourceHelper graphQLResourceHelper;
 
-    private GraphQL flexibleLinesGraphQL;
+    private GraphQL timetableEditorGraphQL;
 
     @PostConstruct
     public void init() {
-        flexibleLinesGraphQL = GraphQL.newGraphQL(flexibleLineSchema.graphQLSchema).build();
+        timetableEditorGraphQL = GraphQL.newGraphQL(timetableEditorSchema.graphQLSchema).build();
     }
-
 
     @POST
     @SuppressWarnings("unchecked")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
-    public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
+    public Response executeTimetableEditorStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
         Context.setProvider(providerCode);
         try {
-            return graphQLResourceHelper.executeStatement(flexibleLinesGraphQL, request);
+            return graphQLResourceHelper.executeStatement(timetableEditorGraphQL, request);
         } finally {
             Context.clear();
         }
     }
 
-
     @POST
     @Consumes("application/graphql")
     @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
-    public Response executeFlexibleLineStatement(@PathParam("providerCode") String providerCode, String query) {
+    public Response executeTimetableEditorStatement(@PathParam("providerCode") String providerCode, String query) {
         Context.setProvider(providerCode);
         try {
-            return graphQLResourceHelper.getGraphQLResponse(flexibleLinesGraphQL, "query", query, new HashMap<>());
+            return graphQLResourceHelper.getGraphQLResponse(timetableEditorGraphQL, "query", query, new HashMap<>());
         } finally {
             Context.clear();
         }

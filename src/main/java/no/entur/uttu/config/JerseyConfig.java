@@ -20,7 +20,7 @@ import io.swagger.jaxrs.listing.ApiListingResource;
 import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.entur.uttu.export.resource.ExportFileDownloadResource;
 import no.entur.uttu.graphql.resource.DataIntegrityViolationExceptionMapper;
-import no.entur.uttu.graphql.resource.FlexibleLinesGraphQLResource;
+import no.entur.uttu.graphql.resource.LinesGraphQLResource;
 import no.entur.uttu.graphql.resource.GeneralExceptionMapper;
 import no.entur.uttu.graphql.resource.ProviderGraphQLResource;
 import no.entur.uttu.health.rest.HealthResource;
@@ -61,11 +61,10 @@ public class JerseyConfig {
             register(CorsResponseFilter.class);
             register(DataIntegrityViolationExceptionMapper.class);
             register(GeneralExceptionMapper.class);
-            register(FlexibleLinesGraphQLResource.class);
+            register(LinesGraphQLResource.class);
             register(ProviderGraphQLResource.class);
             register(ExportFileDownloadResource.class);
         }
-
     }
 
     private class HealthConfig extends ResourceConfig {

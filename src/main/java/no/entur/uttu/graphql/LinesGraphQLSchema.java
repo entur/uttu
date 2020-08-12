@@ -17,15 +17,18 @@ package no.entur.uttu.graphql;
 
 import com.vividsolutions.jts.geom.Geometry;
 import graphql.Scalars;
+import graphql.TypeResolutionEnvironment;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLArgument;
 import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLFieldDefinition;
 import graphql.schema.GraphQLInputObjectType;
+import graphql.schema.GraphQLInterfaceType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
+import graphql.schema.TypeResolver;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
@@ -77,7 +80,7 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
  * GraphQL schema for FlexibleLines and related entities.
  */
 @Component
-public class FlexibleLinesGraphQLSchema {
+public class LinesGraphQLSchema {
     @Autowired
     private DateTimeScalar dateTimeScalar;
 
@@ -355,12 +358,12 @@ public class FlexibleLinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_NOTICES).type(new GraphQLList(noticeObjectType)))
                 .build();
 
+        fixedLineObjectType = newObject(lineObjectType).name("FixedLine")
+                .build();
+
         flexibleLineObjectType = newObject(lineObjectType).name("FlexibleLine")
                 .field(newFieldDefinition().name(FIELD_FLEXIBLE_LINE_TYPE).type(new GraphQLNonNull(flexibleLineTypeEnum)))
                 .field(newFieldDefinition().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementObjectType))
-                .build();
-
-        fixedLineObjectType = newObject(lineObjectType).name("FixedLine")
                 .build();
 
         exportMessageObjectType = newObject().name("Message")
@@ -484,7 +487,6 @@ public class FlexibleLinesGraphQLSchema {
                 .field(newInputObjectField().name(FIELD_DESCRIPTION).type(GraphQLString))
                 .field(newInputObjectField().name(FIELD_PRIVATE_CODE).type(GraphQLString))
                 .build();
-
 
         GraphQLInputObjectType geoJSONInputType = newInputObject()
                 .name("GeoJSONInput")
