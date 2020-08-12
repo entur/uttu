@@ -42,16 +42,16 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 public class LinesGraphQLResource {
 
     @Autowired
-    private LinesGraphQLSchema timetableEditorSchema;
+    private LinesGraphQLSchema linesSchema;
 
     @Autowired
     private GraphQLResourceHelper graphQLResourceHelper;
 
-    private GraphQL timetableEditorGraphQL;
+    private GraphQL linesGraphQL;
 
     @PostConstruct
     public void init() {
-        timetableEditorGraphQL = GraphQL.newGraphQL(timetableEditorSchema.graphQLSchema).build();
+        linesGraphQL = GraphQL.newGraphQL(linesSchema.graphQLSchema).build();
     }
 
     @POST
@@ -59,10 +59,10 @@ public class LinesGraphQLResource {
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
-    public Response executeTimetableEditorStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
+    public Response executeLinesStatement(@PathParam("providerCode") String providerCode, HashMap<String, Object> request) {
         Context.setProvider(providerCode);
         try {
-            return graphQLResourceHelper.executeStatement(timetableEditorGraphQL, request);
+            return graphQLResourceHelper.executeStatement(linesGraphQL, request);
         } finally {
             Context.clear();
         }
@@ -72,10 +72,10 @@ public class LinesGraphQLResource {
     @Consumes("application/graphql")
     @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
-    public Response executeTimetableEditorStatement(@PathParam("providerCode") String providerCode, String query) {
+    public Response executeLinesStatement(@PathParam("providerCode") String providerCode, String query) {
         Context.setProvider(providerCode);
         try {
-            return graphQLResourceHelper.getGraphQLResponse(timetableEditorGraphQL, "query", query, new HashMap<>());
+            return graphQLResourceHelper.getGraphQLResponse(linesGraphQL, "query", query, new HashMap<>());
         } finally {
             Context.clear();
         }

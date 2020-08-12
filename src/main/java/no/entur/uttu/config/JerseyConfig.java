@@ -36,7 +36,7 @@ public class JerseyConfig {
     @Bean
     public ServletRegistrationBean publicAPIJerseyConfig() {
         ServletRegistrationBean publicJersey
-                = new ServletRegistrationBean(new ServletContainer(new FlexibleLinesAPI()));
+                = new ServletRegistrationBean(new ServletContainer(new LinesAPI()));
         publicJersey.addUrlMappings("/services/flexible-lines/*");
         publicJersey.setName("FlexibleLinesAPI");
         publicJersey.setLoadOnStartup(0);
@@ -55,9 +55,9 @@ public class JerseyConfig {
     }
 
 
-    private class FlexibleLinesAPI extends ResourceConfig {
+    private class LinesAPI extends ResourceConfig {
 
-        public FlexibleLinesAPI() {
+        public LinesAPI() {
             register(CorsResponseFilter.class);
             register(DataIntegrityViolationExceptionMapper.class);
             register(GeneralExceptionMapper.class);
@@ -75,7 +75,6 @@ public class JerseyConfig {
             register(GeneralExceptionMapper.class);
             configureSwagger();
         }
-
 
         private void configureSwagger() {
             // Available at http://localhost:port/services/flexible-lines/rut/graphql
