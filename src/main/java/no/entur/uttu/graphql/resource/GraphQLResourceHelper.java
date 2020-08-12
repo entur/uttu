@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class GraphQLResourceHelper {
-    private static final Logger logger = LoggerFactory.getLogger(FlexibleLinesGraphQLResource.class);
+    private static final Logger logger = LoggerFactory.getLogger(LinesGraphQLResource.class);
 
     /**
      * Exception classes that should cause data fetching exceptions to be rethrown and mapped to corresponding HTTP status code outside transaction.
