@@ -19,8 +19,8 @@ spec:
   template:
     metadata:
       annotations:
-        prometheus.io/path: /health/scrape
-        prometheus.io/port: {{ .Values.service.http.internalPort }}
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: '9001'
         prometheus.io/scrape: 'true'
       labels:
         {{- include "common.labels" . | indent 8 }}
@@ -89,7 +89,7 @@ spec:
           livenessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health/live
+              path: /actuator/health/liveness
               port: {{ .Values.service.http.internalPort }}
               scheme: HTTP
             initialDelaySeconds: 120
@@ -99,7 +99,7 @@ spec:
           readinessProbe:
             failureThreshold: 3
             httpGet:
-              path: /health/ready
+              path: /actuator/health/readiness
               port: {{ .Values.service.http.internalPort }}
               scheme: HTTP
             initialDelaySeconds: 30

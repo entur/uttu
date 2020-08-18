@@ -15,7 +15,7 @@
 
 package no.entur.uttu.model;
 
-import com.vividsolutions.jts.geom.Polygon;
+import org.locationtech.jts.geom.Polygon;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;

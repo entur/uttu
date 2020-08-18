@@ -15,7 +15,6 @@
 
 package no.entur.uttu.graphql;
 
-import com.vividsolutions.jts.geom.Geometry;
 import graphql.Scalars;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLArgument;
@@ -57,6 +56,7 @@ import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;

@@ -23,7 +23,6 @@ import no.entur.uttu.graphql.resource.DataIntegrityViolationExceptionMapper;
 import no.entur.uttu.graphql.resource.LinesGraphQLResource;
 import no.entur.uttu.graphql.resource.GeneralExceptionMapper;
 import no.entur.uttu.graphql.resource.ProviderGraphQLResource;
-import no.entur.uttu.health.rest.HealthResource;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -43,18 +42,6 @@ public class JerseyConfig {
         return publicJersey;
     }
 
-
-    @Bean
-    public ServletRegistrationBean privateJersey() {
-        ServletRegistrationBean privateJersey
-                = new ServletRegistrationBean(new ServletContainer(new HealthConfig()));
-        privateJersey.addUrlMappings("/health/*");
-        privateJersey.setName("PrivateJersey");
-        privateJersey.setLoadOnStartup(0);
-        return privateJersey;
-    }
-
-
     private class LinesAPI extends ResourceConfig {
 
         public LinesAPI() {
@@ -67,31 +54,4 @@ public class JerseyConfig {
         }
     }
 
-    private class HealthConfig extends ResourceConfig {
-
-        public HealthConfig() {
-            register(HealthResource.class);
-            register(DataIntegrityViolationExceptionMapper.class);
-            register(GeneralExceptionMapper.class);
-            configureSwagger();
-        }
-
-        private void configureSwagger() {
-            // Available at http://localhost:port/services/flexible-lines/rut/graphql
-            this.register(ApiListingResource.class);
-            this.register(SwaggerSerializers.class);
-
-            BeanConfig config = new BeanConfig();
-            config.setConfigId("uttu-health-swagger-doc");
-            config.setTitle("Uttu Health API");
-            config.setVersion("v1");
-            config.setSchemes(new String[]{"http", "https"});
-            config.setBasePath("/health");
-            config.setResourcePackage("no.entur.uttu.health");
-            config.setPrettyPrint(true);
-            config.setScan(true);
-            config.setScannerId("health-scanner");
-
-        }
-    }
 }
