@@ -45,6 +45,15 @@ data:
     # Temporary setting until bug in KeycloakWebSecurityConfigurerAdapter is fixed (The bean ''httpSessionManager'', defined in class path resource XXXSecurityConfiguration.class],could not be registered. A bean with that name has already been defined in URL)
     spring.main.allow-bean-definition-overriding=true
 
+    # Spring Actuator
+    management.server.port=9001
+    management.endpoints.enabled-by-default=false
+    management.endpoint.info.enabled=true
+    management.endpoint.health.enabled=true
+    management.endpoint.health.group.readiness.include=readinessState,db,pubSub
+    management.endpoint.prometheus.enabled=true
+    management.endpoints.web.exposure.include=info,health,prometheus
+
     # Logging
     logging.level.no.entur.uttu={{ .Values.configMap.logLevel }}
     logging.level.no.entur.uttu.health.rest.HealthResource=INFO
