@@ -90,7 +90,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /actuator/health/liveness
-              port: {{ .Values.service.http.internalPort }}
+              port: 9001
               scheme: HTTP
             initialDelaySeconds: 120
             periodSeconds: 10
@@ -100,7 +100,7 @@ spec:
             failureThreshold: 3
             httpGet:
               path: /actuator/health/readiness
-              port: {{ .Values.service.http.internalPort }}
+              port: 9001
               scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 10
