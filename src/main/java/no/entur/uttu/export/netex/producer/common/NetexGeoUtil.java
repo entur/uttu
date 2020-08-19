@@ -15,13 +15,13 @@
 
 package no.entur.uttu.export.netex.producer.common;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Polygon;
 import net.opengis.gml._3.AbstractRingPropertyType;
 import net.opengis.gml._3.DirectPositionListType;
 import net.opengis.gml._3.LinearRingType;
 import net.opengis.gml._3.PolygonType;
 import no.entur.uttu.export.netex.NetexExportContext;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.Polygon;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
