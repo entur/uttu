@@ -39,7 +39,7 @@ import static no.entur.uttu.model.Constraints.LINE_UNIQUE_NAME;
 @Entity
 @Inheritance(strategy= InheritanceType.JOINED)
 @Table(uniqueConstraints = {@UniqueConstraint(name = LINE_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
-public abstract class Line extends GroupOfEntities_VersionStructure implements no.entur.uttu.export.netex.producer.line.Line {
+public abstract class Line extends GroupOfEntities_VersionStructure {
 
     private String publicCode;
 
@@ -138,4 +138,6 @@ public abstract class Line extends GroupOfEntities_VersionStructure implements n
 
         getJourneyPatterns().stream().forEach(ProviderEntity::checkPersistable);
     }
+
+    public abstract void accept(LineVisitor lineVisitor);
 }

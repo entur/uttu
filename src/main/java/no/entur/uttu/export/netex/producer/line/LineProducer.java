@@ -20,6 +20,9 @@ import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.export.netex.producer.common.OrganisationProducer;
 import no.entur.uttu.model.BookingArrangement;
+import no.entur.uttu.model.FixedLine;
+import no.entur.uttu.model.FlexibleLine;
+import no.entur.uttu.model.Line;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
@@ -35,7 +38,7 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class LineProducer implements LineProducerVisitor {
+public class LineProducer {
 
     @Autowired
     private NetexObjectFactory objectFactory;
@@ -48,25 +51,9 @@ public class LineProducer implements LineProducerVisitor {
 
 
     public org.rutebanken.netex.model.Line_VersionStructure produce(Line line, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
-        return line.accept(this, noticeAssignments, context);
-    }
-
-    @Override
-    public Line_VersionStructure visitFixedLine(no.entur.uttu.model.FixedLine fixedLine, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
-        org.rutebanken.netex.model.Line netex = new org.rutebanken.netex.model.Line();
-        mapCommon(fixedLine, netex, noticeAssignments, context);
-        return NetexIdProducer.copyIdAndVersion(netex, fixedLine);
-    }
-
-    @Override
-    public Line_VersionStructure visitFlexibleLine(no.entur.uttu.model.FlexibleLine flexibleLine, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
-        org.rutebanken.netex.model.FlexibleLine netex = new org.rutebanken.netex.model.FlexibleLine();
-
-        netex.setFlexibleLineType(objectFactory.mapEnum(flexibleLine.getFlexibleLineType(), FlexibleLineTypeEnumeration.class));
-        mapCommon(flexibleLine, netex, noticeAssignments, context);
-        mapBookingArrangements(flexibleLine.getBookingArrangement(), netex);
-
-        return NetexIdProducer.copyIdAndVersion(netex, flexibleLine);
+        LineVisitor lineVisitor = new LineVisitor(noticeAssignments, context);
+        line.accept(lineVisitor);
+        return lineVisitor.getLine();
     }
 
     protected void mapCommon(no.entur.uttu.model.Line local, org.rutebanken.netex.model.Line_VersionStructure netex, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
@@ -104,5 +91,34 @@ public class LineProducer implements LineProducerVisitor {
         }
     }
 
+    private class LineVisitor implements no.entur.uttu.model.LineVisitor {
+        private List<NoticeAssignment> noticeAssignments;
+        private NetexExportContext context;
+        private Line_VersionStructure line;
 
+        public LineVisitor(List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
+            this.noticeAssignments = noticeAssignments;
+            this.context = context;
+        }
+
+        public Line_VersionStructure getLine() {
+            return line;
+        }
+
+        @Override
+        public void visitFixedLine(FixedLine fixedLine) {
+            org.rutebanken.netex.model.Line netexLine = new org.rutebanken.netex.model.Line();
+            mapCommon(fixedLine, netexLine, noticeAssignments, context);
+            line = NetexIdProducer.copyIdAndVersion(netexLine, fixedLine);
+        }
+
+        @Override
+        public void visitFlexibleLine(FlexibleLine flexibleLine) {
+            org.rutebanken.netex.model.FlexibleLine netexLine = new org.rutebanken.netex.model.FlexibleLine();
+            netexLine.setFlexibleLineType(objectFactory.mapEnum(flexibleLine.getFlexibleLineType(), FlexibleLineTypeEnumeration.class));
+            mapCommon(flexibleLine, netexLine, noticeAssignments, context);
+            mapBookingArrangements(flexibleLine.getBookingArrangement(), netexLine);
+            line = NetexIdProducer.copyIdAndVersion(netexLine, flexibleLine);
+        }
+    }
 }

@@ -17,7 +17,6 @@ package no.entur.uttu.export.netex;
 
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
-import no.entur.uttu.export.netex.producer.line.Line;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
