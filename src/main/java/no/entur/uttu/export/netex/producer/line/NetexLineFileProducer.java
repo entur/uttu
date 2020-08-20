@@ -22,6 +22,7 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.JourneyPattern;
+import no.entur.uttu.model.Line;
 import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.util.ExportUtil;
 import org.rutebanken.netex.model.CompositeFrame;
