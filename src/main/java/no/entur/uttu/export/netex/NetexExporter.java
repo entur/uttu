@@ -87,13 +87,15 @@ public class NetexExporter {
     }
 
     protected List<Line> findLinesToExport(Collection<ExportLineAssociation> exportLineAssociations, List<Line> lines) {
+        List<Line> linesToExport = lines;
+
         if (null != exportLineAssociations && !exportLineAssociations.isEmpty()) {
-            lines = lines.stream().filter(line -> exportLineAssociations.stream().anyMatch(la -> la.getLine() == line)).collect(Collectors.toList());
+            linesToExport = linesToExport.stream().filter(line -> exportLineAssociations.stream().anyMatch(la -> la.getLine() == line)).collect(Collectors.toList());
         }
 
-        Preconditions.checkArgument(!lines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
+        Preconditions.checkArgument(!linesToExport.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
 
-        return lines;
+        return linesToExport;
     }
 
     private <T extends ProviderEntity> List<T> findAllValidEntitiesFromRepository(ProviderEntityRepository<T> repository, NetexExportContext exportContext) {
