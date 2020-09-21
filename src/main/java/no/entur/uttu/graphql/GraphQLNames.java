@@ -128,4 +128,9 @@ public class GraphQLNames {
     public static final String FIELD_SEVERITY = "severity";
     public static final String FIELD_DRY_RUN = "dryRun";
     public static final String FIELD_DOWNLOAD_URL = "downloadUrl";
+    public static final String FIELD_EXPORT_LINE_ASSOCIATIONS = "lineAssociations";
+
+    // Export line association
+    public static final String FIELD_LINE = "line";
+    public static final String FIELD_LINE_REF = "lineRef";
 }

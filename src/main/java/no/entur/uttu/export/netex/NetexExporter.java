@@ -17,6 +17,7 @@ package no.entur.uttu.export.netex;
 
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
+import no.entur.uttu.model.Line;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
@@ -72,12 +73,19 @@ public class NetexExporter {
         List<no.entur.uttu.model.FlexibleLine> flexibleLines = findAllValidEntitiesFromRepository(flexibleLineRepository, exportContext);
         List<no.entur.uttu.model.FixedLine> fixedLines = findAllValidEntitiesFromRepository(fixedLineRepository, exportContext);
 
-        Preconditions.checkArgument(!flexibleLines.isEmpty() || !fixedLines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
-
-        Stream.concat(
+        List<Line> lines = Stream.concat(
                 flexibleLines.stream(),
                 fixedLines.stream()
-        ).map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
+        ).collect(Collectors.toList());
+
+        if (!export.getExportLineAssociations().isEmpty()) {
+            lines = lines.stream().filter(line -> export.getExportLineAssociations().stream().anyMatch(la -> la.getLine() == line)).collect(Collectors.toList());
+        }
+
+        Preconditions.checkArgument(!lines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
+
+        lines.stream()
+                .map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
 
         marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
