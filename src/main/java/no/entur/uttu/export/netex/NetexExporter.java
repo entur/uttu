@@ -87,7 +87,7 @@ public class NetexExporter {
     }
 
     protected List<Line> findLinesToExport(Collection<ExportLineAssociation> exportLineAssociations, List<Line> lines) {
-        if (!exportLineAssociations.isEmpty()) {
+        if (null != exportLineAssociations && !exportLineAssociations.isEmpty()) {
             lines = lines.stream().filter(line -> exportLineAssociations.stream().anyMatch(la -> la.getLine() == line)).collect(Collectors.toList());
         }
 

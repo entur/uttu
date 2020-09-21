@@ -3,13 +3,10 @@ package no.entur.uttu.export.netex;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.Line;
-import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportLineAssociation;
-import org.antlr.v4.runtime.misc.Array2DHashSet;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,7 +19,7 @@ public class NetexExporterTest {
 
         Assert.assertEquals(
                 1,
-                exporter.findLinesToExport(List.of(), List.of(line)).size()
+                exporter.findLinesToExport(null, List.of(line)).size()
         );
     }
 
