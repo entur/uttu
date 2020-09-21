@@ -19,6 +19,7 @@ import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.model.Line;
 import no.entur.uttu.model.ProviderEntity;
+import no.entur.uttu.model.job.ExportLineAssociation;
 import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import no.entur.uttu.util.Preconditions;
@@ -36,6 +37,7 @@ import javax.annotation.PostConstruct;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
+import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -67,7 +69,6 @@ public class NetexExporter {
     }
 
     public void exportDataSet(Export export, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
-
         NetexExportContext exportContext = new NetexExportContext(export);
 
         List<no.entur.uttu.model.FlexibleLine> flexibleLines = findAllValidEntitiesFromRepository(flexibleLineRepository, exportContext);
@@ -78,17 +79,21 @@ public class NetexExporter {
                 fixedLines.stream()
         ).collect(Collectors.toList());
 
-        if (!export.getExportLineAssociations().isEmpty()) {
-            lines = lines.stream().filter(line -> export.getExportLineAssociations().stream().anyMatch(la -> la.getLine() == line)).collect(Collectors.toList());
-        }
-
-        Preconditions.checkArgument(!lines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
-
-        lines.stream()
+        findLinesToExport(export.getExportLineAssociations(), lines).stream()
                 .map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
 
         marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
+    }
+
+    protected List<Line> findLinesToExport(Collection<ExportLineAssociation> exportLineAssociations, List<Line> lines) {
+        if (!exportLineAssociations.isEmpty()) {
+            lines = lines.stream().filter(line -> exportLineAssociations.stream().anyMatch(la -> la.getLine() == line)).collect(Collectors.toList());
+        }
+
+        Preconditions.checkArgument(!lines.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
+
+        return lines;
     }
 
     private <T extends ProviderEntity> List<T> findAllValidEntitiesFromRepository(ProviderEntityRepository<T> repository, NetexExportContext exportContext) {
