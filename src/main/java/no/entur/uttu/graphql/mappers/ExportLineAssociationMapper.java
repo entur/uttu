@@ -1,7 +1,6 @@
 package no.entur.uttu.graphql.mappers;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
-import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportLineAssociation;
 import no.entur.uttu.repository.FixedLineRepository;

@@ -1,8 +1,6 @@
 package no.entur.uttu.model.job;
 
-import no.entur.uttu.model.IdentifiedEntity;
 import no.entur.uttu.model.Line;
-import no.entur.uttu.model.ProviderEntity;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,10 +8,9 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 @Entity
-public class ExportLineAssociation implements Serializable {
+public class ExportLineAssociation {
     @Id
     @GeneratedValue(generator = "sequence_per_table_generator")
     protected Long id;

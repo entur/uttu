@@ -17,15 +17,12 @@ package no.entur.uttu.graphql.mappers;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.job.Export;
-import no.entur.uttu.model.job.ExportLineAssociation;
 import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 import static no.entur.uttu.graphql.GraphQLNames.*;
 
