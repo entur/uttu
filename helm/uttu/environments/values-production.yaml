@@ -17,8 +17,8 @@ configMap:
   organisationRegistryUrl: https://api.entur.io/organisations/v1/register/organisations/
   keycloakUrl: https://auth.entur.org/auth/
   pubsubProjectId: neon-1287
-  blobstoreProjectId: entur-ror-prod
-  blobstoreContainerName: ror-marduk-exchange-production
+  blobstoreProjectId: neon-1287
+  blobstoreContainerName: marduk-exchange-production
   logLevel: INFO
   flywayTable: flyway_schema_history
 
