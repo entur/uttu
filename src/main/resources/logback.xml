@@ -17,49 +17,49 @@
 
 <configuration>
     <if condition='property("env").contains("dev")'>
-        <then>
-            <include resource="org/springframework/boot/logging/logback/base.xml" />
-        </then>
-        <else>
-            <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-                <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
-                    <providers>
+    <then>
+        <include resource="org/springframework/boot/logging/logback/base.xml" />
+    </then>
+    <else>
+        <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <pattern>
                         <pattern>
-                            <pattern>
-                                {
-                                "serviceContext": {
+                            {
+                            "serviceContext": {
                                 "service": "uttu"
-                                },
-                                "message": "%message\n%ex{full}",
-                                "severity": "%level",
-                                "reportLocation": {
+                            },
+                            "message": "%message\n%ex{full}",
+                            "severity": "%level",
+                            "reportLocation": {
                                 "filePath": "%logger",
                                 "lineNumber": "%line",
                                 "functionName": "%method"
-                                }
-                                }
-                            </pattern>
+                            }
+                            }
                         </pattern>
-                    </providers>
-                </encoder>
+                    </pattern>
+                </providers>
+            </encoder>
+        </appender>
+
+        <springProfile name="local">
+            <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
+                <layout class="ch.qos.logback.classic.PatternLayout">
+                    <Pattern>
+                        %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{70} - %msg%n
+                    </Pattern>
+                </layout>
             </appender>
+        </springProfile>
 
-            <springProfile name="local">
-                <appender name="console" class="ch.qos.logback.core.ConsoleAppender">
-                    <layout class="ch.qos.logback.classic.PatternLayout">
-                        <Pattern>
-                            %d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{70} - %msg%n
-                        </Pattern>
-                    </layout>
-                </appender>
-            </springProfile>
-
-            <logger name="com" level="INFO"/>
-            <logger name="no" level="INFO"/>
-            <logger name="org" level="INFO"/>
-            <root level="INFO">
-                <appender-ref ref="console"/>
-            </root>
-        </else>
+        <logger name="com" level="INFO"/>
+        <logger name="no" level="INFO"/>
+        <logger name="org" level="INFO"/>
+        <root level="INFO">
+            <appender-ref ref="console"/>
+        </root>
+    </else>
     </if>
 </configuration>
