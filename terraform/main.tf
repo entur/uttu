@@ -45,7 +45,7 @@ resource "kubernetes_secret" "uttu_service_account_credentials" {
     namespace = var.kube_namespace
   }
   data = {
-    "credentials.json" = "${base64decode(google_service_account_key.uttu_service_account_key.private_key)}"
+    "credentials.json" = base64decode(google_service_account_key.uttu_service_account_key.private_key)
   }
 }
 
@@ -71,20 +71,17 @@ resource "google_sql_database_instance" "db_instance" {
     }
   }
   database_version = "POSTGRES_9_6"
-  count = var.entur_env ? 1 : 0
 }
 
 resource "google_sql_database" "db" {
   name = "uttu"
   project = var.gcp_project
-  instance = google_sql_database_instance.db_instance[0].name
-  count = var.entur_env ? 1 : 0
+  instance = google_sql_database_instance.db_instance.name
 }
 
 resource "google_sql_user" "db-user" {
   name = "uttu"
   project = var.gcp_project
-  instance = google_sql_database_instance.db_instance[0].name
+  instance = google_sql_database_instance.db_instance.name
   password = var.ror-uttu-db-password
-  count = var.entur_env ? 1 : 0
 }

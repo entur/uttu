@@ -65,11 +65,6 @@ variable "db_backup_enabled" {
   default = false
 }
 
-variable entur_env {
-  description = "Whether deployment is to new entur environments"
-  default = false
-}
-
 variable ror-uttu-db-password {
   description = "Uttu database password"
 }
