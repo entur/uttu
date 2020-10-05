@@ -45,7 +45,7 @@ resource "kubernetes_secret" "uttu_service_account_credentials" {
     namespace = var.kube_namespace
   }
   data = {
-    "credentials.json" = "${base64decode(google_service_account_key.uttu_service_account_key.private_key)}"
+    "credentials.json" = base64decode(google_service_account_key.uttu_service_account_key.private_key)
   }
 }
 
