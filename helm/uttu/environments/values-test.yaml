@@ -9,7 +9,7 @@ resources:
   xmx: 1000m
 
 sql:
-  instance: entur-test-1287:europe-west1:uttu-db=tcp:5432
+  instance: entur-ror-test:europe-west1:uttu-db=tcp:5432
 
 configMap:
   organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations/
