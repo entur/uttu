@@ -1,6 +1,5 @@
-gcp_project = "entur-dev-1287"
+gcp_project = "entur-ror-dev"
 kube_namespace = "dev"
-cloudsql_project = "entur-dev-1287"
+cloudsql_project = "entur-ror-dev"
 pubsub_project = "carbon-1287"
 storage_bucket_name = "ror-marduk-exchange-dev"
-entur_env = true
