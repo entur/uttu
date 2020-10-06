@@ -66,9 +66,6 @@ resource "google_sql_database_instance" "db_instance" {
   region = "europe-west1"
   settings {
     tier = var.db_tier
-    backup_configuration {
-      enabled = var.db_backup_enabled
-    }
   }
   database_version = "POSTGRES_9_6"
 }
