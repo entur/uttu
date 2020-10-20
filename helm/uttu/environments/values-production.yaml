@@ -16,7 +16,7 @@ sql:
 configMap:
   organisationRegistryUrl: https://api.entur.io/organisations/v1/register/organisations/
   keycloakUrl: https://auth.entur.org/auth/
-  pubsubProjectId: neon-1287
+  pubsubProjectId: entur-ror-prod
   blobstoreProjectId: entur-ror-prod
   blobstoreContainerName: ror-marduk-exchange-production
   logLevel: INFO
