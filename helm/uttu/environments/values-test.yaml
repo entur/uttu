@@ -14,7 +14,7 @@ sql:
 configMap:
   organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations/
   keycloakUrl: https://kc-stage.devstage.entur.io/auth
-  pubsubProjectId: radon-1287
+  pubsubProjectId: entur-ror-test
   blobstoreProjectId: entur-ror-test
   blobstoreContainerName: ror-marduk-exchange-test
   logLevel: INFO
