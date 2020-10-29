@@ -1,12 +1,13 @@
 package no.entur.uttu.model.job;
 
 import no.entur.uttu.model.Line;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 
 @Entity
@@ -19,7 +20,8 @@ public class ExportLineAssociation {
     @NotNull
     private Export export;
 
-    @OneToOne
+    @ManyToOne
+    @OnDelete(action = OnDeleteAction.CASCADE)
     @NotNull
     private Line line;
 

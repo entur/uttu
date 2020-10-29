@@ -81,5 +81,23 @@ class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrati
                 .statusCode(200)
                 .body(not(isEmptyOrNullString()))
 
+
+        String deleteLineMutation = """
+ mutation DeleteLine(\$id: ID!) {
+  deleteFlexibleLine(id: \$id) {
+    id
+  }
+  }
+         """
+
+        String deleteLineVariables = """
+{
+  "id": "$lineRef"
+}
+"""
+
+
+        ValidatableResponse deleteLineRsp = executeGraphQL(deleteLineMutation, deleteLineVariables)
+                .body("data.deleteFlexibleLine.id", equalTo(lineRef))
     }
 }
