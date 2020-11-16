@@ -28,6 +28,7 @@ import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -59,6 +60,17 @@ public class Export extends ProviderEntity {
     private String fileName;
 
     private boolean dryRun;
+
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "export")
+    private Collection<ExportLineAssociation> exportLineAssociations;
+
+    public Collection<ExportLineAssociation> getExportLineAssociations() {
+        return exportLineAssociations;
+    }
+
+    public void setExportLineAssociations(Collection<ExportLineAssociation> exportLineAssociations) {
+        this.exportLineAssociations = exportLineAssociations;
+    }
 
     public ExportStatusEnumeration getExportStatus() {
         return exportStatus;
@@ -131,4 +143,6 @@ public class Export extends ProviderEntity {
             Preconditions.checkArgument(!fromDate.isAfter(toDate), CodedError.fromErrorCode(ErrorCodeEnumeration.FROM_DATE_AFTER_TO_DATE),"%s fromDate(%s) cannot be after toDate(%s)", identity(), fromDate, toDate);
         }
     }
+
+
 }

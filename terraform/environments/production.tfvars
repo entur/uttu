@@ -1,7 +1,5 @@
-gcp_project = "entur-1287"
-cloudsql_project = "entur-1287"
-pubsub_project = "neon-1287"
+gcp_project = "entur-ror-prod"
+cloudsql_project = "entur-ror-prod"
+pubsub_project = "entur-ror-prod"
 kube_namespace = "production"
-storage_bucket_name = "marduk-exchange-production"
-db_backup_enabled = true
-entur_env = true
+storage_bucket_name = "ror-marduk-exchange-production"

@@ -15,7 +15,6 @@
 
 package no.entur.uttu.graphql;
 
-import com.vividsolutions.jts.geom.Geometry;
 import graphql.Scalars;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLArgument;
@@ -57,6 +56,7 @@ import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
+import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -352,6 +352,10 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_MESSAGE).type(new GraphQLNonNull(GraphQLString)))
                 .build();
 
+        GraphQLObjectType exportLineAssociationObjectType = newObject().name("ExportLineAssociation")
+                .field(newFieldDefinition().name(FIELD_LINE).type(new GraphQLNonNull(lineObjectType)))
+                .build();
+
         exportObjectType = newObject(identifiedEntityObjectType).name("Export")
                 .field(newFieldDefinition().name(FIELD_NAME).type(GraphQLString))
                 .field(newFieldDefinition().name(FIELD_EXPORT_STATUS).type(exportStatusEnum))
@@ -366,6 +370,11 @@ public class LinesGraphQLSchema {
                     return export.getProvider().getCode().toLowerCase() + "/export/" + export.getNetexId() + "/download";
                 }))
                 .field(newFieldDefinition().name(FIELD_MESSAGES).type(new GraphQLList(exportMessageObjectType)))
+                .field(newFieldDefinition().name(FIELD_EXPORT_LINE_ASSOCIATIONS).type(new GraphQLList(exportLineAssociationObjectType))
+                        .dataFetcher(env -> {
+                            Export export = env.getSource();
+                            return export.getExportLineAssociations();
+                        }))
                 .build();
     }
 
@@ -599,11 +608,16 @@ public class LinesGraphQLSchema {
                 .field(newInputObjectField().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementInputType))
                 .build();
 
+        GraphQLInputObjectType exportLineAssociationInputType = newInputObject().name("ExportLineAssociationInput")
+                .field(newInputObjectField().name(FIELD_LINE_REF).type(new GraphQLNonNull(GraphQLString)))
+                .build();
+
         GraphQLInputObjectType exportInputType = newInputObject().name("ExportInput")
                 .field(newInputObjectField().name(FIELD_NAME).type(GraphQLString))
                 .field(newInputObjectField().name(FIELD_FROM_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
                 .field(newInputObjectField().name(FIELD_TO_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
                 .field(newInputObjectField().name(FIELD_DRY_RUN).type(GraphQLBoolean).defaultValue(Boolean.FALSE))
+                .field(newInputObjectField().name(FIELD_EXPORT_LINE_ASSOCIATIONS).type(new GraphQLList(exportLineAssociationInputType)))
                 .build();
 
         return newObject()

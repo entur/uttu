@@ -77,13 +77,13 @@ public class ExportService {
 
             if (!export.isDryRun()) {
                 String blobName = exportFolder + ExportUtil.createExportedDataSetFilename(export.getProvider());
-                blobStoreService.uploadBlob(blobName, true, bis);
+                blobStoreService.uploadBlob(blobName, false, bis);
                 bis.reset();
                 // notify Marduk that a new export is available
                 messagingService.notifyExport(export.getProvider().getCode().toLowerCase());
             }
             export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
-            blobStoreService.uploadBlob(export.getFileName(), true, bis);
+            blobStoreService.uploadBlob(export.getFileName(), false, bis);
         } catch (CodedIllegalArgumentException iae) {
             ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getCode().toString());
             export.addMessage(msg);

@@ -20,6 +20,7 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
+import no.entur.uttu.model.Line;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import org.rutebanken.netex.model.DirectionTypeEnumeration;
@@ -29,7 +30,6 @@ import org.rutebanken.netex.model.PointOnRoute;
 import org.rutebanken.netex.model.PointsOnRoute_RelStructure;
 import org.rutebanken.netex.model.Route;
 import org.rutebanken.netex.model.RoutePointRefStructure;
-import org.rutebanken.netex.model.VersionOfObjectRefStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class RouteProducer implements RouteProducerVisitor {
+public class RouteProducer {
 
     @Autowired
     private NetexObjectFactory objectFactory;
@@ -69,26 +69,18 @@ public class RouteProducer implements RouteProducerVisitor {
             name = line.getName();
         }
 
-        LineRefStructure lineRefStructure = line.accept(this);
+        LineVisitor lineVisitor = new LineVisitor();
+        line.accept(lineVisitor);
+        LineRefStructure lineRefStructure = lineVisitor.getLine();
 
         JAXBElement<LineRefStructure> lineRef = objectFactory.wrapAsJAXBElement(
-                objectFactory.populateRefStructure(lineRefStructure, journeyPattern.getLine().getRef(), true));
+        objectFactory.populateRefStructure(lineRefStructure, journeyPattern.getLine().getRef(), true));
 
         return objectFactory.populateId(new Route(), journeyPattern.getRef())
                        .withLineRef(lineRef)
                        .withName(objectFactory.createMultilingualString(name))
                        .withDirectionType(objectFactory.mapEnum(journeyPattern.getDirectionType(), DirectionTypeEnumeration.class))
                        .withPointsInSequence(pointsOnRoute_relStructure);
-    }
-
-    @Override
-    public LineRefStructure visitFlexibleLine(FlexibleLine flexibleLine) {
-        return new FlexibleLineRefStructure();
-    }
-
-    @Override
-    public LineRefStructure visitFixedLine(FixedLine fixedLine) {
-        return new LineRefStructure();
     }
 
     private PointOnRoute mapPointOnRoute(StopPointInJourneyPattern stopPoint, int order, NetexExportContext context) {
@@ -104,5 +96,23 @@ public class RouteProducer implements RouteProducerVisitor {
         return objectFactory.populateId(new PointOnRoute(), stopPoint.getRef())
                        .withOrder(BigInteger.valueOf(order))
                        .withPointRef(objectFactory.wrapRefStructure(new RoutePointRefStructure(), ref, false));
+    }
+
+    private static class LineVisitor implements no.entur.uttu.model.LineVisitor {
+        private LineRefStructure line;
+
+        public LineRefStructure getLine() {
+            return line;
+        }
+
+        @Override
+        public void visitFixedLine(FixedLine fixedLine) {
+            line = new LineRefStructure();
+        }
+
+        @Override
+        public void visitFlexibleLine(FlexibleLine flexibleLine) {
+            line = new FlexibleLineRefStructure();
+        }
     }
 }

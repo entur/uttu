@@ -1,14 +1,14 @@
 env: dev
 
 sql:
-  instance: entur-dev-1287:europe-west1:uttu-db=tcp:5432
+  instance: entur-ror-dev:europe-west1:uttu-db=tcp:5432
 
 configMap:
   organisationRegistryUrl: https://api.dev.entur.io/organisations/v1/register/organisations/
   keycloakUrl: https://kc-dev.devstage.entur.io/auth
-  pubsubProjectId: carbon-1287
-  blobstoreProjectId: carbon-1287
-  blobstoreContainerName: marduk-exchange
+  pubsubProjectId: entur-ror-dev
+  blobstoreProjectId: entur-ror-dev
+  blobstoreContainerName: ror-marduk-exchange-dev
   logLevel: DEBUG
   flywayTable: schema_version
 

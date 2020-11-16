@@ -31,7 +31,7 @@ class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrati
     @Test
     void createExport() {
         String name = "ExportTest"
-        createFlexibleLine(name)
+        ValidatableResponse flexibleLineResponse = createFlexibleLine(name)
 
         String createExportQuery = """
  mutation export(\$export: ExportInput!) {
@@ -53,12 +53,14 @@ class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrati
         LocalDate fromDate = today.minusDays(10)
         LocalDate toDate = today.plusDays(100)
 
+        String lineRef = flexibleLineResponse.extract().body().path("data.mutateFlexibleLine.id")
         String variables = """    
 {
   "export": {
     "name": "$name",
     "fromDate": "$fromDate" ,
-    "toDate":"$toDate"
+    "toDate":"$toDate",
+    "lineAssociations":[{ "lineRef": "$lineRef" }]
   }
 }
         """
@@ -79,5 +81,23 @@ class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrati
                 .statusCode(200)
                 .body(not(isEmptyOrNullString()))
 
+
+        String deleteLineMutation = """
+ mutation DeleteLine(\$id: ID!) {
+  deleteFlexibleLine(id: \$id) {
+    id
+  }
+  }
+         """
+
+        String deleteLineVariables = """
+{
+  "id": "$lineRef"
+}
+"""
+
+
+        ValidatableResponse deleteLineRsp = executeGraphQL(deleteLineMutation, deleteLineVariables)
+                .body("data.deleteFlexibleLine.id", equalTo(lineRef))
     }
 }

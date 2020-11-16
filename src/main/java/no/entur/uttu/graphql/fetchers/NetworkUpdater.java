@@ -15,6 +15,7 @@
 
 package no.entur.uttu.graphql.fetchers;
 
+import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.util.Preconditions;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
@@ -28,6 +29,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("networkUpdater")
 @Transactional
 public class NetworkUpdater extends AbstractProviderEntityUpdater<Network> {
+    @Autowired
+    private FixedLineRepository fixedLineRepository;
 
     @Autowired
     private FlexibleLineRepository flexibleLineRepository;
@@ -46,7 +49,7 @@ public class NetworkUpdater extends AbstractProviderEntityUpdater<Network> {
     protected void verifyDeleteAllowed(String id) {
         Network network = repository.getOne(id);
         if (network != null) {
-            int noOfLines = flexibleLineRepository.countByNetwork(network);
+            int noOfLines = flexibleLineRepository.countByNetwork(network) + fixedLineRepository.countByNetwork(network);
             Preconditions.checkArgument(noOfLines == 0, "%s cannot be deleted as it is referenced by %s line(s)", network.identity(), noOfLines);
         }
         super.verifyDeleteAllowed(id);
