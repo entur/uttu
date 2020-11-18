@@ -27,8 +27,8 @@ variable "service_account_cloudsql_role" {
 }
 
 variable "service_account_pubsub_role" {
-  description = "pubsub editor role"
-  default     = "roles/pubsub.editor"
+  description = "pubsub publisher role"
+  default     = "roles/pubsub.publisher"
 }
 
 variable "pubsub_topic" {
