@@ -47,7 +47,6 @@
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
 
         <postgis-jdbc.version>2.3.0</postgis-jdbc.version>
-        <geodb.version>0.9</geodb.version>
         <geotools.version>20.1</geotools.version>
         <wololo.version>0.13.0</wololo.version>
 
@@ -240,18 +239,6 @@
             <groupId>org.wololo</groupId>
             <artifactId>jts2geojson</artifactId>
             <version>${wololo.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opengeo</groupId>
-            <artifactId>geodb</artifactId>
-            <version>${geodb.version}</version>
-            <scope>runtime</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>xerces</groupId>
-                    <artifactId>xercesImpl</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.geotools</groupId>
