@@ -51,7 +51,7 @@ public class NetexObjectFactory {
     public static final String NSR_XMLNS = "NSR";
     public static final String NSR_XMLNSURL = "http://www.rutebanken.org/ns/nsr";
 
-    @Value("${netex.export.version:1.10:NO-NeTEx-networktimetable:1.3}")
+    @Value("${netex.export.version:1.11:NO-NeTEx-networktimetable:1.3}")
     private String netexVersion;
 
 
@@ -278,7 +278,7 @@ public class NetexObjectFactory {
 
     public TimetableFrame createTimetableFrame(NetexExportContext context, Collection<ServiceJourney> serviceJourneys, Collection<NoticeAssignment> noticeAssignments) {
         JourneysInFrame_RelStructure journeysInFrameRelStructure = objectFactory.createJourneysInFrame_RelStructure();
-        journeysInFrameRelStructure.getDatedServiceJourneyOrDeadRunOrServiceJourney().addAll(serviceJourneys);
+        journeysInFrameRelStructure.getVehicleJourneyOrDatedVehicleJourneyOrNormalDatedVehicleJourney().addAll(serviceJourneys);
 
         orderAssignments(noticeAssignments);
 
