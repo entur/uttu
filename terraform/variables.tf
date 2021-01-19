@@ -57,7 +57,7 @@ variable "load_config_file" {
 
 variable "db_tier" {
   description = "Database instance tier"
-  default = "db-g1-small"
+  default = "db-custom-1-3840"
 }
 
 variable "db_backup_enabled" {
