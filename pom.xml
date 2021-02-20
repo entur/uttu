@@ -41,7 +41,7 @@
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
 
         <entur.helpers.version>1.0.22</entur.helpers.version>
-        <keycloak.version>5.0.0</keycloak.version>
+        <keycloak.version>11.0.0</keycloak.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
