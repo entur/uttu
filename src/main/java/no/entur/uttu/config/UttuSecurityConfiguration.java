@@ -55,9 +55,7 @@ public class UttuSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/actuator/health/readiness").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .oauth2ResourceServer().authenticationManagerResolver(this.multiIssuerAuthenticationManagerResolver)
-                .and()
-                .oauth2Client();
+                .oauth2ResourceServer().authenticationManagerResolver(this.multiIssuerAuthenticationManagerResolver);
 
     }
 
