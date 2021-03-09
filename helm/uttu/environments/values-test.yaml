@@ -13,7 +13,12 @@ sql:
 
 configMap:
   organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations/
-  keycloakUrl: https://kc-stage.devstage.entur.io/auth
+  keycloak:
+    url:  https://kc-stage.devstage.entur.io/auth
+  auth0:
+    ror:
+      url: https://ror-entur-staging.eu.auth0.com/
+      audience: https://ror.api.staging.entur.io
   pubsubProjectId: entur-ror-test
   blobstoreProjectId: entur-ror-test
   blobstoreContainerName: ror-marduk-exchange-test

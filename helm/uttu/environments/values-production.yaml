@@ -15,7 +15,12 @@ sql:
 
 configMap:
   organisationRegistryUrl: https://api.entur.io/organisations/v1/register/organisations/
-  keycloakUrl: https://auth.entur.org/auth/
+  keycloak:
+    url:  https://auth.entur.org/auth
+  auth0:
+    ror:
+      url: https://auth2.entur.org/
+      audience: https://ror.api.entur.io
   pubsubProjectId: entur-ror-prod
   blobstoreProjectId: entur-ror-prod
   blobstoreContainerName: ror-marduk-exchange-production
