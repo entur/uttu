@@ -1,6 +1,5 @@
 package no.entur.uttu.config;
 
-import org.keycloak.adapters.springsecurity.KeycloakSecurityComponents;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -15,7 +14,6 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
-@ComponentScan(basePackageClasses = KeycloakSecurityComponents.class)
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     @Override

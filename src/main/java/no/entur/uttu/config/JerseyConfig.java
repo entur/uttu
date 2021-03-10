@@ -45,7 +45,6 @@ public class JerseyConfig {
     private class LinesAPI extends ResourceConfig {
 
         public LinesAPI() {
-            register(CorsResponseFilter.class);
             register(DataIntegrityViolationExceptionMapper.class);
             register(GeneralExceptionMapper.class);
             register(LinesGraphQLResource.class);

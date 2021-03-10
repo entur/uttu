@@ -15,7 +15,6 @@
 
 package no.entur.uttu;
 
-import no.entur.uttu.config.KeycloakRoleAssignmentExctractorConfig;
 import no.entur.uttu.config.UttuSecurityConfiguration;
 import no.entur.uttu.organisation.OrganisationRegistryImpl;
 import no.entur.uttu.repository.generic.ProviderEntityRepositoryImpl;
@@ -37,7 +36,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
                                         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
                                         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = OrganisationRegistryImpl.class),
                                         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = StopPlaceRegistryImpl.class),
-                                        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = KeycloakRoleAssignmentExctractorConfig.class)
 })
 public class UttuTestApp {
 
