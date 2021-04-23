@@ -18,9 +18,7 @@ package no.entur.uttu.config;
 import no.entur.uttu.util.Preconditions;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-
-import java.util.Objects;
-
+import org.springframework.security.oauth2.jwt.Jwt;
 
 public class Context {
 
@@ -41,14 +39,13 @@ public class Context {
     }
 
     public static String getUsername() {
-        String user = "unknown";
+        String user = null;
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null) {
-            user = Objects.toString(auth.getPrincipal());
+        if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof Jwt) {
+            user = ((Jwt) auth.getPrincipal()).getClaimAsString("preferred_username");
         }
-        return user;
+        return (user == null) ? "unknown" : user;
     }
-
 
     public static String getVerifiedProviderCode() {
         String providerCode = Context.getProvider();
@@ -56,5 +53,4 @@ public class Context {
                 "Provider not set for session");
         return providerCode;
     }
-
 }
