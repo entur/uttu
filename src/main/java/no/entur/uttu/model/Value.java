@@ -32,7 +32,7 @@ import java.util.Set;
 public class Value implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(generator = "sequence_per_table_generator")
     private long id;
 
     @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)

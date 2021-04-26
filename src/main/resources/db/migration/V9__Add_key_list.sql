@@ -40,12 +40,3 @@ ALTER TABLE ONLY flexible_stop_place_key_values
 
 ALTER TABLE ONLY flexible_stop_place_key_values
     ADD CONSTRAINT flexible_stop_place_key_values_fkey_stop_place FOREIGN KEY (flexible_stop_place_pk) REFERENCES flexible_stop_place(pk);
-
-CREATE SEQUENCE hibernate_sequence
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-ALTER TABLE hibernate_sequence OWNER TO uttu;
