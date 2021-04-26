@@ -17,9 +17,12 @@ package no.entur.uttu.graphql.mappers;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.GroupOfEntities_VersionStructure;
+import no.entur.uttu.model.Value;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static no.entur.uttu.graphql.GraphQLNames.*;
@@ -39,6 +42,20 @@ public abstract class AbstractGroupOfEntitiesMapper<T extends GroupOfEntities_Ve
         input.apply(FIELD_NAME, entity::setName);
         input.apply(FIELD_DESCRIPTION, entity::setDescription);
         input.apply(FIELD_PRIVATE_CODE, entity::setPrivateCode);
+        input.apply(FIELD_KEY_VALUES, this::mapKeyValues, entity::setKeyValues);
         return entity;
+    }
+
+    private Map<String, Value> mapKeyValues(List<Map> inputKeyValues) {
+        Map<String, Value> keyValues = new HashMap<>();
+
+        inputKeyValues.forEach(inputMap -> {
+           String key = (String) inputMap.get(FIELD_KEY);
+           List<String> values = (List<String>) inputMap.get(FIELD_VALUES);
+           Value value = new Value(values);
+           keyValues.put(key, value);
+        });
+
+        return keyValues;
     }
 }

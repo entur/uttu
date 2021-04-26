@@ -15,10 +15,16 @@
 
 package no.entur.uttu.model;
 
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+
 import javax.persistence.CascadeType;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
+import java.util.HashMap;
+import java.util.Map;
 
 @MappedSuperclass
 public abstract class GroupOfEntities_VersionStructure
@@ -33,8 +39,9 @@ public abstract class GroupOfEntities_VersionStructure
 
     protected String privateCode;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    protected KeyList keyValue;
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    protected Map<String, Value> keyValues = new HashMap<>();
 
     public GroupOfEntities_VersionStructure() {
     }
@@ -71,13 +78,11 @@ public abstract class GroupOfEntities_VersionStructure
         this.privateCode = value;
     }
 
-    public KeyList getKeyValue() {
-        return keyValue;
+    public Map<String, Value> getKeyValues() {
+        return keyValues;
     }
 
-    public void setKeyValue(KeyList keyValue) {
-        this.keyValue = keyValue;
+    public void setKeyValues(Map<String, Value> keyValues) {
+        this.keyValues = keyValues;
     }
-
-
 }
