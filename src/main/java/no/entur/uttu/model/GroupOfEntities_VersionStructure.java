@@ -15,7 +15,9 @@
 
 package no.entur.uttu.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
 
 @MappedSuperclass
@@ -30,6 +32,9 @@ public abstract class GroupOfEntities_VersionStructure
     protected String description;
 
     protected String privateCode;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    protected KeyList keyValue;
 
     public GroupOfEntities_VersionStructure() {
     }
@@ -64,6 +69,14 @@ public abstract class GroupOfEntities_VersionStructure
 
     public void setPrivateCode(String value) {
         this.privateCode = value;
+    }
+
+    public KeyList getKeyValue() {
+        return keyValue;
+    }
+
+    public void setKeyValue(KeyList keyValue) {
+        this.keyValue = keyValue;
     }
 
 
