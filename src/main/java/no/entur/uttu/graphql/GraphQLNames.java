@@ -35,6 +35,7 @@ public class GraphQLNames {
     public static final String FIELD_NOTICES = "notices";
     public static final String FIELD_FROM_DATE = "fromDate";
     public static final String FIELD_TO_DATE = "toDate";
+    public static final String FIELD_KEY_VALUES = "keyValues";
 
     // Codespace
     public static final String FIELD_XMLNS = "xmlns";
@@ -51,7 +52,6 @@ public class GraphQLNames {
     public static final String FIELD_POLYGON = "polygon";
     public static final String FIELD_START_QUAY_REF = "startQuayRef";
     public static final String FIELD_END_QUAY_REF = "endQuayRef";
-
 
     // Network
     public static final String FIELD_AUTHORITY_REF = "authorityRef";
@@ -133,4 +133,8 @@ public class GraphQLNames {
     // Export line association
     public static final String FIELD_LINE = "line";
     public static final String FIELD_LINE_REF = "lineRef";
+
+    // Key-values
+    public static final String FIELD_KEY = "key";
+    public static final String FIELD_VALUES = "values";
 }

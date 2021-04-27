@@ -33,6 +33,10 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
   mutateFlexibleStopPlace(input: \$flexibleStopPlace) {
     id
     name
+    keyValues {
+      key
+      values
+    }
     flexibleArea {
       polygon {
         type
@@ -57,6 +61,10 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     "name": "$name",
     "description": "flexible area desc",
     "transportMode": "water",
+    "keyValues": [{
+      "key": "foo",
+      "values": ["bar", "baz"]
+    }],
     "flexibleArea": {
       "polygon": {
         "coordinates": [
@@ -93,6 +101,10 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         "name": "$name",
         "description": "hail and ride desc",
         "transportMode": "bus",
+        "keyValues": [{
+          "key": "foo",
+          "values": ["bar", "baz"]
+        }],
         "hailAndRideArea": {"startQuayRef": "NSR:Quay:start","endQuayRef": "NSR:Quay:end"}
     }
         }"""

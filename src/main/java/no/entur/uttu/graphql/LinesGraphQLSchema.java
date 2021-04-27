@@ -67,6 +67,7 @@ import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static graphql.Scalars.*;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
@@ -213,6 +214,11 @@ public class LinesGraphQLSchema {
                         .type(new GraphQLNonNull(GeoJSONCoordinatesScalar.getGraphQGeoJSONCoordinatesScalar())))
                 .build();
 
+        GraphQLObjectType keyValuesObjectType = newObject().name("KeyValues")
+                .field(newFieldDefinition().name(FIELD_KEY).type(GraphQLString))
+                .field(newFieldDefinition().name(FIELD_VALUES).type(new GraphQLList(GraphQLString)))
+                .build();
+
         GraphQLObjectType identifiedEntityObjectType = newObject().name("IdentifiedEntity")
                 .field(idFieldDefinition)
                 .field(versionField)
@@ -273,6 +279,8 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(vehicleModeEnum))
                 .field(newFieldDefinition().name(FIELD_FLEXIBLE_AREA).type(flexibleAreaObjectType))
                 .field(newFieldDefinition().name(FIELD_HAIL_AND_RIDE_AREA).type(hailAndRideAreaType))
+                .field(newFieldDefinition().name(FIELD_KEY_VALUES).type(new GraphQLList(keyValuesObjectType))
+                    .dataFetcher(env -> ((FlexibleStopPlace) env.getSource()).getKeyValues().entrySet().stream().map(entry -> new KeyValuesWrapper(entry.getKey(), entry.getValue())).collect(Collectors.toList())))
                 .build();
 
         GraphQLObjectType operatingPeriod = newObject().name("OperatingPeriod")
@@ -502,11 +510,17 @@ public class LinesGraphQLSchema {
                 .field(newInputObjectField().name(FIELD_END_QUAY_REF).type(new GraphQLNonNull(GraphQLString)))
                 .build();
 
+        GraphQLInputObjectType keyValuesInputType = newInputObject().name("KeyValuesInput")
+                .field(newInputObjectField().name(FIELD_KEY).type(GraphQLString))
+                .field(newInputObjectField().name(FIELD_VALUES).type(new GraphQLList(GraphQLString)))
+                .build();
+
         GraphQLInputObjectType flexibleStopPlaceInputType = newInputObject(groupOfEntitiesInputType)
                 .name("FlexibleStopPlaceInput")
                 .field(newInputObjectField().name(FIELD_TRANSPORT_MODE).type(new GraphQLNonNull(vehicleModeEnum)))
                 .field(newInputObjectField().name(FIELD_FLEXIBLE_AREA).type(flexibleAreaInput))
                 .field(newInputObjectField().name(FIELD_HAIL_AND_RIDE_AREA).type(hailAndRideAreaInput))
+                .field(newInputObjectField().name(FIELD_KEY_VALUES).type(new GraphQLList(keyValuesInputType)))
                 .build();
 
         GraphQLInputObjectType contactInputType = newInputObject(groupOfEntitiesInputType).name("ContactInput")
