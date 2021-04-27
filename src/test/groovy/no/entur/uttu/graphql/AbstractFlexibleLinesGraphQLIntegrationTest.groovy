@@ -62,7 +62,8 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     "description": "flexible area desc",
     "transportMode": "water",
     "keyValues": [{
-      "foo": ["bar", "baz"]
+      "key": "foo",
+      "values": ["bar", "baz"]
     }],
     "flexibleArea": {
       "polygon": {
