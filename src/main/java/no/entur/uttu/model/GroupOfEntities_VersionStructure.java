@@ -81,7 +81,8 @@ public abstract class GroupOfEntities_VersionStructure
         return keyValues;
     }
 
-    public void setKeyValues(Map<String, Value> keyValues) {
-        this.keyValues = keyValues;
+    public void replaceKeyValues(Map<String, Value> keyValues) {
+        this.keyValues.clear();
+        this.keyValues.putAll(keyValues);
     }
 }

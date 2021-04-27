@@ -42,7 +42,7 @@ public abstract class AbstractGroupOfEntitiesMapper<T extends GroupOfEntities_Ve
         input.apply(FIELD_NAME, entity::setName);
         input.apply(FIELD_DESCRIPTION, entity::setDescription);
         input.apply(FIELD_PRIVATE_CODE, entity::setPrivateCode);
-        input.apply(FIELD_KEY_VALUES, this::mapKeyValues, entity::setKeyValues);
+        input.apply(FIELD_KEY_VALUES, this::mapKeyValues, entity::replaceKeyValues);
         return entity;
     }
 
