@@ -56,7 +56,8 @@ public class FlexibleStopPlaceProducer {
                        .withDescription(objectFactory.createMultilingualString(localStopPlace.getDescription()))
                        .withTransportMode(objectFactory.mapEnum(localStopPlace.getTransportMode(), VehicleModeEnumeration.class))
                        .withPrivateCode(objectFactory.createPrivateCodeStructure(localStopPlace.getPrivateCode()))
-                       .withAreas(new FlexibleStopPlace_VersionStructure.Areas().withFlexibleAreaOrFlexibleAreaRefOrHailAndRideArea(netexQuay));
+                       .withAreas(new FlexibleStopPlace_VersionStructure.Areas().withFlexibleAreaOrFlexibleAreaRefOrHailAndRideArea(netexQuay))
+                       .withKeyList(objectFactory.mapKeyValues(localStopPlace.getKeyValues()));
     }
 
     private org.rutebanken.netex.model.FlexibleArea mapFlexibleArea(FlexibleStopPlace flexibleStopPlace, NetexExportContext context) {

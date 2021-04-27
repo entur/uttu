@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -451,5 +452,16 @@ public class NetexObjectFactory {
     public Ref createScheduledStopPointRefFromQuayRef(String quayRef, NetexExportContext context) {
         Ref ref = new Ref(NetexIdProducer.updateIdPrefix(quayRef, context), VERSION_ONE);
         return NetexIdProducer.replaceEntityName(ref, ScheduledStopPoint.class.getSimpleName());
+    }
+
+    public KeyListStructure mapKeyValues(Map<String, no.entur.uttu.model.Value> keyValues) {
+        return new KeyListStructure().withKeyValue(
+                keyValues.entrySet().stream()
+                        .flatMap(entry -> entry.getValue().getItems().stream()
+                                .map(value -> new KeyValueStructure()
+                                        .withKey(entry.getKey())
+                                        .withValue(value))
+                        ).collect(Collectors.toList())
+        );
     }
 }
