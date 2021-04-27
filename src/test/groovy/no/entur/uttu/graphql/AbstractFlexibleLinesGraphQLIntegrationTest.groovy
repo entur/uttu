@@ -33,6 +33,10 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
   mutateFlexibleStopPlace(input: \$flexibleStopPlace) {
     id
     name
+    keyValues {
+      key
+      values
+    }
     flexibleArea {
       polygon {
         type
