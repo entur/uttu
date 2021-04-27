@@ -7,6 +7,15 @@ ALTER TABLE value OWNER TO uttu;
 ALTER TABLE ONLY value
     ADD CONSTRAINT value_pkey PRIMARY KEY (id);
 
+CREATE SEQUENCE value_seq
+    START WITH 1
+    INCREMENT BY 10
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+ALTER TABLE value_seq OWNER TO uttu;
+
 CREATE TABLE value_items (
     value_id bigint NOT NULL,
     items character varying(255)
