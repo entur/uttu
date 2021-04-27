@@ -101,6 +101,10 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         "name": "$name",
         "description": "hail and ride desc",
         "transportMode": "bus",
+        "keyValues": [{
+          "key": "foo",
+          "values": ["bar", "baz"]
+        }],
         "hailAndRideArea": {"startQuayRef": "NSR:Quay:start","endQuayRef": "NSR:Quay:end"}
     }
         }"""
