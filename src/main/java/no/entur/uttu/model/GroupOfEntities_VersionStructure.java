@@ -21,7 +21,6 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 import javax.persistence.CascadeType;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.Size;
 import java.util.HashMap;
 import java.util.Map;

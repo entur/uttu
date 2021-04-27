@@ -46,14 +46,13 @@ public abstract class AbstractGroupOfEntitiesMapper<T extends GroupOfEntities_Ve
         return entity;
     }
 
-    private Map<String, Value> mapKeyValues(List<Map> inputKeyValues) {
+    private Map<String, Value> mapKeyValues(List<Map<String, Object>> inputKeyValues) {
         Map<String, Value> keyValues = new HashMap<>();
 
         inputKeyValues.forEach(inputMap -> {
            String key = (String) inputMap.get(FIELD_KEY);
            List<String> values = (List<String>) inputMap.get(FIELD_VALUES);
-           Value value = new Value(values);
-           keyValues.put(key, value);
+           keyValues.put(key, new Value(values));
         });
 
         return keyValues;

@@ -1,17 +1,25 @@
-package no.entur.uttu.graphql.scalars;
+package no.entur.uttu.graphql;
 
 import no.entur.uttu.model.Value;
 
 import java.util.Set;
 
-public class KeyValuesScalar {
-    public String key;
-    public Set<String> values;
+public class KeyValuesWrapper {
+    private String key;
+    private Set<String> values;
 
-    public KeyValuesScalar(String key, Value value) {
+    public KeyValuesWrapper(String key, Value value) {
         this.key = key;
         if (value != null) {
             this.values = value.getItems();
         }
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public Set<String> getValues() {
+        return values;
     }
 }

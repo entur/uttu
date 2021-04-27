@@ -30,7 +30,6 @@ import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.DurationScalar;
 import no.entur.uttu.graphql.scalars.GeoJSONCoordinatesScalar;
-import no.entur.uttu.graphql.scalars.KeyValuesScalar;
 import no.entur.uttu.graphql.scalars.LocalTimeScalar;
 import no.entur.uttu.model.BookingAccessEnumeration;
 import no.entur.uttu.model.BookingMethodEnumeration;
@@ -281,7 +280,7 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_FLEXIBLE_AREA).type(flexibleAreaObjectType))
                 .field(newFieldDefinition().name(FIELD_HAIL_AND_RIDE_AREA).type(hailAndRideAreaType))
                 .field(newFieldDefinition().name(FIELD_KEY_VALUES).type(new GraphQLList(keyValuesObjectType))
-                    .dataFetcher(env -> ((FlexibleStopPlace) env.getSource()).getKeyValues().entrySet().stream().map(entry -> new KeyValuesScalar(entry.getKey(), entry.getValue())).collect(Collectors.toList())))
+                    .dataFetcher(env -> ((FlexibleStopPlace) env.getSource()).getKeyValues().entrySet().stream().map(entry -> new KeyValuesWrapper(entry.getKey(), entry.getValue())).collect(Collectors.toList())))
                 .build();
 
         GraphQLObjectType operatingPeriod = newObject().name("OperatingPeriod")
