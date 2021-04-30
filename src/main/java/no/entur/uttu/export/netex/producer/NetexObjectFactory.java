@@ -455,6 +455,10 @@ public class NetexObjectFactory {
     }
 
     public KeyListStructure mapKeyValues(Map<String, no.entur.uttu.model.Value> keyValues) {
+        if (keyValues.isEmpty()) {
+            return null;
+        }
+
         return new KeyListStructure().withKeyValue(
                 keyValues.entrySet().stream()
                         .flatMap(entry -> entry.getValue().getItems().stream()
