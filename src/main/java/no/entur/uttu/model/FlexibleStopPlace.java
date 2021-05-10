@@ -16,15 +16,20 @@
 package no.entur.uttu.model;
 
 import no.entur.uttu.util.Preconditions;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(uniqueConstraints = {@UniqueConstraint(name = Constraints.FLEXIBLE_STOP_PLACE_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
@@ -43,6 +48,10 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
     public FlexibleArea getFlexibleArea() {
         return flexibleArea;
     }
+
+    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    protected Map<String, Value> keyValues = new HashMap<>();
 
     public void setFlexibleArea(FlexibleArea flexibleArea) {
         this.flexibleArea = flexibleArea;
@@ -64,6 +73,14 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
         this.transportMode = transportMode;
     }
 
+    public Map<String, Value> getKeyValues() {
+        return keyValues;
+    }
+
+    public void replaceKeyValues(Map<String, Value> keyValues) {
+        this.keyValues.clear();
+        this.keyValues.putAll(keyValues);
+    }
 
     @Override
     public void checkPersistable() {

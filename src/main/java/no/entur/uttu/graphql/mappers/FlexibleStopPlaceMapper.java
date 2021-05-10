@@ -19,12 +19,15 @@ import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.HailAndRideArea;
+import no.entur.uttu.model.Value;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import no.entur.uttu.stopplace.StopPlaceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static no.entur.uttu.graphql.GraphQLNames.*;
@@ -52,8 +55,8 @@ public class FlexibleStopPlaceMapper extends AbstractGroupOfEntitiesMapper<Flexi
         input.apply(FIELD_TRANSPORT_MODE, entity::setTransportMode);
         input.apply(FIELD_FLEXIBLE_AREA, this::mapFlexibleArea, entity::setFlexibleArea);
         input.apply(FIELD_HAIL_AND_RIDE_AREA, this::mapHailAndRideArea, entity::setHailAndRideArea);
+        input.apply(FIELD_KEY_VALUES, this::mapKeyValues, entity::replaceKeyValues);
     }
-
 
     protected FlexibleArea mapFlexibleArea(Map<String, Object> inputMap) {
         ArgumentWrapper input = new ArgumentWrapper(inputMap);
@@ -70,5 +73,17 @@ public class FlexibleStopPlaceMapper extends AbstractGroupOfEntitiesMapper<Flexi
         input.apply(FIELD_START_QUAY_REF, stopPlaceRegistry::getVerifiedQuayRef, entity::setStartQuayRef);
         input.apply(FIELD_END_QUAY_REF, stopPlaceRegistry::getVerifiedQuayRef, entity::setEndQuayRef);
         return entity;
+    }
+
+    private Map<String, Value> mapKeyValues(List<Map<String, Object>> inputKeyValues) {
+        Map<String, Value> keyValues = new HashMap<>();
+
+        inputKeyValues.forEach(inputMap -> {
+            String key = (String) inputMap.get(FIELD_KEY);
+            List<String> values = (List<String>) inputMap.get(FIELD_VALUES);
+            keyValues.put(key, new Value(values));
+        });
+
+        return keyValues;
     }
 }
