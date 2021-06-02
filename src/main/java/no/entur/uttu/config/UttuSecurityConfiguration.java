@@ -22,7 +22,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
  * All requests must be authenticated except for the Swagger and Actuator endpoints.
  * The Oauth2 ID-provider (Keycloak or Auth0) is identified thanks to {@link MultiIssuerAuthenticationManagerResolver}.
  */
-@Profile("!test")
+@Profile("!local & !test")
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 @Component

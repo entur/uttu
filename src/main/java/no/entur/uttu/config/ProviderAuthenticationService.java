@@ -34,15 +34,7 @@ public class ProviderAuthenticationService {
     @Autowired
     private RoleAssignmentExtractor roleAssignmentExtractor;
 
-
-    @Value("${authorization.enabled:true}")
-    protected boolean authorizationEnabled;
-
-
     public boolean hasRoleForProvider(Authentication authentication, String role, String providerCode) {
-        if (!authorizationEnabled) {
-            return true;
-        }
         if (providerCode == null) {
             return false;
         }

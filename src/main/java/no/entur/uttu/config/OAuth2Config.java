@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Profile;
  * Configure Spring Beans for OAuth2 resource server and OAuth2 client security.
  */
 @Configuration
-@Profile("!test")
+@Profile("!local & !test")
 public class OAuth2Config {
 
     /**
