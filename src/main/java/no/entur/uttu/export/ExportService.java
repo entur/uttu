@@ -51,18 +51,12 @@ public class ExportService {
     @Value("${export.working.folder:tmp}")
     private String workingFolder;
 
-    @Value("${export.days.historic.default:2}")
-    private int historicDaysDefault;
-
-    @Value("${export.days.future.default:185}")
-    private int futureDaysDefault;
-
     @Value("${export.blob.folder:outbound/netex/}")
     private String exportFolder = "outbound/netex/";
 
 
     public void exportDataSet(Export export) {
-        setExportDefaults(export);
+        export.checkPersistable();
 
         logger.info("Starting {}", export);
 
@@ -100,16 +94,5 @@ public class ExportService {
 
         export.markAsFinished();
         logger.info("Completed {}", export);
-    }
-
-    private void setExportDefaults(Export export) {
-        LocalDate today = LocalDate.now();
-        if (export.getFromDate() == null) {
-            export.setFromDate(today.minusDays(historicDaysDefault));
-        }
-        if (export.getToDate() == null) {
-            export.setToDate(today.plusDays(futureDaysDefault));
-        }
-        export.checkPersistable();
     }
 }

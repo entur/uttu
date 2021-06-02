@@ -15,9 +15,6 @@
 
 package no.entur.uttu.model.job;
 
-import no.entur.uttu.error.codederror.CodedError;
-import no.entur.uttu.error.codes.ErrorCodeEnumeration;
-import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.model.ProviderEntity;
 
 import javax.persistence.CascadeType;
@@ -26,7 +23,6 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -41,10 +37,6 @@ public class Export extends ProviderEntity {
     @NotNull
     @Enumerated(EnumType.STRING)
     private ExportStatusEnumeration exportStatus = ExportStatusEnumeration.IN_PROGRESS;
-
-    private LocalDate fromDate;
-
-    private LocalDate toDate;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExportMessage> messages = new ArrayList<>();
@@ -93,22 +85,6 @@ public class Export extends ProviderEntity {
         return new TreeSet<>(messages);
     }
 
-    public LocalDate getFromDate() {
-        return fromDate;
-    }
-
-    public void setFromDate(LocalDate fromDate) {
-        this.fromDate = fromDate;
-    }
-
-    public LocalDate getToDate() {
-        return toDate;
-    }
-
-    public void setToDate(LocalDate toDate) {
-        this.toDate = toDate;
-    }
-
     public String getFileName() {
         return fileName;
     }
@@ -131,18 +107,7 @@ public class Export extends ProviderEntity {
                        super.toString() +
                        ", name='" + name + '\'' +
                        ", exportStatus=" + exportStatus +
-                       ", fromDate=" + fromDate +
-                       ", toDate=" + toDate +
                        ", messages=" + messages +
                        '}';
     }
-
-    @Override
-    public void checkPersistable() {
-        if (fromDate != null && toDate != null) {
-            Preconditions.checkArgument(!fromDate.isAfter(toDate), CodedError.fromErrorCode(ErrorCodeEnumeration.FROM_DATE_AFTER_TO_DATE),"%s fromDate(%s) cannot be after toDate(%s)", identity(), fromDate, toDate);
-        }
-    }
-
-
 }

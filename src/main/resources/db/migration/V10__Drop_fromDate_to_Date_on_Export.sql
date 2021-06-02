@@ -1,0 +1,2 @@
+ALTER TABLE ONLY export DROP COLUMN from_date;
+ALTER TABLE ONLY export DROP COLUMN to_date;

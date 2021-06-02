@@ -46,8 +46,6 @@ public class ExportUtilTest {
         Export export= new Export() {
 
         };
-        export.setFromDate(LocalDate.of(2018,1,15));
-        export.setToDate(LocalDate.of(2018,5,20));
         export.setName(name);
         Provider provider=new Provider();
         provider.setCode("TST");

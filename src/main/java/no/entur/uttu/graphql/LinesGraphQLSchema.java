@@ -367,8 +367,6 @@ public class LinesGraphQLSchema {
         exportObjectType = newObject(identifiedEntityObjectType).name("Export")
                 .field(newFieldDefinition().name(FIELD_NAME).type(GraphQLString))
                 .field(newFieldDefinition().name(FIELD_EXPORT_STATUS).type(exportStatusEnum))
-                .field(newFieldDefinition().name(FIELD_FROM_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
-                .field(newFieldDefinition().name(FIELD_TO_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
                 .field(newFieldDefinition().name(FIELD_DRY_RUN).type(GraphQLBoolean))
                 .field(newFieldDefinition().name(FIELD_DOWNLOAD_URL).type(GraphQLString).dataFetcher(env -> {
                     Export export = env.getSource();
@@ -628,8 +626,6 @@ public class LinesGraphQLSchema {
 
         GraphQLInputObjectType exportInputType = newInputObject().name("ExportInput")
                 .field(newInputObjectField().name(FIELD_NAME).type(GraphQLString))
-                .field(newInputObjectField().name(FIELD_FROM_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
-                .field(newInputObjectField().name(FIELD_TO_DATE).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
                 .field(newInputObjectField().name(FIELD_DRY_RUN).type(GraphQLBoolean).defaultValue(Boolean.FALSE))
                 .field(newInputObjectField().name(FIELD_EXPORT_LINE_ASSOCIATIONS).type(new GraphQLList(exportLineAssociationInputType)))
                 .build();
