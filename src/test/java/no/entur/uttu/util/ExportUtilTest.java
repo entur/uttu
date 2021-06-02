@@ -29,7 +29,7 @@ public class ExportUtilTest {
         Export export = createExport("t1");
         String fileName= ExportUtil.createBackupDataSetFilename(export);
 
-        Assert.assertEquals("tst_t1_20180115-20180520_null.zip",fileName);
+        Assert.assertEquals("tst_t1_20210602_null.zip",fileName);
 
     }
 
@@ -38,7 +38,7 @@ public class ExportUtilTest {
         Export export = createExport(null);
         String fileName= ExportUtil.createBackupDataSetFilename(export);
 
-        Assert.assertEquals("tst_20180115-20180520_null.zip",fileName);
+        Assert.assertEquals("tst_20210602_null.zip",fileName);
 
     }
 
