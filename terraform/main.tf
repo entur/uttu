@@ -72,6 +72,9 @@ resource "google_sql_database_instance" "db_instance" {
     backup_configuration {
       enabled = true
     }
+    ip_configuration {
+      require_ssl = true
+    }
   }
   database_version = "POSTGRES_9_6"
 }
