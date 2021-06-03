@@ -67,6 +67,10 @@ resource "google_sql_database_instance" "db_instance" {
   region = "europe-west1"
   settings {
     tier = var.db_tier
+    availability_type = "ZONAL"
+    backup_configuration {
+      enabled = true
+    }
   }
   database_version = "POSTGRES_9_6"
 }
