@@ -29,7 +29,7 @@ public class ExportUtilTest {
         Export export = createExport("t1");
         String fileName= ExportUtil.createBackupDataSetFilename(export);
 
-        Assert.assertEquals("tst_t1_20210602_null.zip",fileName);
+        Assert.assertTrue(fileName.matches("tst_t1_[0-9]*_null.zip"));
 
     }
 
