@@ -65,8 +65,17 @@ resource "google_sql_database_instance" "db_instance" {
   name = "uttu-db"
   project = var.gcp_project
   region = "europe-west1"
+
   settings {
     tier = var.db_tier
+    user_labels = var.labels
+    availability_type = "ZONAL"
+    backup_configuration {
+      enabled = true
+    }
+    ip_configuration {
+      require_ssl = true
+    }
   }
   database_version = "POSTGRES_9_6"
 }
