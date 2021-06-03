@@ -50,16 +50,11 @@ class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrati
 
         LocalDate today = LocalDate.now()
 
-        LocalDate fromDate = today.minusDays(10)
-        LocalDate toDate = today.plusDays(100)
-
         String lineRef = flexibleLineResponse.extract().body().path("data.mutateFlexibleLine.id")
         String variables = """    
 {
   "export": {
     "name": "$name",
-    "fromDate": "$fromDate" ,
-    "toDate":"$toDate",
     "lineAssociations":[{ "lineRef": "$lineRef" }]
   }
 }

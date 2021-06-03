@@ -65,7 +65,7 @@ public class NetexExporter {
 
     @PostConstruct
     public void asyncInit() {
-        new Thread(() -> assertInit()).start();
+        new Thread(this::assertInit).start();
     }
 
     public void exportDataSet(Export export, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {

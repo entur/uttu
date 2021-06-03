@@ -22,7 +22,10 @@ import no.entur.uttu.model.job.Export;
 import org.springframework.util.StringUtils;
 
 import java.text.StringCharacterIterator;
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
 
 public class ExportUtil {
 
@@ -55,9 +58,7 @@ public class ExportUtil {
             fileNameBuilder.append(export.getName());
             fileNameBuilder.append(MAIN_SEPARATOR);
         }
-        fileNameBuilder.append(export.getFromDate().format(DATE_FORMATTER));
-        fileNameBuilder.append(SECONDARY_SEPARATOR);
-        fileNameBuilder.append(export.getToDate().format(DATE_FORMATTER));
+        fileNameBuilder.append(LocalDate.now().format(DATE_FORMATTER));
         fileNameBuilder.append(MAIN_SEPARATOR);
         fileNameBuilder.append(export.getPk());
 

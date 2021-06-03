@@ -46,10 +46,7 @@ public class ExportMapper extends AbstractProviderEntityMapper<Export> {
 
     @Override
     protected void populateEntityFromInput(Export entity, ArgumentWrapper input) {
-
         input.apply(FIELD_NAME, entity::setName);
-        input.apply(FIELD_FROM_DATE, entity::setFromDate);
-        input.apply(FIELD_TO_DATE, entity::setToDate);
         input.apply(FIELD_DRY_RUN, entity::setDryRun);
         input.applyList(FIELD_EXPORT_LINE_ASSOCIATIONS, new ExportLineAssociationMapper(entity, fixedLineRepository, flexibleLineRepository)::map, entity::setExportLineAssociations);
     }

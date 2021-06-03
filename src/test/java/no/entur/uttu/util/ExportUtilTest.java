@@ -29,7 +29,7 @@ public class ExportUtilTest {
         Export export = createExport("t1");
         String fileName= ExportUtil.createBackupDataSetFilename(export);
 
-        Assert.assertEquals("tst_t1_20180115-20180520_null.zip",fileName);
+        Assert.assertTrue(fileName.matches("tst_t1_[0-9]*_null.zip"));
 
     }
 
@@ -37,17 +37,13 @@ public class ExportUtilTest {
     public void testCreateBackupDataSetFilenameWithOutExportName(){
         Export export = createExport(null);
         String fileName= ExportUtil.createBackupDataSetFilename(export);
-
-        Assert.assertEquals("tst_20180115-20180520_null.zip",fileName);
-
+        Assert.assertTrue(fileName.matches("tst_[0-9]*_null.zip"));
     }
 
     private Export createExport(String name) {
         Export export= new Export() {
 
         };
-        export.setFromDate(LocalDate.of(2018,1,15));
-        export.setToDate(LocalDate.of(2018,5,20));
         export.setName(name);
         Provider provider=new Provider();
         provider.setCode("TST");

@@ -96,10 +96,7 @@ public class NetexExportContext {
     }
 
     public <I extends IdentifiedEntity> boolean isValid(I entity) {
-        if (entity == null) {
-            return false;
-        }
-        return entity.isValid(export.getFromDate(), export.getToDate());
+        return entity != null;
     }
 
     public void addExportMessage(SeverityEnumeration severity, String message, Object... params) {
