@@ -16,6 +16,7 @@
 
 package no.entur.uttu.export.messaging;
 
+import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.pubsub.v1.PubsubMessage;
 import no.entur.uttu.UttuIntegrationTest;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
@@ -25,7 +26,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cloud.gcp.pubsub.core.PubSubTemplate;
 
 import java.util.List;
 

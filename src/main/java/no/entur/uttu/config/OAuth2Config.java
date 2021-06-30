@@ -16,14 +16,23 @@
 
 package no.entur.uttu.config;
 
+import org.entur.oauth2.AudienceValidator;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
-import org.entur.oauth2.MultiIssuerAuthenticationManagerResolver;
 import org.entur.oauth2.RorAuth0RolesClaimAdapter;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
+import org.springframework.security.oauth2.core.OAuth2TokenValidator;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
+import org.springframework.security.oauth2.jwt.JwtDecoders;
+import org.springframework.security.oauth2.jwt.JwtValidators;
+import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 
 /**
  * Configure Spring Beans for OAuth2 resource server and OAuth2 client security.
@@ -43,7 +52,7 @@ public class OAuth2Config {
     }
 
     /**
-     * Adapt the JWT claims produced by the RoR Auth0 tenant to make them compatible with those produced by Keycloak.
+     * Adapt the JWT claims produced by the RoR Auth0 tenant.
      *
      * @param rorAuth0ClaimNamespace
      * @return
@@ -54,35 +63,28 @@ public class OAuth2Config {
     }
 
     /**
-     * Identify the issuer of the JWT token (Auth0 or Keycloak) and forward the JWT token to the corresponding JWT decoder.
-     * Verify that the audience is valid and adapt the JWT claim using the injected claim adapter.
+     * Build a @{@link JwtDecoder} for RoR Auth0 domain.
+     * To ensure compatibility with the existing authorization process ({@link JwtRoleAssignmentExtractor}), a "roles"
+     * claim is inserted in the token thanks to @{@link RorAuth0RolesClaimAdapter}
      *
-     * @param keycloakAudience
-     * @param keycloakIssuer
-     * @param keycloakJwksetUri
-     * @param rorAuth0Audience
-     * @param rorAuth0Issuer
-     * @param rorAuth0RolesClaimAdapter
-     * @return
+     * @return a @{@link JwtDecoder} for Auth0.
      */
     @Bean
-    public MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver(@Value("${uttu.oauth2.resourceserver.keycloak.jwt.audience}") String keycloakAudience,
-                                                                                             @Value("${uttu.oauth2.resourceserver.keycloak.jwt.issuer-uri}") String keycloakIssuer,
-                                                                                             @Value("${uttu.oauth2.resourceserver.keycloak.jwt.jwkset-uri}") String keycloakJwksetUri,
-                                                                                             @Value("${uttu.oauth2.resourceserver.auth0.ror.jwt.audience}") String rorAuth0Audience,
-                                                                                             @Value("${uttu.oauth2.resourceserver.auth0.ror.jwt.issuer-uri}") String rorAuth0Issuer,
-                                                                                             RorAuth0RolesClaimAdapter rorAuth0RolesClaimAdapter) {
-        return new MultiIssuerAuthenticationManagerResolver.Builder()
-                .withKeycloakAudience(keycloakAudience)
-                .withKeycloakIssuer(keycloakIssuer)
-                .withKeycloakJwksetUri(keycloakJwksetUri)
-                .withRorAuth0Audience(rorAuth0Audience)
-                .withRorAuth0Issuer(rorAuth0Issuer)
-                .withRorAuth0RolesClaimAdapter(rorAuth0RolesClaimAdapter)
-                .build();
+    @Profile("!test")
+    public JwtDecoder rorAuth0JwtDecoder(OAuth2ResourceServerProperties properties,
+                                         @Value("${uttu.oauth2.resourceserver.auth0.ror.jwt.audience}") String rorAuth0Audience,
+                                         @Autowired RorAuth0RolesClaimAdapter rorAuth0RolesClaimAdapter) {
 
+        String rorAuth0Issuer = properties.getJwt().getIssuerUri();
+        NimbusJwtDecoder jwtDecoder = (NimbusJwtDecoder) JwtDecoders.fromIssuerLocation(rorAuth0Issuer);
+
+        OAuth2TokenValidator<Jwt> audienceValidator = new AudienceValidator(rorAuth0Audience);
+        OAuth2TokenValidator<Jwt> withIssuer = JwtValidators.createDefaultWithIssuer(rorAuth0Issuer);
+        OAuth2TokenValidator<Jwt> withAudience = new DelegatingOAuth2TokenValidator<>(withIssuer, audienceValidator);
+        jwtDecoder.setJwtValidator(withAudience);
+        jwtDecoder.setClaimSetConverter(rorAuth0RolesClaimAdapter);
+        return jwtDecoder;
     }
-
 
 }
 
