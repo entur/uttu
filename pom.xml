@@ -45,7 +45,7 @@
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
 
-        <postgis-jdbc.version>2.3.0</postgis-jdbc.version>
+        <postgis-jdbc.version>2.5.0</postgis-jdbc.version>
         <geotools.version>20.1</geotools.version>
         <wololo.version>0.14.3</wololo.version>
 
