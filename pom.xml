@@ -40,7 +40,7 @@
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
 
-        <entur.helpers.version>1.0.55-SNAPSHOT</entur.helpers.version>
+        <entur.helpers.version>1.0.59</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
