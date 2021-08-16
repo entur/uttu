@@ -65,6 +65,7 @@ public class ServiceJourneyProducer {
         OperatorRefStructure operatorRefStructure = null;
         if (local.getOperatorRef() != null) {
             operatorRefStructure = organisationProducer.produceOperatorRef(local.getOperatorRef(), false, context);
+            context.operatorRefs.add(local.getOperatorRef());
         }
 
         List<DayType> validDayTypes = local.getDayTypes().stream().filter(context::isValid).collect(Collectors.toList());
