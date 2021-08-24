@@ -5,8 +5,6 @@ sql:
 
 configMap:
   organisationRegistryUrl: https://api.dev.entur.io/organisations/v1/register/organisations/
-  keycloak:
-    url: https://kc-dev.devstage.entur.io/auth
   auth0:
     ror:
       url: https://ror-entur-dev.eu.auth0.com/
