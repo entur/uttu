@@ -107,11 +107,11 @@ public abstract class IdentifiedEntity {
         String user = Context.getUsername();
         Instant now = Instant.now();
         this.setChanged(now);
-        this.setCreatedBy(user);
+        this.setChangedBy(user);
 
         if (this.getCreated() == null) {
             this.setCreated(now);
-            this.setChangedBy(user);
+            this.setCreatedBy(user);
         }
     }
 
