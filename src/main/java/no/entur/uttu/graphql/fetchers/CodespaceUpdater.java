@@ -41,14 +41,14 @@ public class CodespaceUpdater implements DataFetcher<Codespace> {
     public Codespace get(DataFetchingEnvironment env) {
 
         ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
-        Long id = input.get(FIELD_ID);
+        String codespaceXmlns = input.get(FIELD_CODE_SPACE_XMLNS);
         Codespace entity;
-        if (id == null) {
+        if (codespaceXmlns == null) {
             entity = new Codespace();
         } else {
-            entity = repository.getOne(id);
+            entity = repository.getOneByXmlns(codespaceXmlns);
             Preconditions.checkArgument(entity != null,
-                    "Attempting to update Codespace with id=%s, but Codespace does not exist.", id);
+                    "Attempting to update Codespace with codespaceXmlns=%s, but Codespace does not exist.", codespaceXmlns);
         }
 
         populateEntityFromInput(entity, input);
