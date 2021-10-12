@@ -48,14 +48,14 @@ public class ProviderUpdater implements DataFetcher<Provider> {
     @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
     public Provider get(DataFetchingEnvironment env) {
         ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
-        Long id = input.get(FIELD_ID);
+        String code = input.get(FIELD_CODE);
         Provider entity;
-        if (id == null) {
+        if (code == null) {
             entity = new Provider();
         } else {
-            entity = repository.getOne(id);
+            entity = repository.getOne(code);
             Preconditions.checkArgument(entity != null,
-                    "Attempting to update Provider with id=%s, but Provider does not exist.", id);
+                    "Attempting to update Provider with code=%s, but Provider does not exist.", code);
         }
 
         populateEntityFromInput(entity, input);
