@@ -81,7 +81,6 @@ public class ProviderGraphQLSchema {
 
     private void initCommonTypes() {
         identifiedEntityObjectType = newObject().name("IdentifiedEntity")
-                                             .field(newFieldDefinition().name(FIELD_ID).type(new GraphQLNonNull(GraphQLID)))
                                              .field(newFieldDefinition().name(FIELD_VERSION).type(new GraphQLNonNull(GraphQLString)))
                                              .field(newFieldDefinition().name(FIELD_CREATED_BY).type(new GraphQLNonNull(GraphQLString)))
                                              .field(newFieldDefinition().name(FIELD_CREATED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
