@@ -50,12 +50,15 @@ public class ProviderUpdater implements DataFetcher<Provider> {
         ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
         String code = input.get(FIELD_CODE);
         Provider entity;
+
         if (code == null) {
             entity = new Provider();
         } else {
             entity = repository.getOne(code);
-            Preconditions.checkArgument(entity != null,
-                    "Attempting to update Provider with code=%s, but Provider does not exist.", code);
+
+            if (entity == null) {
+                entity = new Provider();
+            }
         }
 
         populateEntityFromInput(entity, input);

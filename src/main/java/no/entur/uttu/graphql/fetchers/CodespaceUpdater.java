@@ -47,8 +47,9 @@ public class CodespaceUpdater implements DataFetcher<Codespace> {
             entity = new Codespace();
         } else {
             entity = repository.getOneByXmlns(codespaceXmlns);
-            Preconditions.checkArgument(entity != null,
-                    "Attempting to update Codespace with codespaceXmlns=%s, but Codespace does not exist.", codespaceXmlns);
+            if (entity == null) {
+                entity = new Codespace();
+            }
         }
 
         populateEntityFromInput(entity, input);
