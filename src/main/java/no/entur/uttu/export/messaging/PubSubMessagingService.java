@@ -1,6 +1,7 @@
 package no.entur.uttu.export.messaging;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
+import no.entur.uttu.config.Context;
 import no.entur.uttu.util.ExportUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,7 +15,8 @@ import java.util.Map;
 @Component
 public class PubSubMessagingService implements  MessagingService{
 
-    public static final String CHOUETTE_REFERENTIAL = "RutebankenChouetteReferential";
+    public static final String HEADER_CHOUETTE_REFERENTIAL = "RutebankenChouetteReferential";
+    public static final String HEADER_USERNAME = "RutebankenUsername";
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -37,7 +39,8 @@ public class PubSubMessagingService implements  MessagingService{
         if(enableNotification) {
 
             Map<String, String> pubSubAttributes = new HashMap<>();
-            pubSubAttributes.put(CHOUETTE_REFERENTIAL, ExportUtil.getMigratedReferential(codespace));
+            pubSubAttributes.put(HEADER_CHOUETTE_REFERENTIAL, ExportUtil.getMigratedReferential(codespace));
+            pubSubAttributes.put(HEADER_USERNAME, Context.getUsername() + " (via NPlan)");
             pubSubTemplate.publish(queueName, "", pubSubAttributes);
 
             logger.debug("Sent export notification for codespace {}.", codespace);

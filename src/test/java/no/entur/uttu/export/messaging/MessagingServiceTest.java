@@ -56,7 +56,7 @@ public class MessagingServiceTest extends UttuIntegrationTest {
 
         List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
         Assert.assertEquals(messages.size(), 1);
-        String codespace = messages.get(0).getAttributesMap().get(PubSubMessagingService.CHOUETTE_REFERENTIAL);
+        String codespace = messages.get(0).getAttributesMap().get(PubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
         Assert.assertEquals(codespace, "rb_" + TEST_CODESPACE);
     }
 
