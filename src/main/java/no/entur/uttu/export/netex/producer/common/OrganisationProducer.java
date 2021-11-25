@@ -29,8 +29,10 @@ import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Component;
 
+import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -76,8 +78,17 @@ public class OrganisationProducer {
             context.addExportMessage(SeverityEnumeration.ERROR, "Authority [id:{0}] not found", authorityRef);
             return new Authority();
         }
+
+        if (orgRegAuthority.contact == null || !validateContactUrl(orgRegAuthority.contact.url)) {
+            context.addExportMessage(SeverityEnumeration.ERROR, "Invalid authority contact: {0}", orgRegAuthority.contact);
+        }
+
         return populateNetexOrganisation(new Authority(), orgRegAuthority)
                        .withId(orgRegAuthority.getAuthorityNetexId());
+    }
+
+    private boolean validateContactUrl(String url) {
+        return UrlUtils.isAbsoluteUrl(url);
     }
 
     private Operator mapOperator(String operatorRef, NetexExportContext context) {
