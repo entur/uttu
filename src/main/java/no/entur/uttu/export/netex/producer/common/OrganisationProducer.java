@@ -29,7 +29,6 @@ import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.web.util.UrlUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -87,7 +86,7 @@ public class OrganisationProducer {
     }
 
     private boolean validateContactUrl(String url) {
-        return UrlUtils.isAbsoluteUrl(url) && (url.startsWith("http://") || url.startsWith("https://"));
+        return url != null && (url.startsWith("http://") || url.startsWith("https://"));
     }
 
     private Operator mapOperator(String operatorRef, NetexExportContext context) {
