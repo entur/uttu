@@ -88,7 +88,7 @@ public class OrganisationProducer {
     }
 
     private boolean validateContactUrl(String url) {
-        return UrlUtils.isAbsoluteUrl(url);
+        return UrlUtils.isAbsoluteUrl(url) && (url.startsWith("http://") || url.startsWith("https://"));
     }
 
     private Operator mapOperator(String operatorRef, NetexExportContext context) {
