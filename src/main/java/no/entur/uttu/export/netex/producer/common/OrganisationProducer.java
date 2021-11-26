@@ -76,8 +76,17 @@ public class OrganisationProducer {
             context.addExportMessage(SeverityEnumeration.ERROR, "Authority [id:{0}] not found", authorityRef);
             return new Authority();
         }
+
+        if (orgRegAuthority.contact == null || !validateContactUrl(orgRegAuthority.contact.url)) {
+            context.addExportMessage(SeverityEnumeration.ERROR, "Invalid authority contact: {0}", orgRegAuthority.contact);
+        }
+
         return populateNetexOrganisation(new Authority(), orgRegAuthority)
                        .withId(orgRegAuthority.getAuthorityNetexId());
+    }
+
+    private boolean validateContactUrl(String url) {
+        return url != null && (url.startsWith("http://") || url.startsWith("https://"));
     }
 
     private Operator mapOperator(String operatorRef, NetexExportContext context) {

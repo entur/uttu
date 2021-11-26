@@ -18,6 +18,7 @@ package no.entur.uttu.stubs;
 import com.google.common.collect.Sets;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.organisation.Organisation;
+import no.entur.uttu.organisation.OrganisationContact;
 import no.entur.uttu.organisation.OrganisationRegistry;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
@@ -45,6 +46,10 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
 
         organisation.name="OrgName";
         organisation.version="1";
+
+        organisation.contact = new OrganisationContact();
+        organisation.contact.url = "https://name.org";
+
         return organisation;
     }
 
