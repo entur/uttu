@@ -15,7 +15,3 @@ configMap:
   blobstoreContainerName: ror-marduk-exchange-dev
   logLevel: DEBUG
   flywayTable: schema_version
-
-ingress:
-  enabled: true
-  devIp: 35.205.170.68

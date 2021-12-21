@@ -25,6 +25,3 @@ configMap:
   logLevel: INFO
   flywayTable: flyway_schema_history
 
-ingress:
-  enabled: true
-  productionIp: 35.205.233.237
