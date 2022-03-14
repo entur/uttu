@@ -129,10 +129,16 @@ public class GraphQLNames {
     public static final String FIELD_DRY_RUN = "dryRun";
     public static final String FIELD_DOWNLOAD_URL = "downloadUrl";
     public static final String FIELD_EXPORT_LINE_ASSOCIATIONS = "lineAssociations";
+    public static final String FIELD_EXPORTED_LINE_STATISTICS = "exportedLineStatistics";
 
     // Export line association
     public static final String FIELD_LINE = "line";
     public static final String FIELD_LINE_REF = "lineRef";
+
+    // Exported line statistics
+    public static final String FIELD_LINE_NAME = "lineName";
+    public static final String FIELD_OPERATING_DATE_FROM = "operatingPeriodFrom";
+    public static final String FIELD_OPERATING_DATE_TO = "operatingPeriodTo";
 
     // Key-values
     public static final String FIELD_KEY = "key";

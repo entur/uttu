@@ -79,7 +79,9 @@ public class NetexExporter {
                 fixedLines.stream()
         ).collect(Collectors.toList());
 
-        findLinesToExport(export.getExportLineAssociations(), lines).stream()
+        List<Line> linesToExport = findLinesToExport(export.getExportLineAssociations(), lines);
+
+        linesToExport.stream()
                 .map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
 

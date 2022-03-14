@@ -50,12 +50,7 @@ import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportStatusEnumeration;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.profile.Profile;
-import no.entur.uttu.repository.DataSpaceCleaner;
-import no.entur.uttu.repository.ExportRepository;
-import no.entur.uttu.repository.FixedLineRepository;
-import no.entur.uttu.repository.FlexibleLineRepository;
-import no.entur.uttu.repository.FlexibleStopPlaceRepository;
-import no.entur.uttu.repository.NetworkRepository;
+import no.entur.uttu.repository.*;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -109,6 +104,9 @@ public class LinesGraphQLSchema {
     private ExportRepository exportRepository;
 
     @Autowired
+    private ExportedLineStatisticsRepository lineStatisticsRepository;
+
+    @Autowired
     private FlexibleLineRepository flexibleLineRepository;
 
     @Autowired
@@ -160,6 +158,7 @@ public class LinesGraphQLSchema {
     private GraphQLObjectType flexibleStopPlaceObjectType;
     private GraphQLObjectType networkObjectType;
     private GraphQLObjectType exportObjectType;
+    private GraphQLObjectType exportedLineStatisticsObjectType;
 
     private GraphQLArgument idArgument;
     private GraphQLSchema graphQLSchema;
@@ -280,7 +279,7 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_FLEXIBLE_AREA).type(flexibleAreaObjectType))
                 .field(newFieldDefinition().name(FIELD_HAIL_AND_RIDE_AREA).type(hailAndRideAreaType))
                 .field(newFieldDefinition().name(FIELD_KEY_VALUES).type(new GraphQLList(keyValuesObjectType))
-                    .dataFetcher(env -> ((FlexibleStopPlace) env.getSource()).getKeyValues().entrySet().stream().map(entry -> new KeyValuesWrapper(entry.getKey(), entry.getValue())).collect(Collectors.toList())))
+                        .dataFetcher(env -> ((FlexibleStopPlace) env.getSource()).getKeyValues().entrySet().stream().map(entry -> new KeyValuesWrapper(entry.getKey(), entry.getValue())).collect(Collectors.toList())))
                 .build();
 
         GraphQLObjectType operatingPeriod = newObject().name("OperatingPeriod")
@@ -364,6 +363,12 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_LINE).type(new GraphQLNonNull(lineObjectType)))
                 .build();
 
+        exportedLineStatisticsObjectType = newObject().name("ExportedLineStatistics")
+                .field(newFieldDefinition().name(FIELD_LINE_NAME).type(new GraphQLNonNull(GraphQLString)))
+                .field(newFieldDefinition().name(FIELD_OPERATING_DATE_FROM).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                .field(newFieldDefinition().name(FIELD_OPERATING_DATE_TO).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                .build();
+
         exportObjectType = newObject(identifiedEntityObjectType).name("Export")
                 .field(newFieldDefinition().name(FIELD_NAME).type(GraphQLString))
                 .field(newFieldDefinition().name(FIELD_EXPORT_STATUS).type(exportStatusEnum))
@@ -381,6 +386,11 @@ public class LinesGraphQLSchema {
                             Export export = env.getSource();
                             return export.getExportLineAssociations();
                         }))
+                .field(newFieldDefinition().name(FIELD_EXPORTED_LINE_STATISTICS).type(new GraphQLList(exportedLineStatisticsObjectType)))
+                .build();
+
+        lineStatisticsObjectType = newObject(groupOfEntitiesObjectType).name("LineStatistics")
+                .field(newFieldDefinition().name(EFFECTIVE_PERIOD).type(operatingPeriod))
                 .build();
     }
 
@@ -461,12 +471,17 @@ public class LinesGraphQLSchema {
                         .description("Get export by id")
                         .argument(idArgument)
                         .dataFetcher(env -> exportRepository.getOne(env.getArgument(FIELD_ID))))
+                .field(newFieldDefinition()
+                        .type(lineStatisticsObjectType)
+                        .name("lineStatistics")
+                        .description("Get line statistics")
+                        .dataFetcher(env -> lineStatisticsRepository.findAll()))
                 .build();
     }
 
     private GraphQLObjectType createMutationObject() {
 
-        String ignoredInputFieldDesc="Value is ignored for mutation calls. Included for convenient copying of output to input with minimal modifications.";
+        String ignoredInputFieldDesc = "Value is ignored for mutation calls. Included for convenient copying of output to input with minimal modifications.";
         GraphQLInputObjectType identifiedEntityInputType = newInputObject().name("IdentifiedEntityInput")
                 .field(newInputObjectField().name(FIELD_ID).type(Scalars.GraphQLID))
                 .field(newInputObjectField().name(FIELD_VERSION).type(GraphQLLong)).description(ignoredInputFieldDesc)
