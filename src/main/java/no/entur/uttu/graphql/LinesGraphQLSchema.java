@@ -104,7 +104,7 @@ public class LinesGraphQLSchema {
     private ExportRepository exportRepository;
 
     @Autowired
-    private ExportedLineStatisticsRepository lineStatisticsRepository;
+    private ExportedLineStatisticsRepository exportedLineStatisticsRepository;
 
     @Autowired
     private FlexibleLineRepository flexibleLineRepository;
@@ -364,9 +364,9 @@ public class LinesGraphQLSchema {
                 .build();
 
         exportedLineStatisticsObjectType = newObject().name("ExportedLineStatistics")
-                .field(newFieldDefinition().name(FIELD_LINE_NAME).type(new GraphQLNonNull(GraphQLString)))
-                .field(newFieldDefinition().name(FIELD_OPERATING_DATE_FROM).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
-                .field(newFieldDefinition().name(FIELD_OPERATING_DATE_TO).type(new GraphQLNonNull(DateScalar.getGraphQLDateScalar())))
+                .field(newFieldDefinition().name(FIELD_LINE_NAME).type(GraphQLString))
+                .field(newFieldDefinition().name(FIELD_OPERATING_DATE_FROM).type(DateScalar.getGraphQLDateScalar()))
+                .field(newFieldDefinition().name(FIELD_OPERATING_DATE_TO).type(DateScalar.getGraphQLDateScalar()))
                 .build();
 
         exportObjectType = newObject(identifiedEntityObjectType).name("Export")
@@ -386,11 +386,6 @@ public class LinesGraphQLSchema {
                             Export export = env.getSource();
                             return export.getExportLineAssociations();
                         }))
-                .field(newFieldDefinition().name(FIELD_EXPORTED_LINE_STATISTICS).type(new GraphQLList(exportedLineStatisticsObjectType)))
-                .build();
-
-        lineStatisticsObjectType = newObject(groupOfEntitiesObjectType).name("LineStatistics")
-                .field(newFieldDefinition().name(EFFECTIVE_PERIOD).type(operatingPeriod))
                 .build();
     }
 
@@ -472,10 +467,10 @@ public class LinesGraphQLSchema {
                         .argument(idArgument)
                         .dataFetcher(env -> exportRepository.getOne(env.getArgument(FIELD_ID))))
                 .field(newFieldDefinition()
-                        .type(lineStatisticsObjectType)
+                        .type(new GraphQLList(exportedLineStatisticsObjectType))
                         .name("lineStatistics")
                         .description("Get line statistics")
-                        .dataFetcher(env -> lineStatisticsRepository.findAll()))
+                        .dataFetcher(env -> exportedLineStatisticsRepository.findExportedLineStatisticsByProvider(Context.getProvider())))
                 .build();
     }
 

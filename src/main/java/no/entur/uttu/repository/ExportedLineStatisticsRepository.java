@@ -20,11 +20,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.repository.Repository;
 
-import java.time.Instant;
 import java.util.List;
 
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 public interface ExportedLineStatisticsRepository extends Repository<ExportedLineStatistics, Long> {
 
-    List<ExportedLineStatistics> findAll();
+    List<ExportedLineStatistics> findExportedLineStatisticsByProvider(String providerCode);
+    ExportedLineStatistics getExportedLineStatisticsById(Long id);
+
 }

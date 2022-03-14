@@ -129,7 +129,6 @@ public class GraphQLNames {
     public static final String FIELD_DRY_RUN = "dryRun";
     public static final String FIELD_DOWNLOAD_URL = "downloadUrl";
     public static final String FIELD_EXPORT_LINE_ASSOCIATIONS = "lineAssociations";
-    public static final String FIELD_EXPORTED_LINE_STATISTICS = "exportedLineStatistics";
 
     // Export line association
     public static final String FIELD_LINE = "line";

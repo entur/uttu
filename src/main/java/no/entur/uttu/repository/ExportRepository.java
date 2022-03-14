@@ -28,5 +28,7 @@ public interface ExportRepository extends ProviderEntityRepository<Export> {
 
     List<Export> findByCreatedAfterAndProviderCode(Instant from, String provider);
 
+    Export findFirstByProviderCodeOrderByCreatedDesc(String provider);
+
     Export findByNetexIdAndProviderCode(String netexId,String provider);
 }
