@@ -68,7 +68,7 @@ public class NetexExporter {
         new Thread(this::assertInit).start();
     }
 
-    public void exportDataSet(Export export, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
+    public List<Line> exportDataSet(Export export, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
         NetexExportContext exportContext = new NetexExportContext(export);
 
         List<no.entur.uttu.model.FlexibleLine> flexibleLines = findAllValidEntitiesFromRepository(flexibleLineRepository, exportContext);
@@ -86,6 +86,8 @@ public class NetexExporter {
                 .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
 
         marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
+
+        return linesToExport;
     }
 
     protected List<Line> findLinesToExport(Collection<ExportLineAssociation> exportLineAssociations, List<Line> lines) {

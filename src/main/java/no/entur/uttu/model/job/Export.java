@@ -109,6 +109,10 @@ public class Export extends ProviderEntity {
         return exportedLineStatistics;
     }
 
+    public void addExportedLineStatistics(ExportedLineStatistics exportedLineStatisticstoAdd) {
+        exportedLineStatistics.add(exportedLineStatisticstoAdd);
+        exportedLineStatisticstoAdd.setExport(this);
+    }
     @Override
     public String toString() {
         return "Export{" +
