@@ -138,6 +138,7 @@ public class GraphQLNames {
     public static final String FIELD_LINE_NAME = "lineName";
     public static final String FIELD_OPERATING_DATE_FROM = "operatingPeriodFrom";
     public static final String FIELD_OPERATING_DATE_TO = "operatingPeriodTo";
+    public static final String FIELD_PROVIDER_CODE = "providerCode";
 
     // Key-values
     public static final String FIELD_KEY = "key";

@@ -26,26 +26,13 @@ import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import no.entur.uttu.config.Context;
+import no.entur.uttu.export.lineStatistics.ExportedLineStatisticsService;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.DurationScalar;
 import no.entur.uttu.graphql.scalars.GeoJSONCoordinatesScalar;
 import no.entur.uttu.graphql.scalars.LocalTimeScalar;
-import no.entur.uttu.model.BookingAccessEnumeration;
-import no.entur.uttu.model.BookingMethodEnumeration;
-import no.entur.uttu.model.DayTypeAssignment;
-import no.entur.uttu.model.DirectionTypeEnumeration;
-import no.entur.uttu.model.FixedLine;
-import no.entur.uttu.model.FlexibleArea;
-import no.entur.uttu.model.FlexibleLine;
-import no.entur.uttu.model.FlexibleLineTypeEnumeration;
-import no.entur.uttu.model.FlexibleStopPlace;
-import no.entur.uttu.model.Network;
-import no.entur.uttu.model.ProviderEntity;
-import no.entur.uttu.model.PurchaseMomentEnumeration;
-import no.entur.uttu.model.PurchaseWhenEnumeration;
-import no.entur.uttu.model.VehicleModeEnumeration;
-import no.entur.uttu.model.VehicleSubmodeEnumeration;
+import no.entur.uttu.model.*;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportStatusEnumeration;
 import no.entur.uttu.model.job.SeverityEnumeration;
@@ -104,7 +91,7 @@ public class LinesGraphQLSchema {
     private ExportRepository exportRepository;
 
     @Autowired
-    private ExportedLineStatisticsRepository exportedLineStatisticsRepository;
+    private ExportedLineStatisticsService exportedLineStatisticsService;
 
     @Autowired
     private FlexibleLineRepository flexibleLineRepository;
@@ -161,6 +148,7 @@ public class LinesGraphQLSchema {
     private GraphQLObjectType exportedLineStatisticsObjectType;
 
     private GraphQLArgument idArgument;
+    private GraphQLArgument providerArgument;
     private GraphQLSchema graphQLSchema;
 
     @PostConstruct
@@ -195,6 +183,10 @@ public class LinesGraphQLSchema {
         idArgument = GraphQLArgument.newArgument().name(FIELD_ID)
                 .type(new GraphQLNonNull(GraphQLID))
                 .description("Id for entity").build();
+
+        providerArgument = GraphQLArgument.newArgument().name(FIELD_PROVIDER_CODE)
+                .type(GraphQLID)
+                .description("Provider code, f.eks 'rut' for Ruter.").build();
 
         GraphQLObjectType geoJSONObjectType = newObject()
                 .name("GeoJSON")
@@ -367,6 +359,13 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_LINE_NAME).type(GraphQLString))
                 .field(newFieldDefinition().name(FIELD_OPERATING_DATE_FROM).type(DateScalar.getGraphQLDateScalar()))
                 .field(newFieldDefinition().name(FIELD_OPERATING_DATE_TO).type(DateScalar.getGraphQLDateScalar()))
+                .field(newFieldDefinition().name(FIELD_PROVIDER_CODE).type(GraphQLString).dataFetcher(env -> {
+                    ExportedLineStatistics export = env.getSource();
+                    if (export == null || export.getExport() == null) {
+                        return null;
+                    }
+                    return export.getExport().getProvider().getCode();
+                }))
                 .build();
 
         exportObjectType = newObject(identifiedEntityObjectType).name("Export")
@@ -375,7 +374,7 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_DRY_RUN).type(GraphQLBoolean))
                 .field(newFieldDefinition().name(FIELD_DOWNLOAD_URL).type(GraphQLString).dataFetcher(env -> {
                     Export export = env.getSource();
-                    if (export == null || StringUtils.isEmpty(export.getFileName())) {
+                    if (export == null || StringUtils.hasText(export.getFileName())) {
                         return null;
                     }
                     return export.getProvider().getCode().toLowerCase() + "/export/" + export.getNetexId() + "/download";
@@ -456,7 +455,7 @@ public class LinesGraphQLSchema {
                         .argument(GraphQLArgument.newArgument()
                                 .type(GraphQLLong)
                                 .name("historicDays")
-                                .defaultValue(30l)
+                                .defaultValue(30L)
                                 .description("Number historic to fetch data for"))
                         .description("List exports")
                         .dataFetcher(env -> exportRepository.findByCreatedAfterAndProviderCode(OffsetDateTime.now().minusDays(env.getArgument("historicDays")).toInstant(), Context.getProvider())))
@@ -470,8 +469,14 @@ public class LinesGraphQLSchema {
                         .type(new GraphQLList(exportedLineStatisticsObjectType))
                         .name("lineStatistics")
                         .description("Get line statistics")
-                        .dataFetcher(env -> exportedLineStatisticsRepository.findExportedLineStatisticsByProvider(Context.getProvider())))
-                .build();
+                        .argument(providerArgument)
+                        .dataFetcher(env -> {
+                            String providerCode = env.getArgument(FIELD_PROVIDER_CODE);
+                            return StringUtils.hasText(providerCode)
+                                    ? exportedLineStatisticsService.getLineStatisticsForProvider(providerCode)
+                                    : exportedLineStatisticsService.getLineStatisticsForAllProviders();
+                        }))
+                        .build();
     }
 
     private GraphQLObjectType createMutationObject() {
