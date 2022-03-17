@@ -374,7 +374,7 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_DRY_RUN).type(GraphQLBoolean))
                 .field(newFieldDefinition().name(FIELD_DOWNLOAD_URL).type(GraphQLString).dataFetcher(env -> {
                     Export export = env.getSource();
-                    if (export == null || StringUtils.hasText(export.getFileName())) {
+                    if (export == null || !StringUtils.hasText(export.getFileName())) {
                         return null;
                     }
                     return export.getProvider().getCode().toLowerCase() + "/export/" + export.getNetexId() + "/download";
@@ -472,7 +472,7 @@ public class LinesGraphQLSchema {
                         .argument(providerArgument)
                         .dataFetcher(env -> {
                             String providerCode = env.getArgument(FIELD_PROVIDER_CODE);
-                            return StringUtils.hasText(providerCode)
+                            return providerCode != null
                                     ? exportedLineStatisticsService.getLineStatisticsForProvider(providerCode)
                                     : exportedLineStatisticsService.getLineStatisticsForAllProviders();
                         }))
