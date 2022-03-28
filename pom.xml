@@ -50,7 +50,7 @@
         <wololo.version>0.14.3</wololo.version>
 
         <swagger-jersey2.version>1.6.5</swagger-jersey2.version>
-        <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
+        <javax.jdo.jdo2-api.version>2.3-20090302111651</javax.jdo.jdo2-api.version>
 
         <commons-io.version>2.8.0</commons-io.version>
         <groovy-all.version>2.5.8</groovy-all.version>
