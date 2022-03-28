@@ -6,12 +6,15 @@ aliases:
         auth:
           username: $DOCKERHUB_LOGIN
           password: $DOCKERHUB_PASSWORD
-
   - &GCP-auth-docker
     name: GCP authentication with docker
     command: |
       echo $DOCKER_PASSWORD > ${HOME}/account-auth.json
-
+  - &jfrog-login
+    name: Rename jfrog environment variable for maven setting.xml
+    command: |
+      echo "export JFROG_USER=$ARTIFACTORY_USER"  >> $BASH_ENV
+      echo "export JFROG_PASS=$ARTIFACTORY_PASSWORD"  >> $BASH_ENV
   - &tag-git-version
     name: Tag git commit with build version and push to github
     command: |
@@ -70,6 +73,7 @@ jobs:
       - run:
           name: Download Maven settings
           command: wget https://raw.githubusercontent.com/entur/circleci-toolbox-image-java11/master/tools/m2/settings.xml -O .circleci/settings.xml
+      - run: *jfrog-login
       - run:
           name: Refresh cache
           command: mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.0:go-offline -s .circleci/settings.xml
