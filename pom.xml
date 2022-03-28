@@ -52,7 +52,7 @@
         <swagger-jersey2.version>1.6.5</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-20090302111651</javax.jdo.jdo2-api.version>
 
-        <commons-io.version>2.8.0</commons-io.version>
+        <commons-io.version>2.11.0</commons-io.version>
         <groovy-all.version>2.5.16</groovy-all.version>
         <rest-assured.version>4.1.1</rest-assured.version>
         <graphql.version>11.0</graphql.version>
