@@ -65,8 +65,8 @@ jobs:
       - checkout
       - restore_cache:
           keys:
-            - dep-cache-{{ checksum "pom.xml" }}
-            - dep-cache-
+            - dep-cache-v2-{{ checksum "pom.xml" }}
+            - dep-cache-v2-
       - run:
           name: Download Maven settings
           command: wget https://raw.githubusercontent.com/entur/circleci-toolbox-image-java11/master/tools/m2/settings.xml -O .circleci/settings.xml
@@ -76,7 +76,7 @@ jobs:
       - save_cache:
           paths:
             - ~/.m2
-          key: dep-cache-{{ checksum "pom.xml" }}
+          key: dep-cache-v2-{{ checksum "pom.xml" }}
       # Cannot use -o because of snapshot dependencies.
       - run:
           name: Run Maven verify
