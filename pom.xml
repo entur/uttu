@@ -45,18 +45,18 @@
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
 
-        <postgis-jdbc.version>2.3.0</postgis-jdbc.version>
-        <geotools.version>20.1</geotools.version>
-        <wololo.version>0.14.3</wololo.version>
+        <postgis-jdbc.version>2.5.1</postgis-jdbc.version>
+        <geotools.version>20.5</geotools.version>
+        <wololo.version>0.17.0</wololo.version>
 
         <swagger-jersey2.version>1.6.5</swagger-jersey2.version>
-        <javax.jdo.jdo2-api.version>2.3-eb</javax.jdo.jdo2-api.version>
+        <javax.jdo.jdo2-api.version>2.3-20090302111651</javax.jdo.jdo2-api.version>
 
-        <commons-io.version>2.8.0</commons-io.version>
-        <groovy-all.version>2.5.8</groovy-all.version>
-        <rest-assured.version>4.1.1</rest-assured.version>
+        <commons-io.version>2.11.0</commons-io.version>
+        <groovy-all.version>2.5.16</groovy-all.version>
+        <rest-assured.version>4.5.1</rest-assured.version>
         <graphql.version>11.0</graphql.version>
-        <netex-java-model.version>1.0.11</netex-java-model.version>
+        <netex-java-model.version>1.0.13</netex-java-model.version>
 
 
     </properties>
