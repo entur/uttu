@@ -139,6 +139,10 @@ public class GraphQLNames {
     public static final String FIELD_OPERATING_DATE_FROM = "operatingPeriodFrom";
     public static final String FIELD_OPERATING_DATE_TO = "operatingPeriodTo";
     public static final String FIELD_PROVIDER_CODE = "providerCode";
+    public static final String FIELD_EXPORTED_DAY_TYPES_STATISTICS = "exportedDayTypesStatistics";
+    public static final String FIELD_DAY_TYPE_NETEX_ID = "dayTypeNetexId";
+    public static final String FIELD_START_DATE = "startDate";
+    public static final String FIELD_LINES = "lines";
 
     // Key-values
     public static final String FIELD_KEY = "key";

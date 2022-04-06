@@ -19,7 +19,7 @@ public class NetexLineUtilities {
                 .orElse(null);
     }
 
-    private static AvailabilityPeriod getAvailabilityPeriodFromDayTypeAssignment(DayTypeAssignment dayTypeAssignment) {
+    public static AvailabilityPeriod getAvailabilityPeriodFromDayTypeAssignment(DayTypeAssignment dayTypeAssignment) {
         if (dayTypeAssignment.getOperatingPeriod() != null) {
             return new AvailabilityPeriod(dayTypeAssignment.getOperatingPeriod().getFromDate(), dayTypeAssignment.getOperatingPeriod().getToDate());
         } else if (dayTypeAssignment.getDate() != null) {

@@ -17,12 +17,10 @@ package no.entur.uttu.export;
 
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.export.blob.BlobStoreService;
+import no.entur.uttu.export.lineStatistics.ExportedLineStatisticsService;
 import no.entur.uttu.export.messaging.MessagingService;
-import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.DataSetProducer;
 import no.entur.uttu.export.netex.NetexExporter;
-import no.entur.uttu.export.netex.producer.line.NetexLineUtilities;
-import no.entur.uttu.model.ExportedLineStatistics;
 import no.entur.uttu.model.Line;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportMessage;
@@ -80,7 +78,7 @@ public class ExportService {
                 // notify Marduk that a new export is available
                 messagingService.notifyExport(export.getProvider().getCode().toLowerCase());
                 exportedLines.stream()
-                        .map(ExportService::getExportedLineStatistics)
+                        .map(ExportedLineStatisticsService::toExportedLineStatistics)
                         .forEach(export::addExportedLineStatistics);
             }
             export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
@@ -101,16 +99,5 @@ public class ExportService {
 
         export.markAsFinished();
         logger.info("Completed {}", export);
-    }
-
-    private static ExportedLineStatistics getExportedLineStatistics(Line line) {
-        AvailabilityPeriod availabilityPeriod = NetexLineUtilities.calculateAvailabilityPeriodForLine(line);
-        ExportedLineStatistics exportedLineStatistics = new ExportedLineStatistics();
-
-        exportedLineStatistics.setLineName(line.getName());
-        exportedLineStatistics.setOperatingPeriodFrom(availabilityPeriod.getFrom());
-        exportedLineStatistics.setOperatingPeriodTo(availabilityPeriod.getTo());
-
-        return exportedLineStatistics;
     }
 }

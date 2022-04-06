@@ -20,6 +20,8 @@ import no.entur.uttu.model.job.Export;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 public class ExportedLineStatistics {
@@ -37,8 +39,14 @@ public class ExportedLineStatistics {
     @NotNull
     private LocalDate operatingPeriodTo;
 
+    private String publicCode;
+
     @ManyToOne
     private @NotNull Export export;
+
+    @OneToMany(mappedBy = "exportedLineStatistics", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
+    @NotNull
+    private final List<ExportedDayTypeStatistics> exportedDayTypesStatistics = new ArrayList<>();
 
     public String getLineName() {
         return lineName;
@@ -64,6 +72,14 @@ public class ExportedLineStatistics {
         this.operatingPeriodTo = toDate;
     }
 
+    public String getPublicCode() {
+        return publicCode;
+    }
+
+    public void setPublicCode(String publicCode) {
+        this.publicCode = publicCode;
+    }
+
     public Long getId() {
         return id;
     }
@@ -78,5 +94,14 @@ public class ExportedLineStatistics {
 
     public boolean isValid(LocalDate from, LocalDate to) {
         return !(operatingPeriodFrom.isAfter(to) || operatingPeriodTo.isBefore(from));
+    }
+
+    public List<ExportedDayTypeStatistics> getExportedDayTypesStatistics() {
+        return exportedDayTypesStatistics;
+    }
+
+    public void addExportedDayTypesStatistics(ExportedDayTypeStatistics exportedDayTypesStatisticsToAdd) {
+        exportedDayTypesStatisticsToAdd.setExportedLineStatistics(this);
+        exportedDayTypesStatistics.add(exportedDayTypesStatisticsToAdd);
     }
 }
