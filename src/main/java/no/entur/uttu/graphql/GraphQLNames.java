@@ -143,6 +143,7 @@ public class GraphQLNames {
     public static final String FIELD_DAY_TYPE_NETEX_ID = "dayTypeNetexId";
     public static final String FIELD_START_DATE = "startDate";
     public static final String FIELD_LINES = "lines";
+    public static final String FIELD_PUBLIC_LINES = "publicLines";
 
     // Key-values
     public static final String FIELD_KEY = "key";

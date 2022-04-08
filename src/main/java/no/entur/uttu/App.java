@@ -26,6 +26,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
 @SpringBootApplication(exclude={UserDetailsServiceAutoConfiguration.class})
 @Import(GooglePubSubConfig.class)
@@ -33,6 +34,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
         repositoryBaseClass = ProviderEntityRepositoryImpl.class)
 @EntityScan(basePackageClasses = {Provider.class, Jsr310JpaConverters.class})
 @EnableCaching
+@EnableWebSecurity(debug = true)
 public class App {
 
     public static void main(String[] args) {
