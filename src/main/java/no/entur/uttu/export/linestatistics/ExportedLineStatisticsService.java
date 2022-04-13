@@ -49,7 +49,7 @@ public class ExportedLineStatisticsService {
         return exportedLineStatistics;
     }
 
-    private static List<ExportedDayTypeStatistics> calculateExportedDayTypesStatisticsForLine(Line line) {
+    protected static List<ExportedDayTypeStatistics> calculateExportedDayTypesStatisticsForLine(Line line) {
         return line.getJourneyPatterns().stream()
                 .map(JourneyPattern::getServiceJourneys).flatMap(List::stream)
                 .map(ServiceJourney::getDayTypes).flatMap(List::stream)
@@ -57,7 +57,7 @@ public class ExportedLineStatisticsService {
                 .filter(Objects::nonNull).collect(Collectors.toList());
     }
 
-    private static ExportedDayTypeStatistics getExportedDayTypeStatisticsForDayType(DayType dayType) {
+    protected static ExportedDayTypeStatistics getExportedDayTypeStatisticsForDayType(DayType dayType) {
         return dayType.getDayTypeAssignments().stream()
                 .map(NetexLineUtilities::getAvailabilityPeriodFromDayTypeAssignment)
                 .filter(Objects::nonNull)
