@@ -6,7 +6,7 @@ import no.entur.uttu.model.*;
 import java.util.List;
 import java.util.Objects;
 
-public class NetexLineUtilities {
+public final class NetexLineUtilities {
 
     public static AvailabilityPeriod calculateAvailabilityPeriodForLine(Line line) {
         return line.getJourneyPatterns().stream()

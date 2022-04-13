@@ -18,7 +18,7 @@ package no.entur.uttu.graphql;
 import graphql.Scalars;
 import graphql.schema.*;
 import no.entur.uttu.config.Context;
-import no.entur.uttu.export.lineStatistics.ExportedLineStatisticsService;
+import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
