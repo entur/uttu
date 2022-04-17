@@ -19,7 +19,7 @@ import graphql.Scalars;
 import graphql.schema.*;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
-import no.entur.uttu.export.model.AvailabilityPeriod;
+import no.entur.uttu.graphql.fetchers.ExportedPublicLinesFetcher;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.DurationScalar;
@@ -376,30 +376,7 @@ public class LinesGraphQLSchema {
         exportedLineStatisticsObjectType = newObject().name("ExportedLineStatistics")
                 .field(newFieldDefinition().name(FIELD_START_DATE).type(DateScalar.getGraphQLDateScalar()).dataFetcher(env -> LocalDate.now()))
                 .field(newFieldDefinition().name(FIELD_PUBLIC_LINES).type(new GraphQLList(publicLineObjectType))
-                        .dataFetcher(env -> {
-                            List<ExportedLineStatistics> exportedLineStatistics = env.getSource();
-
-                            return exportedLineStatistics.stream()
-                                    .collect(
-                                            Collectors.groupingBy(lineStatistics -> lineStatistics.getExport().getProvider().getCode(),
-                                                    Collectors.groupingBy(ExportedLineStatistics::getPublicCode))).entrySet().stream()
-                                    .flatMap(lineStatisticsByProviderEntry -> lineStatisticsByProviderEntry.getValue().entrySet().stream()
-                                            .map(lineStatisticsByPublicCodeEntry -> {
-                                                AvailabilityPeriod availabilityPeriodForPublicLine = lineStatisticsByPublicCodeEntry.getValue().stream()
-                                                        .map(exportedLine -> new AvailabilityPeriod(exportedLine.getOperatingPeriodFrom(), exportedLine.getOperatingPeriodTo()))
-                                                        .reduce(AvailabilityPeriod::union).orElse(null);
-
-                                                ExportedPublicLine exportedPublicLine = new ExportedPublicLine();
-                                                exportedPublicLine.setOperatingPeriodFrom(Objects.requireNonNull(availabilityPeriodForPublicLine).getFrom());
-                                                exportedPublicLine.setOperatingPeriodTo(availabilityPeriodForPublicLine.getTo());
-                                                exportedPublicLine.setPublicCode(lineStatisticsByPublicCodeEntry.getKey());
-                                                exportedPublicLine.setLines(lineStatisticsByPublicCodeEntry.getValue());
-                                                exportedPublicLine.setProviderCode(lineStatisticsByProviderEntry.getKey());
-                                                return exportedPublicLine;
-                                            })
-                                    ).collect(Collectors.toList());
-                        }))
-                .build();
+                        .dataFetcher(new ExportedPublicLinesFetcher())).build();
 
         exportObjectType = newObject(identifiedEntityObjectType).name("Export")
                 .field(newFieldDefinition().name(FIELD_NAME).type(GraphQLString))
