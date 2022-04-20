@@ -15,14 +15,8 @@
 
 package no.entur.uttu.config;
 
-import io.swagger.jaxrs.config.BeanConfig;
-import io.swagger.jaxrs.listing.ApiListingResource;
-import io.swagger.jaxrs.listing.SwaggerSerializers;
 import no.entur.uttu.export.resource.ExportFileDownloadResource;
-import no.entur.uttu.graphql.resource.DataIntegrityViolationExceptionMapper;
-import no.entur.uttu.graphql.resource.LinesGraphQLResource;
-import no.entur.uttu.graphql.resource.GeneralExceptionMapper;
-import no.entur.uttu.graphql.resource.ProviderGraphQLResource;
+import no.entur.uttu.graphql.resource.*;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -50,6 +44,7 @@ public class JerseyConfig {
             register(LinesGraphQLResource.class);
             register(ProviderGraphQLResource.class);
             register(ExportFileDownloadResource.class);
+            register(ExportedLineStatisticsGraphQLResource.class);
         }
     }
 

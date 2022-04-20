@@ -134,6 +134,17 @@ public class GraphQLNames {
     public static final String FIELD_LINE = "line";
     public static final String FIELD_LINE_REF = "lineRef";
 
+    // Exported line statistics
+    public static final String FIELD_LINE_NAME = "lineName";
+    public static final String FIELD_OPERATING_DATE_FROM = "operatingPeriodFrom";
+    public static final String FIELD_OPERATING_DATE_TO = "operatingPeriodTo";
+    public static final String FIELD_PROVIDER_CODE = "providerCode";
+    public static final String FIELD_EXPORTED_DAY_TYPES_STATISTICS = "exportedDayTypesStatistics";
+    public static final String FIELD_DAY_TYPE_NETEX_ID = "dayTypeNetexId";
+    public static final String FIELD_START_DATE = "startDate";
+    public static final String FIELD_LINES = "lines";
+    public static final String FIELD_PUBLIC_LINES = "publicLines";
+
     // Key-values
     public static final String FIELD_KEY = "key";
     public static final String FIELD_VALUES = "values";
