@@ -18,6 +18,9 @@ public class ExportedDayTypeStatistics {
     private @NotNull ExportedLineStatistics exportedLineStatistics;
 
     @NotNull
+    protected String serviceJourneyName;
+
+    @NotNull
     protected String dayTypeNetexId;
 
     @NotNull
@@ -64,5 +67,13 @@ public class ExportedDayTypeStatistics {
 
     public void setOperatingPeriodTo(LocalDate operatingPeriodTo) {
         this.operatingPeriodTo = operatingPeriodTo;
+    }
+
+    public String getServiceJourneyName() {
+        return serviceJourneyName;
+    }
+
+    public void setServiceJourneyName(String serviceJourneyName) {
+        this.serviceJourneyName = serviceJourneyName;
     }
 }
