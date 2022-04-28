@@ -144,6 +144,7 @@ public class GraphQLNames {
     public static final String FIELD_START_DATE = "startDate";
     public static final String FIELD_LINES = "lines";
     public static final String FIELD_PUBLIC_LINES = "publicLines";
+    public static final String FIELD_SERVICE_JOURNEY_NAME = "serviceJourneyName";
 
     // Key-values
     public static final String FIELD_KEY = "key";

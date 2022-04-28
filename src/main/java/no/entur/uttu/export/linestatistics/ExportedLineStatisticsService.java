@@ -52,9 +52,17 @@ public class ExportedLineStatisticsService {
     protected static List<ExportedDayTypeStatistics> calculateExportedDayTypesStatisticsForLine(Line line) {
         return line.getJourneyPatterns().stream()
                 .map(JourneyPattern::getServiceJourneys).flatMap(List::stream)
-                .map(ServiceJourney::getDayTypes).flatMap(List::stream)
+                .map(ExportedLineStatisticsService::getExportedDayTypeStatisticsForServiceJourney).flatMap(List::stream)
+                .collect(Collectors.toList());
+    }
+
+    private static List<ExportedDayTypeStatistics> getExportedDayTypeStatisticsForServiceJourney(ServiceJourney serviceJourney) {
+        String serviceJourneyName = serviceJourney.getName();
+        return serviceJourney.getDayTypes().stream()
                 .map(ExportedLineStatisticsService::getExportedDayTypeStatisticsForDayType)
-                .filter(Objects::nonNull).collect(Collectors.toList());
+                .filter(Objects::nonNull)
+                .peek(exportedDayTypeStatistics -> exportedDayTypeStatistics.setServiceJourneyName(serviceJourneyName))
+                .collect(Collectors.toList());
     }
 
     protected static ExportedDayTypeStatistics getExportedDayTypeStatisticsForDayType(DayType dayType) {
@@ -70,5 +78,4 @@ public class ExportedLineStatisticsService {
                     return exportedDayTypesStatistics;
                 }).orElse(null);
     }
-
 }

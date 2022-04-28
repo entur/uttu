@@ -352,6 +352,7 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_DAY_TYPE_NETEX_ID).type(GraphQLString))
                 .field(newFieldDefinition().name(FIELD_OPERATING_DATE_FROM).type(DateScalar.getGraphQLDateScalar()))
                 .field(newFieldDefinition().name(FIELD_OPERATING_DATE_TO).type(DateScalar.getGraphQLDateScalar()))
+                .field(newFieldDefinition().name(FIELD_SERVICE_JOURNEY_NAME).type(GraphQLString))
                 .build();
 
         GraphQLObjectType exportedLineObjectType = newObject().name("ExportedLine")
