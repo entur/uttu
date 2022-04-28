@@ -186,6 +186,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         ],
         "serviceJourneys": [
           {
+            "name": "SJ2",
             "notices": {
               "text": "koko"
             },
@@ -231,6 +232,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         ],
         "serviceJourneys": [
           {
+            "name": "SJ1",
             "dayTypes": [
               {
                 "dayTypeAssignments": [
@@ -326,6 +328,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
                             }
                         }
                         serviceJourneys {
+                            name
                             dayTypes {
                                 daysOfWeek
                                 dayTypeAssignments {
