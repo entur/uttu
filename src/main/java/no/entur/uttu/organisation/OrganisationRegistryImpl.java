@@ -69,6 +69,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
         try {
             return orgRegisterClient.get()
                     .uri(organisationRegistryUrl + organisationId)
+                    .header("Et-Client-Name", "entur-nplan")
                     .retrieve()
                     .bodyToMono(Organisation.class)
                     .retryWhen(Retry.backoff(maxRetryAttempts, Duration.ofSeconds(1)).filter(is5xx))
@@ -84,6 +85,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
         try {
             return orgRegisterClient.get()
                     .uri(organisationRegistryUrl)
+                    .header("Et-Client-Name", "entur-nplan")
                     .retrieve()
                     .bodyToMono(new ParameterizedTypeReference<List<Organisation>>() {})
                     .retryWhen(Retry.backoff(maxRetryAttempts, Duration.ofSeconds(1)).filter(is5xx))
