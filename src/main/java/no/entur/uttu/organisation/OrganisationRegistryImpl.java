@@ -36,6 +36,7 @@ import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
@@ -89,7 +90,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
                     .block(Duration.ofMillis(HTTP_TIMEOUT));
         } catch (HttpClientErrorException ex) {
             logger.warn("Exception while trying to fetch all organisations");
-            return null;
+            return Collections.emptyList();
         }
     }
 
