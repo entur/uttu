@@ -18,43 +18,39 @@ package no.entur.uttu.organisation;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
 public class OrganisationRegistryImpl implements OrganisationRegistry {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private String organisationRegistryUrl;
+    private WebClient orgRegisterClient;
 
-    public OrganisationRegistryImpl(@Value("${organisation.registry.url:https://tjenester.entur.org/organisations/v1/organisations/}") String organisationRegistryUrl) {
+    public OrganisationRegistryImpl(
+            @Value("${organisation.registry.url:https://tjenester.entur.org/organisations/v1/organisations/}") String organisationRegistryUrl,
+            @Autowired WebClient orgRegisterClient
+    ) {
         this.organisationRegistryUrl = organisationRegistryUrl;
-    }
-
-    private RestTemplate restTemplate = createRestTemplate();
-
-    private RestTemplate createRestTemplate() {
-        CloseableHttpClient clientBuilder = HttpClientBuilder.create().build();
-        return new RestTemplate(new HttpComponentsClientHttpRequestFactory(clientBuilder));
+        this.orgRegisterClient = orgRegisterClient;
     }
 
     public Organisation getOrganisation(String organisationId) {
         try {
-            ResponseEntity<Organisation> rateResponse =
-                    restTemplate.getForEntity(organisationRegistryUrl + organisationId,
-                            Organisation.class);
-            return rateResponse.getBody();
+            return orgRegisterClient.get()
+                    .uri(organisationRegistryUrl + organisationId)
+                    .retrieve()
+                    .bodyToMono(Organisation.class)
+                    .block();
         } catch (HttpClientErrorException ex) {
-            logger.warn("Exception while trying to fetch operator: " + organisationId + " : " + ex.getMessage(), ex);
+            logger.warn("Exception while trying to fetch organisation: " + organisationId + " : " + ex.getMessage(), ex);
             return null;
         }
     }
