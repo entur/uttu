@@ -68,3 +68,7 @@ variable "db_backup_enabled" {
 variable ror-uttu-db-password {
   description = "Uttu database password"
 }
+
+variable ror-partner-auth0-secret {
+  description = "Auth0 client secret for Entur partner tenant"
+}

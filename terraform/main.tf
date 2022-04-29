@@ -61,6 +61,18 @@ resource "kubernetes_secret" "ror-uttu-db-password" {
   }
 }
 
+resource "kubernetes_secret" "ror-uttu-secret" {
+  metadata {
+    name      = "${var.labels.team}-${var.labels.app}-secret"
+    namespace = var.kube_namespace
+  }
+
+  data = {
+    "uttu-db-password" = var.ror-uttu-db-password
+    "partner-auth0-secret" = var.ror-partner-auth0-secret
+  }
+}
+
 resource "google_sql_database_instance" "db_instance" {
   name = "uttu-db"
   project = var.gcp_project
