@@ -54,6 +54,11 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
     }
 
     @Override
+    public List<Organisation> getOrganisations() {
+        return null;
+    }
+
+    @Override
     public String getVerifiedOperatorRef(String operatorRef) {
         if (!validOperators.contains(operatorRef)) {
             throw new CodedIllegalArgumentException("", CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_NOT_VALID_OPERATOR));

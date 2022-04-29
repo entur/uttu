@@ -1,6 +1,7 @@
 package no.entur.uttu.config;
 
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
+import org.entur.oauth2.RorAuthenticationConverter;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
