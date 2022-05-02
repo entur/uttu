@@ -1,14 +1,20 @@
 package no.entur.uttu.organisation;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.util.List;
 
-@RestController
+@Component
+@Api
+@Path("/organisations")
 public class OrganisationRestResource {
     private final OrganisationRegistry organisationRegistry;
 
@@ -16,13 +22,16 @@ public class OrganisationRestResource {
         this.organisationRegistry = organisationRegistry;
     }
 
-    @GetMapping(value="/organisations", produces="application/json")
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("isAuthenticated()")
     public List<Organisation> getOrganisations() {
         return organisationRegistry.getOrganisations();
     }
 
-    @GetMapping(value="/organisations/{id}", produces="application/json")
+    @GET
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
     @PreAuthorize("isAuthenticated()")
     public Organisation getOrganisation(@PathVariable String id) { return organisationRegistry.getOrganisation(id); }
 }
