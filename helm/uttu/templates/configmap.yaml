@@ -45,7 +45,7 @@ data:
     spring.security.oauth2.client.provider.orgRegister.token-uri={{ .Values.auth0.partner.tokenUri }}
     spring.security.oauth2.client.registration.orgRegister.client-id={{ .Values.auth0.partner.clientId }}
     spring.security.oauth2.client.registration.orgRegister.authorization-grant-type=client_credentials
-    orgRegister.oauth2.client.audience={{ Values.auth0.orgRegister.audience }}
+    orgRegister.oauth2.client.audience={{ .Values.auth0.orgRegister.audience }}
 
     # Spring Actuator
     management.server.port=9001
