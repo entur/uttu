@@ -10,10 +10,10 @@ configMap:
       url: https://ror-entur-dev.eu.auth0.com/
       audience: https://ror.api.dev.entur.io
     partner:
-        tokenUri: https://partner.dev.entur.org/oauth/token
-        clientId: 4a5zhKZaENqIl1u0m5blot8sYKVTUIec
+      tokenUri: https://partner.dev.entur.org/oauth/token
+      clientId: 4a5zhKZaENqIl1u0m5blot8sYKVTUIec
   orgRegister:
-      audience: https://api.dev.entur.io
+    audience: https://api.dev.entur.io
   pubsubProjectId: entur-ror-dev
   blobstoreProjectId: entur-ror-dev
   blobstoreContainerName: ror-marduk-exchange-dev
