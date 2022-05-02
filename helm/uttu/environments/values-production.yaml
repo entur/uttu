@@ -19,9 +19,9 @@ configMap:
     ror:
       url: https://auth2.entur.org/
       audience: https://ror.api.entur.io
-  partner:
-    tokenUri: https://partner.entur.org/oauth/token
-    clientId: 1ZZMds7c0urOXHAMuklhv2puDcdVUQIW
+    partner:
+      tokenUri: https://partner.entur.org/oauth/token
+      clientId: 1ZZMds7c0urOXHAMuklhv2puDcdVUQIW
   orgRegister:
     audience: https://api.entur.io
   pubsubProjectId: entur-ror-prod
