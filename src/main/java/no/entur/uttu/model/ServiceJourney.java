@@ -50,10 +50,9 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
     @ManyToOne
     private JourneyPattern journeyPattern;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToMany
     @NotNull
     private final List<DayType> dayTypes = new ArrayList<>();
-
 
     @OneToMany(mappedBy = "serviceJourney", cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull

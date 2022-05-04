@@ -74,6 +74,7 @@ public class GraphQLNames {
 
     // DayType
     public static final String FIELD_DAY_TYPES = "dayTypes";
+    public static final String FIELD_DAY_TYPES_REFS = "dayTypesRefs";
 
     // StopPointInJourneyPattern
     public static final String FIELD_FLEXIBLE_STOP_PLACE = "flexibleStopPlace";

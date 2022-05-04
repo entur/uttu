@@ -10,6 +10,9 @@ for f in ./db/migration/V1__Base_version.sql \
            ./db/migration/V8__On_delete_cascade_line_fkey_in_export_line_association.sql \
            ./db/migration/V9__Add_key_list.sql \
            ./db/migration/V10__Drop_fromDate_to_Date_on_Export.sql \
+           ./db/migration/V11__Add_exported_line_statistics.sql \
+           ./db/migration/V12__Add_service_journey_name.sql \
+           ./db/migration/V13__Day_type_Service_journey_many_to_many.sql \
            ./import.sql
 do
   echo "Running migration for ${f}"
