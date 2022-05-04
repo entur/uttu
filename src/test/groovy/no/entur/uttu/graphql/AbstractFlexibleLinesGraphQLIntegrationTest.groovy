@@ -15,10 +15,42 @@
 
 package no.entur.uttu.graphql
 
-import graphql.Assert
 import io.restassured.response.ValidatableResponse
 
+import java.time.LocalDate
+
 abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationTest {
+
+    ValidatableResponse createDayType(LocalDate date) {
+        String query = """
+            mutation MutateDayType(\$input: DayTypeInput!) {
+                mutateDayType(input: \$input) {
+                    id
+                    daysOfWeek
+                    dayTypeAssignments {
+                        date
+                        isAvailable
+                        operatingPeriod {
+                            fromDate
+                            toDate
+                        }
+                    }
+                }
+            }
+        """
+
+        String variables = """
+            {
+                "input": {
+                    "dayTypeAssignments": {
+                        "date": "$date"
+                    }
+                }
+            }
+        """
+
+        executeGraphQL(query, variables)
+    }
 
     protected String getUrl() {
         return "/services/flexible-lines/tst/graphql"
@@ -125,6 +157,8 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     }
 
     ValidatableResponse createFlexibleLine(String name, String operatorRef, String networkId, String flexAreaStopPlaceId, String hailAndRideStopPlaceId) {
+        ValidatableResponse dayTypeResponse = createDayType(TODAY)
+        String dayTypeRef = dayTypeResponse.extract().body().path("data.mutateDayType.id")
         String variables = """
 {
   "flexibleLine": {
@@ -190,15 +224,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
             "notices": {
               "text": "koko"
             },
-            "dayTypes": [
-              {
-                "dayTypeAssignments": [
-                  {
-                    "date": "$TODAY"
-                  }
-                ]
-              }
-            ],
+            "dayTypesRefs": ["$dayTypeRef"],
             "privateCode": "500",
             "passingTimes": [
               {
@@ -233,15 +259,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         "serviceJourneys": [
           {
             "name": "SJ1",
-            "dayTypes": [
-              {
-                "dayTypeAssignments": [
-                  {
-                    "date": "$TODAY"
-                  }
-                ]
-              }
-            ],
+            "dayTypesRefs": ["$dayTypeRef"],
             "privateCode": "501",
             "passingTimes": [
               {
