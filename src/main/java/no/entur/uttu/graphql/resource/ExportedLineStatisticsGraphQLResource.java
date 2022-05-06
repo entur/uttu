@@ -54,7 +54,9 @@ public class ExportedLineStatisticsGraphQLResource {
     @SuppressWarnings("unchecked")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
+    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') " +
+            "or hasRole('" + ROLE_ROUTE_DATA_EDIT + "') " +
+            "and @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "', #request.get('variables').get('providerCode'))")
     public Response executeLinesStatement(Map<String, Object> request) {
         try {
             return graphQLResourceHelper.executeStatement(linesGraphQL, request);
