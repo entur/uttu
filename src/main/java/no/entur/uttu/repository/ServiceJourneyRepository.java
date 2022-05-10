@@ -22,6 +22,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface ServiceJourneyRepository extends ProviderEntityRepository<ServiceJourney> {
 
-    @Query(value = "SELECT COUNT(sj) FROM service_journey sj JOIN service_journey_day_types sjdt ON :dayTypePk = sjdt.day_types_pk", nativeQuery = true)
+    @Query(value = "SELECT COUNT(sj) FROM service_journey sj JOIN service_journey_day_types sjdt ON :dayTypePk = sjdt.day_types_pk WHERE sjdt.service_journey_pk = sj.pk", nativeQuery = true)
     long countByDayTypePk(@Param("dayTypePk") Long dayTypePk);
 }

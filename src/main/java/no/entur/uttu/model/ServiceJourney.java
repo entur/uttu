@@ -31,7 +31,9 @@ import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static no.entur.uttu.model.Constraints.SERVICE_JOURNEY_UNIQUE_NAME;
 
@@ -52,7 +54,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
     @ManyToMany
     @NotNull
-    private final List<DayType> dayTypes = new ArrayList<>();
+    private final Set<DayType> dayTypes = new HashSet<>();
 
     @OneToMany(mappedBy = "serviceJourney", cascade = CascadeType.ALL, orphanRemoval = true)
     @NotNull
@@ -111,7 +113,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
         this.bookingArrangement = bookingArrangement;
     }
 
-    public List<DayType> getDayTypes() {
+    public Set<DayType> getDayTypes() {
         return dayTypes;
     }
 

@@ -33,6 +33,7 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
     private EntityManager entityManager;
     private JpaEntityInformation<T, Long> entityInformation;
     private String findAllQuery;
+    private String findByIdsQuery;
     private String findOneByNetexIdQuery;
 
     public ProviderEntityRepositoryImpl(JpaEntityInformation entityInformation, EntityManager entityManager) {
@@ -40,6 +41,7 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
         this.entityManager = entityManager;
         this.entityInformation = entityInformation;
         findAllQuery = "from " + entityInformation.getEntityName() + " e where e.provider.code=:providerCode";
+        findByIdsQuery = findAllQuery + " and netexId in :netexIds";
         findOneByNetexIdQuery = findAllQuery + " and netexId=:netexId";
     }
 
@@ -55,6 +57,13 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
     public List<T> findAll() {
         return entityManager.createQuery(findAllQuery,
                 entityInformation.getJavaType()).setParameter("providerCode", Context.getVerifiedProviderCode()).getResultList();
+    }
+
+    @Override
+    public List<T> findByIds(List<String> netexIds) {
+        return entityManager.createQuery(findByIdsQuery,
+                        entityInformation.getJavaType()).setParameter("providerCode", Context.getVerifiedProviderCode())
+                .setParameter("netexIds", netexIds).getResultList();
     }
 
     @Override
