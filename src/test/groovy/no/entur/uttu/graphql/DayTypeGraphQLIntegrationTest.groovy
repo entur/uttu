@@ -39,7 +39,7 @@ mutation DeleteDayType(\$id: ID!) {
         ValidatableResponse dayTypeResponse = createDayType()
         String dayTypeRef = dayTypeResponse.extract().body().path("data.mutateDayType.id")
 
-        createFixedLine("TestSJ", dayTypeRef)
+        createFixedLineWithDayTypeRef("TestSJ", dayTypeRef)
 
         executeGraphQL(deleteDayTypeMutation, "{ \"id\": \"" + dayTypeRef + "\" }", 200)
                 .body("errors[0].extensions.code", equalTo("ENTITY_IS_REFERENCED"))

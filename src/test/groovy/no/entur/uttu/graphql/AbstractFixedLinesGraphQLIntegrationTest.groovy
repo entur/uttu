@@ -64,7 +64,7 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
         executeGraphQL(query, variables)
     }
 
-    ValidatableResponse createFixedLine(String name, String dayTypeRef) {
+    ValidatableResponse createFixedLineWithDayTypeRef(String name, String dayTypeRef) {
         String networkId = getNetworkId(createNetwork(name))
 
         String query = """
@@ -150,6 +150,6 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
     ValidatableResponse createFixedLine(String name) {
         ValidatableResponse dayTypeResponse = createDayType();
         String dayTypeRef = dayTypeResponse.extract().body().path("data.mutateDayType.id")
-        createFixedLine(name, dayTypeRef)
+        createFixedLineWithDayTypeRef(name, dayTypeRef)
     }
 }
