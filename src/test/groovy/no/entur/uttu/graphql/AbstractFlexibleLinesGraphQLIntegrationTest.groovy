@@ -26,6 +26,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
             mutation MutateDayType(\$input: DayTypeInput!) {
                 mutateDayType(input: \$input) {
                     id
+                    name
                     daysOfWeek
                     dayTypeAssignments {
                         date
@@ -42,6 +43,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         String variables = """
             {
                 "input": {
+                    "name": "Test day type name",
                     "dayTypeAssignments": {
                         "date": "$date"
                     }
