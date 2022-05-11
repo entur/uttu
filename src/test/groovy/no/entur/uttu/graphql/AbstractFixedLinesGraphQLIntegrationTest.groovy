@@ -83,6 +83,7 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
                       serviceJourneys {
                         id
                         dayTypes {
+                          name
                           daysOfWeek
                           dayTypeAssignments {
                             date

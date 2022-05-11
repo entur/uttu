@@ -348,6 +348,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
                         serviceJourneys {
                             name
                             dayTypes {
+                                name
                                 daysOfWeek
                                 dayTypeAssignments {
                                     operatingPeriod {
