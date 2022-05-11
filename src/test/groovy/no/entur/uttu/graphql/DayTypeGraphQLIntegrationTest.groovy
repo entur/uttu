@@ -1,4 +1,35 @@
 package no.entur.uttu.graphql
 
-class DayTypeGraphQLIntegrationTest {
+import io.restassured.response.ValidatableResponse
+import org.junit.Test
+
+import static org.hamcrest.Matchers.nullValue
+
+class DayTypeGraphQLIntegrationTest extends AbstractFixedLinesGraphQLIntegrationTest {
+
+    String deleteDayTypeMutation = """
+mutation DeleteDayType(\$id: ID!) {
+  deleteDayType(id: \$id) {
+    id
+  }
+}
+"""
+    String getDayTypesByIds = """
+  query GetDayTypesByIds(\$ids: [ID!]!) {
+    dayTypesByIds(ids: \$ids) {
+      id
+      numberOfServiceJourneys
+    }
+  }
+"""
+
+    @Test
+    void testDayTypeLifeCycle() {
+        ValidatableResponse dayTypeResponse = createDayType()
+        String dayTypeRef = dayTypeResponse.extract().body().path("data.mutateDayType.id")
+        executeGraphQL(getDayTypesByIds, "{ \"ids\": [\"" + dayTypeRef + "\"]}", 200)
+                .body("errors", nullValue())
+        executeGraphQL(deleteDayTypeMutation, "{ \"id\": \"" + dayTypeRef + "\" }", 200)
+                .body("errors", nullValue())
+    }
 }
