@@ -26,6 +26,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import javax.jdo.annotations.Cacheable;
+
 @Component
 public class StopPlaceRegistryImpl implements StopPlaceRegistry {
 
@@ -49,6 +51,7 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
     private String stopPlaceRegistryUrl = "https://api.entur.io/stop-places/v1/graphql";
 
 
+    @Cacheable("validQuayRefs")
     public boolean isValidQuayRef(String quayRef) {
         if (quayRef == null) {
             return false;
