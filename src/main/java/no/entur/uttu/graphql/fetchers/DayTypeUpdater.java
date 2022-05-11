@@ -16,6 +16,7 @@
 package no.entur.uttu.graphql.fetchers;
 
 import graphql.schema.DataFetchingEnvironment;
+import no.entur.uttu.error.codederror.EntityHasReferencesCodedError;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.repository.ServiceJourneyRepository;
@@ -49,7 +50,9 @@ public class DayTypeUpdater extends AbstractProviderEntityUpdater<DayType> {
         DayType dayType = repository.getOne(id);
         if (dayType != null) {
             long noOfServiceJourneys = serviceJourneyRepository.countByDayTypePk(dayType.getPk());
-            Preconditions.checkArgument(noOfServiceJourneys == 0, "%s cannot be deleted as it is referenced by %s serviceJourney(s)", dayType.identity(), noOfServiceJourneys);
+            Preconditions.checkArgument(noOfServiceJourneys == 0,
+                    EntityHasReferencesCodedError.fromNumberOfReferences((int)noOfServiceJourneys),
+                    "%s cannot be deleted as it is referenced by %s serviceJourney(s)", dayType.identity(), noOfServiceJourneys);
         }
         super.verifyDeleteAllowed(id);
     }

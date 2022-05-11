@@ -283,6 +283,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     }
 
 
+
     String fullFlexibleLineFieldSet = """
                     id
                     version
