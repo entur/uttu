@@ -147,7 +147,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     }
 
     ValidatableResponse createFlexibleLine(String name) {
-        return createFlexibleLine(name, '22');
+        return createFlexibleLine(name, '22')
     }
 
 
@@ -161,6 +161,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     ValidatableResponse createFlexibleLine(String name, String operatorRef, String networkId, String flexAreaStopPlaceId, String hailAndRideStopPlaceId) {
         ValidatableResponse dayTypeResponse = createDayType(TODAY)
         String dayTypeRef = dayTypeResponse.extract().body().path("data.mutateDayType.id")
+        String timestamp = System.currentTimeMillis().toString()
         String variables = """
 {
   "flexibleLine": {
@@ -222,7 +223,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         ],
         "serviceJourneys": [
           {
-            "name": "SJ2",
+            "name": "SJ-$timestamp-1",
             "notices": {
               "text": "koko"
             },
@@ -260,7 +261,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         ],
         "serviceJourneys": [
           {
-            "name": "SJ1",
+            "name": "SJ-$timestamp-2",
             "dayTypesRefs": ["$dayTypeRef"],
             "privateCode": "501",
             "passingTimes": [
