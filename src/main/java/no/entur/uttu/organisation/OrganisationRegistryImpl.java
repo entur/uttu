@@ -35,7 +35,6 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
-import javax.jdo.annotations.Cacheable;
 import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
@@ -67,7 +66,6 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     }
 
     @Override
-    @Cacheable("organisation")
     public Organisation getOrganisation(String organisationId) {
         try {
             return orgRegisterClient.get()
@@ -84,7 +82,6 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     }
 
     @Override
-    @Cacheable("organisations")
     public List<Organisation> getOrganisations() {
         try {
             return orgRegisterClient.get()
