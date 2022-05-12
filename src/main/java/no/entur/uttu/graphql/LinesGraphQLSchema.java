@@ -19,6 +19,7 @@ import graphql.Scalars;
 import graphql.schema.*;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
+import no.entur.uttu.graphql.fetchers.DayTypeServiceJourneyCountFetcher;
 import no.entur.uttu.graphql.fetchers.ExportedPublicLinesFetcher;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
@@ -75,6 +76,12 @@ public class LinesGraphQLSchema {
     private DataFetcher<Network> networkUpdater;
 
     @Autowired
+    private DataFetcher<DayType> dayTypeUpdater;
+
+    @Autowired
+    private DayTypeServiceJourneyCountFetcher dayTypeServiceJourneyCountFetcher;
+
+    @Autowired
     private FlexibleStopPlaceRepository flexibleStopPlaceRepository;
 
     @Autowired
@@ -97,6 +104,9 @@ public class LinesGraphQLSchema {
 
     @Autowired
     private Profile profile;
+
+    @Autowired
+    private DayTypeRepository dayTypeRepository;
 
     private <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
         return createEnum(name, Arrays.asList(values), mapping);
@@ -135,12 +145,14 @@ public class LinesGraphQLSchema {
     private GraphQLObjectType lineObjectType;
     private GraphQLObjectType fixedLineObjectType;
     private GraphQLObjectType flexibleLineObjectType;
+    private GraphQLObjectType dayTypeObjectType;
     private GraphQLObjectType flexibleStopPlaceObjectType;
     private GraphQLObjectType networkObjectType;
     private GraphQLObjectType exportObjectType;
     private GraphQLObjectType exportedLineStatisticsObjectType;
 
     private GraphQLArgument idArgument;
+    private GraphQLArgument idsArgument;
     private GraphQLArgument providerArgument;
     private GraphQLSchema graphQLSchema;
 
@@ -176,6 +188,10 @@ public class LinesGraphQLSchema {
         idArgument = GraphQLArgument.newArgument().name(FIELD_ID)
                 .type(new GraphQLNonNull(GraphQLID))
                 .description("Id for entity").build();
+
+        idsArgument = GraphQLArgument.newArgument().name(FIELD_IDS)
+                .type(new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))))
+                .description("Ids for entities").build();
 
         providerArgument = GraphQLArgument.newArgument().name(FIELD_PROVIDER_CODE)
                 .type(GraphQLID)
@@ -278,9 +294,11 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_OPERATING_PERIOD).type(operatingPeriod))
                 .build();
 
-        GraphQLObjectType dayTypeObjectType = newObject(identifiedEntityObjectType).name("DayType")
+        dayTypeObjectType = newObject(identifiedEntityObjectType).name("DayType")
                 .field(newFieldDefinition().name(FIELD_DAYS_OF_WEEK).type(new GraphQLList(dayOfWeekEnum)))
                 .field(newFieldDefinition().name(FIELD_DAY_TYPE_ASSIGNMENTS).type(new GraphQLNonNull(new GraphQLList(dayTypeAssignmentObjectType))))
+                .field(newFieldDefinition().name(FIELD_NUMBER_OF_SERVICE_JOURNEYS).dataFetcher(dayTypeServiceJourneyCountFetcher).type(GraphQLLong))
+                .field(newFieldDefinition().name(FIELD_NAME).type(GraphQLString))
                 .build();
 
         GraphQLObjectType timetabledPassingTimeObjectType = newObject(identifiedEntityObjectType).name("TimetabledPassingTime")
@@ -439,6 +457,23 @@ public class LinesGraphQLSchema {
                         .argument(idArgument)
                         .dataFetcher(env -> flexibleLineRepository.getOne(env.getArgument(FIELD_ID))))
                 .field(newFieldDefinition()
+                        .type(new GraphQLList(dayTypeObjectType))
+                        .name("dayTypes")
+                        .description("List dayTypes")
+                        .dataFetcher(env -> dayTypeRepository.findAll()))
+                .field(newFieldDefinition()
+                        .type(new GraphQLList(dayTypeObjectType))
+                        .name("dayTypesByIds")
+                        .description("List dayTypes by ids")
+                        .argument(idsArgument)
+                        .dataFetcher(env -> dayTypeRepository.findByIds(env.getArgument(FIELD_IDS))))
+                .field(newFieldDefinition()
+                        .type(dayTypeObjectType)
+                        .name("dayType")
+                        .description("Get dayType by id")
+                        .argument(idArgument)
+                        .dataFetcher(env -> dayTypeRepository.getOne(env.getArgument(FIELD_ID))))
+                .field(newFieldDefinition()
                         .type(new GraphQLList(flexibleStopPlaceObjectType))
                         .name("flexibleStopPlaces")
                         .description("List flexibleStopPlaces")
@@ -584,6 +619,7 @@ public class LinesGraphQLSchema {
         GraphQLInputObjectType dayTypeInputType = newInputObject(identifiedEntityInputType).name("DayTypeInput")
                 .field(newInputObjectField().name(FIELD_DAYS_OF_WEEK).type(new GraphQLList(dayOfWeekEnum)))
                 .field(newInputObjectField().name(FIELD_DAY_TYPE_ASSIGNMENTS).type(new GraphQLNonNull(new GraphQLList(dayTypeAssignmentInputType))))
+                .field(newInputObjectField().name(FIELD_NAME).type(GraphQLString))
                 .build();
 
         GraphQLInputObjectType noticeInputType = newInputObject(identifiedEntityInputType).name("NoticeInput")
@@ -607,7 +643,7 @@ public class LinesGraphQLSchema {
                 .field(newInputObjectField().name(FIELD_OPERATOR_REF).type(GraphQLString))
                 .field(newInputObjectField().name(FIELD_BOOKING_ARRANGEMENT).type(bookingArrangementInputType))
                 .field(newInputObjectField().name(FIELD_PASSING_TIMES).type(new GraphQLNonNull(new GraphQLList(timetabledPassingTimeInputType))))
-                .field(newInputObjectField().name(FIELD_DAY_TYPES).type(new GraphQLList(dayTypeInputType)))
+                .field(newInputObjectField().name(FIELD_DAY_TYPES_REFS).type(new GraphQLList(GraphQLString)))
                 .field(newInputObjectField().name(FIELD_NOTICES).type(new GraphQLList(noticeInputType)))
                 .build();
 
@@ -717,6 +753,25 @@ public class LinesGraphQLSchema {
                         .description("Delete an existing flexibleLine")
                         .argument(idArgument)
                         .dataFetcher(flexibleLineUpdater))
+                .field(newFieldDefinition()
+                        .type(new GraphQLNonNull(dayTypeObjectType))
+                        .name("mutateDayType")
+                        .description("Create new or update existing dayType")
+                        .argument(GraphQLArgument.newArgument()
+                                .name(FIELD_INPUT)
+                                .type(dayTypeInputType))
+                        .dataFetcher(dayTypeUpdater))
+                .field(newFieldDefinition()
+                        .type(new GraphQLNonNull(dayTypeObjectType))
+                        .name("deleteDayType")
+                        .description("Delete an existing dayType")
+                        .argument(idArgument)
+                        .dataFetcher(dayTypeUpdater))
+                .field(newFieldDefinition()
+                        .type(new GraphQLNonNull(new GraphQLList(dayTypeObjectType)))
+                        .name("deleteDayTypes")
+                        .argument(idArgument)
+                        .dataFetcher(dayTypeUpdater))
                 .field(newFieldDefinition()
                         .type(new GraphQLNonNull(flexibleStopPlaceObjectType))
                         .name("mutateFlexibleStopPlace")

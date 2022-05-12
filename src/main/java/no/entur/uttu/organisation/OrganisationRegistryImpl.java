@@ -65,6 +65,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
         this.maxRetryAttempts = maxRetryAttempts;
     }
 
+    @Override
     public Organisation getOrganisation(String organisationId) {
         try {
             return orgRegisterClient.get()

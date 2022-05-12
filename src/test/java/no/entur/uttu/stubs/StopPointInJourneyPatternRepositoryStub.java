@@ -28,6 +28,11 @@ public class StopPointInJourneyPatternRepositoryStub implements StopPointInJourn
     }
 
     @Override
+    public List<StopPointInJourneyPattern> findByIds(List<String> ids) {
+        return null;
+    }
+
+    @Override
     public StopPointInJourneyPattern getOne(String netexId) {
         return null;
     }

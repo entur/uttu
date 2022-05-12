@@ -39,6 +39,8 @@ public class DayType extends ProviderEntity {
     @OneToMany(cascade = CascadeType.ALL)
     private List<DayTypeAssignment> dayTypeAssignments = new ArrayList<>();
 
+    private String name;
+
     public List<DayOfWeek> getDaysOfWeek() {
         return daysOfWeek;
     }
@@ -46,7 +48,6 @@ public class DayType extends ProviderEntity {
     public void setDaysOfWeek(List<DayOfWeek> daysOfWeek) {
         this.daysOfWeek = daysOfWeek;
     }
-
 
     public List<DayTypeAssignment> getDayTypeAssignments() {
         return dayTypeAssignments;
@@ -56,6 +57,13 @@ public class DayType extends ProviderEntity {
         this.dayTypeAssignments = dayTypeAssignments;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     @Override
     public void checkPersistable() {

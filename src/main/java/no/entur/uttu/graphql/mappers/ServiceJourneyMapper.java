@@ -16,11 +16,11 @@
 package no.entur.uttu.graphql.mappers;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
+import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.organisation.OrganisationRegistry;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import static no.entur.uttu.graphql.GraphQLNames.*;
@@ -31,21 +31,22 @@ public class ServiceJourneyMapper extends AbstractGroupOfEntitiesMapper<ServiceJ
 
     private BookingArrangementMapper bookingArrangementMapper;
 
-    private DayTypeMapper dayTypeMapper;
-
     private TimetabledPassingTimeMapper timetabledPassingTimeMapper;
 
     private NoticeMapper noticeMapper;
 
-    @Autowired
     private OrganisationRegistry organisationRegistry;
 
+    private ProviderEntityRepository<DayType> dayTypeRepository;
+
     public ServiceJourneyMapper(ProviderRepository providerRepository, ProviderEntityRepository<ServiceJourney> repository,
-                                       BookingArrangementMapper bookingArrangementMapper, DayTypeMapper dayTypeMapper,
-                                       TimetabledPassingTimeMapper timetabledPassingTimeMapper, NoticeMapper noticeMapper) {
+                                       BookingArrangementMapper bookingArrangementMapper,
+                                       TimetabledPassingTimeMapper timetabledPassingTimeMapper, NoticeMapper noticeMapper,
+                                        OrganisationRegistry organisationRegistry, ProviderEntityRepository<DayType> dayTypeRepository) {
         super(providerRepository, repository);
+        this.organisationRegistry = organisationRegistry;
+        this.dayTypeRepository = dayTypeRepository;
         this.bookingArrangementMapper = bookingArrangementMapper;
-        this.dayTypeMapper = dayTypeMapper;
         this.timetabledPassingTimeMapper = timetabledPassingTimeMapper;
         this.noticeMapper = noticeMapper;
     }
@@ -61,9 +62,7 @@ public class ServiceJourneyMapper extends AbstractGroupOfEntitiesMapper<ServiceJ
         input.apply(FIELD_OPERATOR_REF, organisationRegistry::getVerifiedOperatorRef, entity::setOperatorRef);
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
         input.applyList(FIELD_PASSING_TIMES, timetabledPassingTimeMapper::map, entity::setPassingTimes);
-        input.applyList(FIELD_DAY_TYPES, dayTypeMapper::map, entity::updateDayTypes);
+        input.applyList(FIELD_DAY_TYPES_REFS, dayTypeRepository::getOne, entity::updateDayTypes);
         input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
     }
-
-
 }

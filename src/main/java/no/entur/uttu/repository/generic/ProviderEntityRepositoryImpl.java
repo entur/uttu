@@ -30,9 +30,14 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
 
     private static final Logger logger = LoggerFactory.getLogger(ProviderEntityRepositoryImpl.class);
 
+    private static final String PROVIDER_CODE_PARAMETER = "providerCode";
+    private static final String NETEX_ID_PARAMETER = "netexId";
+    private static final String NETEX_IDS_PARAMETER = "netexIds";
+
     private EntityManager entityManager;
     private JpaEntityInformation<T, Long> entityInformation;
     private String findAllQuery;
+    private String findByIdsQuery;
     private String findOneByNetexIdQuery;
 
     public ProviderEntityRepositoryImpl(JpaEntityInformation entityInformation, EntityManager entityManager) {
@@ -40,6 +45,7 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
         this.entityManager = entityManager;
         this.entityInformation = entityInformation;
         findAllQuery = "from " + entityInformation.getEntityName() + " e where e.provider.code=:providerCode";
+        findByIdsQuery = findAllQuery + " and netexId in :netexIds";
         findOneByNetexIdQuery = findAllQuery + " and netexId=:netexId";
     }
 
@@ -54,7 +60,14 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
     @Override
     public List<T> findAll() {
         return entityManager.createQuery(findAllQuery,
-                entityInformation.getJavaType()).setParameter("providerCode", Context.getVerifiedProviderCode()).getResultList();
+                entityInformation.getJavaType()).setParameter(PROVIDER_CODE_PARAMETER, Context.getVerifiedProviderCode()).getResultList();
+    }
+
+    @Override
+    public List<T> findByIds(List<String> netexIds) {
+        return entityManager.createQuery(findByIdsQuery,
+                        entityInformation.getJavaType()).setParameter(PROVIDER_CODE_PARAMETER, Context.getVerifiedProviderCode())
+                .setParameter(NETEX_IDS_PARAMETER, netexIds).getResultList();
     }
 
     @Override
@@ -69,8 +82,8 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity> extends Simp
     @Override
     public T getOne(String netexId) {
         List<T> results = entityManager.createQuery(findOneByNetexIdQuery,
-                entityInformation.getJavaType()).setParameter("providerCode", Context.getVerifiedProviderCode())
-                                  .setParameter("netexId", netexId).getResultList();
+                entityInformation.getJavaType()).setParameter(PROVIDER_CODE_PARAMETER, Context.getVerifiedProviderCode())
+                                  .setParameter(NETEX_ID_PARAMETER, netexId).getResultList();
         if (results.isEmpty()) {
             return null;
         }

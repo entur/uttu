@@ -18,6 +18,7 @@ package no.entur.uttu.graphql;
 public class GraphQLNames {
     public static final String FIELD_INPUT = "input";
     public static final String FIELD_ID = "id";
+    public static final String FIELD_IDS = "ids";
     public static final String FIELD_VERSION = "version";
     public static final String FIELD_NAME = "name";
     public static final String FIELD_DESCRIPTION = "description";
@@ -74,6 +75,7 @@ public class GraphQLNames {
 
     // DayType
     public static final String FIELD_DAY_TYPES = "dayTypes";
+    public static final String FIELD_DAY_TYPES_REFS = "dayTypesRefs";
 
     // StopPointInJourneyPattern
     public static final String FIELD_FLEXIBLE_STOP_PLACE = "flexibleStopPlace";
@@ -115,6 +117,7 @@ public class GraphQLNames {
     // DayType
     public static final String FIELD_DAY_TYPE_ASSIGNMENTS = "dayTypeAssignments";
     public static final String FIELD_DAYS_OF_WEEK = "daysOfWeek";
+    public static final String FIELD_NUMBER_OF_SERVICE_JOURNEYS = "numberOfServiceJourneys";
 
     // DayTypeAssignments
     public static final String FIELD_DATE = "date";
