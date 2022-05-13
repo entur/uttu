@@ -1,4 +1,4 @@
-env: staging
+env: test
 
 resources:
   cpuLimit: 500m

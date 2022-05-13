@@ -11,7 +11,7 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   rules:
-  {{- if eq .Values.env "production"}}
+  {{- if eq .Values.env "prod"}}
   - host: timetable-admin-v1-flexible-lines-{{ .Release.Namespace }}.entur.io
   {{ else }}
   - host: timetable-admin-v1-flexible-lines-{{ .Release.Namespace }}.{{ .Release.Namespace }}.entur.io
