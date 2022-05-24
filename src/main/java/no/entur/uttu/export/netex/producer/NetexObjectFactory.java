@@ -451,7 +451,8 @@ public class NetexObjectFactory {
 
     public Ref createScheduledStopPointRefFromQuayRef(String quayRef, NetexExportContext context) {
         Ref ref = new Ref(NetexIdProducer.updateIdPrefix(quayRef, context), VERSION_ONE);
-        return NetexIdProducer.replaceEntityName(ref, ScheduledStopPoint.class.getSimpleName());
+        Ref newRef = NetexIdProducer.replaceEntityName(ref, ScheduledStopPoint.class.getSimpleName());
+        return new Ref(newRef.id + "_UTTU", newRef.version);
     }
 
     public KeyListStructure mapKeyValues(Map<String, no.entur.uttu.model.Value> keyValues) {
