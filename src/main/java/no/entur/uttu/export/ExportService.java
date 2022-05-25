@@ -71,7 +71,7 @@ public class ExportService {
             byte[] bytes = IOUtils.toByteArray(dataSetStream);
             ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 
-            if (!export.isDryRun()) {
+            if (!export.isDryRun() && !exportHasErrors(export)) {
                 String blobName = exportFolder + ExportUtil.createExportedDataSetFilename(export.getProvider());
                 blobStoreService.uploadBlob(blobName, false, bis);
                 bis.reset();
@@ -99,5 +99,9 @@ public class ExportService {
 
         export.markAsFinished();
         logger.info("Completed {}", export);
+    }
+
+    private boolean exportHasErrors(Export export) {
+        return export.getMessages().stream().anyMatch(message -> message.getSeverity().equals(SeverityEnumeration.ERROR));
     }
 }
