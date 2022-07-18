@@ -26,7 +26,7 @@ public class PubSubMessagingService implements  MessagingService{
     @Value("${export.notify.enabled:false}")
     private boolean enableNotification;
 
-    @Value("${export.notify.queue.name:ChouetteMergeWithFlexibleLinesQueue}")
+    @Value("${export.notify.queue.name:FlexibleLinesExportQueue}")
     private String queueName;
 
     /**
