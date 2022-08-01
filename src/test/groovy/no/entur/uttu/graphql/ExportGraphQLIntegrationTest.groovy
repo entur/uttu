@@ -18,11 +18,9 @@ package no.entur.uttu.graphql
 import io.restassured.response.ValidatableResponse
 import no.entur.uttu.model.job.ExportStatusEnumeration
 import org.junit.Test
-import org.xmlunit.validation.ValidationResult
 
 import java.time.LocalDate
 
-import static io.restassured.RestAssured.given
 import static org.hamcrest.Matchers.*
 
 class ExportGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrationTest {

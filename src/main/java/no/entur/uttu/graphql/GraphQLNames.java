@@ -18,6 +18,7 @@ package no.entur.uttu.graphql;
 public class GraphQLNames {
     public static final String FIELD_INPUT = "input";
     public static final String FIELD_ID = "id";
+    public static final String FIELD_IDS = "ids";
     public static final String FIELD_VERSION = "version";
     public static final String FIELD_NAME = "name";
     public static final String FIELD_DESCRIPTION = "description";
@@ -74,6 +75,7 @@ public class GraphQLNames {
 
     // DayType
     public static final String FIELD_DAY_TYPES = "dayTypes";
+    public static final String FIELD_DAY_TYPES_REFS = "dayTypesRefs";
 
     // StopPointInJourneyPattern
     public static final String FIELD_FLEXIBLE_STOP_PLACE = "flexibleStopPlace";
@@ -115,6 +117,7 @@ public class GraphQLNames {
     // DayType
     public static final String FIELD_DAY_TYPE_ASSIGNMENTS = "dayTypeAssignments";
     public static final String FIELD_DAYS_OF_WEEK = "daysOfWeek";
+    public static final String FIELD_NUMBER_OF_SERVICE_JOURNEYS = "numberOfServiceJourneys";
 
     // DayTypeAssignments
     public static final String FIELD_DATE = "date";
@@ -133,6 +136,18 @@ public class GraphQLNames {
     // Export line association
     public static final String FIELD_LINE = "line";
     public static final String FIELD_LINE_REF = "lineRef";
+
+    // Exported line statistics
+    public static final String FIELD_LINE_NAME = "lineName";
+    public static final String FIELD_OPERATING_DATE_FROM = "operatingPeriodFrom";
+    public static final String FIELD_OPERATING_DATE_TO = "operatingPeriodTo";
+    public static final String FIELD_PROVIDER_CODE = "providerCode";
+    public static final String FIELD_EXPORTED_DAY_TYPES_STATISTICS = "exportedDayTypesStatistics";
+    public static final String FIELD_DAY_TYPE_NETEX_ID = "dayTypeNetexId";
+    public static final String FIELD_START_DATE = "startDate";
+    public static final String FIELD_LINES = "lines";
+    public static final String FIELD_PUBLIC_LINES = "publicLines";
+    public static final String FIELD_SERVICE_JOURNEY_NAME = "serviceJourneyName";
 
     // Key-values
     public static final String FIELD_KEY = "key";

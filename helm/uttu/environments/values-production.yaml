@@ -1,4 +1,4 @@
-env: production
+env: prod
 
 replicas: 2
 
@@ -19,12 +19,14 @@ configMap:
     ror:
       url: https://auth2.entur.org/
       audience: https://ror.api.entur.io
+    partner:
+      tokenUri: https://partner.entur.org/oauth/token
+      clientId: 1ZZMds7c0urOXHAMuklhv2puDcdVUQIW
+  orgRegister:
+    audience: https://api.entur.io
   pubsubProjectId: entur-ror-prod
   blobstoreProjectId: entur-ror-prod
   blobstoreContainerName: ror-marduk-exchange-production
   logLevel: INFO
   flywayTable: flyway_schema_history
 
-ingress:
-  enabled: true
-  productionIp: 35.205.233.237

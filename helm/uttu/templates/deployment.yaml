@@ -62,8 +62,13 @@ spec:
             - name: SPRING_DATASOURCE_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: password
-                  name: ror-uttu-db-password
+                  key: uttu-db-password
+                  name: ror-uttu-secret
+            - name: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ORGREGISTER_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: partner-auth0-secret
+                  name: ror-uttu-secret
           resources:
             limits:
               cpu: {{ .Values.resources.cpuLimit }}

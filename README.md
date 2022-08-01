@@ -47,6 +47,8 @@ Run the [script](./src/main/resources/db_init.sh).
 **IntelliJ**: Right-click on `App.java` and choose Run (or Cmd+Shift+F10). Open Run -> Edit configurations, choose the
 correct configuration (Spring Boot -> App), and add `local` to Active profiles. Save the configuration.
 
+If you want to run with google pubsub emulator also add `google-pubsub-emulator` to Active profiles.
+
 **Command line**: `mvn spring-boot:run`
 
 ### GraphQL endpoint

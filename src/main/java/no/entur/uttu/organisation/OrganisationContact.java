@@ -24,6 +24,12 @@ public class OrganisationContact {
     public String email;
     public String phone;
 
-
-
+    @Override
+    public String toString() {
+        return "OrganisationContact{" +
+                "url='" + url + '\'' +
+                ", email='" + email + '\'' +
+                ", phone='" + phone + '\'' +
+                '}';
+    }
 }

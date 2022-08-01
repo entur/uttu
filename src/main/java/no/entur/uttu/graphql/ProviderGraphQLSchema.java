@@ -74,97 +74,96 @@ public class ProviderGraphQLSchema {
     public void init() {
         initCommonTypes();
         graphQLSchema = GraphQLSchema.newSchema()
-                                .query(createQueryObject())
-                                .mutation(createMutationObject())
-                                .build();
+                .query(createQueryObject())
+                .mutation(createMutationObject())
+                .build();
     }
 
     private void initCommonTypes() {
         identifiedEntityObjectType = newObject().name("IdentifiedEntity")
-                                             .field(newFieldDefinition().name(FIELD_ID).type(new GraphQLNonNull(GraphQLID)))
-                                             .field(newFieldDefinition().name(FIELD_VERSION).type(new GraphQLNonNull(GraphQLString)))
-                                             .field(newFieldDefinition().name(FIELD_CREATED_BY).type(new GraphQLNonNull(GraphQLString)))
-                                             .field(newFieldDefinition().name(FIELD_CREATED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
-                                             .field(newFieldDefinition().name(FIELD_CHANGED_BY).type(new GraphQLNonNull(GraphQLString)))
-                                             .field(newFieldDefinition().name(FIELD_CHANGED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
-                                             .build();
+                .field(newFieldDefinition().name(FIELD_VERSION).type(new GraphQLNonNull(GraphQLString)))
+                .field(newFieldDefinition().name(FIELD_CREATED_BY).type(new GraphQLNonNull(GraphQLString)))
+                .field(newFieldDefinition().name(FIELD_CREATED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
+                .field(newFieldDefinition().name(FIELD_CHANGED_BY).type(new GraphQLNonNull(GraphQLString)))
+                .field(newFieldDefinition().name(FIELD_CHANGED).type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar())))
+                .build();
 
         codespaceObjectType = newObject(identifiedEntityObjectType).name("Codespace")
-                                      .field(newFieldDefinition().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString)))
-                                      .field(newFieldDefinition().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString)))
-                                      .build();
+                .field(newFieldDefinition().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString)))
+                .field(newFieldDefinition().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString)))
+                .build();
 
         providerObjectType = newObject(identifiedEntityObjectType).name("Provider")
-                                     .field(newFieldDefinition().name(FIELD_CODE).type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE)))
-                                     .field(newFieldDefinition().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
-                                     .field(newFieldDefinition().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codespaceObjectType)))
-                                     .build();
+                .field(newFieldDefinition().name(FIELD_CODE).type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE)))
+                .field(newFieldDefinition().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
+                .field(newFieldDefinition().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codespaceObjectType)))
+                .build();
 
     }
 
     private GraphQLObjectType createQueryObject() {
 
         GraphQLObjectType queryType = newObject()
-                                              .name("Queries")
-                                              .description("Query and search for data")
-                                              .field(newFieldDefinition()
-                                                             .type(new GraphQLList(codespaceObjectType))
-                                                             .name("codespaces")
-                                                             .description("Search for Codespaces")
-                                                             .dataFetcher(env -> codespaceRepository.findAll()))
-                                              .field(newFieldDefinition()
-                                                             .type(new GraphQLList(providerObjectType))
-                                                             .name("providers")
-                                                             .description("Search for Providers")
-                                                             .dataFetcher(providerFetcher))
-                                              .build();
+                .name("Queries")
+                .description("Query and search for data")
+                .field(newFieldDefinition()
+                        .type(new GraphQLList(codespaceObjectType))
+                        .name("codespaces")
+                        .description("Search for Codespaces")
+                        .dataFetcher(env -> codespaceRepository.findAll()))
+                .field(newFieldDefinition()
+                        .type(new GraphQLList(providerObjectType))
+                        .name("providers")
+                        .description("Search for Providers")
+                        .dataFetcher(providerFetcher))
+                .build();
 
         return queryType;
     }
 
     private GraphQLObjectType createMutationObject() {
 
-        String ignoredInputFieldDesc="Value is ignored for mutation calls. Included for convenient copying of output to input with minimal modifications.";
+        String ignoredInputFieldDesc = "Value is ignored for mutation calls. Included for convenient copying of output to input with minimal modifications.";
         GraphQLInputObjectType identifiedEntityInputType = newInputObject().name("IdentifiedEntityInput")
-                                                                   .field(newInputObjectField().name(FIELD_VERSION).type(GraphQLLong)).description(ignoredInputFieldDesc)
-                                                                   .field(newInputObjectField().name(FIELD_CREATED_BY).type(GraphQLString)).description(ignoredInputFieldDesc)
-                                                                   .field(newInputObjectField().name(FIELD_CREATED).type(dateTimeScalar.getDateTimeScalar())).description(ignoredInputFieldDesc)
-                                                                   .field(newInputObjectField().name(FIELD_CHANGED_BY).type(GraphQLString)).description(ignoredInputFieldDesc)
-                                                                   .field(newInputObjectField().name(FIELD_CHANGED).type(dateTimeScalar.getDateTimeScalar())).description(ignoredInputFieldDesc)
-                                                                   .build();
+                .field(newInputObjectField().name(FIELD_VERSION).type(GraphQLLong)).description(ignoredInputFieldDesc)
+                .field(newInputObjectField().name(FIELD_CREATED_BY).type(GraphQLString)).description(ignoredInputFieldDesc)
+                .field(newInputObjectField().name(FIELD_CREATED).type(dateTimeScalar.getDateTimeScalar())).description(ignoredInputFieldDesc)
+                .field(newInputObjectField().name(FIELD_CHANGED_BY).type(GraphQLString)).description(ignoredInputFieldDesc)
+                .field(newInputObjectField().name(FIELD_CHANGED).type(dateTimeScalar.getDateTimeScalar())).description(ignoredInputFieldDesc)
+                .build();
 
         GraphQLInputObjectType codespaceInputType = newInputObject(identifiedEntityInputType).name("CodespaceInput")
-                                                            .field(newInputObjectField().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString)))
-                                                            .field(newInputObjectField().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString)))
-                                                            .build();
+                .field(newInputObjectField().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString)))
+                .field(newInputObjectField().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString)))
+                .build();
 
         GraphQLInputObjectType providerInputType = newInputObject(identifiedEntityInputType).name("ProviderInput")
-                                                           .field(newInputObjectField().name(FIELD_CODE).type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE)))
-                                                           .field(newInputObjectField().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
-                                                           .field(newInputObjectField().name(FIELD_CODE_SPACE_XMLNS).type(new GraphQLNonNull(GraphQLString)))
-                                                           .build();
+                .field(newInputObjectField().name(FIELD_CODE).type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE)))
+                .field(newInputObjectField().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
+                .field(newInputObjectField().name(FIELD_CODE_SPACE_XMLNS).type(new GraphQLNonNull(GraphQLString)))
+                .build();
 
         GraphQLObjectType mutationType = newObject()
-                                                 .name("Mutations")
-                                                 .description("Create and edit Provider data")
-                                                 .field(newFieldDefinition()
-                                                                .type(new GraphQLNonNull(codespaceObjectType))
-                                                                .name("mutateCodespace")
-                                                                .description("Create new or update existing Codespace")
-                                                                .argument(GraphQLArgument.newArgument()
-                                                                                  .name(FIELD_INPUT)
-                                                                                  .type(codespaceInputType))
-                                                                .dataFetcher(codespaceUpdater))
-                                                 .field(newFieldDefinition()
-                                                                .type(new GraphQLNonNull(providerObjectType))
-                                                                .name("mutateProvider")
-                                                                .description("Create new or update existing Provider")
-                                                                .argument(GraphQLArgument.newArgument()
-                                                                                  .name(FIELD_INPUT)
-                                                                                  .type(providerInputType))
-                                                                .dataFetcher(providerUpdater))
+                .name("Mutations")
+                .description("Create and edit Provider data")
+                .field(newFieldDefinition()
+                        .type(new GraphQLNonNull(codespaceObjectType))
+                        .name("mutateCodespace")
+                        .description("Create new or update existing Codespace")
+                        .argument(GraphQLArgument.newArgument()
+                                .name(FIELD_INPUT)
+                                .type(codespaceInputType))
+                        .dataFetcher(codespaceUpdater))
+                .field(newFieldDefinition()
+                        .type(new GraphQLNonNull(providerObjectType))
+                        .name("mutateProvider")
+                        .description("Create new or update existing Provider")
+                        .argument(GraphQLArgument.newArgument()
+                                .name(FIELD_INPUT)
+                                .type(providerInputType))
+                        .dataFetcher(providerUpdater))
 
-                                                 .build();
+                .build();
 
         return mutationType;
     }

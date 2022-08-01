@@ -15,10 +15,44 @@
 
 package no.entur.uttu.graphql
 
-import graphql.Assert
 import io.restassured.response.ValidatableResponse
 
+import java.time.LocalDate
+
 abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationTest {
+
+    ValidatableResponse createDayType(LocalDate date) {
+        String query = """
+            mutation MutateDayType(\$input: DayTypeInput!) {
+                mutateDayType(input: \$input) {
+                    id
+                    name
+                    daysOfWeek
+                    dayTypeAssignments {
+                        date
+                        isAvailable
+                        operatingPeriod {
+                            fromDate
+                            toDate
+                        }
+                    }
+                }
+            }
+        """
+
+        String variables = """
+            {
+                "input": {
+                    "name": "Test day type name",
+                    "dayTypeAssignments": {
+                        "date": "$date"
+                    }
+                }
+            }
+        """
+
+        executeGraphQL(query, variables)
+    }
 
     protected String getUrl() {
         return "/services/flexible-lines/tst/graphql"
@@ -113,7 +147,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     }
 
     ValidatableResponse createFlexibleLine(String name) {
-        return createFlexibleLine(name, '22');
+        return createFlexibleLine(name, '22')
     }
 
 
@@ -125,6 +159,9 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     }
 
     ValidatableResponse createFlexibleLine(String name, String operatorRef, String networkId, String flexAreaStopPlaceId, String hailAndRideStopPlaceId) {
+        ValidatableResponse dayTypeResponse = createDayType(TODAY)
+        String dayTypeRef = dayTypeResponse.extract().body().path("data.mutateDayType.id")
+        String timestamp = System.currentTimeMillis().toString()
         String variables = """
 {
   "flexibleLine": {
@@ -186,18 +223,11 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         ],
         "serviceJourneys": [
           {
+            "name": "SJ-$timestamp-1",
             "notices": {
               "text": "koko"
             },
-            "dayTypes": [
-              {
-                "dayTypeAssignments": [
-                  {
-                    "date": "$TODAY"
-                  }
-                ]
-              }
-            ],
+            "dayTypesRefs": ["$dayTypeRef"],
             "privateCode": "500",
             "passingTimes": [
               {
@@ -231,15 +261,8 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         ],
         "serviceJourneys": [
           {
-            "dayTypes": [
-              {
-                "dayTypeAssignments": [
-                  {
-                    "date": "$TODAY"
-                  }
-                ]
-              }
-            ],
+            "name": "SJ-$timestamp-2",
+            "dayTypesRefs": ["$dayTypeRef"],
             "privateCode": "501",
             "passingTimes": [
               {
@@ -259,6 +282,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
 
         executeGraphQL(createFlexibleLineQuery, variables)
     }
+
 
 
     String fullFlexibleLineFieldSet = """
@@ -326,7 +350,9 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
                             }
                         }
                         serviceJourneys {
+                            name
                             dayTypes {
+                                name
                                 daysOfWeek
                                 dayTypeAssignments {
                                     operatingPeriod {

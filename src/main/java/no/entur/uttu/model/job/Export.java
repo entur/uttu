@@ -15,6 +15,7 @@
 
 package no.entur.uttu.model.job;
 
+import no.entur.uttu.model.ExportedLineStatistics;
 import no.entur.uttu.model.ProviderEntity;
 
 import javax.persistence.CascadeType;
@@ -40,6 +41,10 @@ public class Export extends ProviderEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ExportMessage> messages = new ArrayList<>();
+
+    @OneToMany(mappedBy = "export", cascade = CascadeType.ALL, orphanRemoval = true)
+    @NotNull
+    private final List<ExportedLineStatistics> exportedLineStatistics = new ArrayList<>();
 
     public String getName() {
         return name;
@@ -74,7 +79,6 @@ public class Export extends ProviderEntity {
         } else {
             exportStatus = ExportStatusEnumeration.SUCCESS;
         }
-
     }
 
     public void addMessage(ExportMessage message) {
@@ -101,13 +105,21 @@ public class Export extends ProviderEntity {
         this.dryRun = dryRun;
     }
 
+    public List<ExportedLineStatistics> getExportedLineStatistics() {
+        return exportedLineStatistics;
+    }
+
+    public void addExportedLineStatistics(ExportedLineStatistics exportedLineStatisticsToAdd) {
+        exportedLineStatisticsToAdd.setExport(this);
+        exportedLineStatistics.add(exportedLineStatisticsToAdd);
+    }
     @Override
     public String toString() {
         return "Export{" +
-                       super.toString() +
-                       ", name='" + name + '\'' +
-                       ", exportStatus=" + exportStatus +
-                       ", messages=" + messages +
-                       '}';
+                super.toString() +
+                ", name='" + name + '\'' +
+                ", exportStatus=" + exportStatus +
+                ", messages=" + messages +
+                '}';
     }
 }

@@ -43,8 +43,8 @@ public class DayTypeMapper extends AbstractProviderEntityMapper<DayType> {
     protected void populateEntityFromInput(DayType entity, ArgumentWrapper input) {
         input.applyList(FIELD_DAY_TYPE_ASSIGNMENTS, this::mapDayTypeAssignment, entity::setDayTypeAssignments);
         input.apply(FIELD_DAYS_OF_WEEK, entity::setDaysOfWeek);
+        input.apply(FIELD_NAME, entity::setName);
     }
-
 
     public DayTypeAssignment mapDayTypeAssignment(Map<String, Object> inputMap) {
         ArgumentWrapper input = new ArgumentWrapper(inputMap);

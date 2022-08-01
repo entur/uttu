@@ -40,6 +40,12 @@ data:
     spring.security.oauth2.resourceserver.jwt.issuer-uri={{ .Values.configMap.auth0.ror.url }}
     uttu.oauth2.resourceserver.auth0.ror.jwt.audience={{ .Values.configMap.auth0.ror.audience }}
     uttu.oauth2.resourceserver.auth0.ror.claim.namespace=https://ror.entur.io/
+    
+    #Oauth2 Client
+    spring.security.oauth2.client.provider.orgregister.token-uri={{ .Values.configMap.auth0.partner.tokenUri }}
+    spring.security.oauth2.client.registration.orgregister.client-id={{ .Values.configMap.auth0.partner.clientId }}
+    spring.security.oauth2.client.registration.orgregister.authorization-grant-type=client_credentials
+    orgregister.oauth2.client.audience={{ .Values.configMap.orgRegister.audience }}
 
     # Spring Actuator
     management.server.port=9001

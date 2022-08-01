@@ -17,9 +17,11 @@ package no.entur.uttu.export;
 
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.export.blob.BlobStoreService;
+import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.export.messaging.MessagingService;
 import no.entur.uttu.export.netex.DataSetProducer;
 import no.entur.uttu.export.netex.NetexExporter;
+import no.entur.uttu.model.Line;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportMessage;
 import no.entur.uttu.model.job.SeverityEnumeration;
@@ -33,7 +35,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.time.LocalDate;
+import java.util.List;
 
 @Component
 public class ExportService {
@@ -63,18 +65,21 @@ public class ExportService {
         try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
 
             boolean validateAgainstSchema = true;
-            exporter.exportDataSet(export, dataSetProducer, validateAgainstSchema);
+            List<Line> exportedLines = exporter.exportDataSet(export, dataSetProducer, validateAgainstSchema);
 
             InputStream dataSetStream = dataSetProducer.buildDataSet();
             byte[] bytes = IOUtils.toByteArray(dataSetStream);
             ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 
-            if (!export.isDryRun()) {
+            if (!export.isDryRun() && !exportHasErrors(export)) {
                 String blobName = exportFolder + ExportUtil.createExportedDataSetFilename(export.getProvider());
                 blobStoreService.uploadBlob(blobName, false, bis);
                 bis.reset();
                 // notify Marduk that a new export is available
                 messagingService.notifyExport(export.getProvider().getCode().toLowerCase());
+                exportedLines.stream()
+                        .map(ExportedLineStatisticsService::toExportedLineStatistics)
+                        .forEach(export::addExportedLineStatistics);
             }
             export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
             blobStoreService.uploadBlob(export.getFileName(), false, bis);
@@ -94,5 +99,9 @@ public class ExportService {
 
         export.markAsFinished();
         logger.info("Completed {}", export);
+    }
+
+    private boolean exportHasErrors(Export export) {
+        return export.getMessages().stream().anyMatch(message -> message.getSeverity().equals(SeverityEnumeration.ERROR));
     }
 }

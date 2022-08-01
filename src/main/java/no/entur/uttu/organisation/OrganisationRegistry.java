@@ -15,9 +15,13 @@
 
 package no.entur.uttu.organisation;
 
+import java.util.List;
+
 public interface OrganisationRegistry {
 
     Organisation getOrganisation(String organisationId);
+
+    List<Organisation> getOrganisations();
 
     /**
      * Return provided operatorRef if valid, else throw exception.

@@ -22,10 +22,51 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
         return "/services/flexible-lines/tst/graphql"
     }
 
+    ValidatableResponse createDayType() {
+        String query = """
+            mutation MutateDayType(\$input: DayTypeInput!) {
+                mutateDayType(input: \$input) {
+                    id
+                    daysOfWeek
+                    dayTypeAssignments {
+                        date
+                        isAvailable
+                        operatingPeriod {
+                            fromDate
+                            toDate
+                        }
+                    }
+                }
+            }
+        """
 
+        String variables = """
+            {
+                "input": {
+                    "daysOfWeek": [
+                        "monday",
+                        "tuesday",
+                        "wednesday",
+                        "thursday",
+                        "friday"
+                    ],
+                    "dayTypeAssignments": {
+                        "operatingPeriod": {
+                            "fromDate": "2020-04-01",
+                            "toDate": "2020-05-01"
+                        },
+                        "isAvailable": true
+                    }
+                }
+            }
+        """
 
-    ValidatableResponse createFixedLine(String name) {
+        executeGraphQL(query, variables)
+    }
+
+    ValidatableResponse createFixedLineWithDayTypeRef(String name, String dayTypeRef) {
         String networkId = getNetworkId(createNetwork(name))
+        String timestamp = System.currentTimeMillis().toString()
 
         String query = """
             mutation MutateFixedLine(\$input: FixedLineInput!) {
@@ -40,6 +81,7 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
                       serviceJourneys {
                         id
                         dayTypes {
+                          name
                           daysOfWeek
                           dayTypeAssignments {
                             date
@@ -85,23 +127,8 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
                     ],
                     "serviceJourneys": [
                       {
-                        "name": "Hverdager3",
-                        "dayTypes": {
-                          "daysOfWeek": [
-                            "monday",
-                            "tuesday",
-                            "wednesday",
-                            "thursday",
-                            "friday"
-                          ],
-                          "dayTypeAssignments": {
-                            "operatingPeriod": {
-                              "fromDate": "2020-04-01",
-                              "toDate": "2020-05-01"
-                            },
-                            "isAvailable": true
-                          }
-                        },
+                        "name": "Hverdager3-$timestamp",
+                        "dayTypesRefs": ["$dayTypeRef"],
                         "passingTimes": [
                           {
                             "departureTime": "07:00:00"
@@ -119,5 +146,11 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
         """
 
         executeGraphQL(query, variables)
+    }
+
+    ValidatableResponse createFixedLine(String name) {
+        ValidatableResponse dayTypeResponse = createDayType()
+        String dayTypeRef = dayTypeResponse.extract().body().path("data.mutateDayType.id")
+        createFixedLineWithDayTypeRef(name, dayTypeRef)
     }
 }

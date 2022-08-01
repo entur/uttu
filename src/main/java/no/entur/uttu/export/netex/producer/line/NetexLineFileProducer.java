@@ -19,11 +19,8 @@ import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexFile;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
-import no.entur.uttu.model.DayType;
-import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Line;
-import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.util.ExportUtil;
 import org.rutebanken.netex.model.CompositeFrame;
 import org.rutebanken.netex.model.NoticeAssignment;
@@ -64,44 +61,13 @@ public class NetexLineFileProducer {
         ServiceFrame serviceFrame = createServiceFrame(line, context);
         TimetableFrame timetableFrame = createTimetableFrame(line, context);
 
-        AvailabilityPeriod availabilityPeriod = calculateAvailabilityPeriod(line);
+        AvailabilityPeriod availabilityPeriod = NetexLineUtilities.calculateAvailabilityPeriodForLine(line);
         context.updateAvailabilityPeriod(availabilityPeriod);
 
         CompositeFrame compositeFrame = objectFactory.createCompositeFrame(context, availabilityPeriod, serviceFrame, timetableFrame);
         JAXBElement<PublicationDeliveryStructure> publicationDelivery = objectFactory.createPublicationDelivery(context, compositeFrame);
 
         return new NetexFile(fileName, publicationDelivery);
-    }
-
-    private AvailabilityPeriod calculateAvailabilityPeriod(Line line) {
-        AvailabilityPeriod period = null;
-
-        List<DayTypeAssignment> allDayTypeAssignmentsForLine = line.getJourneyPatterns().stream()
-                                                                       .map(JourneyPattern::getServiceJourneys).flatMap(List::stream)
-                                                                       .map(ServiceJourney::getDayTypes).flatMap(List::stream)
-                                                                       .map(DayType::getDayTypeAssignments).flatMap(List::stream)
-                                                                       .collect(Collectors.toList());
-        for (DayTypeAssignment dayTypeAssignment : allDayTypeAssignmentsForLine) {
-            period = union(period, dayTypeAssignment);
-        }
-
-        return period;
-    }
-
-    private AvailabilityPeriod union(AvailabilityPeriod period, DayTypeAssignment dayTypeAssignment) {
-        AvailabilityPeriod dayTypeAssignmentPeriod;
-        if (dayTypeAssignment.getOperatingPeriod() != null) {
-            dayTypeAssignmentPeriod = new AvailabilityPeriod(dayTypeAssignment.getOperatingPeriod().getFromDate(), dayTypeAssignment.getOperatingPeriod().getToDate());
-        } else if (dayTypeAssignment.getDate() != null) {
-            dayTypeAssignmentPeriod = new AvailabilityPeriod(dayTypeAssignment.getDate(), dayTypeAssignment.getDate());
-        } else {
-            return period;
-        }
-
-        if (period == null) {
-            return dayTypeAssignmentPeriod;
-        }
-        return period.union(dayTypeAssignmentPeriod);
     }
 
     private ServiceFrame createServiceFrame(Line line, NetexExportContext context) {
@@ -121,7 +87,7 @@ public class NetexLineFileProducer {
     private TimetableFrame createTimetableFrame(Line line, NetexExportContext context) {
         List<NoticeAssignment> noticeAssignments = new ArrayList<>();
         List<org.rutebanken.netex.model.ServiceJourney> netexServiceJourneys = line.getJourneyPatterns().stream().map(JourneyPattern::getServiceJourneys).flatMap(List::stream).filter(context::isValid)
-                                                                                       .map(sj -> serviceJourneyProducer.produce(sj, noticeAssignments, context)).collect(Collectors.toList());
+                .map(sj -> serviceJourneyProducer.produce(sj, noticeAssignments, context)).collect(Collectors.toList());
 
         return objectFactory.createTimetableFrame(context, netexServiceJourneys, noticeAssignments);
     }

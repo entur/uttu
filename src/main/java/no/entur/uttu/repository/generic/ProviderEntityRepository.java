@@ -26,6 +26,8 @@ public interface ProviderEntityRepository<T extends ProviderEntity> extends Repo
 
     List<T> findAll();
 
+    List<T> findByIds(List<String> netexIds);
+
     T getOne(String netexId);
 
     <S extends T> S save(S entity);
