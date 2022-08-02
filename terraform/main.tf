@@ -104,3 +104,35 @@ resource "google_sql_user" "db-user" {
   instance = google_sql_database_instance.db_instance.name
   password = var.ror-uttu-db-password
 }
+
+resource "google_sql_database_instance" "db_instance_pg13" {
+  name = "uttu-db-pg13"
+  project = var.gcp_project
+  region = "europe-west1"
+
+  settings {
+    tier = var.db_tier
+    user_labels = var.labels
+    availability_type = "ZONAL"
+    backup_configuration {
+      enabled = true
+    }
+    ip_configuration {
+      require_ssl = true
+    }
+  }
+  database_version = "POSTGRES_13"
+}
+
+resource "google_sql_database" "db_pg13" {
+  name = "uttu"
+  project = var.gcp_project
+  instance = google_sql_database_instance.db_instance_pg13.name
+}
+
+resource "google_sql_user" "db-user_pg13" {
+  name = "uttu"
+  project = var.gcp_project
+  instance = google_sql_database_instance.db_instance_pg13.name
+  password = var.ror-uttu-db-password
+}
