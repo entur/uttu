@@ -50,17 +50,6 @@ resource "kubernetes_secret" "uttu_service_account_credentials" {
   }
 }
 
-resource "kubernetes_secret" "ror-uttu-db-password" {
-  metadata {
-    name      = "${var.labels.team}-${var.labels.app}-db-password"
-    namespace = var.kube_namespace
-  }
-
-  data = {
-    "password" = var.ror-uttu-db-password
-  }
-}
-
 resource "kubernetes_secret" "ror-uttu-secret" {
   metadata {
     name      = "${var.labels.team}-${var.labels.app}-secret"
@@ -71,38 +60,6 @@ resource "kubernetes_secret" "ror-uttu-secret" {
     "uttu-db-password" = var.ror-uttu-db-password
     "partner-auth0-secret" = var.ror-partner-auth0-secret
   }
-}
-
-resource "google_sql_database_instance" "db_instance" {
-  name = "uttu-db"
-  project = var.gcp_project
-  region = "europe-west1"
-
-  settings {
-    tier = var.db_tier
-    user_labels = var.labels
-    availability_type = "ZONAL"
-    backup_configuration {
-      enabled = true
-    }
-    ip_configuration {
-      require_ssl = true
-    }
-  }
-  database_version = "POSTGRES_9_6"
-}
-
-resource "google_sql_database" "db" {
-  name = "uttu"
-  project = var.gcp_project
-  instance = google_sql_database_instance.db_instance.name
-}
-
-resource "google_sql_user" "db-user" {
-  name = "uttu"
-  project = var.gcp_project
-  instance = google_sql_database_instance.db_instance.name
-  password = var.ror-uttu-db-password
 }
 
 resource "google_sql_database_instance" "db_instance_pg13" {
