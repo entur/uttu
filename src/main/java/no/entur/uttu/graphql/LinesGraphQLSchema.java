@@ -79,6 +79,9 @@ public class LinesGraphQLSchema {
     private DataFetcher<DayType> dayTypeUpdater;
 
     @Autowired
+    private DataFetcher<List<DayType>> dayTypesBulkUpdater;
+
+    @Autowired
     private DayTypeServiceJourneyCountFetcher dayTypeServiceJourneyCountFetcher;
 
     @Autowired
@@ -770,8 +773,8 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition()
                         .type(new GraphQLNonNull(new GraphQLList(dayTypeObjectType)))
                         .name("deleteDayTypes")
-                        .argument(idArgument)
-                        .dataFetcher(dayTypeUpdater))
+                        .argument(idsArgument)
+                        .dataFetcher(dayTypesBulkUpdater))
                 .field(newFieldDefinition()
                         .type(new GraphQLNonNull(flexibleStopPlaceObjectType))
                         .name("mutateFlexibleStopPlace")
