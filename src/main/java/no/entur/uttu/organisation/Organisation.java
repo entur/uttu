@@ -41,7 +41,7 @@ public class Organisation {
     public OrganisationContact customerContact;
 
     public String getAuthorityNetexId() {
-        if (!isAuthority() || references == null) {
+        if (references == null) {
             return null;
         }
 
@@ -49,7 +49,7 @@ public class Organisation {
     }
 
     public String getOperatorNetexId() {
-        if (!isOperator() || references == null) {
+        if (references == null) {
             return null;
         }
 
@@ -64,14 +64,4 @@ public class Organisation {
         }
         return references.get(COMPANY_NUMBER_REFERENCE_KEY);
     }
-
-    public boolean isOperator() {
-        return types != null && types.contains(OPERATOR_TYPE);
-    }
-
-    public boolean isAuthority() {
-        return types != null && types.contains(AUTHORITY_TYPE);
-    }
-
-
 }
