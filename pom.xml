@@ -18,9 +18,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
-        <groupId>org.rutebanken.superpom</groupId>
+        <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>1.0.35</version>
+        <version>1.48</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -40,7 +40,7 @@
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
 
-        <entur.helpers.version>1.0.67</entur.helpers.version>
+        <entur.helpers.version>1.86</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
@@ -48,7 +48,6 @@
         <postgis-jdbc.version>2.5.1</postgis-jdbc.version>
         <geotools.version>20.5</geotools.version>
         <wololo.version>0.18.1</wololo.version>
-        <flyway-core.version>8.5.13</flyway-core.version>
 
         <swagger-jersey2.version>1.6.8</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-20090302111651</javax.jdo.jdo2-api.version>
@@ -71,12 +70,12 @@
             <version>${netex-java-model.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>organisation</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>gcp-storage</artifactId>
             <version>${gcp-storage.version}</version>
             <exclusions>
@@ -95,13 +94,13 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>entur-google-pubsub</artifactId>
             <version>${entur-google-pubsub-version}</version>
         </dependency>
 
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>org.entur.ror.helpers</groupId>
             <artifactId>oauth2</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
@@ -177,7 +176,6 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-            <version>${flyway-core.version}</version>
         </dependency>
         <dependency>
             <groupId>javax.jdo</groupId>
@@ -215,7 +213,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>${guava.version}</version>
         </dependency>
 
         <dependency>
@@ -277,6 +274,7 @@
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
+            <version>1.4.200</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -309,7 +307,7 @@
                         <id>test-compile</id>
                         <phase>test-compile</phase>
                         <configuration>
-                            <tasks>
+                            <target>
                                 <mkdir dir="${basedir}/src/test/groovy"/>
                                 <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
                                     <classpath refid="maven.test.classpath"/>
@@ -319,7 +317,7 @@
                                          srcdir="${basedir}/src/test/groovy/" listfiles="true">
                                     <classpath refid="maven.test.classpath"/>
                                 </groovyc>
-                            </tasks>
+                            </target>
                         </configuration>
                         <goals>
                             <goal>run</goal>
