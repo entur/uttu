@@ -29,7 +29,7 @@ import java.io.InputStream;
 public class GcsBlobStoreService implements BlobStoreService {
 
 
-    @Value("${blobstore.gcs.credential.path}")
+    @Value("${blobstore.gcs.credential.path:#{null}}")
     private String credentialPath;
 
 
@@ -43,7 +43,12 @@ public class GcsBlobStoreService implements BlobStoreService {
 
     @PostConstruct
     private void init() {
-        storage = BlobStoreHelper.getStorage(credentialPath, projectId);
+        if (credentialPath == null || credentialPath.isEmpty()) {
+            // Use default default gcp credentials
+            storage = BlobStoreHelper.getStorage(projectId);
+        } else {
+            storage = BlobStoreHelper.getStorage(credentialPath, projectId);
+        }
     }
 
     public void uploadBlob(String name, boolean makePublic, InputStream inputStream) {
