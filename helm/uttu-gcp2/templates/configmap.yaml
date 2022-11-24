@@ -1,0 +1,62 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "app.name" . }}-application
+  namespace: {{ .Release.Namespace }}
+  labels:
+  {{- include "uttu.common.labels" . | indent 4 }}
+data:
+  application.properties: |-
+    organisation.registry.url={{ .Values.configMap.organisationRegistryUrl }}
+    export.notify.enabled=true
+    export.notify.queue.name=ChouetteMergeWithFlexibleLinesQueue
+    export.working.folder=/tmp/export
+
+    # gcs
+    blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
+    blobstore.gcs.container.name={{ .Values.configMap.blobstoreContainerName }}
+
+    # pubsub
+    spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}
+    spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
+    spring.cloud.gcp.pubsub.subscriber.executor-threads=30
+    spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
+
+    # Database properties
+    spring.jpa.properties.hibernate.dialect=org.hibernate.spatial.dialect.postgis.PostgisDialect
+    spring.jpa.open-in-view=false
+    spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false
+    spring.jpa.database=POSTGRESQL
+    spring.jpa.hibernate.ddl-auto=none
+    spring.database.driverClassName=org.postgresql.Driver
+    spring.datasource.url=jdbc:postgresql://localhost:5432/uttu
+    spring.datasource.platform=postgres
+    spring.datasource.username=uttu
+    spring.flyway.table={{ .Values.configMap.flywayTable }}
+
+    #OAuth2 Resource Server
+    spring.security.oauth2.resourceserver.jwt.issuer-uri={{ .Values.configMap.auth0.ror.url }}
+    uttu.oauth2.resourceserver.auth0.ror.jwt.audience={{ .Values.configMap.auth0.ror.audience }}
+    uttu.oauth2.resourceserver.auth0.ror.claim.namespace=https://ror.entur.io/
+    
+    #Oauth2 Client
+    spring.security.oauth2.client.provider.orgregister.token-uri={{ .Values.configMap.auth0.partner.tokenUri }}
+    spring.security.oauth2.client.registration.orgregister.client-id={{ .Values.configMap.auth0.partner.clientId }}
+    spring.security.oauth2.client.registration.orgregister.authorization-grant-type=client_credentials
+    orgregister.oauth2.client.audience={{ .Values.configMap.orgRegister.audience }}
+
+    # Spring Actuator
+    management.server.port= {{ .Values.common.service.internalPort }}
+    management.endpoints.enabled-by-default=false
+    management.endpoint.info.enabled=true
+    management.endpoint.health.enabled=true
+    management.endpoint.health.group.readiness.include=readinessState,db,pubSub
+    management.endpoint.prometheus.enabled=true
+    management.endpoints.web.exposure.include=info,health,prometheus
+
+    # Logging
+    logging.level.no.entur.uttu={{ .Values.configMap.logLevel }}
+    logging.level.no.entur.uttu.health.rest.HealthResource=INFO
+
+    # Profile
+    spring.profiles.active=gcs-blobstore

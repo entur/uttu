@@ -1,0 +1,17 @@
+apiVersion: v2
+appVersion: "0.1.80"
+description: Backend for flexible transport editor
+name: uttu
+version: 0.1.0
+keywords:
+  - uttu
+sources:
+  - https://github.com/entur/uttu
+maintainers:
+  - name: 'team-ror'
+    email: team.rutedata@entur.org
+engine: gotpl
+dependencies:
+  - name: common
+    version: 1.2.9
+    repository: "https://entur.github.io/helm-charts"
