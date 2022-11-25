@@ -42,6 +42,6 @@
     </PreFlow>
     <HTTPTargetConnection>
         <Properties/>
-        <URL>https://timetable-admin-v1-flexible-lines-NAMESPACE.INGRESS_ENVIRONMENT/services/flexible-lines</URL>
+        <URL>https://timetable-admin-v1-flexible-lines-gcp2.INGRESS_ENVIRONMENT/services/flexible-lines</URL>
     </HTTPTargetConnection>
 </TargetEndpoint>
