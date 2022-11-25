@@ -26,7 +26,7 @@ resource "kubernetes_secret" "uttu-psql-credentials" {
 
 resource "google_sql_database_instance" "db_instance_pg13" {
   name = "uttu-db-pg13"
-  project = var.gcp_project
+  project = var.gcp_resources_project
   region = "europe-west1"
 
   settings {
@@ -45,13 +45,13 @@ resource "google_sql_database_instance" "db_instance_pg13" {
 
 resource "google_sql_database" "db_pg13" {
   name = "uttu"
-  project = var.gcp_project
+  project = var.gcp_resources_project
   instance = google_sql_database_instance.db_instance_pg13.name
 }
 
 resource "google_sql_user" "db-user_pg13" {
   name = "uttu"
-  project = var.gcp_project
+  project = var.gcp_resources_project
   instance = google_sql_database_instance.db_instance_pg13.name
   password = var.ror-uttu-db-password
 }
