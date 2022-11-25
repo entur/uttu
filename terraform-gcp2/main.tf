@@ -12,7 +12,7 @@ provider "kubernetes" {
 
 resource "kubernetes_secret" "uttu-psql-credentials" {
   metadata {
-    name = "nabu-psql-credentials"
+    name = "uttu-psql-credentials"
     namespace = var.kube_namespace
   }
 
