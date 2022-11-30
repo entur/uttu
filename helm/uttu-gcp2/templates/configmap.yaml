@@ -9,7 +9,7 @@ data:
   application.properties: |-
     organisation.registry.url={{ .Values.configMap.organisationRegistryUrl }}
     export.notify.enabled=true
-    export.notify.queue.name=ChouetteMergeWithFlexibleLinesQueue
+    export.notify.queue.name=FlexibleLinesExportQueue
     export.working.folder=/tmp/export
 
     # gcs
