@@ -53,8 +53,8 @@ public class ExportService {
     @Value("${export.working.folder:tmp}")
     private String workingFolder;
 
-    @Value("${export.blob.folder:outbound/netex/}")
-    private String exportFolder = "outbound/netex/";
+    @Value("${export.blob.folder:inbound/netex/}")
+    private String exportFolder = "inbound/netex/";
 
 
     public void exportDataSet(Export export) {

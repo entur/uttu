@@ -44,7 +44,7 @@ public class MessagingServiceTest extends UttuIntegrationTest {
     private EnturGooglePubSubAdmin enturGooglePubSubAdmin;
 
 
-    @Value("${export.notify.queue.name:ChouetteMergeWithFlexibleLinesQueue}")
+    @Value("${export.notify.queue.name:FlexibleLinesExportQueue}")
     private String queueName;
 
     @Test
