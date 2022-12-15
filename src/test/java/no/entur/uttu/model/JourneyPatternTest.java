@@ -52,6 +52,13 @@ public class JourneyPatternTest {
     }
 
     @Test
+    public void checkPersistable_destinationDisplayOnLastStopPointsInJourneyPattern_givesException() {
+        JourneyPattern jp = validJourneyPattern();
+        jp.getPointsInSequence().get(jp.getPointsInSequence().size() - 1).setDestinationDisplay(new DestinationDisplay());
+        assertCheckPersistableFails(jp);
+    }
+
+    @Test
     public void setPointsInSequence_assignsOrder() {
         JourneyPattern journeyPattern = new JourneyPattern();
 

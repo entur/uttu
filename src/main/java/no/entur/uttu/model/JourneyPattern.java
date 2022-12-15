@@ -134,6 +134,9 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
         Preconditions.checkArgument(!Boolean.FALSE.equals(getPointsInSequence().get(getPointsInSequence().size() - 1).getForAlighting()),
                 "%s does not permit alighting on last pointsInSequence", identity());
 
+        Preconditions.checkArgument(getPointsInSequence().get(getPointsInSequence().size() -1).getDestinationDisplay() == null,
+                "%s has destinationDisplay for last pointsInSequence", identity());
+
         getServiceJourneys().stream().forEach(ProviderEntity::checkPersistable);
     }
 }
