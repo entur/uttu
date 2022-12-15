@@ -64,6 +64,11 @@ public class TimetabledPassingTimeTest {
     }
 
     @Test
+    public void checkPersistable_arrivalEqualsDeparture_givesException() {
+        assertCheckPersistableFails(new TimetabledPassingTime().withArrivalTime(T0).withDepartureTime(T0));
+    }
+
+    @Test
     public void checkBeforeOther_departureOneAfterDepartureTwo_givesException() {
         TimetabledPassingTime one = new TimetabledPassingTime().withDepartureTime(T1).withDepartureDayOffset(1);
         TimetabledPassingTime two = new TimetabledPassingTime().withDepartureTime(T0).withDepartureDayOffset(1);
