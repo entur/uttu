@@ -48,7 +48,7 @@ public class ValidationHelper {
         }
 
         if (thisDayOffset != otherDayOffset) {
-            return thisDayOffset < otherDayOffset;
+            return true;
         }
 
         return !thisTime.equals(otherTime);
