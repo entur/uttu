@@ -28,6 +28,7 @@ import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.FlexibleLineRefStructure;
 import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
+import org.rutebanken.netex.model.LineRefStructure;
 import org.rutebanken.netex.model.Line_VersionStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
@@ -56,7 +57,7 @@ public class LineProducer {
         return lineVisitor.getLine();
     }
 
-    protected void mapCommon(no.entur.uttu.model.Line local, org.rutebanken.netex.model.Line_VersionStructure netex, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
+    protected void mapCommon(no.entur.uttu.model.Line local, org.rutebanken.netex.model.Line_VersionStructure netex, NetexExportContext context) {
         netex.setName(objectFactory.createMultilingualString(local.getName()));
         netex.setPrivateCode(objectFactory.createPrivateCodeStructure(local.getPrivateCode()));
 
@@ -73,8 +74,6 @@ public class LineProducer {
 
         netex.setRepresentedByGroupRef(objectFactory.createGroupOfLinesRefStructure(local.getNetwork().getNetexId()));
         context.networks.add(local.getNetwork());
-
-        noticeAssignments.addAll(objectFactory.createNoticeAssignments(local, FlexibleLineRefStructure.class, local.getNotices(), context));
         context.notices.addAll(local.getNotices());
     }
 
@@ -108,7 +107,8 @@ public class LineProducer {
         @Override
         public void visitFixedLine(FixedLine fixedLine) {
             org.rutebanken.netex.model.Line netexLine = new org.rutebanken.netex.model.Line();
-            mapCommon(fixedLine, netexLine, noticeAssignments, context);
+            noticeAssignments.addAll(objectFactory.createNoticeAssignments(fixedLine, LineRefStructure.class, fixedLine.getNotices(), context));
+            mapCommon(fixedLine, netexLine, context);
             line = NetexIdProducer.copyIdAndVersion(netexLine, fixedLine);
         }
 
@@ -116,7 +116,8 @@ public class LineProducer {
         public void visitFlexibleLine(FlexibleLine flexibleLine) {
             org.rutebanken.netex.model.FlexibleLine netexLine = new org.rutebanken.netex.model.FlexibleLine();
             netexLine.setFlexibleLineType(objectFactory.mapEnum(flexibleLine.getFlexibleLineType(), FlexibleLineTypeEnumeration.class));
-            mapCommon(flexibleLine, netexLine, noticeAssignments, context);
+            noticeAssignments.addAll(objectFactory.createNoticeAssignments(flexibleLine, FlexibleLineRefStructure.class, flexibleLine.getNotices(), context));
+            mapCommon(flexibleLine, netexLine, context);
             mapBookingArrangements(flexibleLine.getBookingArrangement(), netexLine);
             line = NetexIdProducer.copyIdAndVersion(netexLine, flexibleLine);
         }
