@@ -72,7 +72,7 @@ public class JourneyPatternTest {
     }
 
 
-    private JourneyPattern validJourneyPattern() {
+    protected static JourneyPattern validJourneyPattern() {
         JourneyPattern journeyPattern = new JourneyPattern();
 
         StopPointInJourneyPattern firstPoint = new StopPointInJourneyPattern();

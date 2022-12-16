@@ -17,6 +17,8 @@ package no.entur.uttu.model;
 
 import org.junit.Test;
 
+import java.util.List;
+
 import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
 
 public class FlexibleLineTest {
@@ -58,12 +60,35 @@ public class FlexibleLineTest {
     }
 
     @Test
+    public void checkPersistable_whenBookingInformationOnJourneyPattern_success() {
+        FlexibleLine flexibleLine = new FlexibleLine();
+        flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
+        flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
+        JourneyPattern journeyPattern = JourneyPatternTest.validJourneyPattern();
+        journeyPattern.getPointsInSequence().get(0).setBookingArrangement(new BookingArrangement());
+        flexibleLine.setJourneyPatterns(List.of(journeyPattern));
+        flexibleLine.checkPersistable();
+    }
+
+    @Test
+    public void checkPersistable_whenBookingInformationOnServiceJourney_success() {
+        FlexibleLine flexibleLine = new FlexibleLine();
+        flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
+        flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
+        flexibleLine.setOperatorRef("TST:Operator:1");
+        JourneyPattern journeyPattern = JourneyPatternTest.validJourneyPattern();
+        ServiceJourney serviceJourney = ServiceJourneyTest.validServiceJourney();
+        serviceJourney.setBookingArrangement(new BookingArrangement());
+        journeyPattern.setServiceJourneys(List.of(serviceJourney));
+        flexibleLine.setJourneyPatterns(List.of(journeyPattern));
+        flexibleLine.checkPersistable();
+    }
+
+    @Test
     public void checkPersistable_whenMissingBookingInformation_giveException() {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
         assertCheckPersistableFails(flexibleLine);
     }
-
-
 }

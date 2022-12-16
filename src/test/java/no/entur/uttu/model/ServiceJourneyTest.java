@@ -99,7 +99,7 @@ public class ServiceJourneyTest {
         assertCheckPersistableFails(serviceJourney);
     }
 
-    private ServiceJourney validServiceJourney() {
+    protected static ServiceJourney validServiceJourney() {
         ServiceJourney serviceJourney = new ServiceJourney();
         serviceJourney.setJourneyPattern(createJP(2));
 
@@ -109,7 +109,7 @@ public class ServiceJourneyTest {
         return serviceJourney;
     }
 
-    private JourneyPattern createJP(int size) {
+    private static JourneyPattern createJP(int size) {
         JourneyPattern journeyPattern = new JourneyPattern();
         journeyPattern.setLine(new FlexibleLine());
         journeyPattern.getLine().setOperatorRef("34");
@@ -121,7 +121,7 @@ public class ServiceJourneyTest {
         return journeyPattern;
     }
 
-    private TimetabledPassingTime passingTime(LocalTime arrivalTime, LocalTime departureTime) {
+    private static TimetabledPassingTime passingTime(LocalTime arrivalTime, LocalTime departureTime) {
         TimetabledPassingTime passingTime = new TimetabledPassingTime();
         passingTime.setArrivalTime(arrivalTime);
         passingTime.setDepartureTime(departureTime);
