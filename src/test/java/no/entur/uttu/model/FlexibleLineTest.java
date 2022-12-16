@@ -25,6 +25,7 @@ public class FlexibleLineTest {
     public void checkPersistable_whenTransportSubmodeNotSet_giveException() {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
+        flexibleLine.setBookingArrangement(new BookingArrangement());
         assertCheckPersistableFails(flexibleLine);
     }
 
@@ -33,6 +34,7 @@ public class FlexibleLineTest {
     public void checkPersistable_whenTransportModeNotSet_giveException() {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.CAR_TRANSPORT_RAIL_SERVICE);
+        flexibleLine.setBookingArrangement(new BookingArrangement());
         assertCheckPersistableFails(flexibleLine);
     }
 
@@ -42,6 +44,7 @@ public class FlexibleLineTest {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.CAR_TRANSPORT_RAIL_SERVICE);
+        flexibleLine.setBookingArrangement(new BookingArrangement());
         assertCheckPersistableFails(flexibleLine);
     }
 
@@ -50,7 +53,16 @@ public class FlexibleLineTest {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
+        flexibleLine.setBookingArrangement(new BookingArrangement());
         flexibleLine.checkPersistable();
+    }
+
+    @Test
+    public void checkPersistable_whenMissingBookingInformation_giveException() {
+        FlexibleLine flexibleLine = new FlexibleLine();
+        flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
+        flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
+        assertCheckPersistableFails(flexibleLine);
     }
 
 

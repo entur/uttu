@@ -15,6 +15,8 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.util.Preconditions;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -51,5 +53,22 @@ public class FlexibleLine extends Line {
     @Override
     public void accept(LineVisitor lineVisitor) {
         lineVisitor.visitFlexibleLine(this);
+    }
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+
+        Preconditions.checkArgument(bookingInformationPresentInHierarchy(),
+                "%s requires booking information on line, journey pattern or service journey", identity());
+    }
+
+    private boolean bookingInformationPresentInHierarchy() {
+        return this.bookingArrangement != null ||
+                this.getJourneyPatterns().stream().anyMatch(jp ->
+                        jp.getPointsInSequence().stream().anyMatch(point -> point.getBookingArrangement() != null) ||
+                                jp.getServiceJourneys().stream().anyMatch(sj -> sj.getBookingArrangement() != null)
+                );
+
     }
 }
