@@ -8,7 +8,24 @@ https://api.dev.entur.io/timetable-admin/v1/flexible-lines/providers/graphql
 
 ## Running locally
 ### Build
-You need Java 11, Maven 3 or higher, and a `settings.xml`-file that gives you access to the internal repo (ask a friend).
+To build the project from source, you need Java 11, Maven 3 or higher.  
+
+To run the unit tests you need additionally to install the [Google PubSub emulator](https://cloud.google.com/pubsub/docs/emulator).  
+The emulator can be installed locally with the following commands:
+```
+gcloud components install pubsub-emulator
+gcloud components update
+```
+You can then locate the installation directory of the GCloud tool kit with the following command:
+
+```
+gcloud info --format="value(installation.sdk_root)"
+```
+The emulator executable is located under the sub-folder ```platform/pubsub-emulator/lib```  
+and can be used in unit tests by setting the following property in the Spring Boot properties file:
+```
+entur.pubsub.emulator.path=/usr/lib/google-cloud-sdk/platform/pubsub-emulator/lib/cloud-pubsub-emulator-0.6.0.jar
+```
 
 ### Database
 
