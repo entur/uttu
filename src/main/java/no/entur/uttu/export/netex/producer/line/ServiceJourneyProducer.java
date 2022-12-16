@@ -16,6 +16,7 @@
 package no.entur.uttu.export.netex.producer.line;
 
 import no.entur.uttu.export.netex.NetexExportContext;
+import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.export.netex.producer.common.OrganisationProducer;
 import no.entur.uttu.model.BookingArrangement;
@@ -47,6 +48,8 @@ import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static no.entur.uttu.export.netex.producer.NetexObjectFactory.VERSION_ONE;
 
 @Component
 public class ServiceJourneyProducer {
@@ -92,7 +95,7 @@ public class ServiceJourneyProducer {
         return objectFactory.populate(new org.rutebanken.netex.model.ServiceJourney(), local)
                        .withJourneyPatternRef(journeyPatternRef)
                        .withName(objectFactory.createMultilingualString(local.getName()))
-                       .withFlexibleServiceProperties(mapFlexibleServiceProperties(local.getBookingArrangement()))
+                       .withFlexibleServiceProperties(mapFlexibleServiceProperties(local.getBookingArrangement(), context))
                        .withPublicCode(local.getPublicCode())
                        .withOperatorRef(operatorRefStructure)
                        .withPassingTimes(new TimetabledPassingTimes_RelStructure().withTimetabledPassingTime(timetabledPassingTimes))
@@ -130,21 +133,23 @@ public class ServiceJourneyProducer {
     }
 
 
-    private FlexibleServiceProperties mapFlexibleServiceProperties(BookingArrangement local) {
+    private FlexibleServiceProperties mapFlexibleServiceProperties(BookingArrangement local, NetexExportContext context) {
         if (local == null) {
             return null;
         }
 
         // TODO flexibleSerivceType?
         return new FlexibleServiceProperties()
-                       .withBookingAccess(objectFactory.mapEnum(local.getBookingAccess(), BookingAccessEnumeration.class))
-                       .withBookingMethods(objectFactory.mapEnums(local.getBookingMethods(), BookingMethodEnumeration.class))
-                       .withBookWhen(objectFactory.mapEnum(local.getBookWhen(), PurchaseWhenEnumeration.class))
-                       .withBuyWhen(objectFactory.mapEnums(local.getBuyWhen(), PurchaseMomentEnumeration.class))
-                       .withLatestBookingTime(local.getLatestBookingTime())
-                       .withMinimumBookingPeriod(local.getMinimumBookingPeriod())
-                       .withBookingNote(objectFactory.createMultilingualString(local.getBookingNote()))
-                       .withBookingContact(contactStructureProducer.mapContactStructure(local.getBookingContact()));
+                .withId(NetexIdProducer.generateId(FlexibleServiceProperties.class, context))
+                .withVersion(VERSION_ONE)
+                .withBookingAccess(objectFactory.mapEnum(local.getBookingAccess(), BookingAccessEnumeration.class))
+                .withBookingMethods(objectFactory.mapEnums(local.getBookingMethods(), BookingMethodEnumeration.class))
+                .withBookWhen(objectFactory.mapEnum(local.getBookWhen(), PurchaseWhenEnumeration.class))
+                .withBuyWhen(objectFactory.mapEnums(local.getBuyWhen(), PurchaseMomentEnumeration.class))
+                .withLatestBookingTime(local.getLatestBookingTime())
+                .withMinimumBookingPeriod(local.getMinimumBookingPeriod())
+                .withBookingNote(objectFactory.createMultilingualString(local.getBookingNote()))
+                .withBookingContact(contactStructureProducer.mapContactStructure(local.getBookingContact()));
 
     }
 }
