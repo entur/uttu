@@ -137,7 +137,9 @@ public abstract class Line extends GroupOfEntities_VersionStructure {
         Preconditions.checkArgument(Objects.equals(transportMode, transportSubmode.getVehicleMode()), "%s transportSubmode %s is valid for transportMode %s", identity(), transportSubmode.value(), transportMode.value());
 
         getJourneyPatterns().stream().forEach(ProviderEntity::checkPersistable);
-        getNotices().stream().forEach(IdentifiedEntity::checkPersistable);
+        if (getNotices() != null) {
+            getNotices().stream().forEach(IdentifiedEntity::checkPersistable);
+        }
     }
 
     public abstract void accept(LineVisitor lineVisitor);

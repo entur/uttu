@@ -165,8 +165,9 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
                 "%s has operator set on neither ServiceJourney or Line", identity());
 
         getDayTypes().stream().forEach(IdentifiedEntity::checkPersistable);
-        getNotices().stream().forEach(IdentifiedEntity::checkPersistable);
-
+        if (getNotices() != null) {
+            getNotices().stream().forEach(IdentifiedEntity::checkPersistable);
+        }
     }
 
 

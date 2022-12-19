@@ -48,5 +48,10 @@ public enum ErrorCodeEnumeration implements ErrorCode {
     /**
      * StopPointInPattern on fixed lines may only have quayRef not flexibleStopPlace
      */
-    FLEXIBLE_STOP_PLACE_NOT_ALLOWED
+    FLEXIBLE_STOP_PLACE_NOT_ALLOWED,
+
+    /**
+     * Notices can't be empty
+     */
+    NO_EMPTY_NOTICES
 }

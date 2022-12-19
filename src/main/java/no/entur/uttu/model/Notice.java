@@ -15,6 +15,8 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 
 import javax.persistence.Entity;
@@ -44,6 +46,6 @@ public class Notice extends ProviderEntity {
     @Override
     public void checkPersistable() {
         super.checkPersistable();
-        Preconditions.checkArgument(text != null && !text.isEmpty(), "Notice text cannot be empty");
+        Preconditions.checkArgument(text != null && !text.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_EMPTY_NOTICES), "Notice text cannot be empty");
     }
 }
