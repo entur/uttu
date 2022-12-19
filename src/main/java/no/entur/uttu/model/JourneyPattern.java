@@ -138,5 +138,6 @@ public class JourneyPattern extends GroupOfEntities_VersionStructure {
                 "%s has destinationDisplay for last pointsInSequence", identity());
 
         getServiceJourneys().stream().forEach(ProviderEntity::checkPersistable);
+        getNotices().stream().forEach(IdentifiedEntity::checkPersistable);
     }
 }
