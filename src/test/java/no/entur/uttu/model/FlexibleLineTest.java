@@ -27,7 +27,7 @@ public class FlexibleLineTest {
     public void checkPersistable_whenTransportSubmodeNotSet_giveException() {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
-        flexibleLine.setBookingArrangement(new BookingArrangement());
+        flexibleLine.setBookingArrangement(validBookingArrangement());
         assertCheckPersistableFails(flexibleLine);
     }
 
@@ -36,7 +36,7 @@ public class FlexibleLineTest {
     public void checkPersistable_whenTransportModeNotSet_giveException() {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.CAR_TRANSPORT_RAIL_SERVICE);
-        flexibleLine.setBookingArrangement(new BookingArrangement());
+        flexibleLine.setBookingArrangement(validBookingArrangement());
         assertCheckPersistableFails(flexibleLine);
     }
 
@@ -46,7 +46,7 @@ public class FlexibleLineTest {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.CAR_TRANSPORT_RAIL_SERVICE);
-        flexibleLine.setBookingArrangement(new BookingArrangement());
+        flexibleLine.setBookingArrangement(validBookingArrangement());
         assertCheckPersistableFails(flexibleLine);
     }
 
@@ -55,7 +55,7 @@ public class FlexibleLineTest {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
-        flexibleLine.setBookingArrangement(new BookingArrangement());
+        flexibleLine.setBookingArrangement(validBookingArrangement());
         flexibleLine.checkPersistable();
     }
 
@@ -65,7 +65,7 @@ public class FlexibleLineTest {
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
         JourneyPattern journeyPattern = JourneyPatternTest.validJourneyPattern();
-        journeyPattern.getPointsInSequence().get(0).setBookingArrangement(new BookingArrangement());
+        journeyPattern.getPointsInSequence().get(0).setBookingArrangement(validBookingArrangement());
         flexibleLine.setJourneyPatterns(List.of(journeyPattern));
         flexibleLine.checkPersistable();
     }
@@ -78,7 +78,7 @@ public class FlexibleLineTest {
         flexibleLine.setOperatorRef("TST:Operator:1");
         JourneyPattern journeyPattern = JourneyPatternTest.validJourneyPattern();
         ServiceJourney serviceJourney = ServiceJourneyTest.validServiceJourney();
-        serviceJourney.setBookingArrangement(new BookingArrangement());
+        serviceJourney.setBookingArrangement(validBookingArrangement());
         journeyPattern.setServiceJourneys(List.of(serviceJourney));
         flexibleLine.setJourneyPatterns(List.of(journeyPattern));
         flexibleLine.checkPersistable();
@@ -90,5 +90,11 @@ public class FlexibleLineTest {
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
         assertCheckPersistableFails(flexibleLine);
+    }
+
+    private BookingArrangement validBookingArrangement() {
+        BookingArrangement bookingArrangement = new BookingArrangement();
+        bookingArrangement.setBookWhen(PurchaseWhenEnumeration.DAY_OF_TRAVEL_ONLY);
+        return bookingArrangement;
     }
 }
