@@ -89,6 +89,10 @@ public class FlexibleLineTest {
         FlexibleLine flexibleLine = new FlexibleLine();
         flexibleLine.setTransportMode(VehicleModeEnumeration.BUS);
         flexibleLine.setTransportSubmode(VehicleSubmodeEnumeration.AIRPORT_LINK_BUS);
+        JourneyPattern journeyPattern = JourneyPatternTest.validJourneyPattern();
+        ServiceJourney serviceJourney = ServiceJourneyTest.validServiceJourney();
+        journeyPattern.setServiceJourneys(List.of(serviceJourney));
+        flexibleLine.setJourneyPatterns(List.of(journeyPattern));
         assertCheckPersistableFails(flexibleLine);
     }
 
