@@ -15,6 +15,8 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.util.Preconditions;
+
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -32,5 +34,16 @@ public class Notice extends ProviderEntity {
 
     public void setText(String text) {
         this.text = text;
+    }
+
+    public Notice withText(String text) {
+        this.text = text;
+        return this;
+    }
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+        Preconditions.checkArgument(text != null && !text.isEmpty(), "Notice text cannot be empty");
     }
 }

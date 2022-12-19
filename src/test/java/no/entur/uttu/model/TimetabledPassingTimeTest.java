@@ -39,7 +39,7 @@ public class TimetabledPassingTimeTest {
 
     @Test
     public void checkPersistable_maxFieldsSet_success() {
-        new TimetabledPassingTime().withArrivalTime(T0).withLatestArrivalTime(T0).withEarliestDepartureTime(T0).withDepartureTime(T0).checkPersistable();
+        new TimetabledPassingTime().withEarliestDepartureTime(T0).withDepartureTime(T0).checkPersistable();
         new TimetabledPassingTime().withArrivalTime(T0).withLatestArrivalTime(T1).withEarliestDepartureTime(T2).withDepartureTime(T3).checkPersistable();
 
         new TimetabledPassingTime().withArrivalTime(T3).withArrivalDayOffset(0).withLatestArrivalTime(T2).withLatestArrivalDayOffset(1).withEarliestDepartureTime(T1)
@@ -61,6 +61,11 @@ public class TimetabledPassingTimeTest {
     @Test
     public void checkPersistable_arrivalAfterLatestArrival_givesException() {
         assertCheckPersistableFails(new TimetabledPassingTime().withArrivalTime(T1).withLatestArrivalTime(T0));
+    }
+
+    @Test
+    public void checkPersistable_arrivalEqualsDeparture_givesException() {
+        assertCheckPersistableFails(new TimetabledPassingTime().withArrivalTime(T0).withDepartureTime(T0));
     }
 
     @Test

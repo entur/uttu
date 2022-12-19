@@ -34,7 +34,9 @@ public class FixedLineTest {
         FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
         stopPointInJourneyPattern.setFlexibleStopPlace(flexibleStopPlace);
         stopPointInJourneyPattern.setDestinationDisplay(new DestinationDisplay());
-        journeyPattern.setPointsInSequence(Arrays.asList(stopPointInJourneyPattern, stopPointInJourneyPattern));
+        StopPointInJourneyPattern secondStopPointInJourneyPattern = new StopPointInJourneyPattern();
+        secondStopPointInJourneyPattern.setFlexibleStopPlace(flexibleStopPlace);
+        journeyPattern.setPointsInSequence(Arrays.asList(stopPointInJourneyPattern, secondStopPointInJourneyPattern));
         fixedLine.setJourneyPatterns(Collections.singletonList(journeyPattern));
         assertCheckPersistableFailsWithErrorCode(fixedLine, ErrorCodeEnumeration.FLEXIBLE_STOP_PLACE_NOT_ALLOWED);
     }

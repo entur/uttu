@@ -183,7 +183,6 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
       }
     ],
     "bookingArrangement": {
-      "latestBookingTime": "12:00",
       "minimumBookingPeriod": "PT2H",
       "bookingNote": "Notis for booking av linje",
       "bookingMethods": [
@@ -191,7 +190,6 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         "callDriver"
       ],
       "bookingAccess": "authorisedPublic",
-      "bookWhen": "untilPreviousDay",
       "buyWhen": [
         "afterBoarding",
         "beforeBoarding"

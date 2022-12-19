@@ -201,6 +201,7 @@ public class TimetabledPassingTime extends ProviderEntity {
         Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, departureTime, departureDayOffset), "%s arrivalTime cannot be later than departureTime", identity());
         Preconditions.checkArgument(ValidationHelper.isNotAfter(earliestDepartureTime, earliestDepartureDayOffset, departureTime, departureDayOffset), "%s earliestDepartureTime cannot be later than departureTime", identity());
         Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, latestArrivalTime, latestArrivalDayOffset), "%s arrivalTime cannot be later than latestArrivalTime", identity());
+        Preconditions.checkArgument(ValidationHelper.isNotSame(arrivalTime, arrivalDayOffset, departureTime, departureDayOffset), "%s arrivalTime and departureTime cannot be the same, use departureTime only", identity());
     }
 
 

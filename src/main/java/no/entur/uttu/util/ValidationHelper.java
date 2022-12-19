@@ -42,4 +42,16 @@ public class ValidationHelper {
         return !thisTime.isAfter(otherTime);
     }
 
+    public static boolean isNotSame(LocalTime thisTime, int thisDayOffset, LocalTime otherTime, int otherDayOffset) {
+        if (thisTime == null || otherTime == null) {
+            return true;
+        }
+
+        if (thisDayOffset != otherDayOffset) {
+            return true;
+        }
+
+        return !thisTime.equals(otherTime);
+    }
+
 }
