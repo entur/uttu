@@ -61,6 +61,8 @@ public class FlexibleLine extends Line {
 
         Preconditions.checkArgument(bookingInformationPresentInHierarchy(),
                 "%s requires booking information on line, journey pattern or service journey", identity());
+
+        validateBookingInformations();
     }
 
     private boolean bookingInformationPresentInHierarchy() {
@@ -70,5 +72,19 @@ public class FlexibleLine extends Line {
                                 jp.getServiceJourneys().stream().anyMatch(sj -> sj.getBookingArrangement() != null)
                 );
 
+    }
+
+    private void validateBookingInformations() {
+        validateBookingInformation(this.bookingArrangement);
+        this.getJourneyPatterns().stream().forEach(jp -> {
+            jp.getPointsInSequence().stream().forEach(stopPoint -> validateBookingInformation(stopPoint.getBookingArrangement()));
+            jp.getServiceJourneys().stream().forEach(sj -> validateBookingInformation(sj.getBookingArrangement()));
+        });
+
+    }
+
+    private void validateBookingInformation(BookingArrangement bookingArrangement) {
+        if (bookingArrangement == null) return;
+        bookingArrangement.checkPersistable();
     }
 }

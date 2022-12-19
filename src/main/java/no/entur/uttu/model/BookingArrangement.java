@@ -16,6 +16,8 @@
 package no.entur.uttu.model;
 
 
+import no.entur.uttu.util.Preconditions;
+
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -110,5 +112,31 @@ public class BookingArrangement extends IdentifiedEntity {
 
     public void setBuyWhen(List<PurchaseMomentEnumeration> buyWhen) {
         this.buyWhen = buyWhen;
+    }
+
+    @Override
+    public void checkPersistable() {
+        super.checkPersistable();
+
+        Preconditions.checkArgument(
+                // notExist(BookWhen xor LatestBookingTime)
+                getLatestBookingTime() == null || getBookWhen() != null,
+                "%s booking information must have BookWhen when LatestBookingTime is defined",
+                this
+        );
+
+        Preconditions.checkArgument(
+                // notExist(BookWhen and MinimumBookingPeriod)
+                getMinimumBookingPeriod() == null || getBookWhen() == null,
+                "%s booking information can't have BookWhen when MinimumBookingPeriod is defined",
+                this
+        );
+
+        Preconditions.checkArgument(
+                // notExist( not(BookWhen) and not(MinimumBookingPeriod))
+                getBookWhen() != null || getMinimumBookingPeriod() != null,
+                "%s booking information must have BookWhen or MinimumBookingPeriod",
+                this
+        );
     }
 }
