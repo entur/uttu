@@ -15,6 +15,8 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 
 import javax.persistence.CascadeType;
@@ -60,6 +62,7 @@ public class FlexibleLine extends Line {
         super.checkPersistable();
 
         Preconditions.checkArgument(bookingInformationPresentInHierarchy(),
+                CodedError.fromErrorCode(ErrorCodeEnumeration.FLEXIBLE_LINE_REQUIRES_BOOKING),
                 "%s requires booking information on line, journey pattern or service journey", identity());
 
         validateBookingInformations();

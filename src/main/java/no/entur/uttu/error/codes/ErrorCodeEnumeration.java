@@ -53,5 +53,10 @@ public enum ErrorCodeEnumeration implements ErrorCode {
     /**
      * Notices can't be empty
      */
-    NO_EMPTY_NOTICES
+    NO_EMPTY_NOTICES,
+
+    /**
+     * Flexible lines must have booking information on line, journey pattern and/or service journey
+     */
+    FLEXIBLE_LINE_REQUIRES_BOOKING
 }
