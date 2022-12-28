@@ -33,7 +33,7 @@ entur.pubsub.emulator.path=/usr/lib/google-cloud-sdk/platform/pubsub-emulator/li
 Install Docker.
 
 ```bash
-docker run --name=uttu -d -e POSTGRES_USER=uttu -e POSTGRES_PASSWORD=uttu -e POSTGRES_DBNAME=uttu -e ALLOW_IP_RANGE=0.0.0.0/0 -p 5432:5432 -v db_local:/var/lib/postgresql --restart=always postgis/postgis:13-3.3
+docker run --name=uttu -d -e POSTGRES_USER=uttu -e POSTGRES_PASSWORD=uttu -e POSTGRES_DB=uttu -p 5432:5432 -v db_local:/var/lib/postgresql --restart=always postgis/postgis:13-3.3
 ```
 
 Now a Docker container is running in the background. Check its status with `docker ps`.
