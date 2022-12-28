@@ -15,18 +15,32 @@
 
 package no.entur.uttu;
 
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = UttuTestApp.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = UttuTestApp.class
+)
 @ActiveProfiles({"google-pubsub-emulator", "test"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public abstract class UttuIntegrationTest {
+
+    @Rule
+    public GenericContainer db = new GenericContainer(DockerImageName.parse("postgis/postgis:13-3.3"))
+            .withEnv("POSTGRES_USER", "uttu")
+            .withEnv("POSTGRES_PASSWORD", "uttu")
+            .withEnv("POSTGRES_DB", "uttu")
+            .withExposedPorts(5432);
+
 
     @Value("${local.server.port}")
     protected int port;
