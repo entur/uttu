@@ -57,11 +57,7 @@ aliases:
 
 jobs:
   build:
-    docker:
-      - image: cimg/openjdk:11.0
-        auth:
-          username: $DOCKERHUB_LOGIN
-          password: $DOCKERHUB_PASSWORD
+    machine: true
     environment:
       MAVEN_OPTS: -Xmx3G
     steps:
