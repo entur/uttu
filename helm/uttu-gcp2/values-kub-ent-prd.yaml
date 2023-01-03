@@ -27,4 +27,5 @@ configMap:
   blobstoreContainerName: ror-marduk-exchange-production
   logLevel: INFO
   flywayTable: flyway_schema_history
+  exportQueueName: ChouetteMergeWithFlexibleLinesQueue
 

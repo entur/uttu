@@ -24,3 +24,4 @@ configMap:
   blobstoreContainerName: ror-marduk-exchange-test
   logLevel: INFO
   flywayTable: flyway_schema_history
+  exportQueueName: FlexibleLinesExportQueue

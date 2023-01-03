@@ -25,3 +25,4 @@ configMap:
   blobstoreContainerName: ror-marduk-exchange-dev
   logLevel: DEBUG
   flywayTable: schema_version
+  exportQueueName: FlexibleLinesExportQueue
