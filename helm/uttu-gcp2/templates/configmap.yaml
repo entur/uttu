@@ -10,6 +10,7 @@ data:
     organisation.registry.url={{ .Values.configMap.organisationRegistryUrl }}
     export.notify.enabled=true
     export.notify.queue.name={{ .Values.configMap.exportQueueName }}
+    export.blob.folder={{ .Values.configMap.exportBlobFolder }}
     export.working.folder=/tmp/export
 
     # gcs

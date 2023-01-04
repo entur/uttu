@@ -28,4 +28,4 @@ configMap:
   logLevel: INFO
   flywayTable: flyway_schema_history
   exportQueueName: ChouetteMergeWithFlexibleLinesQueue
-
+  exportBlobFolder: outbound/netex/

@@ -26,3 +26,4 @@ configMap:
   logLevel: DEBUG
   flywayTable: schema_version
   exportQueueName: FlexibleLinesExportQueue
+  exportBlobFolder: inbound/netex/
