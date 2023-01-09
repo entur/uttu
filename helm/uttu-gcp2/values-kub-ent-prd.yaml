@@ -27,5 +27,5 @@ configMap:
   blobstoreContainerName: ror-marduk-exchange-production
   logLevel: INFO
   flywayTable: flyway_schema_history
-  exportQueueName: ChouetteMergeWithFlexibleLinesQueue
-  exportBlobFolder: outbound/netex/
+  exportQueueName: FlexibleLinesExportQueue
+  exportBlobFolder: inbound/netex/
