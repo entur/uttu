@@ -118,10 +118,15 @@ public class BookingArrangement extends IdentifiedEntity {
     public void checkPersistable() {
         super.checkPersistable();
 
+        // notExist(BookWhen xor LatestBookingTime)
         Preconditions.checkArgument(
-                // notExist(BookWhen xor LatestBookingTime)
                 getLatestBookingTime() == null || getBookWhen() != null,
                 "%s booking information must have BookWhen when LatestBookingTime is defined",
+                this
+        );
+        Preconditions.checkArgument(
+                getBookWhen() == null || getLatestBookingTime() != null,
+                "%s booking information must have LatestBookingTime when BookWhen is defined",
                 this
         );
 
