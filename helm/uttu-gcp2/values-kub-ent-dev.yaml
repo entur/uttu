@@ -11,6 +11,7 @@ ingress:
 
 configMap:
   organisationRegistryUrl: https://api.dev.entur.io/organisations/v1/register/organisations/
+  stopplaceRegistryUrl: https://api.dev.entur.io/stop-places/v1/read
   auth0:
     ror:
       url: https://ror-entur-dev.eu.auth0.com/

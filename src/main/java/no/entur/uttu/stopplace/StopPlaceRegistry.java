@@ -21,4 +21,5 @@ public interface StopPlaceRegistry {
 
     String getVerifiedQuayRef(String quayRef);
 
+    StopPlace getStopPlaceByQuayRef(String quayRef);
 }

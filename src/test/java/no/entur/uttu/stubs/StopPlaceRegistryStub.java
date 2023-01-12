@@ -15,6 +15,7 @@
 
 package no.entur.uttu.stubs;
 
+import no.entur.uttu.stopplace.StopPlace;
 import no.entur.uttu.stopplace.StopPlaceRegistry;
 import org.springframework.stereotype.Component;
 
@@ -29,5 +30,10 @@ public class StopPlaceRegistryStub implements StopPlaceRegistry {
     @Override
     public String getVerifiedQuayRef(String quayRef) {
         return quayRef;
+    }
+
+    @Override
+    public StopPlace getStopPlaceByQuayRef(String quayRef) {
+        return null;
     }
 }

@@ -32,6 +32,7 @@ import no.entur.uttu.model.job.ExportStatusEnumeration;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.profile.Profile;
 import no.entur.uttu.repository.*;
+import no.entur.uttu.stopplace.StopPlaceRegistry;
 import org.locationtech.jts.geom.Geometry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -111,6 +112,9 @@ public class LinesGraphQLSchema {
     @Autowired
     private DayTypeRepository dayTypeRepository;
 
+    @Autowired
+    private StopPlaceRegistry stopPlaceRegistry;
+
     private <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
         return createEnum(name, Arrays.asList(values), mapping);
     }
@@ -153,6 +157,8 @@ public class LinesGraphQLSchema {
     private GraphQLObjectType networkObjectType;
     private GraphQLObjectType exportObjectType;
     private GraphQLObjectType exportedLineStatisticsObjectType;
+
+    private GraphQLObjectType stopPlaceObjectType;
 
     private GraphQLArgument idArgument;
     private GraphQLArgument idsArgument;
@@ -418,6 +424,17 @@ public class LinesGraphQLSchema {
                             return export.getExportLineAssociations();
                         }))
                 .build();
+
+        GraphQLObjectType quayObjectType = newObject().name("Quay")
+                .field(newFieldDefinition().name(FIELD_ID).type(GraphQLString))
+                .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(GraphQLString))
+                .build();
+
+        stopPlaceObjectType = newObject().name("StopPlace")
+                .field(newFieldDefinition().name(FIELD_ID).type(GraphQLID))
+                .field(newFieldDefinition().name(FIELD_NAME).type(GraphQLString))
+                .field(newFieldDefinition().name("quays").type(new GraphQLList(quayObjectType)))
+                .build();
     }
 
     private GraphQLObjectType createQueryObject() {
@@ -525,6 +542,12 @@ public class LinesGraphQLSchema {
                                     ? exportedLineStatisticsService.getLineStatisticsForProvider(providerCode)
                                     : exportedLineStatisticsService.getLineStatisticsForAllProviders();
                         }))
+                .field(newFieldDefinition()
+                        .type(stopPlaceObjectType)
+                        .name("stopPlaceByQuayRef")
+                        .description("Get a stop place of a quay")
+                        .argument(idArgument)
+                        .dataFetcher(env -> stopPlaceRegistry.getStopPlaceByQuayRef(env.getArgument(FIELD_ID))))
                 .build();
     }
 

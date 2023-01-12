@@ -15,6 +15,7 @@
 
 package no.entur.uttu.stopplace;
 
+import no.entur.uttu.config.NetexHttpMessageConverter;
 import no.entur.uttu.util.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,18 +23,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+
+import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
 @Component
 public class StopPlaceRegistryImpl implements StopPlaceRegistry {
 
     private static final Logger logger = LoggerFactory.getLogger(StopPlaceRegistryImpl.class);
 
-
     private RestTemplate restTemplate = new RestTemplate();
-
 
     private static final String ET_CLIENT_ID_HEADER = "ET-Client-ID";
     private static final String ET_CLIENT_NAME_HEADER = "ET-Client-Name";
@@ -45,8 +49,14 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
     @Value("${http.client.id:uttu}")
     private String clientId;
 
-    @Value("${stopplace.registry.url:https://api.entur.io/stop-places/v1/graphql}")
-    private String stopPlaceRegistryUrl = "https://api.entur.io/stop-places/v1/graphql";
+    @Value("${stopplace.registry.url:https://api.entur.io/stop-places/v1/read}")
+    private String stopPlaceRegistryUrl;
+
+    @PostConstruct
+    private void setup() {
+        restTemplate.getMessageConverters().clear();
+        restTemplate.getMessageConverters().add(new NetexHttpMessageConverter());
+    }
 
     public boolean isValidQuayRef(String quayRef) {
         if (quayRef == null) {
@@ -57,11 +67,8 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
         }
 
         try {
-            String rsp =
-                    restTemplate.exchange(stopPlaceRegistryUrl, HttpMethod.POST, createQueryHttpEntity(quayRef), String.class).getBody();
-
-            // Look for "id" field in response, indicating hit. To a void parsing response
-            return rsp != null && rsp.contains(SUCCESS_MATCHER);
+            StopPlace stopPlace = getStopPlaceByQuayRef(quayRef);
+            return stopPlace != null && stopPlace.getId() != null;
         } catch (RestClientException e) {
             logger.warn("Error checking quay ref {}: {}", quayRef, e.getMessage());
             return false;
@@ -82,18 +89,38 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
         return quayRef;
     }
 
-
-    private HttpEntity<String> createQueryHttpEntity(String quayRef) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
-        headers.set(ET_CLIENT_NAME_HEADER, clientName);
-        headers.set(ET_CLIENT_ID_HEADER, clientId);
-
-        String query = buildQuery(quayRef);
-        return new HttpEntity<>(query, headers);
+    @Override
+    public StopPlace getStopPlaceByQuayRef(String quayRef) {
+        try {
+            org.rutebanken.netex.model.StopPlace stopPlace = restTemplate.exchange(stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place", HttpMethod.GET, createHttpEntity(), org.rutebanken.netex.model.StopPlace.class).getBody();
+            assert stopPlace != null;
+            return map(stopPlace);
+        } catch (Exception e) {
+            logger.warn(e.getMessage());
+            throw e;
+        }
     }
 
-    private String buildQuery(String queryRef) {
-        return "{\"operationName\":\"findStop\", \"query\": \"{ stopPlace(query: \\\"" + queryRef + "\\\",versionValidity:CURRENT_FUTURE) {id }}\", \"variables\":null}";
+    private StopPlace map(org.rutebanken.netex.model.StopPlace stopPlace) {
+        StopPlace mapped = new StopPlace();
+        mapped.setId(stopPlace.getId());
+        mapped.setName(stopPlace.getName().getValue());
+        mapped.setQuays(stopPlace.getQuays().getQuayRefOrQuay().stream().map(v -> (org.rutebanken.netex.model.Quay)v).map(this::mapQuay).collect(Collectors.toList()));
+        return mapped;
+    }
+
+    private Quay mapQuay(org.rutebanken.netex.model.Quay quay) {
+        Quay mapped = new Quay();
+        mapped.setId(quay.getId());
+        mapped.setPublicCode(quay.getPublicCode());
+        return mapped;
+    }
+
+    private HttpEntity<Void> createHttpEntity() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
+        headers.set(ET_CLIENT_NAME_HEADER, clientName);
+        headers.set(ET_CLIENT_ID_HEADER, clientId);
+        return new HttpEntity<>(headers);
     }
 }
