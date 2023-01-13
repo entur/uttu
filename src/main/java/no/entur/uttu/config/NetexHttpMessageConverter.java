@@ -39,7 +39,7 @@ public class NetexHttpMessageConverter extends AbstractXmlHttpMessageConverter<O
 
     @Override
     protected boolean supports(Class<?> clazz) {
-        return true;
+        return clazz.isAssignableFrom(StopPlace.class);
     }
 
     @Override
