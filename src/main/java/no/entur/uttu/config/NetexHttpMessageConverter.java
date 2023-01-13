@@ -25,12 +25,11 @@ public class NetexHttpMessageConverter extends AbstractXmlHttpMessageConverter<O
             PublicationDeliveryStructure.class,
             StopPlace.class
     );
-    private Unmarshaller unmarshaller;
 
     @Override
     protected Object readFromSource(Class<?> clazz, HttpHeaders headers, Source source) throws JAXBException {
-        JAXBElement<?> element = (JAXBElement<?>) getUnmarshaller().unmarshal(source);
-        return element.getValue();
+            JAXBElement<?> element = (JAXBElement<?>) getUnmarshaller().unmarshal(source);
+            return element.getValue();
     }
 
     @Override
@@ -49,11 +48,7 @@ public class NetexHttpMessageConverter extends AbstractXmlHttpMessageConverter<O
     }
 
     private Unmarshaller getUnmarshaller() throws JAXBException {
-        if (unmarshaller == null) {
-            unmarshaller = publicationDeliveryContext.createUnmarshaller();
-        }
-
-        return unmarshaller;
+        return publicationDeliveryContext.createUnmarshaller();
     }
 
     private static JAXBContext createContext(Class... clazz) {
