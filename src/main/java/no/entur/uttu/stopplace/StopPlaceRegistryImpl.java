@@ -27,6 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
+import javax.jdo.annotations.Cacheable;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -58,6 +59,7 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
     }
 
     @Override
+    @Cacheable("stopPlacesByQuayRef")
     public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
         try {
             org.rutebanken.netex.model.StopPlace stopPlace = restTemplate.exchange(stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place", HttpMethod.GET, createHttpEntity(), org.rutebanken.netex.model.StopPlace.class).getBody();
