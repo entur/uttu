@@ -10,8 +10,6 @@ import java.util.Optional;
 
 @Component
 public class StopPlaceServiceImpl implements StopPlaceService {
-
-    private static final Logger logger = LoggerFactory.getLogger(StopPlaceServiceImpl.class);
     private final StopPlaceRegistry stopPlaceRegistry;
 
     public StopPlaceServiceImpl(@Autowired StopPlaceRegistry stopPlaceRegistry) {
