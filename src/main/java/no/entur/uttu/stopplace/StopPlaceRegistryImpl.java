@@ -31,8 +31,6 @@ import javax.jdo.annotations.Cacheable;
 import java.util.Collections;
 import java.util.Optional;
 
-import static no.entur.uttu.stopplace.StopPlaceMapper.mapStopPlace;
-
 @Component
 public class StopPlaceRegistryImpl implements StopPlaceRegistry {
 
@@ -60,11 +58,10 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
 
     @Override
     @Cacheable("stopPlacesByQuayRef")
-    public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
+    public Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef) {
         try {
             org.rutebanken.netex.model.StopPlace stopPlace = restTemplate.exchange(stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place", HttpMethod.GET, createHttpEntity(), org.rutebanken.netex.model.StopPlace.class).getBody();
-            assert stopPlace != null;
-            return Optional.of(mapStopPlace(stopPlace));
+            return Optional.ofNullable(stopPlace);
         } catch (Exception e) {
             logger.warn(e.getMessage());
             return Optional.empty();

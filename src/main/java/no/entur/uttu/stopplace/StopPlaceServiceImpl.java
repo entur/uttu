@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
+import static no.entur.uttu.stopplace.StopPlaceMapper.mapStopPlace;
+
 @Component
 public class StopPlaceServiceImpl implements StopPlaceService {
     private final StopPlaceRegistry stopPlaceRegistry;
@@ -42,6 +44,6 @@ public class StopPlaceServiceImpl implements StopPlaceService {
 
     @Override
     public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
-        return stopPlaceRegistry.getStopPlaceByQuayRef(quayRef);
+        return stopPlaceRegistry.getStopPlaceByQuayRef(quayRef).map(StopPlaceMapper::mapStopPlace);
     }
 }

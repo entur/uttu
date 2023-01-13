@@ -32,7 +32,7 @@ import java.util.Optional;
 public class StopPlaceRegistryStub implements StopPlaceRegistry {
 
     @Override
-    public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
+    public Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef) {
         NetexHttpMessageConverter converter = new NetexHttpMessageConverter();
 
         try {
@@ -50,7 +50,7 @@ public class StopPlaceRegistryStub implements StopPlaceRegistry {
                         }
                     }
             );
-            return Optional.of(StopPlaceMapper.mapStopPlace(stopPlace));
+            return Optional.of(stopPlace);
         } catch (IOException e) {
             return Optional.empty();
         }
