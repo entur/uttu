@@ -9,13 +9,14 @@ import org.springframework.web.client.RestClientException;
 
 @Component
 public class StopPlaceServiceImpl implements StopPlaceService {
+
+    private static final Logger logger = LoggerFactory.getLogger(StopPlaceServiceImpl.class);
     private final StopPlaceRegistry stopPlaceRegistry;
 
     public StopPlaceServiceImpl(@Autowired StopPlaceRegistry stopPlaceRegistry) {
         this.stopPlaceRegistry = stopPlaceRegistry;
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(StopPlaceServiceImpl.class);
     public boolean isValidQuayRef(String quayRef) {
         if (quayRef == null) {
             return false;
@@ -24,13 +25,8 @@ public class StopPlaceServiceImpl implements StopPlaceService {
             return false;
         }
 
-        try {
-            StopPlace stopPlace = getStopPlaceByQuayRef(quayRef);
-            return stopPlace != null && stopPlace.getId() != null;
-        } catch (RestClientException e) {
-            logger.warn("Error checking quay ref {}: {}", quayRef, e.getMessage());
-            return false;
-        }
+        StopPlace stopPlace = getStopPlaceByQuayRef(quayRef);
+        return stopPlace != null && stopPlace.getId() != null;
     }
 
     /**

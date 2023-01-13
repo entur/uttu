@@ -64,7 +64,7 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
             return mapStopPlace(stopPlace);
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            throw new RuntimeException("Unable to get stop place by quay ref", e);
+            return null;
         }
     }
 
