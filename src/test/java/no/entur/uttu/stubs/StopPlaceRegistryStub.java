@@ -28,6 +28,6 @@ public class StopPlaceRegistryStub implements StopPlaceRegistry {
     public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
         StopPlace stopPlace = new StopPlace();
         stopPlace.setId("NSR:StopPlace:1");
-        return stopPlace;
+        return Optional.of(stopPlace);
     }
 }
