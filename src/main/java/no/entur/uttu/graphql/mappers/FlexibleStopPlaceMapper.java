@@ -23,6 +23,7 @@ import no.entur.uttu.model.Value;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import no.entur.uttu.stopplace.StopPlaceRegistry;
+import no.entur.uttu.stopplace.StopPlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -38,7 +39,7 @@ public class FlexibleStopPlaceMapper extends AbstractGroupOfEntitiesMapper<Flexi
     private GeometryMapper geometryMapper;
 
     @Autowired
-    private StopPlaceRegistry stopPlaceRegistry;
+    private StopPlaceService stopPlaceService;
 
     public FlexibleStopPlaceMapper(ProviderRepository providerRepository, ProviderEntityRepository<FlexibleStopPlace> repository, GeometryMapper geometryMapper) {
         super(providerRepository, repository);
@@ -70,8 +71,8 @@ public class FlexibleStopPlaceMapper extends AbstractGroupOfEntitiesMapper<Flexi
         ArgumentWrapper input = new ArgumentWrapper(inputMap);
 
         HailAndRideArea entity = new HailAndRideArea();
-        input.apply(FIELD_START_QUAY_REF, stopPlaceRegistry::getVerifiedQuayRef, entity::setStartQuayRef);
-        input.apply(FIELD_END_QUAY_REF, stopPlaceRegistry::getVerifiedQuayRef, entity::setEndQuayRef);
+        input.apply(FIELD_START_QUAY_REF, stopPlaceService::getVerifiedQuayRef, entity::setStartQuayRef);
+        input.apply(FIELD_END_QUAY_REF, stopPlaceService::getVerifiedQuayRef, entity::setEndQuayRef);
         return entity;
     }
 

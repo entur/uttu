@@ -16,7 +16,6 @@
 package no.entur.uttu.stopplace;
 
 import no.entur.uttu.config.NetexHttpMessageConverter;
-import no.entur.uttu.util.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,12 +24,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
-import java.util.stream.Collectors;
+
+import static no.entur.uttu.stopplace.StopPlaceMapper.mapStopPlace;
 
 @Component
 public class StopPlaceRegistryImpl implements StopPlaceRegistry {
@@ -49,7 +48,7 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
     @Value("${http.client.id:uttu}")
     private String clientId;
 
-    @Value("${stopplace.registry.url:https://api.entur.io/stop-places/v1/read}")
+    @Value("${stopplace.registry.url:https://api.dev.entur.io/stop-places/v1/read}")
     private String stopPlaceRegistryUrl;
 
     @PostConstruct
@@ -58,62 +57,16 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
         restTemplate.getMessageConverters().add(new NetexHttpMessageConverter());
     }
 
-    public boolean isValidQuayRef(String quayRef) {
-        if (quayRef == null) {
-            return false;
-        }
-        if (!quayRef.contains(":Quay:")) {
-            return false;
-        }
-
-        try {
-            StopPlace stopPlace = getStopPlaceByQuayRef(quayRef);
-            return stopPlace != null && stopPlace.getId() != null;
-        } catch (RestClientException e) {
-            logger.warn("Error checking quay ref {}: {}", quayRef, e.getMessage());
-            return false;
-        }
-    }
-
-    /**
-     * Return provided quayRef if valid, else throw exception.
-     */
-    public String getVerifiedQuayRef(String quayRef) {
-        if (quayRef == null) {
-            return null;
-        }
-
-        // Check that quayRef is a valid Quay id. To avoid getting hits on stop place / street / municipality whatever, as stop place registry query matches anything
-        Preconditions.checkArgument(isValidQuayRef(quayRef), "%s is not a valid quayRef", quayRef);
-
-        return quayRef;
-    }
-
     @Override
     public StopPlace getStopPlaceByQuayRef(String quayRef) {
         try {
             org.rutebanken.netex.model.StopPlace stopPlace = restTemplate.exchange(stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place", HttpMethod.GET, createHttpEntity(), org.rutebanken.netex.model.StopPlace.class).getBody();
             assert stopPlace != null;
-            return map(stopPlace);
+            return mapStopPlace(stopPlace);
         } catch (Exception e) {
             logger.warn(e.getMessage());
             throw e;
         }
-    }
-
-    private StopPlace map(org.rutebanken.netex.model.StopPlace stopPlace) {
-        StopPlace mapped = new StopPlace();
-        mapped.setId(stopPlace.getId());
-        mapped.setName(stopPlace.getName().getValue());
-        mapped.setQuays(stopPlace.getQuays().getQuayRefOrQuay().stream().map(v -> (org.rutebanken.netex.model.Quay)v).map(this::mapQuay).collect(Collectors.toList()));
-        return mapped;
-    }
-
-    private Quay mapQuay(org.rutebanken.netex.model.Quay quay) {
-        Quay mapped = new Quay();
-        mapped.setId(quay.getId());
-        mapped.setPublicCode(quay.getPublicCode());
-        return mapped;
     }
 
     private HttpEntity<Void> createHttpEntity() {

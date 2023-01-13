@@ -8,7 +8,7 @@ import java.util.List;
 public class StopPlace {
 
     private String id;
-    private String name;
+    private MultilingualString name;
     private List<Quay> quays;
 
     public String getId() {
@@ -19,11 +19,11 @@ public class StopPlace {
         this.id = id;
     }
 
-    public String getName() {
+    public MultilingualString getName() {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(MultilingualString name) {
         this.name = name;
     }
 

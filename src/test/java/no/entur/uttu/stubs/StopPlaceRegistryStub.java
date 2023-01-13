@@ -23,17 +23,9 @@ import org.springframework.stereotype.Component;
 public class StopPlaceRegistryStub implements StopPlaceRegistry {
 
     @Override
-    public boolean isValidQuayRef(String quayRef) {
-        return true;
-    }
-
-    @Override
-    public String getVerifiedQuayRef(String quayRef) {
-        return quayRef;
-    }
-
-    @Override
     public StopPlace getStopPlaceByQuayRef(String quayRef) {
-        return null;
+        StopPlace stopPlace = new StopPlace();
+        stopPlace.setId("NSR:StopPlace:1");
+        return stopPlace;
     }
 }
