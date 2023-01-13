@@ -11,7 +11,6 @@ import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -35,7 +34,9 @@ public class NetexHttpMessageConverter extends AbstractXmlHttpMessageConverter<O
     }
 
     @Override
-    protected void writeToResult(Object o, HttpHeaders headers, Result result) throws Exception {}
+    protected void writeToResult(Object o, HttpHeaders headers, Result result) {
+        // This converter is intended for unmarshalling only
+    }
 
     @Override
     protected boolean supports(Class<?> clazz) {

@@ -41,7 +41,6 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
     private static final String ET_CLIENT_ID_HEADER = "ET-Client-ID";
     private static final String ET_CLIENT_NAME_HEADER = "ET-Client-Name";
 
-    private static final String SUCCESS_MATCHER = "\"id\"";
     @Value("${http.client.name:uttu}")
     private String clientName;
 
@@ -65,7 +64,7 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
             return mapStopPlace(stopPlace);
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            throw e;
+            throw new RuntimeException("Unable to get stop place by quay ref", e);
         }
     }
 

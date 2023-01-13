@@ -3,6 +3,7 @@ package no.entur.uttu.stopplace;
 import java.util.stream.Collectors;
 
 public class StopPlaceMapper {
+    private StopPlaceMapper() {}
     public static StopPlace mapStopPlace(org.rutebanken.netex.model.StopPlace stopPlace) {
         StopPlace mapped = new StopPlace();
         mapped.setId(stopPlace.getId());
