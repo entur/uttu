@@ -19,11 +19,13 @@ import no.entur.uttu.stopplace.StopPlace;
 import no.entur.uttu.stopplace.StopPlaceRegistry;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+
 @Component
 public class StopPlaceRegistryStub implements StopPlaceRegistry {
 
     @Override
-    public StopPlace getStopPlaceByQuayRef(String quayRef) {
+    public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
         StopPlace stopPlace = new StopPlace();
         stopPlace.setId("NSR:StopPlace:1");
         return stopPlace;

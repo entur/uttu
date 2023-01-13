@@ -28,6 +28,7 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
+import java.util.Optional;
 
 import static no.entur.uttu.stopplace.StopPlaceMapper.mapStopPlace;
 
@@ -57,14 +58,14 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
     }
 
     @Override
-    public StopPlace getStopPlaceByQuayRef(String quayRef) {
+    public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
         try {
             org.rutebanken.netex.model.StopPlace stopPlace = restTemplate.exchange(stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place", HttpMethod.GET, createHttpEntity(), org.rutebanken.netex.model.StopPlace.class).getBody();
             assert stopPlace != null;
-            return mapStopPlace(stopPlace);
+            return Optional.of(mapStopPlace(stopPlace));
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            return null;
+            return Optional.empty();
         }
     }
 

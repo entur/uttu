@@ -5,7 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestClientException;
+
+import java.util.Optional;
 
 @Component
 public class StopPlaceServiceImpl implements StopPlaceService {
@@ -25,8 +26,8 @@ public class StopPlaceServiceImpl implements StopPlaceService {
             return false;
         }
 
-        StopPlace stopPlace = getStopPlaceByQuayRef(quayRef);
-        return stopPlace != null && stopPlace.getId() != null;
+        Optional<StopPlace> stopPlace = getStopPlaceByQuayRef(quayRef);
+        return stopPlace.isPresent() && stopPlace.get().getId() != null;
     }
 
     /**
@@ -44,7 +45,7 @@ public class StopPlaceServiceImpl implements StopPlaceService {
     }
 
     @Override
-    public StopPlace getStopPlaceByQuayRef(String quayRef) {
+    public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
         return stopPlaceRegistry.getStopPlaceByQuayRef(quayRef);
     }
 }

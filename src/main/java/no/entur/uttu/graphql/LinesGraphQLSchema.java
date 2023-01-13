@@ -679,7 +679,7 @@ public class LinesGraphQLSchema {
                         .name("stopPlaceByQuayRef")
                         .description("Get a stop place of a quay")
                         .argument(idArgument)
-                        .dataFetcher(env -> stopPlaceService.getStopPlaceByQuayRef(env.getArgument(FIELD_ID))))
+                        .dataFetcher(env -> stopPlaceService.getStopPlaceByQuayRef(env.getArgument(FIELD_ID)).orElse(null)))
                 .build();
     }
 

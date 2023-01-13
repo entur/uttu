@@ -15,6 +15,8 @@
 
 package no.entur.uttu.stopplace;
 
+import java.util.Optional;
+
 public interface StopPlaceRegistry {
-    StopPlace getStopPlaceByQuayRef(String quayRef);
+    Optional<StopPlace> getStopPlaceByQuayRef(String quayRef);
 }
