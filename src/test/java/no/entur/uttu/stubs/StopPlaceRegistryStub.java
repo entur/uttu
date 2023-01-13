@@ -15,10 +15,17 @@
 
 package no.entur.uttu.stubs;
 
+import no.entur.uttu.config.NetexHttpMessageConverter;
 import no.entur.uttu.stopplace.StopPlace;
+import no.entur.uttu.stopplace.StopPlaceMapper;
 import no.entur.uttu.stopplace.StopPlaceRegistry;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.stereotype.Component;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Optional;
 
 @Component
@@ -26,8 +33,28 @@ public class StopPlaceRegistryStub implements StopPlaceRegistry {
 
     @Override
     public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
-        StopPlace stopPlace = new StopPlace();
-        stopPlace.setId("NSR:StopPlace:1");
-        return Optional.of(stopPlace);
+        NetexHttpMessageConverter converter = new NetexHttpMessageConverter();
+
+        try {
+            org.rutebanken.netex.model.StopPlace stopPlace = (org.rutebanken.netex.model.StopPlace) converter.read(
+                    org.rutebanken.netex.model.StopPlace.class,
+                    new HttpInputMessage() {
+                        @Override
+                        public InputStream getBody() throws IOException {
+                            return new FileInputStream("src/test/resources/stopPlaceFixture.xml");
+                        }
+
+                        @Override
+                        public HttpHeaders getHeaders() {
+                            return HttpHeaders.EMPTY;
+                        }
+                    }
+            );
+            return Optional.of(StopPlaceMapper.mapStopPlace(stopPlace));
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+
+
     }
 }
