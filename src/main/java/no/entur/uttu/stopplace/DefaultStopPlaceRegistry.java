@@ -31,10 +31,14 @@ import javax.jdo.annotations.Cacheable;
 import java.util.Collections;
 import java.util.Optional;
 
+/**
+ * Integrates with https://github.com/entur/mummu stop place registry API
+ * to retrieve a stop place given the ID of one of its quays.
+ */
 @Component
-public class StopPlaceRegistryImpl implements StopPlaceRegistry {
+public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
 
-    private static final Logger logger = LoggerFactory.getLogger(StopPlaceRegistryImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(DefaultStopPlaceRegistry.class);
 
     private RestTemplate restTemplate = new RestTemplate();
 
@@ -60,7 +64,12 @@ public class StopPlaceRegistryImpl implements StopPlaceRegistry {
     @Cacheable("stopPlacesByQuayRef")
     public Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef) {
         try {
-            org.rutebanken.netex.model.StopPlace stopPlace = restTemplate.exchange(stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place", HttpMethod.GET, createHttpEntity(), org.rutebanken.netex.model.StopPlace.class).getBody();
+            org.rutebanken.netex.model.StopPlace stopPlace = restTemplate.exchange(
+                    stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place",
+                    HttpMethod.GET,
+                    createHttpEntity(),
+                    org.rutebanken.netex.model.StopPlace.class
+            ).getBody();
             return Optional.ofNullable(stopPlace);
         } catch (Exception e) {
             logger.warn(e.getMessage());

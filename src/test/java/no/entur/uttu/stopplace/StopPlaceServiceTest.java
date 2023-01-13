@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Assertions;
 
 public class StopPlaceServiceTest {
 
-    StopPlaceService stopPlaceService = new StopPlaceServiceImpl(new StopPlaceRegistryStub());
+    StopPlaceService stopPlaceService = new StopPlaceService(new StopPlaceRegistryStub());
 
     @Test
     public void test() {
