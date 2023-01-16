@@ -10,6 +10,7 @@ ingress:
 
 configMap:
   organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations/
+  stopplaceRegistryUrl: https://api.staging.entur.io/stop-places/v1/read
   auth0:
     ror:
       url: https://ror-entur-staging.eu.auth0.com/

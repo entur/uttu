@@ -8,6 +8,7 @@ metadata:
 data:
   application.properties: |-
     organisation.registry.url={{ .Values.configMap.organisationRegistryUrl }}
+    stopplace.registry.url={{ .Values.configMap.stopplaceRegistryUrl }}
     export.notify.enabled=true
     export.notify.queue.name={{ .Values.configMap.exportQueueName }}
     export.blob.folder={{ .Values.configMap.exportBlobFolder }}

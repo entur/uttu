@@ -22,7 +22,7 @@ import no.entur.uttu.model.HailAndRideArea;
 import no.entur.uttu.model.Value;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
-import no.entur.uttu.stopplace.StopPlaceRegistry;
+import no.entur.uttu.stopplace.StopPlaceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,7 +30,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static no.entur.uttu.graphql.GraphQLNames.*;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_END_QUAY_REF;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_FLEXIBLE_AREA;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_HAIL_AND_RIDE_AREA;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_KEY;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_KEY_VALUES;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_POLYGON;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_START_QUAY_REF;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_TRANSPORT_MODE;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_VALUES;
 
 @Component
 public class FlexibleStopPlaceMapper extends AbstractGroupOfEntitiesMapper<FlexibleStopPlace> {
@@ -38,7 +46,7 @@ public class FlexibleStopPlaceMapper extends AbstractGroupOfEntitiesMapper<Flexi
     private GeometryMapper geometryMapper;
 
     @Autowired
-    private StopPlaceRegistry stopPlaceRegistry;
+    private StopPlaceService stopPlaceService;
 
     public FlexibleStopPlaceMapper(ProviderRepository providerRepository, ProviderEntityRepository<FlexibleStopPlace> repository, GeometryMapper geometryMapper) {
         super(providerRepository, repository);
@@ -70,8 +78,8 @@ public class FlexibleStopPlaceMapper extends AbstractGroupOfEntitiesMapper<Flexi
         ArgumentWrapper input = new ArgumentWrapper(inputMap);
 
         HailAndRideArea entity = new HailAndRideArea();
-        input.apply(FIELD_START_QUAY_REF, stopPlaceRegistry::getVerifiedQuayRef, entity::setStartQuayRef);
-        input.apply(FIELD_END_QUAY_REF, stopPlaceRegistry::getVerifiedQuayRef, entity::setEndQuayRef);
+        input.apply(FIELD_START_QUAY_REF, stopPlaceService::getVerifiedQuayRef, entity::setStartQuayRef);
+        input.apply(FIELD_END_QUAY_REF, stopPlaceService::getVerifiedQuayRef, entity::setEndQuayRef);
         return entity;
     }
 

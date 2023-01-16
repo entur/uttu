@@ -25,7 +25,7 @@ import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.model.job.SeverityEnumeration;
-import no.entur.uttu.stopplace.StopPlaceRegistry;
+import no.entur.uttu.stopplace.StopPlaceService;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
@@ -58,7 +58,7 @@ public class JourneyPatternProducer {
     private ContactStructureProducer contactStructureProducer;
 
     @Autowired
-    private StopPlaceRegistry stopPlaceRegistry;
+    private StopPlaceService stopPlaceService;
 
     public org.rutebanken.netex.model.JourneyPattern produce(JourneyPattern local, List<NoticeAssignment> noticeAssignments, NetexExportContext context) {
         List<PointInLinkSequence_VersionedChildStructure> netexStopPoints = local.getPointsInSequence().stream().map(spinjp -> mapStopPointInJourneyPattern(spinjp, noticeAssignments, context)).collect(Collectors.toList());
@@ -124,7 +124,7 @@ public class JourneyPatternProducer {
     }
 
     private void addQuayRef(String quayRef, NetexExportContext context) {
-        if (!stopPlaceRegistry.isValidQuayRef(quayRef)) {
+        if (!stopPlaceService.isValidQuayRef(quayRef)) {
             context.addExportMessage(SeverityEnumeration.ERROR, "{0} is not a valid quayRef", quayRef);
         }
 
