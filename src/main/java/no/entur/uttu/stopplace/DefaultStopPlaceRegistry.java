@@ -15,6 +15,9 @@
 
 package no.entur.uttu.stopplace;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import no.entur.uttu.config.NetexHttpMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +33,8 @@ import javax.annotation.PostConstruct;
 import javax.jdo.annotations.Cacheable;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Integrates with https://github.com/entur/mummu stop place registry API
@@ -54,6 +59,15 @@ public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
     @Value("${stopplace.registry.url:https://api.dev.entur.io/stop-places/v1/read}")
     private String stopPlaceRegistryUrl;
 
+    private final LoadingCache<String, org.rutebanken.netex.model.StopPlace> stopPlaceByQuayRefCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(6, TimeUnit.HOURS)
+            .build(new CacheLoader<>() {
+                @Override
+                public org.rutebanken.netex.model.StopPlace load(String quayRef) {
+                    return lookupStopPlaceByQuayRef(quayRef);
+                }
+            });
+
     @PostConstruct
     private void setup() {
         restTemplate.getMessageConverters().clear();
@@ -64,16 +78,26 @@ public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
     @Cacheable("stopPlacesByQuayRef")
     public Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef) {
         try {
-            org.rutebanken.netex.model.StopPlace stopPlace = restTemplate.exchange(
+            return Optional.of(stopPlaceByQuayRefCache.get(quayRef));
+        } catch (ExecutionException e) {
+            logger.warn("Failed to get stop place by quay ref ${}", quayRef);
+            return Optional.empty();
+        }
+
+    }
+
+    private org.rutebanken.netex.model.StopPlace lookupStopPlaceByQuayRef(String quayRef) {
+        logger.info("cache miss");
+        try {
+            return restTemplate.exchange(
                     stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place",
                     HttpMethod.GET,
                     createHttpEntity(),
                     org.rutebanken.netex.model.StopPlace.class
             ).getBody();
-            return Optional.ofNullable(stopPlace);
         } catch (Exception e) {
             logger.warn(e.getMessage());
-            return Optional.empty();
+            return null;
         }
     }
 
