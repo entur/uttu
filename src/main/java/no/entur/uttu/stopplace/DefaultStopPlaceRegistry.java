@@ -87,7 +87,6 @@ public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
     }
 
     private org.rutebanken.netex.model.StopPlace lookupStopPlaceByQuayRef(String quayRef) {
-        logger.info("cache miss");
         try {
             return restTemplate.exchange(
                     stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place",
