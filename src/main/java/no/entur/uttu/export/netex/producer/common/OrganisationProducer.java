@@ -19,6 +19,7 @@ import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.job.SeverityEnumeration;
+import no.entur.uttu.organisation.OrganisationRegistry;
 import no.entur.uttu.organisation.legacy.Organisation;
 import no.entur.uttu.organisation.legacy.OrganisationContact;
 import org.rutebanken.netex.model.Authority;
