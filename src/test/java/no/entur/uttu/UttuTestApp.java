@@ -17,6 +17,7 @@ package no.entur.uttu;
 
 import no.entur.uttu.config.UttuSecurityConfiguration;
 import no.entur.uttu.organisation.legacy.EnturLegacyOrganisationRegistry;
+import no.entur.uttu.organisation.legacy.OrganisationRestResource;
 import no.entur.uttu.repository.generic.ProviderEntityRepositoryImpl;
 import no.entur.uttu.stopplace.DefaultStopPlaceRegistry;
 import org.entur.pubsub.base.config.GooglePubSubConfig;
@@ -35,6 +36,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
                                         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = UttuSecurityConfiguration.class),
                                         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
                                         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = EnturLegacyOrganisationRegistry.class),
+                                        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = OrganisationRestResource.class),
                                         @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = DefaultStopPlaceRegistry.class),
 })
 public class UttuTestApp {

@@ -15,22 +15,13 @@
 
 package no.entur.uttu.stubs;
 
-import com.google.common.collect.Sets;
-import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.organisation.OrganisationRegistry;
-import no.entur.uttu.organisation.legacy.Organisation;
-import no.entur.uttu.organisation.legacy.OrganisationContact;
-import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
-import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import org.rutebanken.netex.model.ContactStructure;
 import org.rutebanken.netex.model.GeneralOrganisation;
-import org.rutebanken.netex.model.KeyListStructure;
-import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
