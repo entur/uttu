@@ -25,6 +25,7 @@ import no.entur.uttu.organisation.legacy.OrganisationContact;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.AuthorityRefStructure;
 import org.rutebanken.netex.model.ContactStructure;
+import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -71,18 +73,20 @@ public class OrganisationProducer {
     }
 
     private Authority mapAuthority(String authorityRef, NetexExportContext context) {
-        Organisation orgRegAuthority = organisationRegistry.getOrganisation(authorityRef);
-        if (orgRegAuthority == null || orgRegAuthority.getAuthorityNetexId() == null) {
+        Optional<GeneralOrganisation> orgRegAuthority = organisationRegistry.getOrganisation(authorityRef);
+        if (orgRegAuthority.isEmpty() || organisationRegistry.getVerifiedAuthorityRef(authorityRef) == null) {
             context.addExportMessage(SeverityEnumeration.ERROR, "Authority [id:{0}] not found", authorityRef);
             return new Authority();
         }
 
-        if (orgRegAuthority.contact == null || !validateContactUrl(orgRegAuthority.contact.url)) {
-            context.addExportMessage(SeverityEnumeration.ERROR, "Invalid authority contact: {0}", orgRegAuthority.contact);
+        GeneralOrganisation organisation = orgRegAuthority.get();
+
+        if (organisation.getContactDetails() == null || !validateContactUrl(organisation.getContactDetails().getUrl())) {
+            context.addExportMessage(SeverityEnumeration.ERROR, "Invalid authority contact: {0}", organisation.getContactDetails());
         }
 
-        return populateNetexOrganisation(new Authority(), orgRegAuthority)
-                       .withId(orgRegAuthority.getAuthorityNetexId());
+        return populateNetexOrganisation(new Authority(), organisation)
+                       .withId(organisationRegistry.getVerifiedAuthorityRef(authorityRef));
     }
 
     private boolean validateContactUrl(String url) {
@@ -90,35 +94,28 @@ public class OrganisationProducer {
     }
 
     private Operator mapOperator(String operatorRef, NetexExportContext context) {
-        Organisation orgRegOperator = organisationRegistry.getOrganisation(operatorRef);
-        if (orgRegOperator == null || orgRegOperator.getOperatorNetexId() == null) {
+        Optional<GeneralOrganisation> orgRegOperator = organisationRegistry.getOrganisation(operatorRef);
+        if (orgRegOperator.isEmpty() || organisationRegistry.getVerifiedOperatorRef(operatorRef) == null) {
             context.addExportMessage(SeverityEnumeration.ERROR, "Operator [id:{0}] not found", operatorRef);
             return new Operator();
         }
-        return populateNetexOrganisation(new Operator(), orgRegOperator)
-                       .withId(orgRegOperator.getOperatorNetexId())
-                       .withCustomerServiceContactDetails(mapContact(orgRegOperator.customerContact));
+
+        GeneralOrganisation organisation = orgRegOperator.get();
+
+        return populateNetexOrganisation(new Operator(), organisation)
+                       .withId(organisationRegistry.getVerifiedOperatorRef(operatorRef))
+                       .withCustomerServiceContactDetails(organisation.getContactDetails());
     }
 
 
-    private <N extends Organisation_VersionStructure> N populateNetexOrganisation(N netexOrg, Organisation orgRegOrg) {
+    private <N extends Organisation_VersionStructure> N populateNetexOrganisation(N netexOrg, GeneralOrganisation orgRegOrg) {
         netexOrg
-                .withVersion(orgRegOrg.version)
-                .withName(objectFactory.createMultilingualString(orgRegOrg.name))
+                .withVersion(orgRegOrg.getVersion())
+                .withName(objectFactory.createMultilingualString(orgRegOrg.getName().getValue()))
                 .withCompanyNumber(orgRegOrg.getCompanyNumber())
-                .withContactDetails(mapContact(orgRegOrg.contact))
-                .withLegalName(objectFactory.createMultilingualString(orgRegOrg.legalName));
+                .withContactDetails(orgRegOrg.getContactDetails())
+                .withLegalName(objectFactory.createMultilingualString(orgRegOrg.getLegalName().getValue()));
         return netexOrg;
-    }
-
-    private ContactStructure mapContact(OrganisationContact local) {
-        if (local == null) {
-            return null;
-        }
-        return new ContactStructure()
-                       .withEmail(local.email)
-                       .withPhone(local.phone)
-                       .withUrl(local.url);
     }
 
 }
