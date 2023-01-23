@@ -13,14 +13,23 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.organisation;
+package no.entur.uttu.organisation.legacy;
 
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
+import no.entur.uttu.organisation.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
+import org.rutebanken.netex.model.AvailabilityCondition;
+import org.rutebanken.netex.model.ContactStructure;
+import org.rutebanken.netex.model.GeneralOrganisation;
+import org.rutebanken.netex.model.KeyListStructure;
+import org.rutebanken.netex.model.KeyValueStructure;
+import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.ValidityCondition;
+import org.rutebanken.netex.model.ValidityConditions_RelStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,13 +45,16 @@ import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Component
-public class OrganisationRegistryImpl implements OrganisationRegistry {
+public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private static final int HTTP_TIMEOUT = 10000;
 
@@ -51,7 +63,7 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     private final int maxRetryAttempts;
 
 
-    public OrganisationRegistryImpl(
+    public EnturLegacyOrganisationRegistry(
             @Value("${organisation.registry.url:https://tjenester.entur.org/organisations/v1/organisations/}") String organisationRegistryUrl,
             @Value("${organisation.registry.retry.max:3}") int maxRetryAttempts,
             @Autowired WebClient orgRegisterClient
@@ -66,15 +78,18 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     }
 
     @Override
-    public Organisation getOrganisation(String organisationId) {
+    public Optional<GeneralOrganisation> getOrganisation(String organisationId) {
         try {
-            return orgRegisterClient.get()
-                    .uri(organisationRegistryUrl + organisationId)
-                    .header("Et-Client-Name", "entur-nplan")
-                    .retrieve()
-                    .bodyToMono(Organisation.class)
-                    .retryWhen(Retry.backoff(maxRetryAttempts, Duration.ofSeconds(1)).filter(is5xx))
-                    .block(Duration.ofMillis(HTTP_TIMEOUT));
+            Organisation organisation = lookupOrganisation(organisationId);
+
+            if (organisation == null) {
+                return Optional.empty();
+            }
+
+
+            GeneralOrganisation generalOrganisation = mapToGeneralOrganisation(organisation);
+
+            return Optional.of(generalOrganisation);
         } catch (HttpClientErrorException ex) {
             logger.warn("Exception while trying to fetch organisation: " + organisationId + " : " + ex.getMessage(), ex);
             return null;
@@ -82,20 +97,22 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     }
 
     @Override
-    public List<Organisation> getOrganisations() {
+    public List<GeneralOrganisation> getOrganisations() {
         try {
-            return orgRegisterClient.get()
-                    .uri(organisationRegistryUrl)
-                    .header("Et-Client-Name", "entur-nplan")
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<List<Organisation>>() {})
-                    .retryWhen(Retry.backoff(maxRetryAttempts, Duration.ofSeconds(1)).filter(is5xx))
-                    .block(Duration.ofMillis(HTTP_TIMEOUT));
+            List<Organisation> organisations = lookupOrganisations();
+
+            if (organisations == null) {
+                return List.of();
+            }
+
+            return organisations.stream().map(this::mapToGeneralOrganisation).collect(Collectors.toList());
         } catch (HttpClientErrorException ex) {
             logger.warn("Exception while trying to fetch all organisations");
             return Collections.emptyList();
         }
     }
+
+
 
     protected static final Predicate<Throwable> is5xx =
             throwable -> throwable instanceof WebClientResponseException && ((WebClientResponseException) throwable).getStatusCode().is5xxServerError();
@@ -104,11 +121,12 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     /**
      * Return provided operatorRef if valid, else throw exception.
      */
+    @Override
     public String getVerifiedOperatorRef(String operatorRef) {
         if (StringUtils.isEmpty(operatorRef)) {
             return null;
         }
-        Organisation organisation = getOrganisation(operatorRef);
+        Organisation organisation = lookupOrganisation(operatorRef);
         Preconditions.checkArgument(organisation != null, "Organisation with ref %s not found in organisation registry", operatorRef);
         Preconditions.checkArgument(organisation.getOperatorNetexId() != null, CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_NOT_VALID_OPERATOR),"Organisation with ref %s is not a valid operator", operatorRef);
         return operatorRef;
@@ -117,14 +135,59 @@ public class OrganisationRegistryImpl implements OrganisationRegistry {
     /**
      * Return provided authorityRef if valid, else throw exception.
      */
+    @Override
     public String getVerifiedAuthorityRef(String authorityRef) {
         if (StringUtils.isEmpty(authorityRef)) {
             return null;
         }
-        Organisation organisation = getOrganisation(authorityRef);
+        Organisation organisation = lookupOrganisation(authorityRef);
         Preconditions.checkArgument(organisation != null, "Organisation with ref %s not found in organisation registry", authorityRef);
         Preconditions.checkArgument(organisation.getAuthorityNetexId() != null, "Organisation with ref %s is not a valid authority", authorityRef);
         return authorityRef;
     }
 
+    protected Organisation lookupOrganisation(String id) {
+        return orgRegisterClient.get()
+                .uri(organisationRegistryUrl + id)
+                .header("Et-Client-Name", "entur-nplan")
+                .retrieve()
+                .bodyToMono(Organisation.class)
+                .retryWhen(Retry.backoff(maxRetryAttempts, Duration.ofSeconds(1)).filter(is5xx))
+                .block(Duration.ofMillis(HTTP_TIMEOUT));
+    }
+
+    protected List<Organisation> lookupOrganisations() {
+        return orgRegisterClient.get()
+                .uri(organisationRegistryUrl)
+                .header("Et-Client-Name", "entur-nplan")
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<Organisation>>() {})
+                .retryWhen(Retry.backoff(maxRetryAttempts, Duration.ofSeconds(1)).filter(is5xx))
+                .block(Duration.ofMillis(HTTP_TIMEOUT));
+    }
+
+    private GeneralOrganisation mapToGeneralOrganisation(Organisation organisation) {
+        return new GeneralOrganisation()
+                .withId(organisation.id)
+                .withVersion(organisation.version)
+                .withName(new MultilingualString().withValue(organisation.name))
+                //.withName(new MultilingualString().withValue(organisation.legalName))
+                .withCompanyNumber(organisation.getCompanyNumber())
+                .withContactDetails(
+                        new ContactStructure()
+                                .withEmail(organisation.contact.email)
+                                .withPhone(organisation.contact.phone)
+                                .withUrl(organisation.contact.url)
+                )
+                .withKeyList(
+                        new KeyListStructure()
+                                .withKeyValue(
+                                        new KeyValueStructure()
+                                                .withKey("LegacyId")
+                                                .withValue(organisation.references.values().stream().reduce((a, c) -> c + ',' + a).orElse(null)),
+                                        new KeyValueStructure()
+                                                .withKey("")
+                                )
+                );
+    }
 }
