@@ -55,6 +55,16 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
     }
 
     @Override
+    public String getOperatorNetexId(String id) {
+        return "TST:Operator:TstOper";
+    }
+
+    @Override
+    public String getAuthorityNetexId(String id) {
+        return "TST:Authority:TstAuth";
+    }
+
+    @Override
     public List<GeneralOrganisation> getOrganisations() {
         return null;
     }

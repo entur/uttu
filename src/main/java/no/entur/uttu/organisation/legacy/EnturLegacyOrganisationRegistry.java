@@ -146,6 +146,18 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
         return authorityRef;
     }
 
+    @Override
+    public String getOperatorNetexId(String id) {
+        Organisation organisation = lookupOrganisation(id);
+        return organisation.getOperatorNetexId();
+    }
+
+    @Override
+    public String getAuthorityNetexId(String id) {
+        Organisation organisation = lookupOrganisation(id);
+        return organisation.getAuthorityNetexId();
+    }
+
     protected Organisation lookupOrganisation(String id) {
         return orgRegisterClient.get()
                 .uri(organisationRegistryUrl + id)

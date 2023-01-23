@@ -86,7 +86,7 @@ public class OrganisationProducer {
         }
 
         return populateNetexOrganisation(new Authority(), organisation)
-                       .withId(organisationRegistry.getVerifiedAuthorityRef(authorityRef));
+                       .withId(organisationRegistry.getAuthorityNetexId(authorityRef));
     }
 
     private boolean validateContactUrl(String url) {
@@ -103,7 +103,7 @@ public class OrganisationProducer {
         GeneralOrganisation organisation = orgRegOperator.get();
 
         return populateNetexOrganisation(new Operator(), organisation)
-                       .withId(organisationRegistry.getVerifiedOperatorRef(operatorRef))
+                       .withId(organisationRegistry.getOperatorNetexId(operatorRef))
                        .withCustomerServiceContactDetails(organisation.getContactDetails());
     }
 

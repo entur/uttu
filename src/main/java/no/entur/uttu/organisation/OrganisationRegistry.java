@@ -11,4 +11,7 @@ public interface OrganisationRegistry {
 
     String getVerifiedOperatorRef(String operatorRef);
     String getVerifiedAuthorityRef(String authorityRef);
+
+    String getOperatorNetexId(String id);
+    String getAuthorityNetexId(String id);
 }
