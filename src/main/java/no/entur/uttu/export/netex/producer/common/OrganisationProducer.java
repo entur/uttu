@@ -111,10 +111,10 @@ public class OrganisationProducer {
     private <N extends Organisation_VersionStructure> N populateNetexOrganisation(N netexOrg, GeneralOrganisation orgRegOrg) {
         netexOrg
                 .withVersion(orgRegOrg.getVersion())
-                .withName(objectFactory.createMultilingualString(orgRegOrg.getName().getValue()))
+                .withName(orgRegOrg.getName())
                 .withCompanyNumber(orgRegOrg.getCompanyNumber())
                 .withContactDetails(orgRegOrg.getContactDetails())
-                .withLegalName(objectFactory.createMultilingualString(orgRegOrg.getLegalName().getValue()));
+                .withLegalName(orgRegOrg.getLegalName());
         return netexOrg;
     }
 

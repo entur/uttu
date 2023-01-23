@@ -174,10 +174,11 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
                 //.withName(new MultilingualString().withValue(organisation.legalName))
                 .withCompanyNumber(organisation.getCompanyNumber())
                 .withContactDetails(
+                        organisation.contact != null ?
                         new ContactStructure()
                                 .withEmail(organisation.contact.email)
                                 .withPhone(organisation.contact.phone)
-                                .withUrl(organisation.contact.url)
+                                .withUrl(organisation.contact.url) :  null
                 )
                 .withKeyList(
                         new KeyListStructure()
