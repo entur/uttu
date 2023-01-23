@@ -125,12 +125,13 @@ public class OrganisationProducer {
     }
 
     private String getNetexId(GeneralOrganisation organisation, String type) {
-        return organisation.getKeyList().getKeyValue().stream().filter(keyValueStructure -> keyValueStructure.getKey().equals("LegacyId")).findFirst()
+        return Optional.ofNullable(organisation.getKeyList())
+                .flatMap(kl -> kl.getKeyValue().stream().filter(keyValueStructure -> keyValueStructure.getKey().equals("LegacyId")).findFirst()
                 .map(KeyValueStructure::getValue)
                 .map(value -> value.split(","))
                 .map(Object::toString)
                 .filter(v -> v.contains(type))
-                .stream().findFirst().orElse(organisation.getId());
+                .stream().findFirst()).orElse(organisation.getId());
     }
 
 }
