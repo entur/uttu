@@ -19,8 +19,8 @@ import java.util.List;
 public class OrganisationRestResource {
     private final EnturLegacyOrganisationRegistry organisationRegistry;
 
-    public OrganisationRestResource(@Autowired EnturLegacyOrganisationRegistry organisationRegistry) {
-        this.organisationRegistry = organisationRegistry;
+    public OrganisationRestResource(@Autowired EnturLegacyOrganisationRegistry enturLegacyOrganisationRegistry) {
+        this.organisationRegistry = enturLegacyOrganisationRegistry;
     }
 
     @GET
