@@ -30,6 +30,7 @@ import org.rutebanken.netex.model.Organisation_VersionStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -124,14 +125,12 @@ public class OrganisationProducer {
         return getNetexId(organisation, "Authority");
     }
 
-    private String getNetexId(GeneralOrganisation organisation, String type) {
+    protected static String getNetexId(GeneralOrganisation organisation, String type) {
         return Optional.ofNullable(organisation.getKeyList())
                 .flatMap(kl -> kl.getKeyValue().stream().filter(keyValueStructure -> keyValueStructure.getKey().equals("LegacyId")).findFirst()
                 .map(KeyValueStructure::getValue)
                 .map(value -> value.split(","))
-                .map(Object::toString)
-                .filter(v -> v.contains(type))
-                .stream().findFirst()).orElse(organisation.getId());
+                        .flatMap(value -> Arrays.stream(value).filter(id -> id.contains(type)).findFirst())).orElse(organisation.getId());
     }
 
 }
