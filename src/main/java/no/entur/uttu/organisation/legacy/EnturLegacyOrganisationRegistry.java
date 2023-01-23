@@ -22,14 +22,11 @@ import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.organisation.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
-import org.rutebanken.netex.model.AvailabilityCondition;
 import org.rutebanken.netex.model.ContactStructure;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
-import org.rutebanken.netex.model.ValidityCondition;
-import org.rutebanken.netex.model.ValidityConditions_RelStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +42,6 @@ import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -144,18 +140,6 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
         Preconditions.checkArgument(organisation != null, "Organisation with ref %s not found in organisation registry", authorityRef);
         Preconditions.checkArgument(organisation.getAuthorityNetexId() != null, "Organisation with ref %s is not a valid authority", authorityRef);
         return authorityRef;
-    }
-
-    @Override
-    public String getOperatorNetexId(String id) {
-        Organisation organisation = lookupOrganisation(id);
-        return organisation.getOperatorNetexId();
-    }
-
-    @Override
-    public String getAuthorityNetexId(String id) {
-        Organisation organisation = lookupOrganisation(id);
-        return organisation.getAuthorityNetexId();
     }
 
     protected Organisation lookupOrganisation(String id) {

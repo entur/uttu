@@ -8,10 +8,6 @@ import java.util.Optional;
 public interface OrganisationRegistry {
     List<GeneralOrganisation> getOrganisations();
     Optional<GeneralOrganisation> getOrganisation(String id);
-
     String getVerifiedOperatorRef(String operatorRef);
     String getVerifiedAuthorityRef(String authorityRef);
-
-    String getOperatorNetexId(String id);
-    String getAuthorityNetexId(String id);
 }

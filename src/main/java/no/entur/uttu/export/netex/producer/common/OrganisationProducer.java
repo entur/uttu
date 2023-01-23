@@ -20,12 +20,10 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.organisation.OrganisationRegistry;
-import no.entur.uttu.organisation.legacy.Organisation;
-import no.entur.uttu.organisation.legacy.OrganisationContact;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.AuthorityRefStructure;
-import org.rutebanken.netex.model.ContactStructure;
 import org.rutebanken.netex.model.GeneralOrganisation;
+import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
@@ -86,7 +84,7 @@ public class OrganisationProducer {
         }
 
         return populateNetexOrganisation(new Authority(), organisation)
-                       .withId(organisationRegistry.getAuthorityNetexId(authorityRef));
+                       .withId(getAuthorityNetexId(organisation));
     }
 
     private boolean validateContactUrl(String url) {
@@ -103,7 +101,7 @@ public class OrganisationProducer {
         GeneralOrganisation organisation = orgRegOperator.get();
 
         return populateNetexOrganisation(new Operator(), organisation)
-                       .withId(organisationRegistry.getOperatorNetexId(operatorRef))
+                       .withId(getOperatorNetexId(organisation))
                        .withCustomerServiceContactDetails(organisation.getContactDetails());
     }
 
@@ -116,6 +114,23 @@ public class OrganisationProducer {
                 .withContactDetails(orgRegOrg.getContactDetails())
                 .withLegalName(orgRegOrg.getLegalName());
         return netexOrg;
+    }
+
+    private String getOperatorNetexId(GeneralOrganisation organisation) {
+        return getNetexId(organisation, "Operator");
+    }
+
+    private String getAuthorityNetexId(GeneralOrganisation organisation) {
+        return getNetexId(organisation, "Authority");
+    }
+
+    private String getNetexId(GeneralOrganisation organisation, String type) {
+        return organisation.getKeyList().getKeyValue().stream().filter(keyValueStructure -> keyValueStructure.getKey().equals("LegacyId")).findFirst()
+                .map(KeyValueStructure::getValue)
+                .map(value -> value.split(","))
+                .map(Object::toString)
+                .filter(v -> v.contains(type))
+                .stream().findFirst().orElse(organisation.getId());
     }
 
 }
