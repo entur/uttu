@@ -1,7 +1,6 @@
 package no.entur.uttu.organisation.legacy;
 
 import io.swagger.annotations.Api;
-import no.entur.uttu.organisation.OrganisationRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;

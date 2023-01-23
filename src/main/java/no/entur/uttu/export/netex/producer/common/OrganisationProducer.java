@@ -41,9 +41,6 @@ public class OrganisationProducer {
     @Autowired
     private OrganisationRegistry organisationRegistry;
 
-    @Autowired
-    private NetexObjectFactory objectFactory;
-
     public List<Authority> produceAuthorities(NetexExportContext context) {
         return context.networks.stream().map(Network::getAuthorityRef).distinct().map(ref -> mapAuthority(ref, context)).collect(Collectors.toList());
     }

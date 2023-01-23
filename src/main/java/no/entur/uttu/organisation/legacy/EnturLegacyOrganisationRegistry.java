@@ -88,7 +88,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
             return Optional.of(generalOrganisation);
         } catch (HttpClientErrorException ex) {
             logger.warn("Exception while trying to fetch organisation: " + organisationId + " : " + ex.getMessage(), ex);
-            return null;
+            return Optional.empty();
         }
     }
 
@@ -119,7 +119,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
      */
     @Override
     public String getVerifiedOperatorRef(String operatorRef) {
-        if (StringUtils.isEmpty(operatorRef)) {
+        if (operatorRef == null || operatorRef.isEmpty()) {
             return null;
         }
         Organisation organisation = lookupOrganisation(operatorRef);
@@ -133,7 +133,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
      */
     @Override
     public String getVerifiedAuthorityRef(String authorityRef) {
-        if (StringUtils.isEmpty(authorityRef)) {
+        if (authorityRef == null || authorityRef.isEmpty()) {
             return null;
         }
         Organisation organisation = lookupOrganisation(authorityRef);
@@ -167,7 +167,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
                 .withId(organisation.id)
                 .withVersion(organisation.version)
                 .withName(new MultilingualString().withValue(organisation.name))
-                //.withName(new MultilingualString().withValue(organisation.legalName))
+                .withLegalName(new MultilingualString().withValue(organisation.legalName))
                 .withCompanyNumber(organisation.getCompanyNumber())
                 .withContactDetails(
                         organisation.contact != null ?
