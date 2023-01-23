@@ -21,6 +21,8 @@ import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.organisation.OrganisationRegistry;
 import org.rutebanken.netex.model.ContactStructure;
 import org.rutebanken.netex.model.GeneralOrganisation;
+import org.rutebanken.netex.model.KeyListStructure;
+import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
 import org.springframework.stereotype.Component;
 
@@ -42,6 +44,14 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
                 .withContactDetails(
                         new ContactStructure()
                                 .withUrl("https://name.org")
+                )
+                .withKeyList(
+                        new KeyListStructure()
+                                .withKeyValue(
+                                        new KeyValueStructure()
+                                                .withKey("LegacyId")
+                                                .withValue("TST:Authority:TstAuth,TST:Operator:TstOper")
+                                )
                 );
 
         return Optional.of(generalOrganisation);
