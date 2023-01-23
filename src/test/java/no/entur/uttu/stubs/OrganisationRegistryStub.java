@@ -15,6 +15,9 @@
 
 package no.entur.uttu.stubs;
 
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.organisation.OrganisationRegistry;
 import org.rutebanken.netex.model.ContactStructure;
 import org.rutebanken.netex.model.GeneralOrganisation;
@@ -46,6 +49,9 @@ public class OrganisationRegistryStub implements OrganisationRegistry {
 
     @Override
     public String getVerifiedOperatorRef(String operatorRef) {
+        if (!validOperators.contains(operatorRef)) {
+            throw new CodedIllegalArgumentException("", CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_NOT_VALID_OPERATOR));
+        }
         return operatorRef;
     }
 
