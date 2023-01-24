@@ -181,9 +181,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
                                 .withKeyValue(
                                         new KeyValueStructure()
                                                 .withKey("LegacyId")
-                                                .withValue(organisation.references.values().stream().reduce((a, c) -> c + ',' + a).orElse(null)),
-                                        new KeyValueStructure()
-                                                .withKey("")
+                                                .withValue(organisation.references.values().stream().reduce((a, c) -> c + ',' + a).orElse(null))
                                 )
                 );
     }

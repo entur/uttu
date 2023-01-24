@@ -64,6 +64,7 @@ import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
 import no.entur.uttu.stopplace.StopPlaceService;
 import org.locationtech.jts.geom.Geometry;
+import org.rutebanken.netex.model.GeneralOrganisation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -242,6 +243,9 @@ public class LinesGraphQLSchema {
     @Autowired
     private StopPlaceService stopPlaceService;
 
+    @Autowired
+    private DataFetcher<List<GeneralOrganisation>> organisationsFetcher;
+
     private <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
         return createEnum(name, Arrays.asList(values), mapping);
     }
@@ -286,6 +290,8 @@ public class LinesGraphQLSchema {
     private GraphQLObjectType exportedLineStatisticsObjectType;
 
     private GraphQLObjectType stopPlaceObjectType;
+
+    private GraphQLObjectType organisationObjectType;
 
     private GraphQLArgument idArgument;
     private GraphQLArgument idsArgument;
@@ -567,6 +573,16 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
                 .field(newFieldDefinition().name("quays").type(new GraphQLList(quayObjectType)))
                 .build();
+
+
+
+        organisationObjectType = newObject().name("Organisation")
+                .field(newFieldDefinition().name(FIELD_ID).type(GraphQLID))
+                .field(versionField)
+                .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
+                .field(newFieldDefinition().name("legalName").type(multilingualStringObjectType))
+                .field(newFieldDefinition().name("contactDetails").type(contactObjectType))
+                .build();
     }
 
     private GraphQLObjectType createQueryObject() {
@@ -680,6 +696,12 @@ public class LinesGraphQLSchema {
                         .description("Get a stop place of a quay")
                         .argument(idArgument)
                         .dataFetcher(env -> stopPlaceService.getStopPlaceByQuayRef(env.getArgument(FIELD_ID)).orElse(null)))
+                .field(newFieldDefinition()
+                        .type(new GraphQLList(organisationObjectType))
+                        .name("organisations")
+                        .description("List all organisations")
+                        .dataFetcher(organisationsFetcher)
+                )
                 .build();
     }
 
