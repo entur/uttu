@@ -49,6 +49,7 @@ import no.entur.uttu.model.Network;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
+import no.entur.uttu.model.TimetabledPassingTime;
 import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.model.VehicleSubmodeEnumeration;
 import no.entur.uttu.model.job.Export;
@@ -62,7 +63,6 @@ import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
-import no.entur.uttu.stopplace.StopPlaceService;
 import org.locationtech.jts.geom.Geometry;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -241,10 +241,10 @@ public class LinesGraphQLSchema {
     private DayTypeRepository dayTypeRepository;
 
     @Autowired
-    private StopPlaceService stopPlaceService;
+    private DataFetcher<List<GeneralOrganisation>> organisationsFetcher;
 
     @Autowired
-    private DataFetcher<List<GeneralOrganisation>> organisationsFetcher;
+    private DataFetcher<TimetabledPassingTime.StopPlace> quayRefSearchFetcher;
 
     private <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
         return createEnum(name, Arrays.asList(values), mapping);
@@ -574,8 +574,6 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name("quays").type(new GraphQLList(quayObjectType)))
                 .build();
 
-
-
         organisationObjectType = newObject().name("Organisation")
                 .field(newFieldDefinition().name(FIELD_ID).type(GraphQLID))
                 .field(versionField)
@@ -695,13 +693,12 @@ public class LinesGraphQLSchema {
                         .name("stopPlaceByQuayRef")
                         .description("Get a stop place of a quay")
                         .argument(idArgument)
-                        .dataFetcher(env -> stopPlaceService.getStopPlaceByQuayRef(env.getArgument(FIELD_ID)).orElse(null)))
+                        .dataFetcher(quayRefSearchFetcher))
                 .field(newFieldDefinition()
                         .type(new GraphQLList(organisationObjectType))
                         .name("organisations")
                         .description("List all organisations")
-                        .dataFetcher(organisationsFetcher)
-                )
+                        .dataFetcher(organisationsFetcher))
                 .build();
     }
 

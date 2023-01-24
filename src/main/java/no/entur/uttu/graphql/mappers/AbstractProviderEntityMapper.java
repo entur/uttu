@@ -15,6 +15,7 @@
 
 package no.entur.uttu.graphql.mappers;
 
+import no.entur.uttu.stopplace.StopPlaceRegistry;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.ArgumentWrapper;
@@ -68,5 +69,4 @@ public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
                 "Provider not found [code=%s]", providerCode);
         return provider;
     }
-
 }

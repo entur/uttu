@@ -20,7 +20,7 @@ import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
-import no.entur.uttu.stopplace.StopPlaceService;
+import no.entur.uttu.stopplace.StopPlaceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -45,10 +45,10 @@ public class StopPointInJourneyPatternMapper extends AbstractProviderEntityMappe
     private NoticeMapper noticeMapper;
 
     @Autowired
-    private StopPlaceService stopPlaceService;
+    private StopPlaceRegistry stopPlaceRegistry;
 
     public StopPointInJourneyPatternMapper(@Autowired ProviderRepository providerRepository,
-                                                  @Autowired ProviderEntityRepository<StopPointInJourneyPattern> entityRepository) {
+                                           @Autowired ProviderEntityRepository<StopPointInJourneyPattern> entityRepository) {
         super(providerRepository, entityRepository);
 
 
@@ -62,11 +62,16 @@ public class StopPointInJourneyPatternMapper extends AbstractProviderEntityMappe
     @Override
     protected void populateEntityFromInput(StopPointInJourneyPattern entity, ArgumentWrapper input) {
         input.applyReference(FIELD_FLEXIBLE_STOP_PLACE_REF, flexibleStopPlaceRepository, entity::setFlexibleStopPlace);
-        input.apply(FIELD_QUAY_REF, stopPlaceService::getVerifiedQuayRef, entity::setQuayRef);
+        input.apply(FIELD_QUAY_REF, this::getVerifiedQuayRef, entity::setQuayRef);
         input.apply(FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
         input.apply(FIELD_DESTINATION_DISPLAY, destinationDisplayMapper::map, entity::setDestinationDisplay);
         input.apply(FIELD_FOR_BOARDING, entity::setForBoarding);
         input.apply(FIELD_FOR_ALIGHTING, entity::setForAlighting);
         input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
     }
+
+    protected String getVerifiedQuayRef(String quayRef) {
+        return stopPlaceRegistry.getStopPlaceByQuayRef(quayRef).isPresent() ? quayRef : null;
+    }
+
 }

@@ -16,8 +16,6 @@
 package no.entur.uttu.stubs;
 
 import no.entur.uttu.config.NetexHttpMessageConverter;
-import no.entur.uttu.stopplace.StopPlace;
-import no.entur.uttu.stopplace.StopPlaceMapper;
 import no.entur.uttu.stopplace.StopPlaceRegistry;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpInputMessage;
