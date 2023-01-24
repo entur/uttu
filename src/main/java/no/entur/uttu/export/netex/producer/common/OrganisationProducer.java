@@ -16,7 +16,6 @@
 package no.entur.uttu.export.netex.producer.common;
 
 import no.entur.uttu.export.netex.NetexExportContext;
-import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.organisation.OrganisationRegistry;

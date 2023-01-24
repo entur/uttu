@@ -15,14 +15,13 @@
 
 package no.entur.uttu.graphql.mappers;
 
-import no.entur.uttu.stopplace.StopPlaceRegistry;
-import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
+import no.entur.uttu.util.Preconditions;
 
 import java.util.Map;
 
