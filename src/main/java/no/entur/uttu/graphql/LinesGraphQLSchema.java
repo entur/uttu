@@ -361,6 +361,15 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_VALUES).type(new GraphQLList(GraphQLString)))
                 .build();
 
+        GraphQLObjectType keyValueObjectType = newObject().name("KeyValue")
+                .field(newFieldDefinition().name(FIELD_KEY).type(GraphQLString))
+                .field(newFieldDefinition().name("value").type(GraphQLString))
+                .build();
+
+        GraphQLObjectType keyListObjectType = newObject().name("KeyList")
+                .field(newFieldDefinition().name("keyValue").type(new GraphQLList(keyValueObjectType)))
+                .build();
+
         GraphQLObjectType identifiedEntityObjectType = newObject().name("IdentifiedEntity")
                 .field(idFieldDefinition)
                 .field(versionField)
@@ -580,6 +589,7 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
                 .field(newFieldDefinition().name("legalName").type(multilingualStringObjectType))
                 .field(newFieldDefinition().name("contactDetails").type(contactObjectType))
+                .field(newFieldDefinition().name("keyList").type(keyListObjectType))
                 .build();
     }
 

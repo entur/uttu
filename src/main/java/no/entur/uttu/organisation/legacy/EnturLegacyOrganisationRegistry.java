@@ -44,6 +44,7 @@ import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -171,7 +172,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     }
 
     private GeneralOrganisation mapToGeneralOrganisation(Organisation organisation) {
-        return new GeneralOrganisation()
+        GeneralOrganisation mapped = new GeneralOrganisation()
                 .withId(organisation.id)
                 .withVersion(organisation.version)
                 .withName(new MultilingualString().withValue(organisation.name))
@@ -183,14 +184,29 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
                                 .withEmail(organisation.contact.email)
                                 .withPhone(organisation.contact.phone)
                                 .withUrl(organisation.contact.url) :  null
-                )
-                .withKeyList(
-                        new KeyListStructure()
-                                .withKeyValue(
-                                        new KeyValueStructure()
-                                                .withKey("LegacyId")
-                                                .withValue(organisation.references.values().stream().reduce((a, c) -> c + ',' + a).orElse(null))
-                                )
                 );
+
+        List<String> legacyIdList = new ArrayList<>();
+
+        if (organisation.getAuthorityNetexId() != null) {
+            legacyIdList.add(organisation.getAuthorityNetexId());
+        }
+
+        if (organisation.getOperatorNetexId() != null) {
+            legacyIdList.add(organisation.getOperatorNetexId());
+        }
+
+        if (!legacyIdList.isEmpty()) {
+            mapped.withKeyList(
+                    new KeyListStructure()
+                            .withKeyValue(
+                                    new KeyValueStructure()
+                                            .withKey("LegacyId")
+                                            .withValue(String.join(",", legacyIdList))
+                            )
+            );
+        }
+
+        return mapped;
     }
 }
