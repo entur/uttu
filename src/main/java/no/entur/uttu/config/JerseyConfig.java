@@ -17,7 +17,7 @@ package no.entur.uttu.config;
 
 import no.entur.uttu.export.resource.ExportFileDownloadResource;
 import no.entur.uttu.graphql.resource.*;
-import no.entur.uttu.organisation.OrganisationRestResource;
+import no.entur.uttu.organisation.legacy.OrganisationRestResource;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
