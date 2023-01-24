@@ -15,6 +15,9 @@
 
 package no.entur.uttu.organisation.legacy;
 
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
@@ -27,6 +30,7 @@ import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +49,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -57,6 +62,24 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     private String organisationRegistryUrl;
     private WebClient orgRegisterClient;
     private final int maxRetryAttempts;
+
+    private final LoadingCache<String, List<Organisation>> organisationsCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(6, TimeUnit.HOURS)
+            .build(new CacheLoader<>() {
+                @Override
+                public List<Organisation> load(String unused) throws Exception {
+                    return lookupOrganisations();
+                }
+            });
+
+    private final LoadingCache<String, Organisation> organisationCache = CacheBuilder.newBuilder()
+            .expireAfterWrite(6, TimeUnit.HOURS)
+            .build(new CacheLoader<>() {
+                @Override
+                public Organisation load(String id) throws Exception {
+                    return lookupOrganisation(id);
+                }
+            });
 
 
     public EnturLegacyOrganisationRegistry(
@@ -76,17 +99,10 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     @Override
     public Optional<GeneralOrganisation> getOrganisation(String organisationId) {
         try {
-            Organisation organisation = lookupOrganisation(organisationId);
-
-            if (organisation == null) {
-                return Optional.empty();
-            }
-
-
+            Organisation organisation = organisationCache.get(organisationId);
             GeneralOrganisation generalOrganisation = mapToGeneralOrganisation(organisation);
-
             return Optional.of(generalOrganisation);
-        } catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException | ExecutionException ex) {
             logger.warn("Exception while trying to fetch organisation: " + organisationId + " : " + ex.getMessage(), ex);
             return Optional.empty();
         }
@@ -95,19 +111,13 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     @Override
     public List<GeneralOrganisation> getOrganisations() {
         try {
-            List<Organisation> organisations = lookupOrganisations();
-
-            if (organisations == null) {
-                return List.of();
-            }
-
+            List<Organisation> organisations = organisationsCache.get("");
             return organisations.stream().map(this::mapToGeneralOrganisation).collect(Collectors.toList());
-        } catch (HttpClientErrorException ex) {
+        } catch (HttpClientErrorException | ExecutionException ex) {
             logger.warn("Exception while trying to fetch all organisations");
             return Collections.emptyList();
         }
     }
-
 
 
     protected static final Predicate<Throwable> is5xx =
