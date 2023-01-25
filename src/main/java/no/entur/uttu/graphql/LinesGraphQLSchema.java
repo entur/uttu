@@ -34,8 +34,10 @@ import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.DurationScalar;
 import no.entur.uttu.graphql.scalars.GeoJSONCoordinatesScalar;
 import no.entur.uttu.graphql.scalars.LocalTimeScalar;
+import no.entur.uttu.graphql.scalars.ProviderCodeScalar;
 import no.entur.uttu.model.BookingAccessEnumeration;
 import no.entur.uttu.model.BookingMethodEnumeration;
+import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.DirectionTypeEnumeration;
@@ -46,6 +48,7 @@ import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.FlexibleLineTypeEnumeration;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.Network;
+import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
@@ -56,6 +59,7 @@ import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportStatusEnumeration;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.profile.Profile;
+import no.entur.uttu.repository.CodespaceRepository;
 import no.entur.uttu.repository.DataSpaceCleaner;
 import no.entur.uttu.repository.DayTypeRepository;
 import no.entur.uttu.repository.ExportRepository;
@@ -100,6 +104,8 @@ import static no.entur.uttu.graphql.GraphQLNames.FIELD_BOOK_WHEN;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_BUY_WHEN;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CHANGED;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CHANGED_BY;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_CODE;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_CODE_SPACE;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CONTACT_PERSON;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CREATED;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CREATED_BY;
@@ -180,6 +186,8 @@ import static no.entur.uttu.graphql.GraphQLNames.FIELD_TRANSPORT_SUBMODE;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_URL;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_VALUES;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_VERSION;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_XMLNS;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_XMLNS_URL;
 
 /**
  * GraphQL schema for FlexibleLines and related entities.
@@ -246,6 +254,12 @@ public class LinesGraphQLSchema {
     @Autowired
     private DataFetcher<TimetabledPassingTime.StopPlace> quayRefSearchFetcher;
 
+    @Autowired
+    private CodespaceRepository codespaceRepository;
+
+    @Autowired
+    private DataFetcher<List<Provider>> providerFetcher;
+
     private <T extends Enum> GraphQLEnumType createEnum(String name, T[] values, Function<T, String> mapping) {
         return createEnum(name, Arrays.asList(values), mapping);
     }
@@ -288,11 +302,10 @@ public class LinesGraphQLSchema {
     private GraphQLObjectType networkObjectType;
     private GraphQLObjectType exportObjectType;
     private GraphQLObjectType exportedLineStatisticsObjectType;
-
     private GraphQLObjectType stopPlaceObjectType;
-
     private GraphQLObjectType organisationObjectType;
-
+    private GraphQLObjectType codespaceObjectType;
+    private GraphQLObjectType providerObjectType;
     private GraphQLArgument idArgument;
     private GraphQLArgument idsArgument;
     private GraphQLArgument providerArgument;
@@ -591,6 +604,17 @@ public class LinesGraphQLSchema {
                 .field(newFieldDefinition().name("contactDetails").type(contactObjectType))
                 .field(newFieldDefinition().name("keyList").type(keyListObjectType))
                 .build();
+
+        codespaceObjectType = newObject(identifiedEntityObjectType).name("Codespace")
+                .field(newFieldDefinition().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString)))
+                .field(newFieldDefinition().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString)))
+                .build();
+
+        providerObjectType = newObject(identifiedEntityObjectType).name("Provider")
+                .field(newFieldDefinition().name(FIELD_CODE).type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE)))
+                .field(newFieldDefinition().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString)))
+                .field(newFieldDefinition().name(FIELD_CODE_SPACE).type(new GraphQLNonNull(codespaceObjectType)))
+                .build();
     }
 
     private GraphQLObjectType createQueryObject() {
@@ -709,6 +733,16 @@ public class LinesGraphQLSchema {
                         .name("organisations")
                         .description("List all organisations")
                         .dataFetcher(organisationsFetcher))
+                .field(newFieldDefinition()
+                        .type(new GraphQLList(codespaceObjectType))
+                        .name("codespaces")
+                        .description("Search for Codespaces")
+                        .dataFetcher(env -> codespaceRepository.findAll()))
+                .field(newFieldDefinition()
+                        .type(new GraphQLList(providerObjectType))
+                        .name("providers")
+                        .description("Search for Providers")
+                        .dataFetcher(providerFetcher))
                 .build();
     }
 
