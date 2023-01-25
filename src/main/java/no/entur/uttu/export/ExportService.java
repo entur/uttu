@@ -56,6 +56,9 @@ public class ExportService {
     @Value("${export.blob.folder:inbound/netex/}")
     private String exportFolder = "inbound/netex/";
 
+    @Value("${export.blob.filenameSuffix:-flexible-lines}")
+    private String exportedFilenameSuffix;
+
 
     public void exportDataSet(Export export) {
         export.checkPersistable();
@@ -72,7 +75,7 @@ public class ExportService {
             ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 
             if (!export.isDryRun() && !exportHasErrors(export)) {
-                String blobName = exportFolder + ExportUtil.createExportedDataSetFilename(export.getProvider());
+                String blobName = exportFolder + ExportUtil.createExportedDataSetFilename(export.getProvider(), exportedFilenameSuffix);
                 blobStoreService.uploadBlob(blobName, false, bis);
                 bis.reset();
                 // notify Marduk that a new export is available

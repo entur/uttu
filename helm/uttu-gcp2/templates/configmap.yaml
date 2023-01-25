@@ -12,6 +12,8 @@ data:
     export.notify.enabled=true
     export.notify.queue.name={{ .Values.configMap.exportQueueName }}
     export.blob.folder={{ .Values.configMap.exportBlobFolder }}
+    export.blob.filenameSuffix=-flexible-lines
+    export.blob.commonFileFilenameSuffix=_flexible_shared_data
     export.working.folder=/tmp/export
 
     # gcs
