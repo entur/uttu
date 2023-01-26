@@ -41,7 +41,7 @@ public class CodespaceUpdater implements DataFetcher<Codespace> {
     public Codespace get(DataFetchingEnvironment env) {
 
         ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
-        String codespaceXmlns = input.get(FIELD_CODE_SPACE_XMLNS);
+        String codespaceXmlns = input.get(FIELD_XMLNS);
         Codespace entity;
         if (codespaceXmlns == null) {
             entity = new Codespace();
