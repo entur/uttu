@@ -12,7 +12,7 @@ ingress:
 
 
 configMap:
-  organisationRegistryUrl: https://api.entur.io/organisations/v1/register/organisations/
+  organisationRegistryUrl: https://api.entur.io/organisations/v1/register/organisations
   stopplaceRegistryUrl: https://api.entur.io/stop-places/v1/read
   auth0:
     ror:

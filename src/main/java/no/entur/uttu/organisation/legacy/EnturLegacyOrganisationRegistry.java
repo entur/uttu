@@ -82,7 +82,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
 
 
     public EnturLegacyOrganisationRegistry(
-            @Value("${organisation.registry.url:https://tjenester.entur.org/organisations/v1/organisations/}") String organisationRegistryUrl,
+            @Value("${organisation.registry.url:https://tjenester.entur.org/organisations/v1/organisations}") String organisationRegistryUrl,
             @Value("${organisation.registry.retry.max:3}") int maxRetryAttempts,
             @Autowired WebClient orgRegisterClient
     ) {
@@ -153,7 +153,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
 
     protected Organisation lookupOrganisation(String id) {
         return orgRegisterClient.get()
-                .uri(organisationRegistryUrl + id)
+                .uri(organisationRegistryUrl + "/" + id)
                 .header("Et-Client-Name", "entur-nplan")
                 .retrieve()
                 .bodyToMono(Organisation.class)

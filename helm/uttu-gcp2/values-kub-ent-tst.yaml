@@ -9,7 +9,7 @@ ingress:
   domainName: -gcp2.staging.entur.io
 
 configMap:
-  organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations/
+  organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations
   stopplaceRegistryUrl: https://api.staging.entur.io/stop-places/v1/read
   auth0:
     ror:
