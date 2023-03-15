@@ -27,21 +27,9 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Component
 public class UttuSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedHeaders(List.of("*"));
-        configuration.addAllowedOrigin("*");
-        configuration.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
     @Override
     public void configure(HttpSecurity http) throws Exception {
-        http.cors(withDefaults())
-                .csrf().disable()
+        http.csrf().disable()
                 .authorizeRequests()
                 .antMatchers("/services/swagger.json").permitAll()
                 // exposed internally only, on a different port (pod-level)
