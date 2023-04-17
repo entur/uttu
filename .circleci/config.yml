@@ -57,7 +57,8 @@ aliases:
 
 jobs:
   build:
-    machine: true
+    machine:
+      image: ubuntu-2204:2022.04.2
     environment:
       MAVEN_OPTS: -Xmx3G
     steps:
