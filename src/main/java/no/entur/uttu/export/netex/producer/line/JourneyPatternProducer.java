@@ -124,7 +124,7 @@ public class JourneyPatternProducer {
     }
 
     private void addQuayRef(String quayRef, NetexExportContext context) {
-        if (!stopPlaceRegistry.isValidQuayRef(quayRef)) {
+        if (stopPlaceRegistry.getStopPlaceByQuayRef(quayRef).isEmpty()) {
             context.addExportMessage(SeverityEnumeration.ERROR, "{0} is not a valid quayRef", quayRef);
         }
 

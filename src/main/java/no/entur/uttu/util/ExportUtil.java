@@ -22,15 +22,10 @@ import no.entur.uttu.model.job.Export;
 import org.springframework.util.StringUtils;
 
 import java.text.StringCharacterIterator;
-import java.time.Instant;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 
 public class ExportUtil {
-
-
-    private static final String COMMON_FILE_NAME_SUFFIX = "_flexible_shared_data.xml";
 
     private static final String MAIN_SEPARATOR = "_";
     private static final String SECONDARY_SEPARATOR = "-";
@@ -42,8 +37,8 @@ public class ExportUtil {
     // In Marduk providers are identified with their migrated provider referential, thus the codespace must be prefixed.
     public static final String MIGRATED_PROVIDER_PREFIX = "rb_";
 
-    public static String createExportedDataSetFilename(Provider provider) {
-        return MIGRATED_PROVIDER_PREFIX + provider.getCode().toLowerCase() + "-flexible-lines.zip";
+    public static String createExportedDataSetFilename(Provider provider, String exportedFilenameSuffix) {
+        return MIGRATED_PROVIDER_PREFIX + provider.getCode().toLowerCase() + exportedFilenameSuffix + ".zip";
     }
 
     public static String getMigratedReferential(String codespace) {
@@ -66,8 +61,8 @@ public class ExportUtil {
         return fileNameBuilder.toString();
     }
 
-    public static String createCommonFileFilename(Provider provider) {
-        return "_" + provider.getCodespace().getXmlns().toUpperCase() + COMMON_FILE_NAME_SUFFIX;
+    public static String createCommonFileFilename(Provider provider, String commonFileFilenameSuffix) {
+        return "_" + provider.getCodespace().getXmlns().toUpperCase() + commonFileFilenameSuffix + ".xml";
     }
 
     public static String createLineFilename(Line line) {

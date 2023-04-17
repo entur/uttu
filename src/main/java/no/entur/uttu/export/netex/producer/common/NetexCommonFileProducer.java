@@ -45,6 +45,7 @@ import org.rutebanken.netex.model.ServiceFrame;
 import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.netex.model.StopAssignment_VersionStructure;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.xml.bind.JAXBElement;
@@ -71,6 +72,9 @@ public class NetexCommonFileProducer {
     @Autowired
     private NetworkProducer networkProducer;
 
+    @Value("${export.blob.commonFileFilenameSuffix:_flexible_shared_data}")
+    private String commonFileFilenameSuffix;
+
 
     public NetexFile toCommonFile(NetexExportContext context) {
         ResourceFrame resourceFrame = createResourceFrame(context);
@@ -81,7 +85,7 @@ public class NetexCommonFileProducer {
 
         JAXBElement<PublicationDeliveryStructure> publicationDelivery = objectFactory.createPublicationDelivery(context, compositeFrame);
 
-        String fileName = ExportUtil.createCommonFileFilename(context.provider);
+        String fileName = ExportUtil.createCommonFileFilename(context.provider, commonFileFilenameSuffix);
 
         return new NetexFile(fileName, publicationDelivery);
     }

@@ -10,7 +10,8 @@ ingress:
 
 
 configMap:
-  organisationRegistryUrl: https://api.dev.entur.io/organisations/v1/register/organisations/
+  organisationRegistryUrl: https://api.dev.entur.io/organisations/v1/register/organisations
+  stopplaceRegistryUrl: https://api.dev.entur.io/stop-places/v1/read
   auth0:
     ror:
       url: https://ror-entur-dev.eu.auth0.com/
@@ -25,3 +26,5 @@ configMap:
   blobstoreContainerName: ror-marduk-exchange-dev
   logLevel: DEBUG
   flywayTable: schema_version
+  exportQueueName: FlexibleLinesExportQueue
+  exportBlobFolder: inbound/netex/

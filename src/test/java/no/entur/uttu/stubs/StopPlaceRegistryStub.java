@@ -15,19 +15,44 @@
 
 package no.entur.uttu.stubs;
 
+import no.entur.uttu.config.NetexHttpMessageConverter;
 import no.entur.uttu.stopplace.StopPlaceRegistry;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpInputMessage;
 import org.springframework.stereotype.Component;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Optional;
 
 @Component
 public class StopPlaceRegistryStub implements StopPlaceRegistry {
 
     @Override
-    public boolean isValidQuayRef(String quayRef) {
-        return true;
-    }
+    public Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef) {
+        NetexHttpMessageConverter converter = new NetexHttpMessageConverter();
 
-    @Override
-    public String getVerifiedQuayRef(String quayRef) {
-        return quayRef;
+        try {
+            org.rutebanken.netex.model.StopPlace stopPlace = (org.rutebanken.netex.model.StopPlace) converter.read(
+                    org.rutebanken.netex.model.StopPlace.class,
+                    new HttpInputMessage() {
+                        @Override
+                        public InputStream getBody() throws IOException {
+                            return new FileInputStream("src/test/resources/stopPlaceFixture.xml");
+                        }
+
+                        @Override
+                        public HttpHeaders getHeaders() {
+                            return HttpHeaders.EMPTY;
+                        }
+                    }
+            );
+            return Optional.of(stopPlace);
+        } catch (IOException e) {
+            return Optional.empty();
+        }
+
+
     }
 }

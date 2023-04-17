@@ -17,6 +17,7 @@ package no.entur.uttu.model;
 
 import org.junit.Test;
 
+import java.time.LocalTime;
 import java.util.List;
 
 import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
@@ -107,6 +108,7 @@ public class FlexibleLineTest {
     private BookingArrangement validBookingArrangement() {
         BookingArrangement bookingArrangement = new BookingArrangement();
         bookingArrangement.setBookWhen(PurchaseWhenEnumeration.DAY_OF_TRAVEL_ONLY);
+        bookingArrangement.setLatestBookingTime(LocalTime.NOON);
         return bookingArrangement;
     }
 }

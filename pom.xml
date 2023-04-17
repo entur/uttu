@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>1.50</version>
+        <version>1.57</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -40,20 +40,20 @@
 
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
 
-        <entur.helpers.version>1.86</entur.helpers.version>
+        <entur.helpers.version>1.93</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
 
-        <postgis-jdbc.version>2.5.1</postgis-jdbc.version>
+        <postgis-jdbc.version>2021.1.0</postgis-jdbc.version>
         <geotools.version>20.5</geotools.version>
         <wololo.version>0.18.1</wololo.version>
 
-        <swagger-jersey2.version>1.6.9</swagger-jersey2.version>
+        <swagger-jersey2.version>1.6.10</swagger-jersey2.version>
         <javax.jdo.jdo2-api.version>2.3-20090302111651</javax.jdo.jdo2-api.version>
 
         <commons-io.version>2.11.0</commons-io.version>
-        <groovy-all.version>2.5.20</groovy-all.version>
+        <groovy-all.version>2.5.22</groovy-all.version>
         <rest-assured.version>4.5.1</rest-assured.version>
         <graphql.version>11.0</graphql.version>
         <netex-java-model.version>1.0.14</netex-java-model.version>

@@ -9,7 +9,8 @@ ingress:
   domainName: -gcp2.staging.entur.io
 
 configMap:
-  organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations/
+  organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations
+  stopplaceRegistryUrl: https://api.staging.entur.io/stop-places/v1/read
   auth0:
     ror:
       url: https://ror-entur-staging.eu.auth0.com/
@@ -24,3 +25,5 @@ configMap:
   blobstoreContainerName: ror-marduk-exchange-test
   logLevel: INFO
   flywayTable: flyway_schema_history
+  exportQueueName: FlexibleLinesExportQueue
+  exportBlobFolder: inbound/netex/

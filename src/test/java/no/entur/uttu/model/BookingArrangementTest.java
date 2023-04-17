@@ -45,9 +45,9 @@ public class BookingArrangementTest {
     }
 
     @Test
-    public void checkPersistable_WithBookWhenOnly_succeeds() {
+    public void checkPersistable_WithBookWhenOnly_givesException() {
         BookingArrangement bookingArrangement = new BookingArrangement();
         bookingArrangement.setBookWhen(PurchaseWhenEnumeration.DAY_OF_TRAVEL_ONLY);
-        bookingArrangement.checkPersistable();
+        assertCheckPersistableFails(bookingArrangement);
     }
 }
