@@ -1,4 +1,4 @@
-FROM adoptopenjdk/openjdk11:jre-11.0.11_9-alpine
+FROM eclipse-temurin:17-jre-alpine
 RUN apk update && apk upgrade
 WORKDIR /deployments
 COPY target/uttu-*-SNAPSHOT.jar uttu.jar
