@@ -28,29 +28,12 @@ entur.pubsub.emulator.path=/usr/lib/google-cloud-sdk/platform/pubsub-emulator/li
 ```
 
 ### Database
-
-#### Via local installation of database
-Install Postgres, either via [brew](https://gist.github.com/ibraheem4/ce5ccd3e4d7a65589ce84f2a3b7c23a3), [postgresapp.com](http://postgresapp.com/),
-or [postgresql.org](https://www.postgresql.org/download/).
-
-For brew install, also install PostGIS: `brew install postgis` (should be included in Postgres.app and EnterpriseDB Postgres installations).
-Create folder for database `mkdir db`
-Initialise database `initdb ./db`
-Start db service: `pg_ctl -D ./db/ -l logfile start`
-Create db with your username: `createdb `whoami``
-Create uttu database: `createdb uttu`
-
-Create uttu user: `createuser -s uttu` (you might also have to create a `postgres` user)
-
-Run the [script](./src/main/resources/db_init.sh)
-
-
 #### Via Docker
 
 Install Docker.
 
 ```bash
-docker run --name=uttu -d -e POSTGRES_USER=uttu -e POSTGRES_PASS=uttu -e POSTGRES_DBNAME=uttu -e ALLOW_IP_RANGE=0.0.0.0/0 -p 5432:5432 -v db_local:/var/lib/postgresql --restart=always kartoza/postgis:9.6-2.4
+docker run --name=uttu -d -e POSTGRES_USER=uttu -e POSTGRES_PASSWORD=uttu -e POSTGRES_DB=uttu -p 5432:5432 -v db_local:/var/lib/postgresql --restart=always postgis/postgis:13-3.3
 ```
 
 Now a Docker container is running in the background. Check its status with `docker ps`.

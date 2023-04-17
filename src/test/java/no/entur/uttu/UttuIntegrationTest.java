@@ -23,7 +23,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringRunner;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, classes = UttuTestApp.class)
+@SpringBootTest(
+        webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+        classes = UttuTestApp.class
+)
 @ActiveProfiles({"google-pubsub-emulator", "test"})
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public abstract class UttuIntegrationTest {
