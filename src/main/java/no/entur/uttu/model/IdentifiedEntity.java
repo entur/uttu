@@ -26,6 +26,8 @@ import javax.persistence.Version;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 
 @MappedSuperclass
 public abstract class IdentifiedEntity {
@@ -66,7 +68,7 @@ public abstract class IdentifiedEntity {
     }
 
     public void setCreated(Instant created) {
-        this.created = created;
+        this.created = Objects.requireNonNull(created).truncatedTo(ChronoUnit.MICROS);
     }
 
     public Instant getChanged() {
@@ -74,7 +76,7 @@ public abstract class IdentifiedEntity {
     }
 
     public void setChanged(Instant changed) {
-        this.changed = changed;
+        this.changed = Objects.requireNonNull(changed).truncatedTo(ChronoUnit.MICROS);
     }
 
     public String getCreatedBy() {
