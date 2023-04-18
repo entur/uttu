@@ -8,7 +8,7 @@ https://api.dev.entur.io/timetable-admin/v1/flexible-lines/providers/graphql
 
 ## Running locally
 ### Build
-To build the project from source, you need Java 11, Maven 3 or higher.  
+To build the project from source, you need Java 17 and Maven 3.
 
 To run the unit tests you need additionally to install the [Google PubSub emulator](https://cloud.google.com/pubsub/docs/emulator).  
 The emulator can be installed locally with the following commands:
