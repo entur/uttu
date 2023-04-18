@@ -15,6 +15,7 @@
 
 package no.entur.uttu.model;
 
+import no.entur.uttu.export.linestatistics.LineType;
 import no.entur.uttu.model.job.Export;
 
 import javax.persistence.*;
@@ -32,6 +33,10 @@ public class ExportedLineStatistics {
 
     @NotNull
     protected String lineName;
+
+    @Enumerated(EnumType.STRING)
+    @NotNull
+    private LineType lineType;
 
     @NotNull
     private LocalDate operatingPeriodFrom;
@@ -54,6 +59,14 @@ public class ExportedLineStatistics {
 
     public void setLineName(String lineName) {
         this.lineName = lineName;
+    }
+
+    public LineType getLineType() {
+        return lineType;
+    }
+
+    public void setLineType(LineType lineType) {
+        this.lineType = lineType;
     }
 
     public LocalDate getOperatingPeriodFrom() {

@@ -19,8 +19,7 @@ public class ExportedLineStatisticsService {
     private final ExportRepository exportRepository;
     private final ExportedLineStatisticsRepository exportedLineStatisticsRepository;
 
-    public ExportedLineStatisticsService(ExportRepository exportRepository,
-                                         ExportedLineStatisticsRepository lineStatisticsRepository) {
+    public ExportedLineStatisticsService(ExportRepository exportRepository, ExportedLineStatisticsRepository lineStatisticsRepository) {
         this.exportRepository = exportRepository;
         this.exportedLineStatisticsRepository = lineStatisticsRepository;
     }
@@ -43,10 +42,15 @@ public class ExportedLineStatisticsService {
         exportedLineStatistics.setOperatingPeriodFrom(availabilityPeriod.getFrom());
         exportedLineStatistics.setOperatingPeriodTo(availabilityPeriod.getTo());
         exportedLineStatistics.setPublicCode(line.getPublicCode());
+        exportedLineStatistics.setLineType(getLineType(line));
 
         calculateExportedDayTypesStatisticsForLine(line).forEach(exportedLineStatistics::addExportedDayTypesStatistics);
 
         return exportedLineStatistics;
+    }
+
+    protected static LineType getLineType(Line line) {
+        return line instanceof FixedLine ? LineType.FIXED : LineType.FLEXIBLE;
     }
 
     protected static List<ExportedDayTypeStatistics> calculateExportedDayTypesStatisticsForLine(Line line) {
@@ -58,11 +62,13 @@ public class ExportedLineStatisticsService {
 
     private static List<ExportedDayTypeStatistics> getExportedDayTypeStatisticsForServiceJourney(ServiceJourney serviceJourney) {
         String serviceJourneyName = serviceJourney.getName();
-        return serviceJourney.getDayTypes().stream()
+        List<ExportedDayTypeStatistics> statistics = serviceJourney.getDayTypes().stream()
                 .map(ExportedLineStatisticsService::getExportedDayTypeStatisticsForDayType)
                 .filter(Objects::nonNull)
-                .peek(exportedDayTypeStatistics -> exportedDayTypeStatistics.setServiceJourneyName(serviceJourneyName))
                 .collect(Collectors.toList());
+
+        statistics.forEach(exportedDayTypeStatistics -> exportedDayTypeStatistics.setServiceJourneyName(serviceJourneyName));
+        return statistics;
     }
 
     protected static ExportedDayTypeStatistics getExportedDayTypeStatisticsForDayType(DayType dayType) {
