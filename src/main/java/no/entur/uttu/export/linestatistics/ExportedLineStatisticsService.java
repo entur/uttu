@@ -50,11 +50,16 @@ public class ExportedLineStatisticsService {
     exportedLineStatistics.setOperatingPeriodFrom(availabilityPeriod.getFrom());
     exportedLineStatistics.setOperatingPeriodTo(availabilityPeriod.getTo());
     exportedLineStatistics.setPublicCode(line.getPublicCode());
+    exportedLineStatistics.setLineType(getLineType(line));
 
     calculateExportedDayTypesStatisticsForLine(line)
       .forEach(exportedLineStatistics::addExportedDayTypesStatistics);
 
     return exportedLineStatistics;
+  }
+
+  protected static LineType getLineType(Line line) {
+    return line instanceof FixedLine ? LineType.FIXED : LineType.FLEXIBLE;
   }
 
   protected static List<ExportedDayTypeStatistics> calculateExportedDayTypesStatisticsForLine(
@@ -74,15 +79,17 @@ public class ExportedLineStatisticsService {
     ServiceJourney serviceJourney
   ) {
     String serviceJourneyName = serviceJourney.getName();
-    return serviceJourney
+      List<ExportedDayTypeStatistics> statistics = serviceJourney
       .getDayTypes()
       .stream()
       .map(ExportedLineStatisticsService::getExportedDayTypeStatisticsForDayType)
       .filter(Objects::nonNull)
-      .peek(exportedDayTypeStatistics ->
-        exportedDayTypeStatistics.setServiceJourneyName(serviceJourneyName)
-      )
       .collect(Collectors.toList());
+
+      statistics.forEach(
+              exportedDayTypeStatistics -> exportedDayTypeStatistics.setServiceJourneyName(serviceJourneyName)
+      );
+      return statistics;
   }
 
   protected static ExportedDayTypeStatistics getExportedDayTypeStatisticsForDayType(
