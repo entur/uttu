@@ -1,4 +1,4 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM eclipse-temurin:17.0.6_10-jre-alpine
 RUN apk update && apk upgrade
 WORKDIR /deployments
 COPY target/uttu-*-SNAPSHOT.jar uttu.jar
