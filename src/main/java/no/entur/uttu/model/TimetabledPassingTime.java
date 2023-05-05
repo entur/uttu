@@ -212,12 +212,20 @@ public class TimetabledPassingTime extends ProviderEntity {
      * @param other the other TimetabledPassingTime
      */
     public void checkBeforeOther(TimetabledPassingTime other) {
+
+        // Validate regular passing times
         Preconditions.checkArgument(ValidationHelper.isNotAfter(departureTime, departureDayOffset, other.departureTime, other.departureDayOffset), "%s departureTime cannot be after next elements (%s) departureTime", identity(), other.identity());
         Preconditions.checkArgument(ValidationHelper.isNotAfter(departureTime, departureDayOffset, other.arrivalTime, other.arrivalDayOffset), "%s departureTime cannot be after next elements (%s) arrivalTime", identity(), other.identity());
         Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, other.arrivalTime, other.arrivalDayOffset), "%s arrivalTime cannot be after next elements (%s) arrivalTime", identity(), other.identity());
         Preconditions.checkArgument(ValidationHelper.isNotAfter(arrivalTime, arrivalDayOffset, other.departureTime, other.departureDayOffset), "%s arrivalTime cannot be after next elements (%s) departureTime", identity(), other.identity());
+
+        // Validate combinations of time windows
         Preconditions.checkArgument(ValidationHelper.isNotAfter(latestArrivalTime, latestArrivalDayOffset, other.latestArrivalTime, other.latestArrivalDayOffset), "%s latestArrivalTime cannot be after later next elements (%s) latestArrivalTime", identity(), other.identity());
         Preconditions.checkArgument(ValidationHelper.isNotAfter(earliestDepartureTime, earliestDepartureDayOffset, other.earliestDepartureTime, other.earliestDepartureDayOffset), "%s earliestDepartureTime cannot be after later next elements (%s) earliestDepartureTime", identity(), other.identity());
+
+        // Validate time window in combination with regular passing time
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(latestArrivalTime, latestArrivalDayOffset, other.arrivalTime, other.arrivalDayOffset), "%s latestArrivalTime cannot be after next element (%s) arrivalTime", identity(), other.identity());
+        Preconditions.checkArgument(ValidationHelper.isNotAfter(departureTime, departureDayOffset, other.earliestDepartureTime, other.earliestDepartureDayOffset), "%s departureTime cannot be after next element (%s) earliestDepartureTime", identity(), other.identity());
     }
 
     public static class MultilingualString {
