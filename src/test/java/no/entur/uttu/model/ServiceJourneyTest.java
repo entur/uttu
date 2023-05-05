@@ -99,11 +99,83 @@ public class ServiceJourneyTest {
         assertCheckPersistableFails(serviceJourney);
     }
 
+    @Test
+    public void checkPersistable_whenFixedArrivalBeforeEndOfTimeWindowOfPreviousStop_thenThrowException() {
+        ServiceJourney serviceJourney = validServiceJourney();
+
+        serviceJourney.setPassingTimes(
+                List.of(
+                        // Time window 10:00 - 11:00
+                        timeWindowPassingTime(LocalTime.of(10, 0), LocalTime.of(11, 0)),
+
+                        // Arrival at 10:30
+                        passingTime(LocalTime.of(10, 30), null)
+                )
+        );
+
+        assertCheckPersistableFails(serviceJourney);
+    }
+
+    @Test
+    public void checkPersistable_whenFixedArrivalIsAfterEndOfTimeWindowOfNextStop_thenSuccess() {
+        ServiceJourney serviceJourney = validServiceJourney();
+
+        serviceJourney.setPassingTimes(
+                List.of(
+                        // Time window 10:00 - 11:00
+                        timeWindowPassingTime(LocalTime.of(10, 0), LocalTime.of(11, 0)),
+
+                        // Arrival at 10:30
+                        passingTime(LocalTime.of(11, 15), null)
+                )
+        );
+
+        serviceJourney.checkPersistable();
+    }
+
+    @Test
+    public void checkPersistable_whenFixedDepartureIsAfterStartOfTimeWindowOfNextStop_thenThrowException() {
+        ServiceJourney serviceJourney = validServiceJourney();
+
+        serviceJourney.setPassingTimes(
+                List.of(
+                        // Departs at 10:15
+                        passingTime(null, LocalTime.of(10, 15)),
+
+                        // Time window 10:00 - 11:00
+                        timeWindowPassingTime(LocalTime.of(10, 0), LocalTime.of(11, 0))
+                )
+        );
+
+        assertCheckPersistableFails(serviceJourney);
+    }
+
+    @Test
+    public void checkPersistable_whenFixedDepartureIsBeforeStartOfTimeWindowOfNextStop_thenSuccess() {
+        ServiceJourney serviceJourney = validServiceJourney();
+
+        serviceJourney.setPassingTimes(
+                List.of(
+                        // Departs at 09:45
+                        passingTime(null, LocalTime.of(9, 45)),
+
+                        // Time window 10:00 - 11:00
+                        timeWindowPassingTime(LocalTime.of(10, 0), LocalTime.of(11, 0))
+                )
+        );
+
+        serviceJourney.checkPersistable();
+    }
+
     protected static ServiceJourney validServiceJourney() {
         ServiceJourney serviceJourney = new ServiceJourney();
         serviceJourney.setJourneyPattern(createJP(2));
 
-        List<TimetabledPassingTime> passingTimes = Arrays.asList(passingTime(null, LocalTime.of(10, 0)), passingTime(LocalTime.of(11, 0), null));
+        List<TimetabledPassingTime> passingTimes = Arrays.asList(
+                passingTime(null, LocalTime.of(10, 0)),
+                passingTime(LocalTime.of(11, 0), null)
+        );
+
         serviceJourney.setPassingTimes(passingTimes);
 
         return serviceJourney;
@@ -122,9 +194,14 @@ public class ServiceJourneyTest {
     }
 
     private static TimetabledPassingTime passingTime(LocalTime arrivalTime, LocalTime departureTime) {
-        TimetabledPassingTime passingTime = new TimetabledPassingTime();
-        passingTime.setArrivalTime(arrivalTime);
-        passingTime.setDepartureTime(departureTime);
-        return passingTime;
+        return new TimetabledPassingTime()
+                .withArrivalTime(arrivalTime)
+                .withDepartureTime(departureTime);
+    }
+
+    private static TimetabledPassingTime timeWindowPassingTime(LocalTime earliestDepartureTime, LocalTime latestArrivalTime) {
+        return new TimetabledPassingTime()
+                .withEarliestDepartureTime(earliestDepartureTime)
+                .withLatestArrivalTime(latestArrivalTime);
     }
 }
