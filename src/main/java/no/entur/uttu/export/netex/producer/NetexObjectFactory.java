@@ -327,7 +327,7 @@ public class NetexObjectFactory {
     }
 
     public ServiceCalendarFrame createServiceCalendarFrame(NetexExportContext context, Collection<DayType> dayTypes, Collection<DayTypeAssignment> dayTypeAssignments,
-                                                                  Collection<OperatingPeriod> operatingPeriods) {
+                                                                  Collection<OperatingPeriod> operatingPeriods, Collection<OperatingDay> operatingDays) {
         String frameId = NetexIdProducer.generateId(ServiceCalendarFrame.class, context);
 
         DayTypesInFrame_RelStructure dayTypesStruct = null;
@@ -348,12 +348,20 @@ public class NetexObjectFactory {
             operatingPeriodsInFrameRelStructure.getOperatingPeriodOrUicOperatingPeriod().sort(Comparator.comparing(OperatingPeriod_VersionStructure::getFromDate));
         }
 
+        OperatingDaysInFrame_RelStructure operatingDaysInFrameRelStructure = null;
+        if (!CollectionUtils.isEmpty(operatingDays)) {
+            operatingDaysInFrameRelStructure = new OperatingDaysInFrame_RelStructure();
+            operatingDaysInFrameRelStructure.getOperatingDay().addAll(operatingDays);
+            operatingDaysInFrameRelStructure.getOperatingDay().sort(Comparator.comparing(OperatingDay_VersionStructure::getCalendarDate));
+        }
+
         return objectFactory.createServiceCalendarFrame()
-                       .withVersion(VERSION_ONE)
-                       .withId(frameId)
-                       .withDayTypes(dayTypesStruct)
-                       .withDayTypeAssignments(dayTypeAssignmentsInFrameRelStructure)
-                       .withOperatingPeriods(operatingPeriodsInFrameRelStructure);
+                .withVersion(VERSION_ONE)
+                .withId(frameId)
+                .withDayTypes(dayTypesStruct)
+                .withDayTypeAssignments(dayTypeAssignmentsInFrameRelStructure)
+                .withOperatingPeriods(operatingPeriodsInFrameRelStructure)
+                .withOperatingDays(operatingDaysInFrameRelStructure);
 
     }
 

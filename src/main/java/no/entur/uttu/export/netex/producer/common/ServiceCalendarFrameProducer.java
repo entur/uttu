@@ -23,6 +23,8 @@ import no.entur.uttu.model.Ref;
 import org.rutebanken.netex.model.DayOfWeekEnumeration;
 import org.rutebanken.netex.model.DayTypeAssignment;
 import org.rutebanken.netex.model.DayTypeRefStructure;
+import org.rutebanken.netex.model.OperatingDay;
+import org.rutebanken.netex.model.OperatingDayRefStructure;
 import org.rutebanken.netex.model.OperatingPeriod;
 import org.rutebanken.netex.model.OperatingPeriodRefStructure;
 import org.rutebanken.netex.model.PropertiesOfDay_RelStructure;
@@ -69,6 +71,7 @@ public class ServiceCalendarFrameProducer {
         List<org.rutebanken.netex.model.DayType> netexDayTypes = new ArrayList<>();
         List<DayTypeAssignment> netexDayTypeAssignments = new ArrayList<>();
         List<OperatingPeriod> netexOperatingPeriods = new ArrayList<>();
+        List<OperatingDay> netexOperatingDays = new ArrayList<>();
 
 
         int dayTypeAssignmentOrder = 1;
@@ -80,8 +83,10 @@ public class ServiceCalendarFrameProducer {
             for (no.entur.uttu.model.DayTypeAssignment localDayTypeAssignment : validDayTypeAssignments) {
                 OperatingPeriod operatingPeriod = null;
                 if (context.isValid(localDayTypeAssignment.getOperatingPeriod())) {
-                    operatingPeriod = mapOperatingPeriod(localDayTypeAssignment.getOperatingPeriod(), context);
-                    netexOperatingPeriods.add(operatingPeriod);
+                    var mappedOperatingPeriod = mapOperatingPeriod(localDayTypeAssignment.getOperatingPeriod(), context);
+                    netexOperatingPeriods.add(mappedOperatingPeriod.getOperatingPeriod());
+                    netexOperatingDays.addAll(mappedOperatingPeriod.getOperatingDays());
+                    operatingPeriod = mappedOperatingPeriod.getOperatingPeriod();
                 }
                 netexDayTypeAssignments.add(mapDayTypeAssignment(localDayTypeAssignment, localDayType, operatingPeriod, dayTypeAssignmentOrder++, context));
             }
@@ -89,7 +94,7 @@ public class ServiceCalendarFrameProducer {
 
         Collections.sort(netexDayTypeAssignments, new DayTypeAssignmentExportComparator());
 
-        return objectFactory.createServiceCalendarFrame(context, netexDayTypes, netexDayTypeAssignments, netexOperatingPeriods);
+        return objectFactory.createServiceCalendarFrame(context, netexDayTypes, netexDayTypeAssignments, netexOperatingPeriods, netexOperatingDays);
     }
 
 
@@ -104,14 +109,36 @@ public class ServiceCalendarFrameProducer {
         return objectFactory.populateId(new org.rutebanken.netex.model.DayType(), local.getRef()).withProperties(properties);
     }
 
-    private OperatingPeriod mapOperatingPeriod(no.entur.uttu.model.OperatingPeriod local, NetexExportContext context) {
+    private MappedOperatingPeriod mapOperatingPeriod(no.entur.uttu.model.OperatingPeriod local, NetexExportContext context) {
 
-        String id = NetexIdProducer.generateId(OperatingPeriod.class, context);
-        return new org.rutebanken.netex.model.OperatingPeriod()
-                       .withId(id)
-                       .withVersion(Objects.toString(local.getVersion()))
-                       .withFromDate(local.getFromDate().atStartOfDay())
-                       .withToDate(local.getToDate().atStartOfDay());
+        var id = NetexIdProducer.generateId(OperatingPeriod.class, context);
+
+        var fromDate = new OperatingDay()
+                .withId(NetexIdProducer.generateId(OperatingDay.class, context))
+                .withVersion("0")
+                .withCalendarDate(local.getFromDate().atStartOfDay());
+        var toDate = new OperatingDay()
+                .withId(NetexIdProducer.generateId(OperatingDay.class, context))
+                .withVersion("0")
+                .withCalendarDate(local.getToDate().atStartOfDay());
+
+        var operatingPeriod = new org.rutebanken.netex.model.OperatingPeriod()
+                .withId(id)
+                .withVersion(Objects.toString(local.getVersion()))
+                .withFromOperatingDayRef(
+                        objectFactory.populateRefStructure(new OperatingDayRefStructure(), new Ref(fromDate.getId(), fromDate.getVersion()), false)
+                )
+                .withToOperatingDayRef(
+                        objectFactory.populateRefStructure(new OperatingDayRefStructure(), new Ref(toDate.getId(), toDate.getVersion()), false)
+                );
+
+        return new MappedOperatingPeriod(
+                operatingPeriod,
+                List.of(
+                        fromDate,
+                        toDate
+                )
+        );
     }
 
     private DayTypeAssignment mapDayTypeAssignment(no.entur.uttu.model.DayTypeAssignment local, DayType localDayType,
