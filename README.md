@@ -1,5 +1,5 @@
 # Uttu
-[![CircleCI](https://circleci.com/gh/entur/uttu/tree/master.svg?style=svg)](https://circleci.com/gh/entur/uttu/tree/master) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=entur_uttu&metric=alert_status)](https://sonarcloud.io/dashboard?id=entur_uttu)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/entur/uttu/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/entur/uttu/tree/master) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=entur_uttu&metric=alert_status)](https://sonarcloud.io/dashboard?id=entur_uttu)
 
 Back-end for Nplan, a simple timetable editor. Front-end is [Enki](https://github.com/entur/enki).
 
