@@ -8,22 +8,27 @@ import graphql.schema.CoercingSerializeException;
 import graphql.schema.GraphQLScalarType;
 
 public class ProviderCodeScalar {
-    public static final GraphQLScalarType PROVIDER_CODE = new GraphQLScalarType("ProviderCode", "Provider codes must be lower-case strings", new Coercing() {
-        @Override
-        public Object serialize(Object dataFetcherResult) throws CoercingSerializeException {
-            return serializeProviderCode(dataFetcherResult);
-        }
 
-        @Override
-        public Object parseValue(Object input) throws CoercingParseValueException {
-            return parseProviderCodeFromValue(input);
-        }
+    public static final GraphQLScalarType PROVIDER_CODE = new GraphQLScalarType.Builder()
+            .name("ProviderCode")
+            .description("Provider codes must be lower-case strings")
+            .coercing(new Coercing() {
+                @Override
+                public Object serialize(Object dataFetcherResult) throws CoercingSerializeException {
+                    return serializeProviderCode(dataFetcherResult);
+                }
 
-        @Override
-        public Object parseLiteral(Object input) throws CoercingParseLiteralException {
-            return parseProviderCodeAsLiteral(input);
-        }
-    });
+                @Override
+                public Object parseValue(Object input) throws CoercingParseValueException {
+                    return parseProviderCodeFromValue(input);
+                }
+
+                @Override
+                public Object parseLiteral(Object input) throws CoercingParseLiteralException {
+                    return parseProviderCodeAsLiteral(input);
+                }
+            })
+            .build();
 
     private static boolean isValidProviderCode(String code) {
         return code.toLowerCase().equals(code);

@@ -43,7 +43,10 @@ public class DateScalar {
     }
 
     private static GraphQLScalarType createGraphQLDateScalar() {
-        return new GraphQLScalarType("Date", DESCRIPTION, new Coercing() {
+        return new GraphQLScalarType.Builder()
+                .name("Date")
+                .description(DESCRIPTION)
+                .coercing(new Coercing() {
             @Override
             public String serialize(Object input) {
                 if (input instanceof LocalDate) {
@@ -64,7 +67,7 @@ public class DateScalar {
                 }
                 return null;
             }
-        });
+        }).build();
     }
 
 }

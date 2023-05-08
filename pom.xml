@@ -55,7 +55,8 @@
         <commons-io.version>2.11.0</commons-io.version>
         <groovy-all.version>2.5.22</groovy-all.version>
         <rest-assured.version>4.5.1</rest-assured.version>
-        <graphql.version>12.0</graphql.version>
+        <graphql.version>17.5</graphql.version>
+        <graphql-extended-scalars.version>17.1</graphql-extended-scalars.version>
         <netex-java-model.version>1.0.14</netex-java-model.version>
 
 
@@ -181,6 +182,12 @@
             <groupId>com.graphql-java</groupId>
             <artifactId>graphql-java</artifactId>
             <version>${graphql.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java-extended-scalars</artifactId>
+            <version>${graphql-extended-scalars.version}</version>
         </dependency>
 
         <dependency>
