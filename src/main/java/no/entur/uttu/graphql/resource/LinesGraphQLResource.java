@@ -16,6 +16,8 @@
 package no.entur.uttu.graphql.resource;
 
 import graphql.GraphQL;
+import graphql.scalars.ExtendedScalars;
+import graphql.schema.idl.RuntimeWiring;
 import io.swagger.annotations.Api;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.LinesGraphQLSchema;
@@ -52,6 +54,7 @@ public class LinesGraphQLResource {
 
     @PostConstruct
     public void init() {
+        RuntimeWiring.newRuntimeWiring().scalar(ExtendedScalars.GraphQLLong);
         linesGraphQL = GraphQL.newGraphQL(linesSchema.getGraphQLSchema()).build();
     }
 
