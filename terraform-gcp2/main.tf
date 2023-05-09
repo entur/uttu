@@ -10,6 +10,10 @@ provider "kubernetes" {
   version = ">= 2.13.1"
 }
 
+variable "gcp_pubsub_project" {
+  default = "The GCP pubsub project gcp2"
+}
+
 resource "kubernetes_secret" "uttu-psql-credentials" {
   metadata {
     name = "uttu-psql-credentials"
@@ -54,4 +58,13 @@ resource "google_sql_user" "db-user_pg13" {
   project = var.gcp_resources_project
   instance = google_sql_database_instance.db_instance_pg13.name
   password = var.ror-uttu-db-password
+}
+
+# add service account as member to pubsub service in the gcp2 project
+
+resource "google_pubsub_topic_iam_member" "pubsub_topic_iam_member" {
+  project = var.gcp_pubsub_project
+  topic = var.pubsub_topic_name
+  role = var.service_account_pubsub_role
+  member = var.uttu_service_account
 }

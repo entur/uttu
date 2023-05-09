@@ -36,3 +36,17 @@ variable ror-uttu-db-password {
 variable ror-partner-auth0-secret {
   description = "Auth0 client secret for Entur partner tenant"
 }
+
+variable "pubsub_topic_name" {
+  description = "PubSub Topic name"
+  default = "FlexibleLinesExportQueue"
+}
+
+variable "service_account_pubsub_role" {
+  description = "Role of the Service Account - more about roles https://cloud.google.com/pubsub/docs/access-control"
+  default = "roles/pubsub.publisher"
+}
+
+variable "uttu_service_account" {
+  description = "application service account"
+}
