@@ -25,7 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FixedLineUpdater extends AbstractProviderEntityUpdater<FixedLine> {
 
-    public FixedLineUpdater(AbstractProviderEntityMapper<FixedLine> mapper, ProviderEntityRepository<FixedLine> repository) {
-        super(mapper, repository);
-    }
+  public FixedLineUpdater(
+    AbstractProviderEntityMapper<FixedLine> mapper,
+    ProviderEntityRepository<FixedLine> repository
+  ) {
+    super(mapper, repository);
+  }
 }

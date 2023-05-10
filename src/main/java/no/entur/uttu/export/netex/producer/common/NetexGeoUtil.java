@@ -15,6 +15,9 @@
 
 package no.entur.uttu.export.netex.producer.common;
 
+import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
 import net.opengis.gml._3.AbstractRingPropertyType;
 import net.opengis.gml._3.DirectPositionListType;
 import net.opengis.gml._3.LinearRingType;
@@ -23,36 +26,39 @@ import no.entur.uttu.export.netex.NetexExportContext;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Polygon;
 
-import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-
 public class NetexGeoUtil {
 
+  public static final String SRS_NAME_WGS84 = "ESPG:4326";
 
-    public static final String SRS_NAME_WGS84 = "ESPG:4326";
-
-    public static PolygonType toNetexPolygon(Polygon polygon, NetexExportContext context) {
-        if (polygon == null) {
-            return null;
-        }
-        LinearRingType linearRing = new LinearRingType();
-
-        List<Double> values = new ArrayList<>();
-        for (Coordinate coordinate : polygon.getExteriorRing().getCoordinates()) {
-            values.add(coordinate.y); // lat
-            values.add(coordinate.x); // lon
-        }
-
-        // Ignoring interior rings because the corresponding exclaves are not handled.
-
-        DirectPositionListType positionList = new DirectPositionListType().withValue(values);
-        linearRing.withPosList(positionList);
-
-        // Polygon id attr does not support regular netex ids. use 'P' prefix with seq no
-        String polygonId ="P"+ context.getAndIncrementIdSequence(PolygonType.class.getSimpleName());
-        return new PolygonType().withId(polygonId).withSrsDimension(BigInteger.valueOf(2)).withSrsName(SRS_NAME_WGS84)
-                       .withExterior(new AbstractRingPropertyType().withAbstractRing(
-                               new net.opengis.gml._3.ObjectFactory().createLinearRing(linearRing)));
+  public static PolygonType toNetexPolygon(Polygon polygon, NetexExportContext context) {
+    if (polygon == null) {
+      return null;
     }
+    LinearRingType linearRing = new LinearRingType();
+
+    List<Double> values = new ArrayList<>();
+    for (Coordinate coordinate : polygon.getExteriorRing().getCoordinates()) {
+      values.add(coordinate.y); // lat
+      values.add(coordinate.x); // lon
+    }
+
+    // Ignoring interior rings because the corresponding exclaves are not handled.
+
+    DirectPositionListType positionList = new DirectPositionListType().withValue(values);
+    linearRing.withPosList(positionList);
+
+    // Polygon id attr does not support regular netex ids. use 'P' prefix with seq no
+    String polygonId =
+      "P" + context.getAndIncrementIdSequence(PolygonType.class.getSimpleName());
+    return new PolygonType()
+      .withId(polygonId)
+      .withSrsDimension(BigInteger.valueOf(2))
+      .withSrsName(SRS_NAME_WGS84)
+      .withExterior(
+        new AbstractRingPropertyType()
+          .withAbstractRing(
+            new net.opengis.gml._3.ObjectFactory().createLinearRing(linearRing)
+          )
+      );
+  }
 }

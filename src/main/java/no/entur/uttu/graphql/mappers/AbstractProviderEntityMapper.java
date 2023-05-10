@@ -15,6 +15,9 @@
 
 package no.entur.uttu.graphql.mappers;
 
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
+
+import java.util.Map;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Provider;
@@ -23,49 +26,51 @@ import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import no.entur.uttu.util.Preconditions;
 
-import java.util.Map;
-
-import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
-
 public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
 
-    private ProviderEntityRepository<T> entityRepository;
+  private ProviderEntityRepository<T> entityRepository;
 
-    private ProviderRepository providerRepository;
+  private ProviderRepository providerRepository;
 
+  public AbstractProviderEntityMapper(
+    ProviderRepository providerRepository,
+    ProviderEntityRepository<T> entityRepository
+  ) {
+    this.providerRepository = providerRepository;
+    this.entityRepository = entityRepository;
+  }
 
-    public AbstractProviderEntityMapper(ProviderRepository providerRepository, ProviderEntityRepository<T> entityRepository) {
-        this.providerRepository = providerRepository;
-        this.entityRepository = entityRepository;
+  public T map(Object inputObj) {
+    ArgumentWrapper input = new ArgumentWrapper((Map) inputObj);
+    String netexId = input.get(FIELD_ID);
+    T entity;
+    if (netexId == null) {
+      entity = createNewEntity(input);
+      entity.setProvider(getVerifiedProvider(Context.getVerifiedProviderCode()));
+    } else {
+      entity = entityRepository.getOne(netexId);
+      Preconditions.checkArgument(
+        entity != null,
+        "Attempting to update Entity with netexId=%s, but Entity does not exist.",
+        netexId
+      );
     }
 
-    public T map(Object inputObj) {
-        ArgumentWrapper input = new ArgumentWrapper((Map) inputObj);
-        String netexId = input.get(FIELD_ID);
-        T entity;
-        if (netexId == null) {
-            entity = createNewEntity(input);
-            entity.setProvider(getVerifiedProvider(Context.getVerifiedProviderCode()));
-        } else {
-            entity = entityRepository.getOne(netexId);
-            Preconditions.checkArgument(entity != null,
-                    "Attempting to update Entity with netexId=%s, but Entity does not exist.", netexId);
-        }
+    populateEntityFromInput(entity, input);
+    return entity;
+  }
 
-        populateEntityFromInput(entity, input);
-        return entity;
-    }
+  protected abstract T createNewEntity(ArgumentWrapper input);
 
+  protected abstract void populateEntityFromInput(T entity, ArgumentWrapper input);
 
-    protected abstract T createNewEntity(ArgumentWrapper input);
-
-    protected abstract void populateEntityFromInput(T entity, ArgumentWrapper input);
-
-
-    private Provider getVerifiedProvider(String providerCode) {
-        Provider provider = providerRepository.getOne(providerCode);
-        Preconditions.checkArgument(provider != null,
-                "Provider not found [code=%s]", providerCode);
-        return provider;
-    }
+  private Provider getVerifiedProvider(String providerCode) {
+    Provider provider = providerRepository.getOne(providerCode);
+    Preconditions.checkArgument(
+      provider != null,
+      "Provider not found [code=%s]",
+      providerCode
+    );
+    return provider;
+  }
 }

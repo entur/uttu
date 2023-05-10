@@ -15,13 +15,14 @@
 
 package no.entur.uttu.error.codedexception;
 
+import java.util.Map;
 import no.entur.uttu.error.ErrorCode;
 import no.entur.uttu.error.SubCode;
 
-import java.util.Map;
-
 public interface CodedException {
-    public String getCode();
-    public String getSubCode();
-    public Map<String, Object> getMetadata();
+  public String getCode();
+
+  public String getSubCode();
+
+  public Map<String, Object> getMetadata();
 }

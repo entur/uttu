@@ -15,93 +15,101 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.model.job.Export;
-
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.*;
+import javax.validation.constraints.NotNull;
+import no.entur.uttu.model.job.Export;
 
 @Entity
 public class ExportedLineStatistics {
 
-    @Id
-    @GeneratedValue(generator = "sequence_per_table_generator")
-    protected Long id;
+  @Id
+  @GeneratedValue(generator = "sequence_per_table_generator")
+  protected Long id;
 
-    @NotNull
-    protected String lineName;
+  @NotNull
+  protected String lineName;
 
-    @NotNull
-    private LocalDate operatingPeriodFrom;
+  @NotNull
+  private LocalDate operatingPeriodFrom;
 
-    @NotNull
-    private LocalDate operatingPeriodTo;
+  @NotNull
+  private LocalDate operatingPeriodTo;
 
-    private String publicCode;
+  private String publicCode;
 
-    @ManyToOne
-    private @NotNull Export export;
+  @ManyToOne
+  @NotNull
+  private Export export;
 
-    @OneToMany(mappedBy = "exportedLineStatistics", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @NotNull
-    private final List<ExportedDayTypeStatistics> exportedDayTypesStatistics = new ArrayList<>();
+  @OneToMany(
+    mappedBy = "exportedLineStatistics",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true,
+    fetch = FetchType.EAGER
+  )
+  @NotNull
+  private final List<ExportedDayTypeStatistics> exportedDayTypesStatistics =
+    new ArrayList<>();
 
-    public String getLineName() {
-        return lineName;
-    }
+  public String getLineName() {
+    return lineName;
+  }
 
-    public void setLineName(String lineName) {
-        this.lineName = lineName;
-    }
+  public void setLineName(String lineName) {
+    this.lineName = lineName;
+  }
 
-    public LocalDate getOperatingPeriodFrom() {
-        return operatingPeriodFrom;
-    }
+  public LocalDate getOperatingPeriodFrom() {
+    return operatingPeriodFrom;
+  }
 
-    public void setOperatingPeriodFrom(LocalDate fromDate) {
-        this.operatingPeriodFrom = fromDate;
-    }
+  public void setOperatingPeriodFrom(LocalDate fromDate) {
+    this.operatingPeriodFrom = fromDate;
+  }
 
-    public LocalDate getOperatingPeriodTo() {
-        return operatingPeriodTo;
-    }
+  public LocalDate getOperatingPeriodTo() {
+    return operatingPeriodTo;
+  }
 
-    public void setOperatingPeriodTo(LocalDate toDate) {
-        this.operatingPeriodTo = toDate;
-    }
+  public void setOperatingPeriodTo(LocalDate toDate) {
+    this.operatingPeriodTo = toDate;
+  }
 
-    public String getPublicCode() {
-        return publicCode;
-    }
+  public String getPublicCode() {
+    return publicCode;
+  }
 
-    public void setPublicCode(String publicCode) {
-        this.publicCode = publicCode;
-    }
+  public void setPublicCode(String publicCode) {
+    this.publicCode = publicCode;
+  }
 
-    public Long getId() {
-        return id;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public Export getExport() {
-        return export;
-    }
+  public Export getExport() {
+    return export;
+  }
 
-    public void setExport(Export export) {
-        this.export = export;
-    }
+  public void setExport(Export export) {
+    this.export = export;
+  }
 
-    public boolean isValid(LocalDate from, LocalDate to) {
-        return !(operatingPeriodFrom.isAfter(to) || operatingPeriodTo.isBefore(from));
-    }
+  public boolean isValid(LocalDate from, LocalDate to) {
+    return !(operatingPeriodFrom.isAfter(to) || operatingPeriodTo.isBefore(from));
+  }
 
-    public List<ExportedDayTypeStatistics> getExportedDayTypesStatistics() {
-        return exportedDayTypesStatistics;
-    }
+  public List<ExportedDayTypeStatistics> getExportedDayTypesStatistics() {
+    return exportedDayTypesStatistics;
+  }
 
-    public void addExportedDayTypesStatistics(ExportedDayTypeStatistics exportedDayTypesStatisticsToAdd) {
-        exportedDayTypesStatisticsToAdd.setExportedLineStatistics(this);
-        exportedDayTypesStatistics.add(exportedDayTypesStatisticsToAdd);
-    }
+  public void addExportedDayTypesStatistics(
+    ExportedDayTypeStatistics exportedDayTypesStatisticsToAdd
+  ) {
+    exportedDayTypesStatisticsToAdd.setExportedLineStatistics(this);
+    exportedDayTypesStatistics.add(exportedDayTypesStatisticsToAdd);
+  }
 }

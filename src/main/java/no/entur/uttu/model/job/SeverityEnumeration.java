@@ -16,18 +16,17 @@
 package no.entur.uttu.model.job;
 
 public enum SeverityEnumeration {
-    INFO("info"),
-    WARN("warn"),
-    ERROR("error");
+  INFO("info"),
+  WARN("warn"),
+  ERROR("error");
 
-    private final String value;
+  private final String value;
 
-    SeverityEnumeration(String v) {
-        this.value = v;
-    }
+  SeverityEnumeration(String v) {
+    this.value = v;
+  }
 
-    public String value() {
-        return this.value;
-    }
-
+  public String value() {
+    return this.value;
+  }
 }

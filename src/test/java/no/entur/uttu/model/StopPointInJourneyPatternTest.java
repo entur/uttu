@@ -15,46 +15,47 @@
 
 package no.entur.uttu.model;
 
-import org.junit.Test;
-
 import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
+
+import org.junit.Test;
 
 public class StopPointInJourneyPatternTest {
 
-    @Test
-    public void checkPersistable_bothQuayRefAndFlexibleStopPlace_givesException() {
-        StopPointInJourneyPattern stopPointInJourneyPattern=new StopPointInJourneyPattern();
-        stopPointInJourneyPattern.setQuayRef("quayRef");
-        stopPointInJourneyPattern.setFlexibleStopPlace(new FlexibleStopPlace());
+  @Test
+  public void checkPersistable_bothQuayRefAndFlexibleStopPlace_givesException() {
+    StopPointInJourneyPattern stopPointInJourneyPattern = new StopPointInJourneyPattern();
+    stopPointInJourneyPattern.setQuayRef("quayRef");
+    stopPointInJourneyPattern.setFlexibleStopPlace(new FlexibleStopPlace());
 
-        assertCheckPersistableFails(stopPointInJourneyPattern);
-    }
-    @Test
-    public void checkPersistable_neitherQuayRefNorFlexibleStopPlace_givesException() {
-        StopPointInJourneyPattern stopPointInJourneyPattern=new StopPointInJourneyPattern();
-        assertCheckPersistableFails(stopPointInJourneyPattern);
-    }
+    assertCheckPersistableFails(stopPointInJourneyPattern);
+  }
 
-    @Test
-    public void checkPersistable_neitherBoardingNorAlightingAllowed_givesException() {
-        StopPointInJourneyPattern stopPointInJourneyPattern=new StopPointInJourneyPattern();
-        stopPointInJourneyPattern.setQuayRef("quayRef");
-        stopPointInJourneyPattern.setForAlighting(false);
-        stopPointInJourneyPattern.setForBoarding(false);
-        assertCheckPersistableFails(stopPointInJourneyPattern);
-    }
+  @Test
+  public void checkPersistable_neitherQuayRefNorFlexibleStopPlace_givesException() {
+    StopPointInJourneyPattern stopPointInJourneyPattern = new StopPointInJourneyPattern();
+    assertCheckPersistableFails(stopPointInJourneyPattern);
+  }
 
-    @Test
-    public void checkPersistable_withFlexibleStopPlace_success() {
-        StopPointInJourneyPattern stopPointInJourneyPattern=new StopPointInJourneyPattern();
-        stopPointInJourneyPattern.setFlexibleStopPlace(new FlexibleStopPlace());
-        stopPointInJourneyPattern.checkPersistable();
-    }
+  @Test
+  public void checkPersistable_neitherBoardingNorAlightingAllowed_givesException() {
+    StopPointInJourneyPattern stopPointInJourneyPattern = new StopPointInJourneyPattern();
+    stopPointInJourneyPattern.setQuayRef("quayRef");
+    stopPointInJourneyPattern.setForAlighting(false);
+    stopPointInJourneyPattern.setForBoarding(false);
+    assertCheckPersistableFails(stopPointInJourneyPattern);
+  }
 
-    @Test
-    public void checkPersistable_withQuayRef_success() {
-        StopPointInJourneyPattern stopPointInJourneyPattern=new StopPointInJourneyPattern();
-        stopPointInJourneyPattern.setQuayRef("quayRef");
-        stopPointInJourneyPattern.checkPersistable();
-    }
+  @Test
+  public void checkPersistable_withFlexibleStopPlace_success() {
+    StopPointInJourneyPattern stopPointInJourneyPattern = new StopPointInJourneyPattern();
+    stopPointInJourneyPattern.setFlexibleStopPlace(new FlexibleStopPlace());
+    stopPointInJourneyPattern.checkPersistable();
+  }
+
+  @Test
+  public void checkPersistable_withQuayRef_success() {
+    StopPointInJourneyPattern stopPointInJourneyPattern = new StopPointInJourneyPattern();
+    stopPointInJourneyPattern.setQuayRef("quayRef");
+    stopPointInJourneyPattern.checkPersistable();
+  }
 }

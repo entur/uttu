@@ -15,6 +15,7 @@
 
 package no.entur.uttu.graphql.mappers;
 
+import java.util.Map;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -23,45 +24,42 @@ import org.locationtech.jts.geom.Polygon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Component
 public class GeometryMapper {
 
-    @Autowired
-    private GeometryFactory geometryFactory;
+  @Autowired
+  private GeometryFactory geometryFactory;
 
-
-    public Polygon createJTSPolygon(Map map) {
-        if (map.get("type") != null && map.get("coordinates") != null) {
-            if ("Polygon".equals(map.get("type"))) {
-                Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
-                return geometryFactory.createPolygon(coordinates);
-            }
-        }
-        return null;
+  public Polygon createJTSPolygon(Map map) {
+    if (map.get("type") != null && map.get("coordinates") != null) {
+      if ("Polygon".equals(map.get("type"))) {
+        Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
+        return geometryFactory.createPolygon(coordinates);
+      }
     }
+    return null;
+  }
 
-    public LineString createGeoJsonLineString(Map map) {
-        if (map.get("type") != null && map.get("coordinates") != null) {
-            if ("LineString".equals(map.get("type"))) {
-                Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
-                return geometryFactory.createLineString(coordinates);
-            }
-        }
-        return null;
+  public LineString createGeoJsonLineString(Map map) {
+    if (map.get("type") != null && map.get("coordinates") != null) {
+      if ("LineString".equals(map.get("type"))) {
+        Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
+        return geometryFactory.createLineString(coordinates);
+      }
     }
+    return null;
+  }
 
-    public Point createGeoJsonPoint(Map map) {
-        if (map == null) {
-            return null;
-        }
-        if (map.get("type") != null && map.get("coordinates") != null) {
-            if ("Point".equals(map.get("type"))) {
-                Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
-                return geometryFactory.createPoint(coordinates[0]);
-            }
-        }
-        return null;
+  public Point createGeoJsonPoint(Map map) {
+    if (map == null) {
+      return null;
     }
+    if (map.get("type") != null && map.get("coordinates") != null) {
+      if ("Point".equals(map.get("type"))) {
+        Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
+        return geometryFactory.createPoint(coordinates[0]);
+      }
+    }
+    return null;
+  }
 }

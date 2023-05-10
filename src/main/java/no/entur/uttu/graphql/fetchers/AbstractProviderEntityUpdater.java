@@ -15,6 +15,9 @@
 
 package no.entur.uttu.graphql.fetchers;
 
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_INPUT;
+
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
@@ -22,44 +25,42 @@ import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.transaction.annotation.Transactional;
 
-import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
-import static no.entur.uttu.graphql.GraphQLNames.FIELD_INPUT;
+public abstract class AbstractProviderEntityUpdater<T extends ProviderEntity>
+  implements DataFetcher<T> {
 
-public abstract class AbstractProviderEntityUpdater<T extends ProviderEntity> implements DataFetcher<T> {
+  protected AbstractProviderEntityMapper<T> mapper;
 
-    protected AbstractProviderEntityMapper<T> mapper;
+  protected ProviderEntityRepository<T> repository;
 
-    protected ProviderEntityRepository<T> repository;
+  public AbstractProviderEntityUpdater(
+    AbstractProviderEntityMapper<T> mapper,
+    ProviderEntityRepository<T> repository
+  ) {
+    this.mapper = mapper;
+    this.repository = repository;
+  }
 
-    public AbstractProviderEntityUpdater(AbstractProviderEntityMapper<T> mapper, ProviderEntityRepository<T> repository) {
-        this.mapper = mapper;
-        this.repository = repository;
+  @Override
+  @Transactional
+  public T get(DataFetchingEnvironment env) {
+    if (env.getField().getName().startsWith("delete")) {
+      return deleteEntity(env);
+    } else {
+      return saveEntity(env);
     }
+  }
 
-    @Override
-    @Transactional
-    public T get(DataFetchingEnvironment env) {
-        if (env.getField().getName().startsWith("delete")) {
-            return deleteEntity(env);
-        } else {
-            return saveEntity(env);
-        }
-    }
+  protected T deleteEntity(DataFetchingEnvironment env) {
+    String id = env.getArgument(FIELD_ID);
+    verifyDeleteAllowed(id);
+    return repository.delete(id);
+  }
 
-    protected T deleteEntity(DataFetchingEnvironment env) {
-        String id = env.getArgument(FIELD_ID);
-        verifyDeleteAllowed(id);
-        return repository.delete(id);
-    }
+  protected T saveEntity(DataFetchingEnvironment env) {
+    T entity = mapper.map(env.getArgument(FIELD_INPUT));
+    entity.checkPersistable();
+    return repository.save(entity);
+  }
 
-    protected T saveEntity(DataFetchingEnvironment env) {
-        T entity = mapper.map(env.getArgument(FIELD_INPUT));
-        entity.checkPersistable();
-        return repository.save(entity);
-    }
-
-
-    protected void verifyDeleteAllowed(String id) {
-
-    }
+  protected void verifyDeleteAllowed(String id) {}
 }

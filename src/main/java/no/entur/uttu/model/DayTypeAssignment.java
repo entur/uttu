@@ -15,74 +15,71 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.util.Preconditions;
-
+import java.time.LocalDate;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.OneToOne;
-import java.time.LocalDate;
-
+import no.entur.uttu.util.Preconditions;
 
 @Entity
 public class DayTypeAssignment extends IdentifiedEntity {
 
+  // Whether this period is to be included or excluded. Belongs to DayTypeAssignment in Transmodel. Added here as a simplification.
+  private Boolean available;
 
-    // Whether this period is to be included or excluded. Belongs to DayTypeAssignment in Transmodel. Added here as a simplification.
-    private Boolean available;
+  private LocalDate date;
 
-    private LocalDate date;
+  @OneToOne(cascade = CascadeType.ALL)
+  private OperatingPeriod operatingPeriod;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private OperatingPeriod operatingPeriod;
+  public Boolean getAvailable() {
+    return available;
+  }
 
-    public Boolean getAvailable() {
-        return available;
+  public void setAvailable(Boolean available) {
+    this.available = available;
+  }
+
+  public LocalDate getDate() {
+    return date;
+  }
+
+  public void setDate(LocalDate date) {
+    this.date = date;
+  }
+
+  public OperatingPeriod getOperatingPeriod() {
+    return operatingPeriod;
+  }
+
+  public void setOperatingPeriod(OperatingPeriod operatingPeriod) {
+    this.operatingPeriod = operatingPeriod;
+  }
+
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
+
+    Preconditions.checkArgument(
+      date != null ^ operatingPeriod != null,
+      "Exactly one of date or operationPeriod must be set for DayTypeAssignment"
+    );
+
+    if (operatingPeriod != null) {
+      operatingPeriod.checkPersistable();
+    }
+  }
+
+  public boolean isValid(LocalDate from, LocalDate to) {
+    boolean dateValid = false;
+    if (date != null) {
+      dateValid = !(from.isAfter(date) || to.isBefore(date));
+    }
+    boolean operatingPeriodValid = false;
+    if (operatingPeriod != null) {
+      operatingPeriodValid = operatingPeriod.isValid(from, to);
     }
 
-    public void setAvailable(Boolean available) {
-        this.available = available;
-    }
-
-    public LocalDate getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDate date) {
-        this.date = date;
-    }
-
-    public OperatingPeriod getOperatingPeriod() {
-        return operatingPeriod;
-    }
-
-    public void setOperatingPeriod(OperatingPeriod operatingPeriod) {
-        this.operatingPeriod = operatingPeriod;
-    }
-
-
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
-
-        Preconditions.checkArgument(date != null ^ operatingPeriod != null, "Exactly one of date or operationPeriod must be set for DayTypeAssignment");
-
-        if (operatingPeriod != null) {
-            operatingPeriod.checkPersistable();
-        }
-
-    }
-
-
-    public boolean isValid(LocalDate from, LocalDate to) {
-        boolean dateValid = false;
-        if (date != null) {
-            dateValid = !(from.isAfter(date) || to.isBefore(date));
-        }
-        boolean operatingPeriodValid = false;
-        if (operatingPeriod != null) {
-            operatingPeriodValid = operatingPeriod.isValid(from, to);
-        }
-
-        return (dateValid || operatingPeriodValid) && super.isValid(from, to);
-    }
+    return (dateValid || operatingPeriodValid) && super.isValid(from, to);
+  }
 }

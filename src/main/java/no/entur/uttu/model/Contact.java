@@ -20,56 +20,59 @@ import javax.validation.constraints.Size;
 
 @Entity
 public class Contact extends IdentifiedEntity {
-    @Size(max = 256)
-    private String email;
-    @Size(max = 256)
-    private String phone;
-    @Size(max = 256)
-    private String url;
 
-    @Size(max = 256)
-    private String contactPerson;
+  @Size(max = 256)
+  private String email;
 
-    @Size(max = 4000)
-    private String furtherDetails;
+  @Size(max = 256)
+  private String phone;
 
-    public String getEmail() {
-        return email;
-    }
+  @Size(max = 256)
+  private String url;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+  @Size(max = 256)
+  private String contactPerson;
 
-    public String getPhone() {
-        return phone;
-    }
+  @Size(max = 4000)
+  private String furtherDetails;
 
-    public void setPhone(String phone) {
-        this.phone = phone;
-    }
+  public String getEmail() {
+    return email;
+  }
 
-    public String getUrl() {
-        return url;
-    }
+  public void setEmail(String email) {
+    this.email = email;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  public String getPhone() {
+    return phone;
+  }
 
-    public String getContactPerson() {
-        return contactPerson;
-    }
+  public void setPhone(String phone) {
+    this.phone = phone;
+  }
 
-    public void setContactPerson(String contactPerson) {
-        this.contactPerson = contactPerson;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    public String getFurtherDetails() {
-        return furtherDetails;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setFurtherDetails(String furtherDetails) {
-        this.furtherDetails = furtherDetails;
-    }
+  public String getContactPerson() {
+    return contactPerson;
+  }
+
+  public void setContactPerson(String contactPerson) {
+    this.contactPerson = contactPerson;
+  }
+
+  public String getFurtherDetails() {
+    return furtherDetails;
+  }
+
+  public void setFurtherDetails(String furtherDetails) {
+    this.furtherDetails = furtherDetails;
+  }
 }

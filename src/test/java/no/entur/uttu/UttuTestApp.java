@@ -29,17 +29,30 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
 @Import(GooglePubSubConfig.class)
-@EnableJpaRepositories(basePackages = {"no.entur.uttu.repository"},
-        repositoryBaseClass = ProviderEntityRepositoryImpl.class)
-@ComponentScan(excludeFilters = {
-                                        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = UttuSecurityConfiguration.class),
-                                        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
-                                        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = EnturLegacyOrganisationRegistry.class),
-                                        @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = DefaultStopPlaceRegistry.class),
-})
+@EnableJpaRepositories(
+  basePackages = { "no.entur.uttu.repository" },
+  repositoryBaseClass = ProviderEntityRepositoryImpl.class
+)
+@ComponentScan(
+  excludeFilters = {
+    @ComponentScan.Filter(
+      type = FilterType.ASSIGNABLE_TYPE,
+      value = UttuSecurityConfiguration.class
+    ),
+    @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
+    @ComponentScan.Filter(
+      type = FilterType.ASSIGNABLE_TYPE,
+      value = EnturLegacyOrganisationRegistry.class
+    ),
+    @ComponentScan.Filter(
+      type = FilterType.ASSIGNABLE_TYPE,
+      value = DefaultStopPlaceRegistry.class
+    ),
+  }
+)
 public class UttuTestApp {
 
-    public static void main(String[] args) {
-        SpringApplication.run(UttuTestApp.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(UttuTestApp.class, args);
+  }
 }

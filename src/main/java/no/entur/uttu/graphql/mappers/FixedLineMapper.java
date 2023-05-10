@@ -23,12 +23,16 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class FixedLineMapper extends LineMapper<FixedLine> {
-    public FixedLineMapper(ProviderRepository providerRepository, ProviderEntityRepository<FixedLine> repository) {
-        super(providerRepository, repository);
-    }
 
-    @Override
-    protected FixedLine createNewEntity(ArgumentWrapper input) {
-        return new FixedLine();
-    }
+  public FixedLineMapper(
+    ProviderRepository providerRepository,
+    ProviderEntityRepository<FixedLine> repository
+  ) {
+    super(providerRepository, repository);
+  }
+
+  @Override
+  protected FixedLine createNewEntity(ArgumentWrapper input) {
+    return new FixedLine();
+  }
 }

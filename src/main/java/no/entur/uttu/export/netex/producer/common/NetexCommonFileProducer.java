@@ -15,6 +15,11 @@
 
 package no.entur.uttu.export.netex.producer.common;
 
+import java.math.BigInteger;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import javax.xml.bind.JAXBElement;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexFile;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
@@ -48,114 +53,186 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.xml.bind.JAXBElement;
-import java.math.BigInteger;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
-
 @Component
 public class NetexCommonFileProducer {
 
-    @Autowired
-    private NetexObjectFactory objectFactory;
+  @Autowired
+  private NetexObjectFactory objectFactory;
 
-    @Autowired
-    private OrganisationProducer organisationProducer;
+  @Autowired
+  private OrganisationProducer organisationProducer;
 
-    @Autowired
-    private FlexibleStopPlaceProducer flexibleStopPlaceProducer;
+  @Autowired
+  private FlexibleStopPlaceProducer flexibleStopPlaceProducer;
 
-    @Autowired
-    private ServiceCalendarFrameProducer serviceCalendarFrameProducer;
+  @Autowired
+  private ServiceCalendarFrameProducer serviceCalendarFrameProducer;
 
-    @Autowired
-    private NetworkProducer networkProducer;
+  @Autowired
+  private NetworkProducer networkProducer;
 
-    @Value("${export.blob.commonFileFilenameSuffix:_flexible_shared_data}")
-    private String commonFileFilenameSuffix;
+  @Value("${export.blob.commonFileFilenameSuffix:_flexible_shared_data}")
+  private String commonFileFilenameSuffix;
 
+  public NetexFile toCommonFile(NetexExportContext context) {
+    ResourceFrame resourceFrame = createResourceFrame(context);
+    SiteFrame siteFrame = createSiteFrame(context);
+    ServiceFrame serviceFrame = createServiceFrame(context);
+    ServiceCalendarFrame serviceCalendarFrame = serviceCalendarFrameProducer.produce(
+      context
+    );
+    CompositeFrame compositeFrame = objectFactory.createCompositeFrame(
+      context,
+      context.getAvailabilityPeriod(),
+      resourceFrame,
+      siteFrame,
+      serviceFrame,
+      serviceCalendarFrame
+    );
 
-    public NetexFile toCommonFile(NetexExportContext context) {
-        ResourceFrame resourceFrame = createResourceFrame(context);
-        SiteFrame siteFrame = createSiteFrame(context);
-        ServiceFrame serviceFrame = createServiceFrame(context);
-        ServiceCalendarFrame serviceCalendarFrame = serviceCalendarFrameProducer.produce(context);
-        CompositeFrame compositeFrame = objectFactory.createCompositeFrame(context, context.getAvailabilityPeriod(), resourceFrame, siteFrame, serviceFrame, serviceCalendarFrame);
+    JAXBElement<PublicationDeliveryStructure> publicationDelivery =
+      objectFactory.createPublicationDelivery(context, compositeFrame);
 
-        JAXBElement<PublicationDeliveryStructure> publicationDelivery = objectFactory.createPublicationDelivery(context, compositeFrame);
+    String fileName = ExportUtil.createCommonFileFilename(
+      context.provider,
+      commonFileFilenameSuffix
+    );
 
-        String fileName = ExportUtil.createCommonFileFilename(context.provider, commonFileFilenameSuffix);
+    return new NetexFile(fileName, publicationDelivery);
+  }
 
-        return new NetexFile(fileName, publicationDelivery);
-    }
+  private ResourceFrame createResourceFrame(NetexExportContext context) {
+    List<Operator> netexOperators = organisationProducer.produceOperators(context);
+    List<Authority> netexAuthorities = organisationProducer.produceAuthorities(context);
+    return objectFactory.createResourceFrame(context, netexAuthorities, netexOperators);
+  }
 
-    private ResourceFrame createResourceFrame(NetexExportContext context) {
-        List<Operator> netexOperators = organisationProducer.produceOperators(context);
-        List<Authority> netexAuthorities = organisationProducer.produceAuthorities(context);
-        return objectFactory.createResourceFrame(context, netexAuthorities, netexOperators);
-    }
+  private SiteFrame createSiteFrame(NetexExportContext context) {
+    List<FlexibleStopPlace> netexFlexibleStopPlaces = flexibleStopPlaceProducer.produce(
+      context
+    );
 
-    private SiteFrame createSiteFrame(NetexExportContext context) {
-        List<FlexibleStopPlace> netexFlexibleStopPlaces = flexibleStopPlaceProducer.produce(context);
+    return objectFactory.createSiteFrame(context, netexFlexibleStopPlaces);
+  }
 
-        return objectFactory.createSiteFrame(context, netexFlexibleStopPlaces);
-    }
+  private ServiceFrame createServiceFrame(NetexExportContext context) {
+    List<Network> networks = networkProducer.produce(context);
+    List<RoutePoint> routePoints = context.routePointRefs
+      .stream()
+      .map(this::buildRoutePoint)
+      .collect(Collectors.toList());
+    List<ScheduledStopPoint> scheduledStopPoints = context.scheduledStopPointRefs
+      .stream()
+      .map(this::buildScheduledStopPoint)
+      .collect(Collectors.toList());
 
-    private ServiceFrame createServiceFrame(NetexExportContext context) {
-        List<Network> networks = networkProducer.produce(context);
-        List<RoutePoint> routePoints = context.routePointRefs.stream().map(this::buildRoutePoint).collect(Collectors.toList());
-        List<ScheduledStopPoint> scheduledStopPoints = context.scheduledStopPointRefs.stream()
-                                                               .map(this::buildScheduledStopPoint).collect(Collectors.toList());
+    List<StopAssignment_VersionStructure> stopAssignments = context.flexibleStopPlaces
+      .stream()
+      .map(no.entur.uttu.model.FlexibleStopPlace::getRef)
+      .map(this::buildFlexibleStopAssignment)
+      .collect(Collectors.toList());
 
-        List<StopAssignment_VersionStructure> stopAssignments = context.flexibleStopPlaces.stream().map(no.entur.uttu.model.FlexibleStopPlace::getRef)
-                                                                        .map(this::buildFlexibleStopAssignment).collect(Collectors.toList());
+    AtomicInteger passengerStopAssignmentOrder = new AtomicInteger(1);
 
-        AtomicInteger passengerStopAssignmentOrder = new AtomicInteger(1);
+    stopAssignments.addAll(
+      context.quayRefs
+        .stream()
+        .map(quayRef ->
+          mapPassengerStopAssignment(
+            quayRef,
+            passengerStopAssignmentOrder.getAndIncrement(),
+            context
+          )
+        )
+        .collect(Collectors.toList())
+    );
 
-        stopAssignments.addAll(context.quayRefs.stream().map(quayRef -> mapPassengerStopAssignment(quayRef, passengerStopAssignmentOrder.getAndIncrement(), context)).collect(Collectors.toList()));
+    List<Notice> notices = context.notices
+      .stream()
+      .map(this::mapNotice)
+      .collect(Collectors.toList());
+    List<DestinationDisplay> destinationDisplays = context.destinationDisplays
+      .stream()
+      .map(this::mapDestinationDisplay)
+      .collect(Collectors.toList());
 
-        List<Notice> notices = context.notices.stream().map(this::mapNotice).collect(Collectors.toList());
-        List<DestinationDisplay> destinationDisplays = context.destinationDisplays.stream().map(this::mapDestinationDisplay).collect(Collectors.toList());
+    return objectFactory.createCommonServiceFrame(
+      context,
+      networks,
+      routePoints,
+      scheduledStopPoints,
+      stopAssignments,
+      notices,
+      destinationDisplays
+    );
+  }
 
+  private RoutePoint buildRoutePoint(Ref ref) {
+    Ref scheduledStopPointRef = NetexIdProducer.replaceEntityName(
+      ref,
+      ScheduledStopPoint.class.getSimpleName()
+    );
+    PointRefStructure pointRefStructure = new PointRefStructure()
+      .withRef(scheduledStopPointRef.id)
+      .withVersion(scheduledStopPointRef.version);
+    PointProjection pointProjection = objectFactory
+      .populateId(new PointProjection(), ref)
+      .withProjectToPointRef(pointRefStructure);
+    Projections_RelStructure projections_relStructure = new Projections_RelStructure()
+      .withProjectionRefOrProjection(objectFactory.wrapAsJAXBElement(pointProjection));
+    return objectFactory
+      .populateId(new RoutePoint(), ref)
+      .withProjections(projections_relStructure);
+  }
 
-        return objectFactory.createCommonServiceFrame(context, networks, routePoints, scheduledStopPoints, stopAssignments, notices, destinationDisplays);
-    }
+  private ScheduledStopPoint buildScheduledStopPoint(Ref ref) {
+    return objectFactory.populateId(new ScheduledStopPoint(), ref);
+  }
 
+  private FlexibleStopAssignment buildFlexibleStopAssignment(Ref ref) {
+    return objectFactory
+      .populateId(new FlexibleStopAssignment(), ref)
+      .withScheduledStopPointRef(
+        objectFactory.wrapRefStructure(new ScheduledStopPointRefStructure(), ref, true)
+      )
+      .withFlexibleStopPlaceRef(
+        objectFactory.populateRefStructure(new FlexibleStopPlaceRefStructure(), ref, true)
+      );
+  }
 
-    private RoutePoint buildRoutePoint(Ref ref) {
-        Ref scheduledStopPointRef = NetexIdProducer.replaceEntityName(ref, ScheduledStopPoint.class.getSimpleName());
-        PointRefStructure pointRefStructure = new PointRefStructure().withRef(scheduledStopPointRef.id).withVersion(scheduledStopPointRef.version);
-        PointProjection pointProjection = objectFactory.populateId(new PointProjection(), ref).withProjectToPointRef(pointRefStructure);
-        Projections_RelStructure projections_relStructure = new Projections_RelStructure().withProjectionRefOrProjection(objectFactory.wrapAsJAXBElement(pointProjection));
-        return objectFactory.populateId(new RoutePoint(), ref)
-                       .withProjections(projections_relStructure);
-    }
+  public Notice mapNotice(no.entur.uttu.model.Notice local) {
+    return objectFactory
+      .populateId(new Notice(), local.getRef())
+      .withText(objectFactory.createMultilingualString(local.getText()));
+  }
 
-    private ScheduledStopPoint buildScheduledStopPoint(Ref ref) {
-        return objectFactory.populateId(new ScheduledStopPoint(), ref);
-    }
+  public DestinationDisplay mapDestinationDisplay(
+    no.entur.uttu.model.DestinationDisplay local
+  ) {
+    return objectFactory
+      .populateId(new DestinationDisplay(), local.getRef())
+      .withFrontText(objectFactory.createMultilingualString(local.getFrontText()));
+  }
 
-    private FlexibleStopAssignment buildFlexibleStopAssignment(Ref ref) {
-        return objectFactory.populateId(new FlexibleStopAssignment(), ref)
-                       .withScheduledStopPointRef(objectFactory.wrapRefStructure(new ScheduledStopPointRefStructure(), ref, true))
-                       .withFlexibleStopPlaceRef(objectFactory.populateRefStructure(new FlexibleStopPlaceRefStructure(), ref, true));
-    }
-
-    public Notice mapNotice(no.entur.uttu.model.Notice local) {
-        return objectFactory.populateId(new Notice(), local.getRef()).withText(objectFactory.createMultilingualString(local.getText()));
-    }
-
-    public DestinationDisplay mapDestinationDisplay(no.entur.uttu.model.DestinationDisplay local) {
-        return objectFactory.populateId(new DestinationDisplay(), local.getRef()).withFrontText(objectFactory.createMultilingualString(local.getFrontText()));
-    }
-
-
-    public PassengerStopAssignment mapPassengerStopAssignment(String quayRef, int order, NetexExportContext context) {
-        Ref scheduledStopPointRef = objectFactory.createScheduledStopPointRefFromQuayRef(quayRef, context);
-        return objectFactory.populateId(new PassengerStopAssignment(), scheduledStopPointRef).withOrder(BigInteger.valueOf(order))
-                       .withScheduledStopPointRef(objectFactory.wrapRefStructure(new ScheduledStopPointRefStructure(), scheduledStopPointRef, true))
-                       .withQuayRef(new QuayRefStructure().withRef(quayRef));
-
-    }
+  public PassengerStopAssignment mapPassengerStopAssignment(
+    String quayRef,
+    int order,
+    NetexExportContext context
+  ) {
+    Ref scheduledStopPointRef = objectFactory.createScheduledStopPointRefFromQuayRef(
+      quayRef,
+      context
+    );
+    return objectFactory
+      .populateId(new PassengerStopAssignment(), scheduledStopPointRef)
+      .withOrder(BigInteger.valueOf(order))
+      .withScheduledStopPointRef(
+        objectFactory.wrapRefStructure(
+          new ScheduledStopPointRefStructure(),
+          scheduledStopPointRef,
+          true
+        )
+      )
+      .withQuayRef(new QuayRefStructure().withRef(quayRef));
+  }
 }

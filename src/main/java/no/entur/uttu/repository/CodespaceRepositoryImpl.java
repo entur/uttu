@@ -15,25 +15,31 @@
 
 package no.entur.uttu.repository;
 
+import javax.persistence.EntityManager;
 import no.entur.uttu.model.Codespace;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.EntityManager;
-
 @Repository
-public class CodespaceRepositoryImpl extends SimpleJpaRepository<Codespace, Long> implements CodespaceRepository {
+public class CodespaceRepositoryImpl
+  extends SimpleJpaRepository<Codespace, Long>
+  implements CodespaceRepository {
 
-    private final EntityManager entityManager;
+  private final EntityManager entityManager;
 
-    public CodespaceRepositoryImpl(EntityManager entityManager) {
-        super(Codespace.class, entityManager);
-        this.entityManager = entityManager;
-    }
+  public CodespaceRepositoryImpl(EntityManager entityManager) {
+    super(Codespace.class, entityManager);
+    this.entityManager = entityManager;
+  }
 
-    @Override
-    public Codespace getOneByXmlns(String xmlns) {
-        return entityManager.createQuery("from Codespace where xmlns=:xmlns", Codespace.class).setParameter("xmlns", xmlns).getResultList().stream().findFirst().orElse(null);
-    }
+  @Override
+  public Codespace getOneByXmlns(String xmlns) {
+    return entityManager
+      .createQuery("from Codespace where xmlns=:xmlns", Codespace.class)
+      .setParameter("xmlns", xmlns)
+      .getResultList()
+      .stream()
+      .findFirst()
+      .orElse(null);
+  }
 }
-

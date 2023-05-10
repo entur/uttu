@@ -16,19 +16,17 @@
 package no.entur.uttu.model.job;
 
 public enum ExportStatusEnumeration {
+  IN_PROGRESS("inProgress"),
+  FAILED("failed"),
+  SUCCESS("success");
 
-    IN_PROGRESS("inProgress"),
-    FAILED("failed"),
-    SUCCESS("success");
+  private final String value;
 
-    private final String value;
+  ExportStatusEnumeration(String v) {
+    this.value = v;
+  }
 
-    ExportStatusEnumeration(String v) {
-        this.value = v;
-    }
-
-    public String value() {
-        return this.value;
-    }
-
+  public String value() {
+    return this.value;
+  }
 }

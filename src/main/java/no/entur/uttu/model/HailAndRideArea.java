@@ -15,40 +15,42 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.util.Preconditions;
-
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
+import no.entur.uttu.util.Preconditions;
 
 @Entity
 public class HailAndRideArea extends IdentifiedEntity {
 
-    @NotNull
-    private String startQuayRef;
+  @NotNull
+  private String startQuayRef;
 
-    @NotNull
-    private String endQuayRef;
+  @NotNull
+  private String endQuayRef;
 
-    public String getStartQuayRef() {
-        return startQuayRef;
-    }
+  public String getStartQuayRef() {
+    return startQuayRef;
+  }
 
-    public void setStartQuayRef(String startQuayRef) {
-        this.startQuayRef = startQuayRef;
-    }
+  public void setStartQuayRef(String startQuayRef) {
+    this.startQuayRef = startQuayRef;
+  }
 
-    public String getEndQuayRef() {
-        return endQuayRef;
-    }
+  public String getEndQuayRef() {
+    return endQuayRef;
+  }
 
-    public void setEndQuayRef(String endQuayRef) {
-        this.endQuayRef = endQuayRef;
-    }
+  public void setEndQuayRef(String endQuayRef) {
+    this.endQuayRef = endQuayRef;
+  }
 
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
 
-        Preconditions.checkArgument(startQuayRef != null && endQuayRef != null, "startQuayRef and endQuayRef must be set for HailAndRideArea");
-    }
+    Preconditions.checkArgument(
+      startQuayRef != null && endQuayRef != null,
+      "startQuayRef and endQuayRef must be set for HailAndRideArea"
+    );
+  }
 }

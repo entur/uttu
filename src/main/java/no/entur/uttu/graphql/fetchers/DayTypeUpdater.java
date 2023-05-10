@@ -29,31 +29,38 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("dayTypeUpdater")
 @Transactional
 public class DayTypeUpdater extends AbstractProviderEntityUpdater<DayType> {
-    private final ServiceJourneyRepository serviceJourneyRepository;
 
-    public DayTypeUpdater(
-            AbstractProviderEntityMapper<DayType> mapper,
-            ProviderEntityRepository<DayType> repository,
-            @Autowired ServiceJourneyRepository serviceJourneyRepository
-    ) {
-        super(mapper, repository);
-        this.serviceJourneyRepository = serviceJourneyRepository;
-    }
+  private final ServiceJourneyRepository serviceJourneyRepository;
 
-    @Override
-    protected DayType deleteEntity(DataFetchingEnvironment env) {
-        return super.deleteEntity(env);
-    }
+  public DayTypeUpdater(
+    AbstractProviderEntityMapper<DayType> mapper,
+    ProviderEntityRepository<DayType> repository,
+    @Autowired ServiceJourneyRepository serviceJourneyRepository
+  ) {
+    super(mapper, repository);
+    this.serviceJourneyRepository = serviceJourneyRepository;
+  }
 
-    @Override
-    protected void verifyDeleteAllowed(String id) {
-        DayType dayType = repository.getOne(id);
-        if (dayType != null) {
-            long noOfServiceJourneys = serviceJourneyRepository.countByDayTypePk(dayType.getPk());
-            Preconditions.checkArgument(noOfServiceJourneys == 0,
-                    EntityHasReferencesCodedError.fromNumberOfReferences((int)noOfServiceJourneys),
-                    "%s cannot be deleted as it is referenced by %s serviceJourney(s)", dayType.identity(), noOfServiceJourneys);
-        }
-        super.verifyDeleteAllowed(id);
+  @Override
+  protected DayType deleteEntity(DataFetchingEnvironment env) {
+    return super.deleteEntity(env);
+  }
+
+  @Override
+  protected void verifyDeleteAllowed(String id) {
+    DayType dayType = repository.getOne(id);
+    if (dayType != null) {
+      long noOfServiceJourneys = serviceJourneyRepository.countByDayTypePk(
+        dayType.getPk()
+      );
+      Preconditions.checkArgument(
+        noOfServiceJourneys == 0,
+        EntityHasReferencesCodedError.fromNumberOfReferences((int) noOfServiceJourneys),
+        "%s cannot be deleted as it is referenced by %s serviceJourney(s)",
+        dayType.identity(),
+        noOfServiceJourneys
+      );
     }
+    super.verifyDeleteAllowed(id);
+  }
 }

@@ -19,13 +19,13 @@ import org.junit.Assert;
 
 public class NetexLineFileProducerTest {
 
-    // @Test
-    public void testFindAvailabilityPeriod() {
-        Assert.fail();
-    }
+  // @Test
+  public void testFindAvailabilityPeriod() {
+    Assert.fail();
+  }
 
-    // @Test
-    public void testCreateLineFileName() {
-        Assert.fail();
-    }
+  // @Test
+  public void testCreateLineFileName() {
+    Assert.fail();
+  }
 }

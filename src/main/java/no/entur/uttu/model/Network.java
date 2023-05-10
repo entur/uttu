@@ -15,36 +15,46 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.util.Preconditions;
+import static no.entur.uttu.model.Constraints.NETWORK_UNIQUE_NAME;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-
-import static no.entur.uttu.model.Constraints.NETWORK_UNIQUE_NAME;
+import no.entur.uttu.util.Preconditions;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = NETWORK_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
+@Table(
+  uniqueConstraints = {
+    @UniqueConstraint(
+      name = NETWORK_UNIQUE_NAME,
+      columnNames = { "provider_pk", "name" }
+    ),
+  }
+)
 public class Network extends GroupOfEntities_VersionStructure {
 
-    /**
-     * Reference to Authority in organisation registry.
-     */
-    @NotNull
-    private String authorityRef;
+  /**
+   * Reference to Authority in organisation registry.
+   */
+  @NotNull
+  private String authorityRef;
 
-    public String getAuthorityRef() {
-        return authorityRef;
-    }
+  public String getAuthorityRef() {
+    return authorityRef;
+  }
 
-    public void setAuthorityRef(String authorityRef) {
-        this.authorityRef = authorityRef;
-    }
+  public void setAuthorityRef(String authorityRef) {
+    this.authorityRef = authorityRef;
+  }
 
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
-        Preconditions.checkArgument(authorityRef != null, "% authorityRef not set", identity());
-    }
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
+    Preconditions.checkArgument(
+      authorityRef != null,
+      "% authorityRef not set",
+      identity()
+    );
+  }
 }

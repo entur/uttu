@@ -15,38 +15,43 @@
 
 package no.entur.uttu.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import org.rutebanken.helper.organisation.AuthorizationConstants;
 import org.rutebanken.helper.organisation.RoleAssignment;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class RoleAssignmentListBuilder {
 
-    private List<RoleAssignment> roleAssignments = new ArrayList<>();
+  private List<RoleAssignment> roleAssignments = new ArrayList<>();
 
-    public static RoleAssignmentListBuilder builder() {
-        return new RoleAssignmentListBuilder();
-    }
+  public static RoleAssignmentListBuilder builder() {
+    return new RoleAssignmentListBuilder();
+  }
 
-    public List<RoleAssignment> build() {
-        return roleAssignments;
-    }
+  public List<RoleAssignment> build() {
+    return roleAssignments;
+  }
 
-    public RoleAssignmentListBuilder withAccessAllAreas() {
-        return withRole(AuthorizationConstants.ROLE_EDIT_STOPS, AuthorizationConstants.ENTITY_CLASSIFIER_ALL_TYPES)
-                .withRole(AuthorizationConstants.ROLE_DELETE_STOPS, AuthorizationConstants.ENTITY_CLASSIFIER_ALL_TYPES);
-    }
+  public RoleAssignmentListBuilder withAccessAllAreas() {
+    return withRole(
+      AuthorizationConstants.ROLE_EDIT_STOPS,
+      AuthorizationConstants.ENTITY_CLASSIFIER_ALL_TYPES
+    )
+      .withRole(
+        AuthorizationConstants.ROLE_DELETE_STOPS,
+        AuthorizationConstants.ENTITY_CLASSIFIER_ALL_TYPES
+      );
+  }
 
-    private RoleAssignmentListBuilder withRole(String roleName, String entityType) {
-        RoleAssignment roleAssignment = RoleAssignment.builder().withRole(roleName)
-                .withOrganisation("NOT_YET_CHECKED")
-                .withEntityClassification(AuthorizationConstants.ENTITY_TYPE, entityType)
-                .build();
+  private RoleAssignmentListBuilder withRole(String roleName, String entityType) {
+    RoleAssignment roleAssignment = RoleAssignment
+      .builder()
+      .withRole(roleName)
+      .withOrganisation("NOT_YET_CHECKED")
+      .withEntityClassification(AuthorizationConstants.ENTITY_TYPE, entityType)
+      .build();
 
-        roleAssignments.add(roleAssignment);
-        return this;
-    }
-
-
+    roleAssignments.add(roleAssignment);
+    return this;
+  }
 }

@@ -18,7 +18,7 @@ package no.entur.uttu.export.blob;
 import java.io.InputStream;
 
 public interface BlobStoreService {
-    void uploadBlob(String name, boolean makePublic, InputStream inputStream);
+  void uploadBlob(String name, boolean makePublic, InputStream inputStream);
 
-    InputStream downloadBlob(String name);
+  InputStream downloadBlob(String name);
 }

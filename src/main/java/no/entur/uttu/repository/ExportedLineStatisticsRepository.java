@@ -15,17 +15,15 @@
 
 package no.entur.uttu.repository;
 
+import java.util.List;
 import no.entur.uttu.model.ExportedLineStatistics;
 import no.entur.uttu.model.job.Export;
+import org.springframework.data.repository.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.repository.Repository;
-
-import java.util.List;
 
 @Transactional(propagation = Propagation.REQUIRES_NEW)
-public interface ExportedLineStatisticsRepository extends Repository<ExportedLineStatistics, Long> {
-
-    List<ExportedLineStatistics> findByExportIn(List<Export> export);
-
+public interface ExportedLineStatisticsRepository
+  extends Repository<ExportedLineStatistics, Long> {
+  List<ExportedLineStatistics> findByExportIn(List<Export> export);
 }

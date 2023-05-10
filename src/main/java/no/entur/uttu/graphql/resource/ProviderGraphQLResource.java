@@ -17,11 +17,7 @@ package no.entur.uttu.graphql.resource;
 
 import graphql.GraphQL;
 import io.swagger.annotations.Api;
-import no.entur.uttu.graphql.ProviderGraphQLSchema;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-
+import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -29,44 +25,48 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
+import no.entur.uttu.graphql.ProviderGraphQLSchema;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
 
 @Component
 @Api
 @Path("/providers/graphql")
 public class ProviderGraphQLResource {
 
-    @Autowired
-    private ProviderGraphQLSchema providerSchema;
+  @Autowired
+  private ProviderGraphQLSchema providerSchema;
 
-    private GraphQL providerGraphQL;
+  private GraphQL providerGraphQL;
 
-    @Autowired
-    private GraphQLResourceHelper graphQLResourceHelper;
+  @Autowired
+  private GraphQLResourceHelper graphQLResourceHelper;
 
-    @PostConstruct
-    public void init() {
-        providerGraphQL = GraphQL.newGraphQL(providerSchema.graphQLSchema).build();
-    }
+  @PostConstruct
+  public void init() {
+    providerGraphQL = GraphQL.newGraphQL(providerSchema.graphQLSchema).build();
+  }
 
+  @POST
+  @SuppressWarnings("unchecked")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @PreAuthorize("isAuthenticated()")
+  public Response executeProviderStatement(HashMap<String, Object> request) {
+    return graphQLResourceHelper.executeStatement(providerGraphQL, request);
+  }
 
-    @POST
-    @SuppressWarnings("unchecked")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("isAuthenticated()")
-    public Response executeProviderStatement(HashMap<String, Object> request) {
-        return graphQLResourceHelper.executeStatement(providerGraphQL, request);
-    }
-
-
-    @POST
-    @Consumes("application/graphql")
-    @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("isAuthenticated()")
-    public Response executeProviderStatement(String query) {
-        return graphQLResourceHelper.getGraphQLResponse(providerGraphQL, "query", query, new HashMap<>());
-    }
-
-
+  @POST
+  @Consumes("application/graphql")
+  @Produces(MediaType.APPLICATION_JSON)
+  @PreAuthorize("isAuthenticated()")
+  public Response executeProviderStatement(String query) {
+    return graphQLResourceHelper.getGraphQLResponse(
+      providerGraphQL,
+      "query",
+      query,
+      new HashMap<>()
+    );
+  }
 }

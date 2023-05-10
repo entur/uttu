@@ -26,26 +26,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class JerseyConfig {
 
-    @Bean
-    public ServletRegistrationBean publicAPIJerseyConfig() {
-        ServletRegistrationBean publicJersey
-                = new ServletRegistrationBean(new ServletContainer(new LinesAPI()));
-        publicJersey.addUrlMappings("/services/flexible-lines/*");
-        publicJersey.setName("FlexibleLinesAPI");
-        publicJersey.setLoadOnStartup(0);
-        return publicJersey;
+  @Bean
+  public ServletRegistrationBean publicAPIJerseyConfig() {
+    ServletRegistrationBean publicJersey = new ServletRegistrationBean(
+      new ServletContainer(new LinesAPI())
+    );
+    publicJersey.addUrlMappings("/services/flexible-lines/*");
+    publicJersey.setName("FlexibleLinesAPI");
+    publicJersey.setLoadOnStartup(0);
+    return publicJersey;
+  }
+
+  private class LinesAPI extends ResourceConfig {
+
+    public LinesAPI() {
+      register(DataIntegrityViolationExceptionMapper.class);
+      register(GeneralExceptionMapper.class);
+      register(LinesGraphQLResource.class);
+      register(ProviderGraphQLResource.class);
+      register(ExportFileDownloadResource.class);
+      register(ExportedLineStatisticsGraphQLResource.class);
     }
-
-    private class LinesAPI extends ResourceConfig {
-
-        public LinesAPI() {
-            register(DataIntegrityViolationExceptionMapper.class);
-            register(GeneralExceptionMapper.class);
-            register(LinesGraphQLResource.class);
-            register(ProviderGraphQLResource.class);
-            register(ExportFileDownloadResource.class);
-            register(ExportedLineStatisticsGraphQLResource.class);
-        }
-    }
-
+  }
 }
