@@ -55,6 +55,10 @@ public abstract class ProviderEntity extends IdentifiedEntity {
         return netexId;
     }
 
+    public String getId() {
+        return getNetexId();
+    }
+
     public void setNetexId(String netexId) {
         this.netexId = netexId;
     }

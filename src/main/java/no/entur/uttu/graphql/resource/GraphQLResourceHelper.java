@@ -100,7 +100,6 @@ public class GraphQLResourceHelper {
                 ExecutionInput executionInput = ExecutionInput.newExecutionInput()
                                                         .query(query)
                                                         .operationName(operationName)
-                                                        .context(null)
                                                         .root(null)
                                                         .variables(variables)
                                                         .build();

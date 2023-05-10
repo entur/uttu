@@ -30,7 +30,7 @@ class NetworkGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrat
         assertNetworkResponse(rsp,"mutateNetwork")
         String id = getNetworkId(rsp)
 
-        String queryForNetwork = """ { network(id:"$id") { id, name, authorityRef }} """
+        String queryForNetwork = """ { network(id:"$id") { id, name, authorityRef } } """
 
         assertNetworkResponse(executeGraphqQLQueryOnly(queryForNetwork), "network")
     }

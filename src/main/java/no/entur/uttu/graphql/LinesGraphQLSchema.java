@@ -46,7 +46,6 @@ import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.FlexibleLineTypeEnumeration;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.Network;
-import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
 import no.entur.uttu.model.TimetabledPassingTime;
@@ -82,8 +81,8 @@ import java.util.stream.Collectors;
 import static graphql.Scalars.GraphQLBoolean;
 import static graphql.Scalars.GraphQLID;
 import static graphql.Scalars.GraphQLInt;
-import static graphql.Scalars.GraphQLLong;
 import static graphql.Scalars.GraphQLString;
+import static graphql.scalars.ExtendedScalars.GraphQLLong;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
 import static graphql.schema.GraphQLInputObjectType.newInputObject;
@@ -319,7 +318,6 @@ public class LinesGraphQLSchema {
         GraphQLFieldDefinition idFieldDefinition = newFieldDefinition()
                 .name(FIELD_ID)
                 .type(new GraphQLNonNull(GraphQLID))
-                .dataFetcher(env -> ((ProviderEntity) env.getSource()).getNetexId())
                 .build();
 
         GraphQLFieldDefinition versionField = newFieldDefinition()

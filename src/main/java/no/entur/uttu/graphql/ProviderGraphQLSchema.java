@@ -34,8 +34,7 @@ import javax.annotation.PostConstruct;
 
 import java.util.List;
 
-import static graphql.Scalars.GraphQLID;
-import static graphql.Scalars.GraphQLLong;
+import static graphql.scalars.ExtendedScalars.GraphQLLong;
 import static graphql.Scalars.GraphQLString;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
