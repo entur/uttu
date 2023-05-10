@@ -37,8 +37,8 @@ common:
 
   configmap:
     data:
-      JAVA_OPTIONS:  -server -Xmx2048m -Xss1024m -Dspring.config.location=/etc/application-config/application.properties
-        -Dfile.encoding=UTF-8 -Dio.grpc.netty.shaded.io.netty.transport.noNative=true
+      JDK_JAVA_OPTIONS:  -server -Xmx2048m -Xss1024m -Dspring.config.location=/etc/application-config/application.properties
+        -Dfile.encoding=UTF-8
       TZ: Europe/Oslo
     enabled: true
     toEnv: true

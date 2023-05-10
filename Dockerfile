@@ -1,7 +1,8 @@
-FROM eclipse-temurin:17.0.7_7-jre-alpine
-RUN apk update && apk upgrade
+FROM bellsoft/liberica-openjdk-alpine:17.0.7-7
+RUN apk update && apk upgrade && apk add --no-cache \
+    tini
 WORKDIR /deployments
 COPY target/uttu-*-SNAPSHOT.jar uttu.jar
 RUN addgroup appuser && adduser --disabled-password appuser --ingroup appuser
 USER appuser
-CMD java $JAVA_OPTIONS -jar uttu.jar
+CMD [ "/sbin/tini", "--", "java", "-jar", "uttu.jar" ]
