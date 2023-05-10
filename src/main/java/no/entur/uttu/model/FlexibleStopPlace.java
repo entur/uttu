@@ -15,10 +15,8 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.util.Preconditions;
-import org.hibernate.annotations.Cache;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -28,70 +26,82 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
-import java.util.Map;
+import no.entur.uttu.util.Preconditions;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 @Entity
-@Table(uniqueConstraints = {@UniqueConstraint(name = Constraints.FLEXIBLE_STOP_PLACE_UNIQUE_NAME, columnNames = {"provider_pk", "name"})})
+@Table(
+  uniqueConstraints = {
+    @UniqueConstraint(
+      name = Constraints.FLEXIBLE_STOP_PLACE_UNIQUE_NAME,
+      columnNames = { "provider_pk", "name" }
+    ),
+  }
+)
 public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private VehicleModeEnumeration transportMode;
+  @Enumerated(EnumType.STRING)
+  @NotNull
+  private VehicleModeEnumeration transportMode;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private FlexibleArea flexibleArea;
+  @OneToOne(cascade = CascadeType.ALL)
+  private FlexibleArea flexibleArea;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private HailAndRideArea hailAndRideArea;
+  @OneToOne(cascade = CascadeType.ALL)
+  private HailAndRideArea hailAndRideArea;
 
-    public FlexibleArea getFlexibleArea() {
-        return flexibleArea;
+  public FlexibleArea getFlexibleArea() {
+    return flexibleArea;
+  }
+
+  @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  protected Map<String, Value> keyValues = new HashMap<>();
+
+  public void setFlexibleArea(FlexibleArea flexibleArea) {
+    this.flexibleArea = flexibleArea;
+  }
+
+  public HailAndRideArea getHailAndRideArea() {
+    return hailAndRideArea;
+  }
+
+  public void setHailAndRideArea(HailAndRideArea hailAndRideArea) {
+    this.hailAndRideArea = hailAndRideArea;
+  }
+
+  public VehicleModeEnumeration getTransportMode() {
+    return transportMode;
+  }
+
+  public void setTransportMode(VehicleModeEnumeration transportMode) {
+    this.transportMode = transportMode;
+  }
+
+  public Map<String, Value> getKeyValues() {
+    return keyValues;
+  }
+
+  public void replaceKeyValues(Map<String, Value> keyValues) {
+    this.keyValues.clear();
+    this.keyValues.putAll(keyValues);
+  }
+
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
+    Preconditions.checkArgument(
+      flexibleArea != null ^ hailAndRideArea != null,
+      "%s exactly one of flexibleArea and hailAndRideArea must be set",
+      identity()
+    );
+
+    if (flexibleArea != null) {
+      flexibleArea.checkPersistable();
     }
-
-    @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    protected Map<String, Value> keyValues = new HashMap<>();
-
-    public void setFlexibleArea(FlexibleArea flexibleArea) {
-        this.flexibleArea = flexibleArea;
+    if (hailAndRideArea != null) {
+      hailAndRideArea.checkPersistable();
     }
-
-    public HailAndRideArea getHailAndRideArea() {
-        return hailAndRideArea;
-    }
-
-    public void setHailAndRideArea(HailAndRideArea hailAndRideArea) {
-        this.hailAndRideArea = hailAndRideArea;
-    }
-
-    public VehicleModeEnumeration getTransportMode() {
-        return transportMode;
-    }
-
-    public void setTransportMode(VehicleModeEnumeration transportMode) {
-        this.transportMode = transportMode;
-    }
-
-    public Map<String, Value> getKeyValues() {
-        return keyValues;
-    }
-
-    public void replaceKeyValues(Map<String, Value> keyValues) {
-        this.keyValues.clear();
-        this.keyValues.putAll(keyValues);
-    }
-
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
-        Preconditions.checkArgument(flexibleArea != null ^ hailAndRideArea != null, "%s exactly one of flexibleArea and hailAndRideArea must be set", identity());
-
-        if (flexibleArea != null) {
-            flexibleArea.checkPersistable();
-        }
-        if (hailAndRideArea != null) {
-            hailAndRideArea.checkPersistable();
-        }
-    }
+  }
 }

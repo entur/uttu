@@ -15,111 +15,123 @@
 
 package no.entur.uttu.model.job;
 
-import no.entur.uttu.model.ExportedLineStatistics;
-import no.entur.uttu.model.ProviderEntity;
-
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import no.entur.uttu.model.ExportedLineStatistics;
+import no.entur.uttu.model.ProviderEntity;
 
 @Entity
 public class Export extends ProviderEntity {
 
-    private String name;
+  private String name;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private ExportStatusEnumeration exportStatus = ExportStatusEnumeration.IN_PROGRESS;
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  private ExportStatusEnumeration exportStatus = ExportStatusEnumeration.IN_PROGRESS;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<ExportMessage> messages = new ArrayList<>();
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  private List<ExportMessage> messages = new ArrayList<>();
 
-    @OneToMany(mappedBy = "export", cascade = CascadeType.ALL, orphanRemoval = true)
-    @NotNull
-    private final List<ExportedLineStatistics> exportedLineStatistics = new ArrayList<>();
+  @OneToMany(mappedBy = "export", cascade = CascadeType.ALL, orphanRemoval = true)
+  @NotNull
+  private final List<ExportedLineStatistics> exportedLineStatistics = new ArrayList<>();
 
-    public String getName() {
-        return name;
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  private String fileName;
+
+  private boolean dryRun;
+
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "export")
+  private Collection<ExportLineAssociation> exportLineAssociations;
+
+  public Collection<ExportLineAssociation> getExportLineAssociations() {
+    return exportLineAssociations;
+  }
+
+  public void setExportLineAssociations(
+    Collection<ExportLineAssociation> exportLineAssociations
+  ) {
+    this.exportLineAssociations = exportLineAssociations;
+  }
+
+  public ExportStatusEnumeration getExportStatus() {
+    return exportStatus;
+  }
+
+  public void markAsFinished() {
+    if (
+      messages.stream().anyMatch(m -> SeverityEnumeration.ERROR.equals(m.getSeverity()))
+    ) {
+      exportStatus = ExportStatusEnumeration.FAILED;
+    } else {
+      exportStatus = ExportStatusEnumeration.SUCCESS;
     }
+  }
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public void addMessage(ExportMessage message) {
+    this.messages.add(message);
+  }
 
-    private String fileName;
+  public SortedSet<ExportMessage> getMessages() {
+    return new TreeSet<>(messages);
+  }
 
-    private boolean dryRun;
+  public String getFileName() {
+    return fileName;
+  }
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "export")
-    private Collection<ExportLineAssociation> exportLineAssociations;
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
 
-    public Collection<ExportLineAssociation> getExportLineAssociations() {
-        return exportLineAssociations;
-    }
+  public boolean isDryRun() {
+    return dryRun;
+  }
 
-    public void setExportLineAssociations(Collection<ExportLineAssociation> exportLineAssociations) {
-        this.exportLineAssociations = exportLineAssociations;
-    }
+  public void setDryRun(boolean dryRun) {
+    this.dryRun = dryRun;
+  }
 
-    public ExportStatusEnumeration getExportStatus() {
-        return exportStatus;
-    }
+  public List<ExportedLineStatistics> getExportedLineStatistics() {
+    return exportedLineStatistics;
+  }
 
-    public void markAsFinished() {
-        if (messages.stream().anyMatch(m -> SeverityEnumeration.ERROR.equals(m.getSeverity()))) {
-            exportStatus = ExportStatusEnumeration.FAILED;
-        } else {
-            exportStatus = ExportStatusEnumeration.SUCCESS;
-        }
-    }
+  public void addExportedLineStatistics(
+    ExportedLineStatistics exportedLineStatisticsToAdd
+  ) {
+    exportedLineStatisticsToAdd.setExport(this);
+    exportedLineStatistics.add(exportedLineStatisticsToAdd);
+  }
 
-    public void addMessage(ExportMessage message) {
-        this.messages.add(message);
-    }
-
-    public SortedSet<ExportMessage> getMessages() {
-        return new TreeSet<>(messages);
-    }
-
-    public String getFileName() {
-        return fileName;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
-    }
-
-    public boolean isDryRun() {
-        return dryRun;
-    }
-
-    public void setDryRun(boolean dryRun) {
-        this.dryRun = dryRun;
-    }
-
-    public List<ExportedLineStatistics> getExportedLineStatistics() {
-        return exportedLineStatistics;
-    }
-
-    public void addExportedLineStatistics(ExportedLineStatistics exportedLineStatisticsToAdd) {
-        exportedLineStatisticsToAdd.setExport(this);
-        exportedLineStatistics.add(exportedLineStatisticsToAdd);
-    }
-    @Override
-    public String toString() {
-        return "Export{" +
-                super.toString() +
-                ", name='" + name + '\'' +
-                ", exportStatus=" + exportStatus +
-                ", messages=" + messages +
-                '}';
-    }
+  @Override
+  public String toString() {
+    return (
+      "Export{" +
+      super.toString() +
+      ", name='" +
+      name +
+      '\'' +
+      ", exportStatus=" +
+      exportStatus +
+      ", messages=" +
+      messages +
+      '}'
+    );
+  }
 }

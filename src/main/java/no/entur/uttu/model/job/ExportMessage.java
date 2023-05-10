@@ -15,8 +15,7 @@
 
 package no.entur.uttu.model.job;
 
-import no.entur.uttu.util.Preconditions;
-
+import java.text.MessageFormat;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -25,59 +24,56 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import java.text.MessageFormat;
+import no.entur.uttu.util.Preconditions;
 
 @Entity
 public class ExportMessage implements Comparable<ExportMessage> {
 
-    @Id
-    @GeneratedValue(generator = "sequence_per_table_generator")
-    protected Long pk;
+  @Id
+  @GeneratedValue(generator = "sequence_per_table_generator")
+  protected Long pk;
 
-    @NotNull
-    @Enumerated(EnumType.STRING)
-    private SeverityEnumeration severity;
+  @NotNull
+  @Enumerated(EnumType.STRING)
+  private SeverityEnumeration severity;
 
-    @NotNull
-    @Column(length = 4000)
-    @Size(max = 4000)
-    private String message;
+  @NotNull
+  @Column(length = 4000)
+  @Size(max = 4000)
+  private String message;
 
-    private ExportMessage() {
+  private ExportMessage() {}
+
+  public ExportMessage(SeverityEnumeration severity, String message, Object... params) {
+    Preconditions.checkArgument(severity != null, "Severity must be assigned");
+    Preconditions.checkArgument(message != null, "Severity must be assigned");
+    this.severity = severity;
+    this.message = MessageFormat.format(message, params);
+  }
+
+  public String getMessage() {
+    return message;
+  }
+
+  @Override
+  public String toString() {
+    return "ExportMessage{" + "message='" + message + '\'' + '}';
+  }
+
+  public Long getPk() {
+    return pk;
+  }
+
+  public SeverityEnumeration getSeverity() {
+    return severity;
+  }
+
+  @Override
+  public int compareTo(ExportMessage o) {
+    int severityCmp = o.severity.compareTo(this.severity);
+    if (severityCmp != 0) {
+      return severityCmp;
     }
-
-    public ExportMessage(SeverityEnumeration severity, String message, Object... params) {
-        Preconditions.checkArgument(severity != null, "Severity must be assigned");
-        Preconditions.checkArgument(message != null, "Severity must be assigned");
-        this.severity = severity;
-        this.message = MessageFormat.format(message, params);
-    }
-
-    public String getMessage() {
-        return message;
-    }
-
-    @Override
-    public String toString() {
-        return "ExportMessage{" +
-                       "message='" + message + '\'' +
-                       '}';
-    }
-
-    public Long getPk() {
-        return pk;
-    }
-
-    public SeverityEnumeration getSeverity() {
-        return severity;
-    }
-
-    @Override
-    public int compareTo(ExportMessage o) {
-        int severityCmp = o.severity.compareTo(this.severity);
-        if (severityCmp != 0) {
-            return severityCmp;
-        }
-        return this.message.compareTo(o.getMessage());
-    }
+    return this.message.compareTo(o.getMessage());
+  }
 }

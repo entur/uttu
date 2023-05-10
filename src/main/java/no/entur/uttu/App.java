@@ -27,15 +27,17 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
-@SpringBootApplication(exclude={UserDetailsServiceAutoConfiguration.class})
+@SpringBootApplication(exclude = { UserDetailsServiceAutoConfiguration.class })
 @Import(GooglePubSubConfig.class)
-@EnableJpaRepositories(basePackages = {"no.entur.uttu.repository"},
-        repositoryBaseClass = ProviderEntityRepositoryImpl.class)
-@EntityScan(basePackageClasses = {Provider.class, Jsr310JpaConverters.class})
+@EnableJpaRepositories(
+  basePackages = { "no.entur.uttu.repository" },
+  repositoryBaseClass = ProviderEntityRepositoryImpl.class
+)
+@EntityScan(basePackageClasses = { Provider.class, Jsr310JpaConverters.class })
 @EnableCaching
 public class App {
 
-    public static void main(String[] args) {
-        SpringApplication.run(App.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(App.class, args);
+  }
 }

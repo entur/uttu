@@ -20,18 +20,20 @@ package no.entur.uttu.model;
  */
 public class Constraints {
 
-    public static final String FLEXIBLE_STOP_PLACE_UNIQUE_NAME = "flexible_stop_place_unique_name_constraint";
+  public static final String FLEXIBLE_STOP_PLACE_UNIQUE_NAME =
+    "flexible_stop_place_unique_name_constraint";
 
-    public static final String LINE_UNIQUE_NAME = "line_unique_name_constraint";
+  public static final String LINE_UNIQUE_NAME = "line_unique_name_constraint";
 
-    public static final String JOURNEY_PATTERN_UNIQUE_NAME = "journey_pattern_unique_name_constraint";
+  public static final String JOURNEY_PATTERN_UNIQUE_NAME =
+    "journey_pattern_unique_name_constraint";
 
-    public static final String NETWORK_UNIQUE_NAME = "network_unique_name_constraint";
+  public static final String NETWORK_UNIQUE_NAME = "network_unique_name_constraint";
 
-    public static final String SERVICE_JOURNEY_UNIQUE_NAME = "service_journey_unique_name_constraint";
+  public static final String SERVICE_JOURNEY_UNIQUE_NAME =
+    "service_journey_unique_name_constraint";
 
-    public static final String PROVIDER_UNIQUE_CODE = "provider_unique_code_constraint";
+  public static final String PROVIDER_UNIQUE_CODE = "provider_unique_code_constraint";
 
-    public static final String CODESPACE_UNIQUE_XMLNS = "codespace_unique_xmlns_constraint";
-
+  public static final String CODESPACE_UNIQUE_XMLNS = "codespace_unique_xmlns_constraint";
 }

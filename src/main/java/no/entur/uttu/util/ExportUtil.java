@@ -15,156 +15,180 @@
 
 package no.entur.uttu.util;
 
+import java.text.StringCharacterIterator;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.model.Line;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.job.Export;
 import org.springframework.util.StringUtils;
 
-import java.text.StringCharacterIterator;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-
 public class ExportUtil {
 
-    private static final String MAIN_SEPARATOR = "_";
-    private static final String SECONDARY_SEPARATOR = "-";
+  private static final String MAIN_SEPARATOR = "_";
+  private static final String SECONDARY_SEPARATOR = "-";
 
-    private static final String DATE_PATTERN = "yyyyMMdd";
+  private static final String DATE_PATTERN = "yyyyMMdd";
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(DATE_PATTERN);
+  private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(
+    DATE_PATTERN
+  );
 
-    // In Marduk providers are identified with their migrated provider referential, thus the codespace must be prefixed.
-    public static final String MIGRATED_PROVIDER_PREFIX = "rb_";
+  // In Marduk providers are identified with their migrated provider referential, thus the codespace must be prefixed.
+  public static final String MIGRATED_PROVIDER_PREFIX = "rb_";
 
-    public static String createExportedDataSetFilename(Provider provider, String exportedFilenameSuffix) {
-        return MIGRATED_PROVIDER_PREFIX + provider.getCode().toLowerCase() + exportedFilenameSuffix + ".zip";
+  public static String createExportedDataSetFilename(
+    Provider provider,
+    String exportedFilenameSuffix
+  ) {
+    return (
+      MIGRATED_PROVIDER_PREFIX +
+      provider.getCode().toLowerCase() +
+      exportedFilenameSuffix +
+      ".zip"
+    );
+  }
+
+  public static String getMigratedReferential(String codespace) {
+    return MIGRATED_PROVIDER_PREFIX + codespace;
+  }
+
+  public static String createBackupDataSetFilename(Export export) {
+    StringBuilder fileNameBuilder = new StringBuilder(
+      export.getProvider().getCode().toLowerCase()
+    );
+    fileNameBuilder.append(MAIN_SEPARATOR);
+
+    if (!StringUtils.isEmpty(export.getName())) {
+      fileNameBuilder.append(export.getName());
+      fileNameBuilder.append(MAIN_SEPARATOR);
+    }
+    fileNameBuilder.append(LocalDate.now().format(DATE_FORMATTER));
+    fileNameBuilder.append(MAIN_SEPARATOR);
+    fileNameBuilder.append(export.getPk());
+
+    fileNameBuilder.append(".zip");
+    return fileNameBuilder.toString();
+  }
+
+  public static String createCommonFileFilename(
+    Provider provider,
+    String commonFileFilenameSuffix
+  ) {
+    return (
+      "_" +
+      provider.getCodespace().getXmlns().toUpperCase() +
+      commonFileFilenameSuffix +
+      ".xml"
+    );
+  }
+
+  public static String createLineFilename(Line line) {
+    StringBuilder b = new StringBuilder();
+    b.append(NetexIdProducer.getObjectIdPrefix(line.getNetexId()));
+    b.append(MAIN_SEPARATOR);
+    b.append(line.getNetexId().replaceAll(":", SECONDARY_SEPARATOR));
+    b.append(MAIN_SEPARATOR);
+    if (line.getPrivateCode() != null) {
+      b.append(line.getPrivateCode().replaceAll(MAIN_SEPARATOR, SECONDARY_SEPARATOR));
+      b.append(MAIN_SEPARATOR);
+    }
+    if (line.getName() != null) {
+      b.append(line.getName());
+    } else if (line.getPublicCode() != null) {
+      b.append(line.getPublicCode());
     }
 
-    public static String getMigratedReferential(String codespace) {
-        return MIGRATED_PROVIDER_PREFIX + codespace;
-    }
+    return (
+      utftoasci(b.toString())
+        .replaceAll("/", SECONDARY_SEPARATOR)
+        .replace(" ", SECONDARY_SEPARATOR)
+        .replaceAll("\\.", SECONDARY_SEPARATOR) +
+      ".xml"
+    );
+  }
 
-    public static String createBackupDataSetFilename(Export export) {
-        StringBuilder fileNameBuilder = new StringBuilder(export.getProvider().getCode().toLowerCase());
-        fileNameBuilder.append(MAIN_SEPARATOR);
+  // Convert string to ascii, replacing common non ascii chars with replacements (Å => A etc) and omitting the rest.
+  private static String utftoasci(String s) {
+    final StringBuffer sb = new StringBuffer(s.length() * 2);
 
-        if (!StringUtils.isEmpty(export.getName())) {
-            fileNameBuilder.append(export.getName());
-            fileNameBuilder.append(MAIN_SEPARATOR);
+    final StringCharacterIterator iterator = new StringCharacterIterator(s);
+
+    char ch = iterator.current();
+
+    while (ch != StringCharacterIterator.DONE) {
+      if (Character.getNumericValue(ch) > 0) {
+        sb.append(ch);
+      } else {
+        if (Character.toString(ch).equals("Ê")) {
+          sb.append("E");
+        } else if (Character.toString(ch).equals("È")) {
+          sb.append("E");
+        } else if (Character.toString(ch).equals("ë")) {
+          sb.append("e");
+        } else if (Character.toString(ch).equals("é")) {
+          sb.append("e");
+        } else if (Character.toString(ch).equals("è")) {
+          sb.append("e");
+        } else if (Character.toString(ch).equals("è")) {
+          sb.append("e");
+        } else if (Character.toString(ch).equals("Â")) {
+          sb.append("A");
+        } else if (Character.toString(ch).equals("ä")) {
+          sb.append("a");
+        } else if (Character.toString(ch).equals("ß")) {
+          sb.append("ss");
+        } else if (Character.toString(ch).equals("Ç")) {
+          sb.append("C");
+        } else if (Character.toString(ch).equals("Ö")) {
+          sb.append("O");
+        } else if (Character.toString(ch).equals("º")) {
+          sb.append("");
+        } else if (Character.toString(ch).equals("Ó")) {
+          sb.append("O");
+        } else if (Character.toString(ch).equals("ª")) {
+          sb.append("");
+        } else if (Character.toString(ch).equals("º")) {
+          sb.append("");
+        } else if (Character.toString(ch).equals("Ñ")) {
+          sb.append("N");
+        } else if (Character.toString(ch).equals("É")) {
+          sb.append("E");
+        } else if (Character.toString(ch).equals("Ä")) {
+          sb.append("A");
+        } else if (Character.toString(ch).equals("Å")) {
+          sb.append("A");
+        } else if (Character.toString(ch).equals("å")) {
+          sb.append("a");
+        } else if (Character.toString(ch).equals("ä")) {
+          sb.append("a");
+        } else if (Character.toString(ch).equals("Ü")) {
+          sb.append("U");
+        } else if (Character.toString(ch).equals("ö")) {
+          sb.append("o");
+        } else if (Character.toString(ch).equals("ü")) {
+          sb.append("u");
+        } else if (Character.toString(ch).equals("á")) {
+          sb.append("a");
+        } else if (Character.toString(ch).equals("Ó")) {
+          sb.append("O");
+        } else if (Character.toString(ch).equals("É")) {
+          sb.append("E");
+        } else if (Character.toString(ch).equals("Æ")) {
+          sb.append("E");
+        } else if (Character.toString(ch).equals("æ")) {
+          sb.append("e");
+        } else if (Character.toString(ch).equals("Ø")) {
+          sb.append("O");
+        } else if (Character.toString(ch).equals("ø")) {
+          sb.append("o");
+        } else {
+          sb.append(ch);
         }
-        fileNameBuilder.append(LocalDate.now().format(DATE_FORMATTER));
-        fileNameBuilder.append(MAIN_SEPARATOR);
-        fileNameBuilder.append(export.getPk());
-
-        fileNameBuilder.append(".zip");
-        return fileNameBuilder.toString();
+      }
+      ch = iterator.next();
     }
-
-    public static String createCommonFileFilename(Provider provider, String commonFileFilenameSuffix) {
-        return "_" + provider.getCodespace().getXmlns().toUpperCase() + commonFileFilenameSuffix + ".xml";
-    }
-
-    public static String createLineFilename(Line line) {
-        StringBuilder b = new StringBuilder();
-        b.append(NetexIdProducer.getObjectIdPrefix(line.getNetexId()));
-        b.append(MAIN_SEPARATOR);
-        b.append(line.getNetexId().replaceAll(":", SECONDARY_SEPARATOR));
-        b.append(MAIN_SEPARATOR);
-        if (line.getPrivateCode() != null) {
-            b.append(line.getPrivateCode().replaceAll(MAIN_SEPARATOR, SECONDARY_SEPARATOR));
-            b.append(MAIN_SEPARATOR);
-        }
-        if (line.getName() != null) {
-            b.append(line.getName());
-        } else if (line.getPublicCode() != null) {
-            b.append(line.getPublicCode());
-        }
-
-        return utftoasci(b.toString()).replaceAll("/", SECONDARY_SEPARATOR).replace(" ", SECONDARY_SEPARATOR).replaceAll("\\.", SECONDARY_SEPARATOR) + ".xml";
-    }
-
-    // Convert string to ascii, replacing common non ascii chars with replacements (Å => A etc) and omitting the rest.
-    private static String utftoasci(String s) {
-        final StringBuffer sb = new StringBuffer(s.length() * 2);
-
-        final StringCharacterIterator iterator = new StringCharacterIterator(s);
-
-        char ch = iterator.current();
-
-        while (ch != StringCharacterIterator.DONE) {
-            if (Character.getNumericValue(ch) > 0) {
-                sb.append(ch);
-            } else {
-
-                if (Character.toString(ch).equals("Ê")) {
-                    sb.append("E");
-                } else if (Character.toString(ch).equals("È")) {
-                    sb.append("E");
-                } else if (Character.toString(ch).equals("ë")) {
-                    sb.append("e");
-                } else if (Character.toString(ch).equals("é")) {
-                    sb.append("e");
-                } else if (Character.toString(ch).equals("è")) {
-                    sb.append("e");
-                } else if (Character.toString(ch).equals("è")) {
-                    sb.append("e");
-                } else if (Character.toString(ch).equals("Â")) {
-                    sb.append("A");
-                } else if (Character.toString(ch).equals("ä")) {
-                    sb.append("a");
-                } else if (Character.toString(ch).equals("ß")) {
-                    sb.append("ss");
-                } else if (Character.toString(ch).equals("Ç")) {
-                    sb.append("C");
-                } else if (Character.toString(ch).equals("Ö")) {
-                    sb.append("O");
-                } else if (Character.toString(ch).equals("º")) {
-                    sb.append("");
-                } else if (Character.toString(ch).equals("Ó")) {
-                    sb.append("O");
-                } else if (Character.toString(ch).equals("ª")) {
-                    sb.append("");
-                } else if (Character.toString(ch).equals("º")) {
-                    sb.append("");
-                } else if (Character.toString(ch).equals("Ñ")) {
-                    sb.append("N");
-                } else if (Character.toString(ch).equals("É")) {
-                    sb.append("E");
-                } else if (Character.toString(ch).equals("Ä")) {
-                    sb.append("A");
-                } else if (Character.toString(ch).equals("Å")) {
-                    sb.append("A");
-                } else if (Character.toString(ch).equals("å")) {
-                    sb.append("a");
-                } else if (Character.toString(ch).equals("ä")) {
-                    sb.append("a");
-                } else if (Character.toString(ch).equals("Ü")) {
-                    sb.append("U");
-                } else if (Character.toString(ch).equals("ö")) {
-                    sb.append("o");
-                } else if (Character.toString(ch).equals("ü")) {
-                    sb.append("u");
-                } else if (Character.toString(ch).equals("á")) {
-                    sb.append("a");
-                } else if (Character.toString(ch).equals("Ó")) {
-                    sb.append("O");
-                } else if (Character.toString(ch).equals("É")) {
-                    sb.append("E");
-                } else if (Character.toString(ch).equals("Æ")) {
-                    sb.append("E");
-                } else if (Character.toString(ch).equals("æ")) {
-                    sb.append("e");
-                } else if (Character.toString(ch).equals("Ø")) {
-                    sb.append("O");
-                } else if (Character.toString(ch).equals("ø")) {
-                    sb.append("o");
-                } else {
-                    sb.append(ch);
-                }
-            }
-            ch = iterator.next();
-        }
-        return sb.toString().replaceAll("[^\\p{ASCII}]", "");
-    }
+    return sb.toString().replaceAll("[^\\p{ASCII}]", "");
+  }
 }

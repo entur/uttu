@@ -15,19 +15,6 @@
 
 package no.entur.uttu.graphql.fetchers;
 
-import no.entur.uttu.util.Preconditions;
-import graphql.schema.DataFetcher;
-import graphql.schema.DataFetchingEnvironment;
-import no.entur.uttu.graphql.ArgumentWrapper;
-import no.entur.uttu.model.Codespace;
-import no.entur.uttu.model.Provider;
-import no.entur.uttu.repository.CodespaceRepository;
-import no.entur.uttu.repository.ProviderRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
-
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CODE;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CODE_SPACE_XMLNS;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
@@ -35,47 +22,64 @@ import static no.entur.uttu.graphql.GraphQLNames.FIELD_INPUT;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_NAME;
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
 
+import graphql.schema.DataFetcher;
+import graphql.schema.DataFetchingEnvironment;
+import no.entur.uttu.graphql.ArgumentWrapper;
+import no.entur.uttu.model.Codespace;
+import no.entur.uttu.model.Provider;
+import no.entur.uttu.repository.CodespaceRepository;
+import no.entur.uttu.repository.ProviderRepository;
+import no.entur.uttu.util.Preconditions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+
 @Component
 @Transactional
 public class ProviderUpdater implements DataFetcher<Provider> {
 
-    @Autowired
-    private ProviderRepository repository;
-    @Autowired
-    private CodespaceRepository codespaceRepository;
+  @Autowired
+  private ProviderRepository repository;
 
-    @Override
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
-    public Provider get(DataFetchingEnvironment env) {
-        ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
-        String code = input.get(FIELD_CODE);
-        Provider entity;
+  @Autowired
+  private CodespaceRepository codespaceRepository;
 
-        if (code == null) {
-            entity = new Provider();
-        } else {
-            entity = repository.getOne(code);
+  @Override
+  @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
+  public Provider get(DataFetchingEnvironment env) {
+    ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
+    String code = input.get(FIELD_CODE);
+    Provider entity;
 
-            if (entity == null) {
-                entity = new Provider();
-            }
-        }
+    if (code == null) {
+      entity = new Provider();
+    } else {
+      entity = repository.getOne(code);
 
-        populateEntityFromInput(entity, input);
-
-        return repository.save(entity);
+      if (entity == null) {
+        entity = new Provider();
+      }
     }
 
-    private void populateEntityFromInput(Provider entity, ArgumentWrapper input) {
-        input.apply(FIELD_CODE, entity::setCode);
-        input.apply(FIELD_NAME, entity::setName);
-        input.apply(FIELD_CODE_SPACE_XMLNS, this::getVerifiedCodespace, entity::setCodespace);
-    }
+    populateEntityFromInput(entity, input);
 
-    private Codespace getVerifiedCodespace(String xmlns) {
-        Codespace codespace = codespaceRepository.getOneByXmlns(xmlns);
-        Preconditions.checkArgument(codespace != null,
-                "Codespace not found [xmlns=%s]", xmlns);
-        return codespace;
-    }
+    return repository.save(entity);
+  }
+
+  private void populateEntityFromInput(Provider entity, ArgumentWrapper input) {
+    input.apply(FIELD_CODE, entity::setCode);
+    input.apply(FIELD_NAME, entity::setName);
+    input.apply(FIELD_CODE_SPACE_XMLNS, this::getVerifiedCodespace, entity::setCodespace);
+  }
+
+  private Codespace getVerifiedCodespace(String xmlns) {
+    Codespace codespace = codespaceRepository.getOneByXmlns(xmlns);
+    Preconditions.checkArgument(
+      codespace != null,
+      "Codespace not found [xmlns=%s]",
+      xmlns
+    );
+    return codespace;
+  }
 }

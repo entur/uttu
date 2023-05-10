@@ -18,6 +18,7 @@ package no.entur.uttu.export.messaging;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.pubsub.v1.PubsubMessage;
+import java.util.List;
 import no.entur.uttu.UttuIntegrationTest;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
 import org.junit.Assert;
@@ -27,37 +28,35 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
-import java.util.List;
-
 public class MessagingServiceTest extends UttuIntegrationTest {
 
-    public static final String TEST_CODESPACE = "rut";
-    private final Logger logger = LoggerFactory.getLogger(getClass());
+  public static final String TEST_CODESPACE = "rut";
+  private final Logger logger = LoggerFactory.getLogger(getClass());
 
-    @Autowired
-    private MessagingService messagingService;
+  @Autowired
+  private MessagingService messagingService;
 
-    @Autowired
-    private PubSubTemplate pubSubTemplate;
+  @Autowired
+  private PubSubTemplate pubSubTemplate;
 
-    @Autowired
-    private EnturGooglePubSubAdmin enturGooglePubSubAdmin;
+  @Autowired
+  private EnturGooglePubSubAdmin enturGooglePubSubAdmin;
 
+  @Value("${export.notify.queue.name:FlexibleLinesExportQueue}")
+  private String queueName;
 
-    @Value("${export.notify.queue.name:FlexibleLinesExportQueue}")
-    private String queueName;
+  @Test
+  public void testNotifyExport() {
+    enturGooglePubSubAdmin.createSubscriptionIfMissing(queueName);
 
-    @Test
-    public void testNotifyExport() {
+    messagingService.notifyExport(TEST_CODESPACE);
 
-        enturGooglePubSubAdmin.createSubscriptionIfMissing(queueName);
-
-        messagingService.notifyExport(TEST_CODESPACE);
-
-        List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
-        Assert.assertEquals(messages.size(), 1);
-        String codespace = messages.get(0).getAttributesMap().get(PubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
-        Assert.assertEquals(codespace, "rb_" + TEST_CODESPACE);
-    }
-
+    List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
+    Assert.assertEquals(messages.size(), 1);
+    String codespace = messages
+      .get(0)
+      .getAttributesMap()
+      .get(PubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
+    Assert.assertEquals(codespace, "rb_" + TEST_CODESPACE);
+  }
 }

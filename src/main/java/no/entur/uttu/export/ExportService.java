@@ -15,6 +15,9 @@
 
 package no.entur.uttu.export;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.util.List;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
@@ -33,78 +36,100 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
-import java.util.List;
-
 @Component
 public class ExportService {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private NetexExporter exporter;
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @Autowired
-    private BlobStoreService blobStoreService;
+  @Autowired
+  private NetexExporter exporter;
 
-    @Autowired
-    private MessagingService messagingService;
+  @Autowired
+  private BlobStoreService blobStoreService;
 
-    @Value("${export.working.folder:tmp}")
-    private String workingFolder;
+  @Autowired
+  private MessagingService messagingService;
 
-    @Value("${export.blob.folder:inbound/netex/}")
-    private String exportFolder = "inbound/netex/";
+  @Value("${export.working.folder:tmp}")
+  private String workingFolder;
 
-    @Value("${export.blob.filenameSuffix:-flexible-lines}")
-    private String exportedFilenameSuffix;
+  @Value("${export.blob.folder:inbound/netex/}")
+  private String exportFolder = "inbound/netex/";
 
+  @Value("${export.blob.filenameSuffix:-flexible-lines}")
+  private String exportedFilenameSuffix;
 
-    public void exportDataSet(Export export) {
-        export.checkPersistable();
+  public void exportDataSet(Export export) {
+    export.checkPersistable();
 
-        logger.info("Starting {}", export);
+    logger.info("Starting {}", export);
 
-        try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
+    try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
+      boolean validateAgainstSchema = true;
+      List<Line> exportedLines = exporter.exportDataSet(
+        export,
+        dataSetProducer,
+        validateAgainstSchema
+      );
 
-            boolean validateAgainstSchema = true;
-            List<Line> exportedLines = exporter.exportDataSet(export, dataSetProducer, validateAgainstSchema);
+      InputStream dataSetStream = dataSetProducer.buildDataSet();
+      byte[] bytes = IOUtils.toByteArray(dataSetStream);
+      ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 
-            InputStream dataSetStream = dataSetProducer.buildDataSet();
-            byte[] bytes = IOUtils.toByteArray(dataSetStream);
-            ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-
-            if (!export.isDryRun() && !exportHasErrors(export)) {
-                String blobName = exportFolder + ExportUtil.createExportedDataSetFilename(export.getProvider(), exportedFilenameSuffix);
-                blobStoreService.uploadBlob(blobName, false, bis);
-                bis.reset();
-                // notify Marduk that a new export is available
-                messagingService.notifyExport(export.getProvider().getCode().toLowerCase());
-                exportedLines.stream()
-                        .map(ExportedLineStatisticsService::toExportedLineStatistics)
-                        .forEach(export::addExportedLineStatistics);
-            }
-            export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
-            blobStoreService.uploadBlob(export.getFileName(), false, bis);
-        } catch (CodedIllegalArgumentException iae) {
-            ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getCode().toString());
-            export.addMessage(msg);
-            logger.info(export.identity() + " Export failed with exception: " + iae.getMessage(), iae);
-        } catch (IllegalArgumentException iae) {
-            ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getMessage());
-            export.addMessage(msg);
-            logger.info(export.identity() + " Export failed with exception: " + iae.getMessage(), iae);
-        } catch (Exception e) {
-            ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, "Export failed with exception {0} : {1}", e.getClass().getSimpleName(), e.getMessage());
-            export.addMessage(msg);
-            logger.warn(msg.getMessage(), e);
-        }
-
-        export.markAsFinished();
-        logger.info("Completed {}", export);
+      if (!export.isDryRun() && !exportHasErrors(export)) {
+        String blobName =
+          exportFolder +
+          ExportUtil.createExportedDataSetFilename(
+            export.getProvider(),
+            exportedFilenameSuffix
+          );
+        blobStoreService.uploadBlob(blobName, false, bis);
+        bis.reset();
+        // notify Marduk that a new export is available
+        messagingService.notifyExport(export.getProvider().getCode().toLowerCase());
+        exportedLines
+          .stream()
+          .map(ExportedLineStatisticsService::toExportedLineStatistics)
+          .forEach(export::addExportedLineStatistics);
+      }
+      export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
+      blobStoreService.uploadBlob(export.getFileName(), false, bis);
+    } catch (CodedIllegalArgumentException iae) {
+      ExportMessage msg = new ExportMessage(
+        SeverityEnumeration.ERROR,
+        iae.getCode().toString()
+      );
+      export.addMessage(msg);
+      logger.info(
+        export.identity() + " Export failed with exception: " + iae.getMessage(),
+        iae
+      );
+    } catch (IllegalArgumentException iae) {
+      ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getMessage());
+      export.addMessage(msg);
+      logger.info(
+        export.identity() + " Export failed with exception: " + iae.getMessage(),
+        iae
+      );
+    } catch (Exception e) {
+      ExportMessage msg = new ExportMessage(
+        SeverityEnumeration.ERROR,
+        "Export failed with exception {0} : {1}",
+        e.getClass().getSimpleName(),
+        e.getMessage()
+      );
+      export.addMessage(msg);
+      logger.warn(msg.getMessage(), e);
     }
 
-    private boolean exportHasErrors(Export export) {
-        return export.getMessages().stream().anyMatch(message -> message.getSeverity().equals(SeverityEnumeration.ERROR));
-    }
+    export.markAsFinished();
+    logger.info("Completed {}", export);
+  }
+
+  private boolean exportHasErrors(Export export) {
+    return export
+      .getMessages()
+      .stream()
+      .anyMatch(message -> message.getSeverity().equals(SeverityEnumeration.ERROR));
+  }
 }

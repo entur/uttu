@@ -20,6 +20,5 @@ import no.entur.uttu.model.Network;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 
 public interface FixedLineRepository extends ProviderEntityRepository<FixedLine> {
-
-    int countByNetwork(Network network);
+  int countByNetwork(Network network);
 }

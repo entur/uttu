@@ -22,35 +22,38 @@ import org.springframework.security.oauth2.jwt.Jwt;
 
 public class Context {
 
-    private static ThreadLocal<String> providerPerThread = new ThreadLocal<>();
+  private static ThreadLocal<String> providerPerThread = new ThreadLocal<>();
 
-    public static void setProvider(String providerCode) {
-        Preconditions.checkArgument(providerCode != null,
-                "Attempt to set providerCode = null for session");
-        providerPerThread.set(providerCode);
-    }
+  public static void setProvider(String providerCode) {
+    Preconditions.checkArgument(
+      providerCode != null,
+      "Attempt to set providerCode = null for session"
+    );
+    providerPerThread.set(providerCode);
+  }
 
-    public static String getProvider() {
-        return providerPerThread.get();
-    }
+  public static String getProvider() {
+    return providerPerThread.get();
+  }
 
-    public static void clear() {
-        providerPerThread.remove();
-    }
+  public static void clear() {
+    providerPerThread.remove();
+  }
 
-    public static String getUsername() {
-        String user = null;
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        if (auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof Jwt) {
-            user = ((Jwt) auth.getPrincipal()).getClaimAsString("preferred_username");
-        }
-        return (user == null) ? "unknown" : user;
+  public static String getUsername() {
+    String user = null;
+    Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+    if (
+      auth != null && auth.getPrincipal() != null && auth.getPrincipal() instanceof Jwt
+    ) {
+      user = ((Jwt) auth.getPrincipal()).getClaimAsString("preferred_username");
     }
+    return (user == null) ? "unknown" : user;
+  }
 
-    public static String getVerifiedProviderCode() {
-        String providerCode = Context.getProvider();
-        Preconditions.checkArgument(providerCode != null,
-                "Provider not set for session");
-        return providerCode;
-    }
+  public static String getVerifiedProviderCode() {
+    String providerCode = Context.getProvider();
+    Preconditions.checkArgument(providerCode != null, "Provider not set for session");
+    return providerCode;
+  }
 }

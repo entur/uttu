@@ -18,5 +18,5 @@ package no.entur.uttu.stopplace;
 import java.util.Optional;
 
 public interface StopPlaceRegistry {
-    Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef);
+  Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef);
 }

@@ -17,20 +17,34 @@ package no.entur.uttu.util;
 
 import com.google.common.base.Strings;
 import no.entur.uttu.error.codederror.CodedError;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 public final class Preconditions {
-    public static void checkArgument(boolean expression, CodedError codedError, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) {
-        if (!expression) {
-            throw new CodedIllegalArgumentException(
-                    Strings.lenientFormat(errorMessageTemplate, errorMessageArgs),
-                    codedError
-            );
-        }
-    }
 
-    public static void checkArgument(boolean expression, @Nullable String errorMessageTemplate, @Nullable Object... errorMessageArgs) {
-        com.google.common.base.Preconditions.checkArgument(expression, errorMessageTemplate, errorMessageArgs);
+  public static void checkArgument(
+    boolean expression,
+    CodedError codedError,
+    @Nullable String errorMessageTemplate,
+    @Nullable Object... errorMessageArgs
+  ) {
+    if (!expression) {
+      throw new CodedIllegalArgumentException(
+        Strings.lenientFormat(errorMessageTemplate, errorMessageArgs),
+        codedError
+      );
     }
+  }
+
+  public static void checkArgument(
+    boolean expression,
+    @Nullable String errorMessageTemplate,
+    @Nullable Object... errorMessageArgs
+  ) {
+    com.google.common.base.Preconditions.checkArgument(
+      expression,
+      errorMessageTemplate,
+      errorMessageArgs
+    );
+  }
 }

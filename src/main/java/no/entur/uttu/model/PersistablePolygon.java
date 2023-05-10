@@ -15,37 +15,34 @@
 
 package no.entur.uttu.model;
 
-
-import org.locationtech.jts.geom.Polygon;
-
+import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
+import org.locationtech.jts.geom.Polygon;
 
 @Entity
 public class PersistablePolygon implements Serializable {
 
-    @Id
-    @GeneratedValue(generator = "sequence_per_table_generator")
-    protected Long id;
+  @Id
+  @GeneratedValue(generator = "sequence_per_table_generator")
+  protected Long id;
 
-    @NotNull
-    private Polygon polygon;
+  @NotNull
+  private Polygon polygon;
 
-    public PersistablePolygon() {
-    }
+  public PersistablePolygon() {}
 
-    public PersistablePolygon(Polygon polygon) {
-        this.polygon = polygon;
-    }
+  public PersistablePolygon(Polygon polygon) {
+    this.polygon = polygon;
+  }
 
-    public Polygon getPolygon() {
-        return polygon;
-    }
+  public Polygon getPolygon() {
+    return polygon;
+  }
 
-    public void setPolygon(Polygon polygon) {
-        this.polygon = polygon;
-    }
+  public void setPolygon(Polygon polygon) {
+    this.polygon = polygon;
+  }
 }

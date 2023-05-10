@@ -15,8 +15,7 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.util.Preconditions;
-
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -25,122 +24,124 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import java.util.List;
+import no.entur.uttu.util.Preconditions;
 
 @Entity
 public class StopPointInJourneyPattern extends ProviderEntity {
 
-    @ManyToOne
-    private FlexibleStopPlace flexibleStopPlace;
+  @ManyToOne
+  private FlexibleStopPlace flexibleStopPlace;
 
-    // Reference to quay in external stop place registry (NSR), either this or flexibleStopPlace must be set
-    private String quayRef;
+  // Reference to quay in external stop place registry (NSR), either this or flexibleStopPlace must be set
+  private String quayRef;
 
-    @NotNull
-    @ManyToOne
-    private JourneyPattern journeyPattern;
+  @NotNull
+  @ManyToOne
+  private JourneyPattern journeyPattern;
 
+  @OneToOne(cascade = CascadeType.ALL)
+  private BookingArrangement bookingArrangement;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private BookingArrangement bookingArrangement;
+  // Order is reserved word in db
+  @Column(name = "order_val")
+  @Min(value = 1L, message = "The value must be positive")
+  private int order;
 
+  @OneToOne(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  private DestinationDisplay destinationDisplay;
 
-    // Order is reserved word in db
-    @Column(name = "order_val")
-    @Min(value = 1L, message = "The value must be positive")
-    private int order;
+  @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  private List<Notice> notices;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private DestinationDisplay destinationDisplay;
+  private Boolean forAlighting;
+  private Boolean forBoarding;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private List<Notice> notices;
+  public FlexibleStopPlace getFlexibleStopPlace() {
+    return flexibleStopPlace;
+  }
 
+  public void setFlexibleStopPlace(FlexibleStopPlace flexibleStopPlace) {
+    this.flexibleStopPlace = flexibleStopPlace;
+  }
 
-    private Boolean forAlighting;
-    private Boolean forBoarding;
+  public DestinationDisplay getDestinationDisplay() {
+    return destinationDisplay;
+  }
 
-    public FlexibleStopPlace getFlexibleStopPlace() {
-        return flexibleStopPlace;
-    }
+  public void setDestinationDisplay(DestinationDisplay destinationDisplay) {
+    this.destinationDisplay = destinationDisplay;
+  }
 
-    public void setFlexibleStopPlace(FlexibleStopPlace flexibleStopPlace) {
-        this.flexibleStopPlace = flexibleStopPlace;
-    }
+  public int getOrder() {
+    return order;
+  }
 
-    public DestinationDisplay getDestinationDisplay() {
-        return destinationDisplay;
-    }
+  public void setOrder(int order) {
+    this.order = order;
+  }
 
-    public void setDestinationDisplay(DestinationDisplay destinationDisplay) {
-        this.destinationDisplay = destinationDisplay;
-    }
+  public JourneyPattern getJourneyPattern() {
+    return journeyPattern;
+  }
 
-    public int getOrder() {
-        return order;
-    }
+  public void setJourneyPattern(JourneyPattern journeyPattern) {
+    this.journeyPattern = journeyPattern;
+  }
 
-    public void setOrder(int order) {
-        this.order = order;
-    }
+  public BookingArrangement getBookingArrangement() {
+    return bookingArrangement;
+  }
 
-    public JourneyPattern getJourneyPattern() {
-        return journeyPattern;
-    }
+  public void setBookingArrangement(BookingArrangement bookingArrangement) {
+    this.bookingArrangement = bookingArrangement;
+  }
 
-    public void setJourneyPattern(JourneyPattern journeyPattern) {
-        this.journeyPattern = journeyPattern;
-    }
+  public String getQuayRef() {
+    return quayRef;
+  }
 
-    public BookingArrangement getBookingArrangement() {
-        return bookingArrangement;
-    }
+  public void setQuayRef(String quayRef) {
+    this.quayRef = quayRef;
+  }
 
-    public void setBookingArrangement(BookingArrangement bookingArrangement) {
-        this.bookingArrangement = bookingArrangement;
-    }
+  public List<Notice> getNotices() {
+    return notices;
+  }
 
-    public String getQuayRef() {
-        return quayRef;
-    }
+  public void setNotices(List<Notice> notices) {
+    this.notices = notices;
+  }
 
-    public void setQuayRef(String quayRef) {
-        this.quayRef = quayRef;
-    }
+  public Boolean getForAlighting() {
+    return forAlighting;
+  }
 
-    public List<Notice> getNotices() {
-        return notices;
-    }
+  public void setForAlighting(Boolean forAlighting) {
+    this.forAlighting = forAlighting;
+  }
 
-    public void setNotices(List<Notice> notices) {
-        this.notices = notices;
-    }
+  public Boolean getForBoarding() {
+    return forBoarding;
+  }
 
-    public Boolean getForAlighting() {
-        return forAlighting;
-    }
+  public void setForBoarding(Boolean forBoarding) {
+    this.forBoarding = forBoarding;
+  }
 
-    public void setForAlighting(Boolean forAlighting) {
-        this.forAlighting = forAlighting;
-    }
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
 
-    public Boolean getForBoarding() {
-        return forBoarding;
-    }
+    Preconditions.checkArgument(
+      !Boolean.FALSE.equals(forBoarding) || !Boolean.FALSE.equals(forAlighting),
+      "%s allows neither boarding or alighting",
+      identity()
+    );
 
-    public void setForBoarding(Boolean forBoarding) {
-        this.forBoarding = forBoarding;
-    }
-
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
-
-        Preconditions.checkArgument(!Boolean.FALSE.equals(forBoarding) || !Boolean.FALSE.equals(forAlighting),
-                "%s allows neither boarding or alighting", identity());
-
-        Preconditions.checkArgument(flexibleStopPlace != null ^ quayRef != null,
-                "%s exactly one of flexibleStopPlace and quayRef should be set", identity());
-
-    }
+    Preconditions.checkArgument(
+      flexibleStopPlace != null ^ quayRef != null,
+      "%s exactly one of flexibleStopPlace and quayRef should be set",
+      identity()
+    );
+  }
 }

@@ -15,39 +15,35 @@
 
 package no.entur.uttu.util;
 
+import java.time.LocalDate;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.job.Export;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.time.LocalDate;
-
 public class ExportUtilTest {
 
-    @Test
-    public void testCreateBackupDataSetFilenameWithExportName(){
-        Export export = createExport("t1");
-        String fileName= ExportUtil.createBackupDataSetFilename(export);
+  @Test
+  public void testCreateBackupDataSetFilenameWithExportName() {
+    Export export = createExport("t1");
+    String fileName = ExportUtil.createBackupDataSetFilename(export);
 
-        Assert.assertTrue(fileName.matches("tst_t1_[0-9]*_null.zip"));
+    Assert.assertTrue(fileName.matches("tst_t1_[0-9]*_null.zip"));
+  }
 
-    }
+  @Test
+  public void testCreateBackupDataSetFilenameWithOutExportName() {
+    Export export = createExport(null);
+    String fileName = ExportUtil.createBackupDataSetFilename(export);
+    Assert.assertTrue(fileName.matches("tst_[0-9]*_null.zip"));
+  }
 
-    @Test
-    public void testCreateBackupDataSetFilenameWithOutExportName(){
-        Export export = createExport(null);
-        String fileName= ExportUtil.createBackupDataSetFilename(export);
-        Assert.assertTrue(fileName.matches("tst_[0-9]*_null.zip"));
-    }
-
-    private Export createExport(String name) {
-        Export export= new Export() {
-
-        };
-        export.setName(name);
-        Provider provider=new Provider();
-        provider.setCode("TST");
-        export.setProvider(provider);
-        return export;
-    }
+  private Export createExport(String name) {
+    Export export = new Export() {};
+    export.setName(name);
+    Provider provider = new Provider();
+    provider.setCode("TST");
+    export.setProvider(provider);
+    return export;
+  }
 }

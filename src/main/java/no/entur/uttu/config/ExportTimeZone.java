@@ -15,11 +15,10 @@
 
 package no.entur.uttu.config;
 
+import java.time.ZoneId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import java.time.ZoneId;
 
 /**
  * Default time zone for exported dates.
@@ -32,25 +31,25 @@ import java.time.ZoneId;
 @Component
 public class ExportTimeZone {
 
+  private final String defaultTimeZoneName;
 
-    private final String defaultTimeZoneName;
-            
-    private ZoneId defaultTimeZone;
+  private ZoneId defaultTimeZone;
 
-    @Autowired
-    public ExportTimeZone(@Value("${export.time.zone.default:Europe/Oslo}") String defaultTimeZoneName) {
-        this.defaultTimeZoneName = defaultTimeZoneName;
+  @Autowired
+  public ExportTimeZone(
+    @Value("${export.time.zone.default:Europe/Oslo}") String defaultTimeZoneName
+  ) {
+    this.defaultTimeZoneName = defaultTimeZoneName;
+  }
+
+  public ExportTimeZone() {
+    this.defaultTimeZoneName = "Europe/Oslo";
+  }
+
+  public ZoneId getDefaultTimeZoneId() {
+    if (defaultTimeZone == null) {
+      defaultTimeZone = ZoneId.of(defaultTimeZoneName);
     }
-
-    public ExportTimeZone() {
-        this.defaultTimeZoneName = "Europe/Oslo";
-    }
-
-
-    public ZoneId getDefaultTimeZoneId() {
-        if (defaultTimeZone==null){
-            defaultTimeZone=ZoneId.of(defaultTimeZoneName);
-        }
-        return defaultTimeZone;
-    }
+    return defaultTimeZone;
+  }
 }

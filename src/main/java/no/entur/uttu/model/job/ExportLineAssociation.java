@@ -1,48 +1,47 @@
 package no.entur.uttu.model.job;
 
-import no.entur.uttu.model.Line;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
+import no.entur.uttu.model.Line;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 public class ExportLineAssociation {
-    @Id
-    @GeneratedValue(generator = "sequence_per_table_generator")
-    protected Long id;
 
-    @ManyToOne
-    @NotNull
-    private Export export;
+  @Id
+  @GeneratedValue(generator = "sequence_per_table_generator")
+  protected Long id;
 
-    @ManyToOne
-    @OnDelete(action = OnDeleteAction.CASCADE)
-    @NotNull
-    private Line line;
+  @ManyToOne
+  @NotNull
+  private Export export;
 
-    public Long getId() {
-        return id;
-    }
+  @ManyToOne
+  @OnDelete(action = OnDeleteAction.CASCADE)
+  @NotNull
+  private Line line;
 
-    public Export getExport() {
-        return export;
-    }
+  public Long getId() {
+    return id;
+  }
 
-    public void setExport(Export export) {
-        this.export = export;
-    }
+  public Export getExport() {
+    return export;
+  }
 
-    public Line getLine() {
-        return line;
-    }
+  public void setExport(Export export) {
+    this.export = export;
+  }
 
-    public void setLine(Line line) {
-        this.line = line;
-    }
+  public Line getLine() {
+    return line;
+  }
+
+  public void setLine(Line line) {
+    this.line = line;
+  }
 }
-

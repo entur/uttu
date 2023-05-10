@@ -15,133 +15,135 @@
 
 package no.entur.uttu.model;
 
-
-import no.entur.uttu.util.Preconditions;
-
+import java.time.Duration;
+import java.time.LocalTime;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
-import java.time.Duration;
-import java.time.LocalTime;
-import java.util.List;
+import no.entur.uttu.util.Preconditions;
 
 @Entity
 public class BookingArrangement extends IdentifiedEntity {
 
-    private LocalTime latestBookingTime;
+  private LocalTime latestBookingTime;
 
-    private Duration minimumBookingPeriod;
+  private Duration minimumBookingPeriod;
 
-    private String bookingNote;
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    private List<BookingMethodEnumeration> bookingMethods;
-    @Enumerated(EnumType.STRING)
-    private BookingAccessEnumeration bookingAccess;
-    @Enumerated(EnumType.STRING)
-    private PurchaseWhenEnumeration bookWhen;
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    private List<PurchaseMomentEnumeration> buyWhen;
+  private String bookingNote;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private Contact bookingContact;
+  @ElementCollection
+  @Enumerated(EnumType.STRING)
+  private List<BookingMethodEnumeration> bookingMethods;
 
-    public LocalTime getLatestBookingTime() {
-        return latestBookingTime;
-    }
+  @Enumerated(EnumType.STRING)
+  private BookingAccessEnumeration bookingAccess;
 
-    public void setLatestBookingTime(LocalTime latestBookingTime) {
-        this.latestBookingTime = latestBookingTime;
-    }
+  @Enumerated(EnumType.STRING)
+  private PurchaseWhenEnumeration bookWhen;
 
-    public String getBookingNote() {
-        return bookingNote;
-    }
+  @ElementCollection
+  @Enumerated(EnumType.STRING)
+  private List<PurchaseMomentEnumeration> buyWhen;
 
-    public void setBookingNote(String bookingNote) {
-        this.bookingNote = bookingNote;
-    }
+  @OneToOne(cascade = CascadeType.ALL)
+  private Contact bookingContact;
 
-    public Contact getBookingContact() {
-        return bookingContact;
-    }
+  public LocalTime getLatestBookingTime() {
+    return latestBookingTime;
+  }
 
-    public void setBookingContact(Contact bookingContact) {
-        this.bookingContact = bookingContact;
-    }
+  public void setLatestBookingTime(LocalTime latestBookingTime) {
+    this.latestBookingTime = latestBookingTime;
+  }
 
-    public Duration getMinimumBookingPeriod() {
-        return minimumBookingPeriod;
-    }
+  public String getBookingNote() {
+    return bookingNote;
+  }
 
-    public void setMinimumBookingPeriod(Duration minimumBookingPeriod) {
-        this.minimumBookingPeriod = minimumBookingPeriod;
-    }
+  public void setBookingNote(String bookingNote) {
+    this.bookingNote = bookingNote;
+  }
 
-    public List<BookingMethodEnumeration> getBookingMethods() {
-        return bookingMethods;
-    }
+  public Contact getBookingContact() {
+    return bookingContact;
+  }
 
-    public void setBookingMethods(List<BookingMethodEnumeration> bookingMethods) {
-        this.bookingMethods = bookingMethods;
-    }
+  public void setBookingContact(Contact bookingContact) {
+    this.bookingContact = bookingContact;
+  }
 
-    public BookingAccessEnumeration getBookingAccess() {
-        return bookingAccess;
-    }
+  public Duration getMinimumBookingPeriod() {
+    return minimumBookingPeriod;
+  }
 
-    public void setBookingAccess(BookingAccessEnumeration bookingAccess) {
-        this.bookingAccess = bookingAccess;
-    }
+  public void setMinimumBookingPeriod(Duration minimumBookingPeriod) {
+    this.minimumBookingPeriod = minimumBookingPeriod;
+  }
 
-    public PurchaseWhenEnumeration getBookWhen() {
-        return bookWhen;
-    }
+  public List<BookingMethodEnumeration> getBookingMethods() {
+    return bookingMethods;
+  }
 
-    public void setBookWhen(PurchaseWhenEnumeration bookWhen) {
-        this.bookWhen = bookWhen;
-    }
+  public void setBookingMethods(List<BookingMethodEnumeration> bookingMethods) {
+    this.bookingMethods = bookingMethods;
+  }
 
-    public List<PurchaseMomentEnumeration> getBuyWhen() {
-        return buyWhen;
-    }
+  public BookingAccessEnumeration getBookingAccess() {
+    return bookingAccess;
+  }
 
-    public void setBuyWhen(List<PurchaseMomentEnumeration> buyWhen) {
-        this.buyWhen = buyWhen;
-    }
+  public void setBookingAccess(BookingAccessEnumeration bookingAccess) {
+    this.bookingAccess = bookingAccess;
+  }
 
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
+  public PurchaseWhenEnumeration getBookWhen() {
+    return bookWhen;
+  }
 
-        // notExist(BookWhen xor LatestBookingTime)
-        Preconditions.checkArgument(
-                getLatestBookingTime() == null || getBookWhen() != null,
-                "%s booking information must have BookWhen when LatestBookingTime is defined",
-                this
-        );
-        Preconditions.checkArgument(
-                getBookWhen() == null || getLatestBookingTime() != null,
-                "%s booking information must have LatestBookingTime when BookWhen is defined",
-                this
-        );
+  public void setBookWhen(PurchaseWhenEnumeration bookWhen) {
+    this.bookWhen = bookWhen;
+  }
 
-        Preconditions.checkArgument(
-                // notExist(BookWhen and MinimumBookingPeriod)
-                getMinimumBookingPeriod() == null || getBookWhen() == null,
-                "%s booking information can't have BookWhen when MinimumBookingPeriod is defined",
-                this
-        );
+  public List<PurchaseMomentEnumeration> getBuyWhen() {
+    return buyWhen;
+  }
 
-        Preconditions.checkArgument(
-                // notExist( not(BookWhen) and not(MinimumBookingPeriod))
-                getBookWhen() != null || getMinimumBookingPeriod() != null,
-                "%s booking information must have BookWhen or MinimumBookingPeriod",
-                this
-        );
-    }
+  public void setBuyWhen(List<PurchaseMomentEnumeration> buyWhen) {
+    this.buyWhen = buyWhen;
+  }
+
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
+
+    // notExist(BookWhen xor LatestBookingTime)
+    Preconditions.checkArgument(
+      getLatestBookingTime() == null || getBookWhen() != null,
+      "%s booking information must have BookWhen when LatestBookingTime is defined",
+      this
+    );
+    Preconditions.checkArgument(
+      getBookWhen() == null || getLatestBookingTime() != null,
+      "%s booking information must have LatestBookingTime when BookWhen is defined",
+      this
+    );
+
+    Preconditions.checkArgument(
+      // notExist(BookWhen and MinimumBookingPeriod)
+      getMinimumBookingPeriod() == null || getBookWhen() == null,
+      "%s booking information can't have BookWhen when MinimumBookingPeriod is defined",
+      this
+    );
+
+    Preconditions.checkArgument(
+      // notExist( not(BookWhen) and not(MinimumBookingPeriod))
+      getBookWhen() != null || getMinimumBookingPeriod() != null,
+      "%s booking information must have BookWhen or MinimumBookingPeriod",
+      this
+    );
+  }
 }

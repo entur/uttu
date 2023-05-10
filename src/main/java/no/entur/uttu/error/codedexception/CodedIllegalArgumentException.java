@@ -15,34 +15,36 @@
 
 package no.entur.uttu.error.codedexception;
 
+import java.util.Map;
+import java.util.Optional;
 import no.entur.uttu.error.ErrorCode;
 import no.entur.uttu.error.SubCode;
 import no.entur.uttu.error.codederror.CodedError;
 
-import java.util.Map;
-import java.util.Optional;
+public class CodedIllegalArgumentException
+  extends IllegalArgumentException
+  implements CodedException {
 
-public class CodedIllegalArgumentException extends IllegalArgumentException implements CodedException {
-    private final ErrorCode code;
-    private final SubCode subCode;
-    private final Map<String, Object> metadata;
+  private final ErrorCode code;
+  private final SubCode subCode;
+  private final Map<String, Object> metadata;
 
-    public CodedIllegalArgumentException(String message, CodedError codedError) {
-        super(message);
-        this.code = codedError.getErrorCode();
-        this.subCode = codedError.getSubCode();
-        this.metadata = codedError.getMetadata();
-    }
+  public CodedIllegalArgumentException(String message, CodedError codedError) {
+    super(message);
+    this.code = codedError.getErrorCode();
+    this.subCode = codedError.getSubCode();
+    this.metadata = codedError.getMetadata();
+  }
 
-    public String getCode() {
-        return Optional.ofNullable(code).map(ErrorCode::toString).orElse(null);
-    }
+  public String getCode() {
+    return Optional.ofNullable(code).map(ErrorCode::toString).orElse(null);
+  }
 
-    public String getSubCode() {
-        return Optional.ofNullable(subCode).map(SubCode::toString).orElse(null);
-    }
+  public String getSubCode() {
+    return Optional.ofNullable(subCode).map(SubCode::toString).orElse(null);
+  }
 
-    public Map<String, Object> getMetadata() {
-        return metadata;
-    }
+  public Map<String, Object> getMetadata() {
+    return metadata;
+  }
 }

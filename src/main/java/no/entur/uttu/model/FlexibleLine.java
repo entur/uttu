@@ -15,79 +15,99 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.error.codederror.CodedError;
-import no.entur.uttu.error.codes.ErrorCodeEnumeration;
-import no.entur.uttu.util.Preconditions;
-
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
+import no.entur.uttu.util.Preconditions;
 
 @Entity
 public class FlexibleLine extends Line {
 
-    @Enumerated(EnumType.STRING)
-    @NotNull
-    private FlexibleLineTypeEnumeration flexibleLineType;
+  @Enumerated(EnumType.STRING)
+  @NotNull
+  private FlexibleLineTypeEnumeration flexibleLineType;
 
-    @OneToOne(cascade = CascadeType.ALL)
-    private BookingArrangement bookingArrangement;
+  @OneToOne(cascade = CascadeType.ALL)
+  private BookingArrangement bookingArrangement;
 
-    public FlexibleLineTypeEnumeration getFlexibleLineType() {
-        return flexibleLineType;
-    }
+  public FlexibleLineTypeEnumeration getFlexibleLineType() {
+    return flexibleLineType;
+  }
 
-    public void setFlexibleLineType(FlexibleLineTypeEnumeration flexibleLineType) {
-        this.flexibleLineType = flexibleLineType;
-    }
+  public void setFlexibleLineType(FlexibleLineTypeEnumeration flexibleLineType) {
+    this.flexibleLineType = flexibleLineType;
+  }
 
-    public BookingArrangement getBookingArrangement() {
-        return bookingArrangement;
-    }
+  public BookingArrangement getBookingArrangement() {
+    return bookingArrangement;
+  }
 
-    public void setBookingArrangement(BookingArrangement bookingArrangement) {
-        this.bookingArrangement = bookingArrangement;
-    }
+  public void setBookingArrangement(BookingArrangement bookingArrangement) {
+    this.bookingArrangement = bookingArrangement;
+  }
 
-    @Override
-    public void accept(LineVisitor lineVisitor) {
-        lineVisitor.visitFlexibleLine(this);
-    }
+  @Override
+  public void accept(LineVisitor lineVisitor) {
+    lineVisitor.visitFlexibleLine(this);
+  }
 
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
 
-        Preconditions.checkArgument(bookingInformationPresentInHierarchy(),
-                CodedError.fromErrorCode(ErrorCodeEnumeration.FLEXIBLE_LINE_REQUIRES_BOOKING),
-                "%s requires booking information on line, journey pattern or service journey", identity());
+    Preconditions.checkArgument(
+      bookingInformationPresentInHierarchy(),
+      CodedError.fromErrorCode(ErrorCodeEnumeration.FLEXIBLE_LINE_REQUIRES_BOOKING),
+      "%s requires booking information on line, journey pattern or service journey",
+      identity()
+    );
 
-        validateBookingInformations();
-    }
+    validateBookingInformations();
+  }
 
-    private boolean bookingInformationPresentInHierarchy() {
-        return this.bookingArrangement != null ||
-                this.getJourneyPatterns().stream().anyMatch(jp ->
-                        jp.getPointsInSequence().stream().anyMatch(point -> point.getBookingArrangement() != null) ||
-                                jp.getServiceJourneys().stream().anyMatch(sj -> sj.getBookingArrangement() != null)
-                );
+  private boolean bookingInformationPresentInHierarchy() {
+    return (
+      this.bookingArrangement != null ||
+      this.getJourneyPatterns()
+        .stream()
+        .anyMatch(jp ->
+          jp
+            .getPointsInSequence()
+            .stream()
+            .anyMatch(point -> point.getBookingArrangement() != null) ||
+          jp
+            .getServiceJourneys()
+            .stream()
+            .anyMatch(sj -> sj.getBookingArrangement() != null)
+        )
+    );
+  }
 
-    }
+  private void validateBookingInformations() {
+    validateBookingInformation(this.bookingArrangement);
+    this.getJourneyPatterns()
+      .stream()
+      .forEach(jp -> {
+        jp
+          .getPointsInSequence()
+          .stream()
+          .forEach(stopPoint ->
+            validateBookingInformation(stopPoint.getBookingArrangement())
+          );
+        jp
+          .getServiceJourneys()
+          .stream()
+          .forEach(sj -> validateBookingInformation(sj.getBookingArrangement()));
+      });
+  }
 
-    private void validateBookingInformations() {
-        validateBookingInformation(this.bookingArrangement);
-        this.getJourneyPatterns().stream().forEach(jp -> {
-            jp.getPointsInSequence().stream().forEach(stopPoint -> validateBookingInformation(stopPoint.getBookingArrangement()));
-            jp.getServiceJourneys().stream().forEach(sj -> validateBookingInformation(sj.getBookingArrangement()));
-        });
-
-    }
-
-    private void validateBookingInformation(BookingArrangement bookingArrangement) {
-        if (bookingArrangement == null) return;
-        bookingArrangement.checkPersistable();
-    }
+  private void validateBookingInformation(BookingArrangement bookingArrangement) {
+    if (bookingArrangement == null) return;
+    bookingArrangement.checkPersistable();
+  }
 }

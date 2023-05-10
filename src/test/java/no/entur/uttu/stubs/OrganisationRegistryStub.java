@@ -15,6 +15,9 @@
 
 package no.entur.uttu.stubs;
 
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
@@ -26,53 +29,48 @@ import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
 import org.springframework.stereotype.Component;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-
 @Component
 public class OrganisationRegistryStub implements OrganisationRegistry {
 
-    private List<String> validOperators = Collections.singletonList("22");
+  private List<String> validOperators = Collections.singletonList("22");
 
-    @Override
-    public Optional<GeneralOrganisation> getOrganisation(String organisationId) {
-        GeneralOrganisation generalOrganisation = new GeneralOrganisation()
-                .withId(organisationId)
-                .withVersion("1")
-                .withName(new MultilingualString().withValue("OrgName"))
-                .withContactDetails(
-                        new ContactStructure()
-                                .withUrl("https://name.org")
-                )
-                .withKeyList(
-                        new KeyListStructure()
-                                .withKeyValue(
-                                        new KeyValueStructure()
-                                                .withKey("LegacyId")
-                                                .withValue("TST:Authority:TstAuth,TST:Operator:TstOper")
-                                )
-                );
+  @Override
+  public Optional<GeneralOrganisation> getOrganisation(String organisationId) {
+    GeneralOrganisation generalOrganisation = new GeneralOrganisation()
+      .withId(organisationId)
+      .withVersion("1")
+      .withName(new MultilingualString().withValue("OrgName"))
+      .withContactDetails(new ContactStructure().withUrl("https://name.org"))
+      .withKeyList(
+        new KeyListStructure()
+          .withKeyValue(
+            new KeyValueStructure()
+              .withKey("LegacyId")
+              .withValue("TST:Authority:TstAuth,TST:Operator:TstOper")
+          )
+      );
 
-        return Optional.of(generalOrganisation);
+    return Optional.of(generalOrganisation);
+  }
+
+  @Override
+  public String getVerifiedOperatorRef(String operatorRef) {
+    if (!validOperators.contains(operatorRef)) {
+      throw new CodedIllegalArgumentException(
+        "",
+        CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_NOT_VALID_OPERATOR)
+      );
     }
+    return operatorRef;
+  }
 
-    @Override
-    public String getVerifiedOperatorRef(String operatorRef) {
-        if (!validOperators.contains(operatorRef)) {
-            throw new CodedIllegalArgumentException("", CodedError.fromErrorCode(ErrorCodeEnumeration.ORGANISATION_NOT_VALID_OPERATOR));
-        }
-        return operatorRef;
-    }
+  @Override
+  public String getVerifiedAuthorityRef(String authorityRef) {
+    return authorityRef;
+  }
 
-    @Override
-    public String getVerifiedAuthorityRef(String authorityRef) {
-        return authorityRef;
-    }
-
-    @Override
-    public List<GeneralOrganisation> getOrganisations() {
-        return null;
-    }
-
+  @Override
+  public List<GeneralOrganisation> getOrganisations() {
+    return null;
+  }
 }

@@ -15,24 +15,23 @@
 
 package no.entur.uttu.repository.generic;
 
+import java.util.List;
 import no.entur.uttu.model.ProviderEntity;
 import org.springframework.data.repository.NoRepositoryBean;
 import org.springframework.data.repository.Repository;
 
-import java.util.List;
-
 @NoRepositoryBean
-public interface ProviderEntityRepository<T extends ProviderEntity> extends Repository<T, Long> {
+public interface ProviderEntityRepository<T extends ProviderEntity>
+  extends Repository<T, Long> {
+  List<T> findAll();
 
-    List<T> findAll();
+  List<T> findByIds(List<String> netexIds);
 
-    List<T> findByIds(List<String> netexIds);
+  T getOne(String netexId);
 
-    T getOne(String netexId);
+  <S extends T> S save(S entity);
 
-    <S extends T> S save(S entity);
+  T delete(String netexId);
 
-    T delete(String netexId);
-
-    void deleteAll();
+  void deleteAll();
 }

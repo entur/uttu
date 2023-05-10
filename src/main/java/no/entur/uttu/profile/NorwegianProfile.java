@@ -15,67 +15,70 @@
 
 package no.entur.uttu.profile;
 
-import no.entur.uttu.model.VehicleModeEnumeration;
-import no.entur.uttu.model.VehicleSubmodeEnumeration;
-import org.springframework.stereotype.Component;
+import static no.entur.uttu.model.VehicleSubmodeEnumeration.*;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static no.entur.uttu.model.VehicleSubmodeEnumeration.*;
-
+import no.entur.uttu.model.VehicleModeEnumeration;
+import no.entur.uttu.model.VehicleSubmodeEnumeration;
+import org.springframework.stereotype.Component;
 
 @Component
 public class NorwegianProfile implements Profile {
 
-    private static final List<VehicleSubmodeEnumeration> LEGAL_VEHICLE_SUBMODES = Arrays.asList(
-            DOMESTIC_FLIGHT,
-            HELICOPTER_SERVICE,
-            INTERNATIONAL_FLIGHT,
-            AIRPORT_LINK_BUS,
-            EXPRESS_BUS,
-            LOCAL_BUS,
-            NIGHT_BUS,
-            RAIL_REPLACEMENT_BUS,
-            REGIONAL_BUS,
-            SCHOOL_BUS,
-            SHUTTLE_BUS,
-            SIGHTSEEING_BUS,
-            SIGHTSEEING_SERVICE,
-            TELECABIN,
-            INTERNATIONAL_COACH,
-            NATIONAL_COACH,
-            TOURIST_COACH,
-            FUNICULAR,
-            METRO,
-            AIRPORT_LINK_RAIL,
-            INTERNATIONAL,
-            INTERREGIONAL_RAIL,
-            LOCAL,
-            LONG_DISTANCE,
-            NIGHT_RAIL,
-            REGIONAL_RAIL,
-            TOURIST_RAILWAY,
-            CITY_TRAM,
-            LOCAL_TRAM,
-            HIGH_SPEED_PASSENGER_SERVICE,
-            HIGH_SPEED_VEHICLE_SERVICE,
-            INTERNATIONAL_CAR_FERRY,
-            INTERNATIONAL_PASSENGER_FERRY,
-            LOCAL_CAR_FERRY,
-            LOCAL_PASSENGER_FERRY,
-            NATIONAL_CAR_FERRY,
-            SIGHTSEEING_SERVICE
+  private static final List<VehicleSubmodeEnumeration> LEGAL_VEHICLE_SUBMODES =
+    Arrays.asList(
+      DOMESTIC_FLIGHT,
+      HELICOPTER_SERVICE,
+      INTERNATIONAL_FLIGHT,
+      AIRPORT_LINK_BUS,
+      EXPRESS_BUS,
+      LOCAL_BUS,
+      NIGHT_BUS,
+      RAIL_REPLACEMENT_BUS,
+      REGIONAL_BUS,
+      SCHOOL_BUS,
+      SHUTTLE_BUS,
+      SIGHTSEEING_BUS,
+      SIGHTSEEING_SERVICE,
+      TELECABIN,
+      INTERNATIONAL_COACH,
+      NATIONAL_COACH,
+      TOURIST_COACH,
+      FUNICULAR,
+      METRO,
+      AIRPORT_LINK_RAIL,
+      INTERNATIONAL,
+      INTERREGIONAL_RAIL,
+      LOCAL,
+      LONG_DISTANCE,
+      NIGHT_RAIL,
+      REGIONAL_RAIL,
+      TOURIST_RAILWAY,
+      CITY_TRAM,
+      LOCAL_TRAM,
+      HIGH_SPEED_PASSENGER_SERVICE,
+      HIGH_SPEED_VEHICLE_SERVICE,
+      INTERNATIONAL_CAR_FERRY,
+      INTERNATIONAL_PASSENGER_FERRY,
+      LOCAL_CAR_FERRY,
+      LOCAL_PASSENGER_FERRY,
+      NATIONAL_CAR_FERRY,
+      SIGHTSEEING_SERVICE
     );
 
-    @Override
-    public List<VehicleModeEnumeration> getLegalVehicleModes() {
-        return getLegalVehicleSubmodes().stream().map(VehicleSubmodeEnumeration::getVehicleMode).distinct().collect(Collectors.toList());
-    }
+  @Override
+  public List<VehicleModeEnumeration> getLegalVehicleModes() {
+    return getLegalVehicleSubmodes()
+      .stream()
+      .map(VehicleSubmodeEnumeration::getVehicleMode)
+      .distinct()
+      .collect(Collectors.toList());
+  }
 
-    @Override
-    public List<VehicleSubmodeEnumeration> getLegalVehicleSubmodes() {
-        return LEGAL_VEHICLE_SUBMODES;
-    }
+  @Override
+  public List<VehicleSubmodeEnumeration> getLegalVehicleSubmodes() {
+    return LEGAL_VEHICLE_SUBMODES;
+  }
 }

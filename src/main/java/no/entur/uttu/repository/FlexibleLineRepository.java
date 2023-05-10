@@ -19,9 +19,6 @@ import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 
-
 public interface FlexibleLineRepository extends ProviderEntityRepository<FlexibleLine> {
-
-
-    int countByNetwork(Network network);
+  int countByNetwork(Network network);
 }

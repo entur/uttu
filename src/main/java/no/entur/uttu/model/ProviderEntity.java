@@ -16,18 +16,17 @@
 package no.entur.uttu.model;
 
 import com.google.common.base.Joiner;
-import no.entur.uttu.util.Preconditions;
-import no.entur.uttu.config.Context;
-
+import java.text.MessageFormat;
+import java.util.Objects;
+import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
-import java.text.MessageFormat;
-import java.util.Objects;
-import java.util.UUID;
+import no.entur.uttu.config.Context;
+import no.entur.uttu.util.Preconditions;
 
 /**
  * Abstract superclass for all entities belong to a provider.
@@ -35,86 +34,96 @@ import java.util.UUID;
 @MappedSuperclass
 public abstract class ProviderEntity extends IdentifiedEntity {
 
-    @ManyToOne
-    @NotNull
-    protected Provider provider;
+  @ManyToOne
+  @NotNull
+  protected Provider provider;
 
-    @NotNull
-    @Column(unique = true)
-    protected String netexId;
+  @NotNull
+  @Column(unique = true)
+  protected String netexId;
 
-    public Provider getProvider() {
-        return provider;
-    }
+  public Provider getProvider() {
+    return provider;
+  }
 
-    public void setProvider(Provider provider) {
-        this.provider = provider;
-    }
+  public void setProvider(Provider provider) {
+    this.provider = provider;
+  }
 
-    public String getNetexId() {
-        return netexId;
-    }
+  public String getNetexId() {
+    return netexId;
+  }
 
-    public String getId() {
-        return getNetexId();
-    }
+  public String getId() {
+    return getNetexId();
+  }
 
-    public void setNetexId(String netexId) {
-        this.netexId = netexId;
-    }
+  public void setNetexId(String netexId) {
+    this.netexId = netexId;
+  }
 
-    public String getNetexVersion() {
-        return Objects.toString(version);
-    }
+  public String getNetexVersion() {
+    return Objects.toString(version);
+  }
 
-    @PrePersist
-    public void setNetexIdIfMissing() {
-        this.setNetexId(Joiner.on(":").join(getProvider().getCodespace().getXmlns(), getNetexName(), UUID.randomUUID()));
-    }
+  @PrePersist
+  public void setNetexIdIfMissing() {
+    this.setNetexId(
+        Joiner
+          .on(":")
+          .join(
+            getProvider().getCodespace().getXmlns(),
+            getNetexName(),
+            UUID.randomUUID()
+          )
+      );
+  }
 
-    public String getNetexName() {
-        return this.getClass().getSimpleName();
-    }
+  public String getNetexName() {
+    return this.getClass().getSimpleName();
+  }
 
+  @PreUpdate
+  protected void verifyProvider() {
+    String providerCode = Context.getVerifiedProviderCode();
+    Preconditions.checkArgument(
+      Objects.equals(this.getProvider().getCode(), providerCode),
+      "Provider mismatch, attempting to store entity[½s] in context of provider[%s] .",
+      this,
+      providerCode
+    );
+  }
 
-    @PreUpdate
-    protected void verifyProvider() {
-        String providerCode = Context.getVerifiedProviderCode();
-        Preconditions.checkArgument(Objects.equals(this.getProvider().getCode(), providerCode),
-                "Provider mismatch, attempting to store entity[½s] in context of provider[%s] .", this, providerCode);
-    }
+  public Ref getRef() {
+    return new Ref(getNetexId(), getNetexVersion());
+  }
 
-    public Ref getRef() {
-        return new Ref(getNetexId(), getNetexVersion());
-    }
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    ProviderEntity that = (ProviderEntity) o;
 
-        ProviderEntity that = (ProviderEntity) o;
+    if (
+      netexId != null ? !netexId.equals(that.netexId) : that.netexId != null
+    ) return false;
+    return version != null ? version.equals(that.version) : that.version == null;
+  }
 
-        if (netexId != null ? !netexId.equals(that.netexId) : that.netexId != null) return false;
-        return version != null ? version.equals(that.version) : that.version == null;
-    }
+  @Override
+  public int hashCode() {
+    int result = netexId != null ? netexId.hashCode() : 0;
+    result = 31 * result + (version != null ? version.hashCode() : 0);
+    return result;
+  }
 
-    @Override
-    public int hashCode() {
-        int result = netexId != null ? netexId.hashCode() : 0;
-        result = 31 * result + (version != null ? version.hashCode() : 0);
-        return result;
-    }
+  public String identity() {
+    return MessageFormat.format("{0}[{1}]", getClass().getSimpleName(), getNetexId());
+  }
 
-
-    public String identity() {
-        return MessageFormat.format("{0}[{1}]", getClass().getSimpleName(), getNetexId());
-    }
-
-    @Override
-    public String toString() {
-        return super.toString() +
-                       ", provider=" + provider +
-                       ", netexId='" + netexId + '\'';
-    }
+  @Override
+  public String toString() {
+    return super.toString() + ", provider=" + provider + ", netexId='" + netexId + '\'';
+  }
 }

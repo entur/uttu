@@ -23,23 +23,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DataSpaceCleaner {
 
-    @Autowired
-    private FlexibleLineRepository flexibleLineRepository;
+  @Autowired
+  private FlexibleLineRepository flexibleLineRepository;
 
-    @Autowired
-    private FlexibleStopPlaceRepository flexibleStopPlaceRepository;
+  @Autowired
+  private FlexibleStopPlaceRepository flexibleStopPlaceRepository;
 
-    @Autowired
-    private NetworkRepository networkRepository;
+  @Autowired
+  private NetworkRepository networkRepository;
 
-    @Autowired
-    private NoticeRepository noticeRepository;
+  @Autowired
+  private NoticeRepository noticeRepository;
 
-
-    public void clean() {
-        flexibleLineRepository.deleteAll();
-        flexibleStopPlaceRepository.deleteAll();
-        networkRepository.deleteAll();
-        noticeRepository.deleteAll();
-    }
+  public void clean() {
+    flexibleLineRepository.deleteAll();
+    flexibleStopPlaceRepository.deleteAll();
+    networkRepository.deleteAll();
+    noticeRepository.deleteAll();
+  }
 }

@@ -17,35 +17,46 @@ package no.entur.uttu.graphql.fetchers;
 
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codederror.EntityHasReferencesCodedError;
-import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.repository.StopPointInJourneyPatternRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
+import no.entur.uttu.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service("flexibleStopPlaceUpdater")
 @Transactional
-public class FlexibleStopPlaceUpdater extends AbstractProviderEntityUpdater<FlexibleStopPlace> {
+public class FlexibleStopPlaceUpdater
+  extends AbstractProviderEntityUpdater<FlexibleStopPlace> {
 
-    @Autowired
-    private StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository;
+  @Autowired
+  private StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository;
 
-    public FlexibleStopPlaceUpdater(AbstractProviderEntityMapper<FlexibleStopPlace> mapper, ProviderEntityRepository<FlexibleStopPlace> repository) {
-        super(mapper, repository);
+  public FlexibleStopPlaceUpdater(
+    AbstractProviderEntityMapper<FlexibleStopPlace> mapper,
+    ProviderEntityRepository<FlexibleStopPlace> repository
+  ) {
+    super(mapper, repository);
+  }
+
+  @Override
+  protected void verifyDeleteAllowed(String id) {
+    FlexibleStopPlace entity = repository.getOne(id);
+    if (entity != null) {
+      int noOfLines = stopPointInJourneyPatternRepository.countByFlexibleStopPlace(
+        entity
+      );
+      CodedError error = EntityHasReferencesCodedError.fromNumberOfReferences(noOfLines);
+      Preconditions.checkArgument(
+        noOfLines == 0,
+        error,
+        "%s cannot be deleted as it is referenced by %s StopPointInJourneyPatterns(s)",
+        entity.identity(),
+        noOfLines
+      );
     }
-
-    @Override
-    protected void verifyDeleteAllowed(String id) {
-        FlexibleStopPlace entity = repository.getOne(id);
-        if (entity != null) {
-            int noOfLines = stopPointInJourneyPatternRepository.countByFlexibleStopPlace(entity);
-            CodedError error = EntityHasReferencesCodedError.fromNumberOfReferences(noOfLines);
-            Preconditions.checkArgument(noOfLines == 0, error, "%s cannot be deleted as it is referenced by %s StopPointInJourneyPatterns(s)", entity.identity(), noOfLines);
-        }
-        super.verifyDeleteAllowed(id);
-    }
+    super.verifyDeleteAllowed(id);
+  }
 }
-

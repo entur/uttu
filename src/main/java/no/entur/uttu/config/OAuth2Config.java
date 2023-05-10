@@ -33,32 +33,36 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 @Profile("!local & !test")
 public class OAuth2Config {
 
-    /**
-     * Extract role assignments from a JWT token.
-     *
-     * @return
-     */
-    @Bean
-    public RoleAssignmentExtractor roleAssignmentExtractor() {
-        return new JwtRoleAssignmentExtractor();
-    }
+  /**
+   * Extract role assignments from a JWT token.
+   *
+   * @return
+   */
+  @Bean
+  public RoleAssignmentExtractor roleAssignmentExtractor() {
+    return new JwtRoleAssignmentExtractor();
+  }
 
-    /**
-     * Build a @{@link JwtDecoder} for RoR Auth0 domain.
-     *
-     * @return a @{@link JwtDecoder} for Auth0.
-     */
-    @Bean
-    public JwtDecoder rorAuth0JwtDecoder(OAuth2ResourceServerProperties properties,
-                                         @Value("${uttu.oauth2.resourceserver.auth0.ror.jwt.audience}") String rorAuth0Audience,
-                                         @Value("${uttu.oauth2.resourceserver.auth0.ror.claim.namespace}") String rorAuth0ClaimNamespace) {
-
-        String rorAuth0Issuer = properties.getJwt().getIssuerUri();
-        return new RoRJwtDecoderBuilder().withIssuer(rorAuth0Issuer)
-                .withAudience(rorAuth0Audience)
-                .withAuth0ClaimNamespace(rorAuth0ClaimNamespace)
-                .build();
-    }
-
+  /**
+   * Build a @{@link JwtDecoder} for RoR Auth0 domain.
+   *
+   * @return a @{@link JwtDecoder} for Auth0.
+   */
+  @Bean
+  public JwtDecoder rorAuth0JwtDecoder(
+    OAuth2ResourceServerProperties properties,
+    @Value(
+      "${uttu.oauth2.resourceserver.auth0.ror.jwt.audience}"
+    ) String rorAuth0Audience,
+    @Value(
+      "${uttu.oauth2.resourceserver.auth0.ror.claim.namespace}"
+    ) String rorAuth0ClaimNamespace
+  ) {
+    String rorAuth0Issuer = properties.getJwt().getIssuerUri();
+    return new RoRJwtDecoderBuilder()
+      .withIssuer(rorAuth0Issuer)
+      .withAudience(rorAuth0Audience)
+      .withAuth0ClaimNamespace(rorAuth0ClaimNamespace)
+      .build();
+  }
 }
-

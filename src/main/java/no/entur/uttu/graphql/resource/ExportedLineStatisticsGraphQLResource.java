@@ -15,53 +15,60 @@
 
 package no.entur.uttu.graphql.resource;
 
+import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
+import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
+
 import graphql.GraphQL;
 import io.swagger.annotations.Api;
+import java.util.Map;
+import javax.annotation.PostConstruct;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.LinesGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.util.Map;
-
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
-
 @Component
 @Api
 @Path("exportedLineStatistics/graphql")
 public class ExportedLineStatisticsGraphQLResource {
 
-    @Autowired
-    private LinesGraphQLSchema linesSchema;
+  @Autowired
+  private LinesGraphQLSchema linesSchema;
 
-    @Autowired
-    private GraphQLResourceHelper graphQLResourceHelper;
+  @Autowired
+  private GraphQLResourceHelper graphQLResourceHelper;
 
-    private GraphQL linesGraphQL;
+  private GraphQL linesGraphQL;
 
-    @PostConstruct
-    public void init() {
-        linesGraphQL = GraphQL.newGraphQL(linesSchema.getGraphQLSchema()).build();
+  @PostConstruct
+  public void init() {
+    linesGraphQL = GraphQL.newGraphQL(linesSchema.getGraphQLSchema()).build();
+  }
+
+  @POST
+  @SuppressWarnings("unchecked")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @PreAuthorize(
+    "hasRole('" +
+    ROLE_ROUTE_DATA_ADMIN +
+    "') " +
+    "or hasRole('" +
+    ROLE_ROUTE_DATA_EDIT +
+    "') " +
+    "and @providerAuthenticationService.hasRoleForProvider(authentication,'" +
+    ROLE_ROUTE_DATA_EDIT +
+    "', #request.get('variables').get('providerCode'))"
+  )
+  public Response executeLinesStatement(Map<String, Object> request) {
+    try {
+      return graphQLResourceHelper.executeStatement(linesGraphQL, request);
+    } finally {
+      Context.clear();
     }
-
-    @POST
-    @SuppressWarnings("unchecked")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') " +
-            "or hasRole('" + ROLE_ROUTE_DATA_EDIT + "') " +
-            "and @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "', #request.get('variables').get('providerCode'))")
-    public Response executeLinesStatement(Map<String, Object> request) {
-        try {
-            return graphQLResourceHelper.executeStatement(linesGraphQL, request);
-        } finally {
-            Context.clear();
-        }
-    }
+  }
 }

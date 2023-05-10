@@ -25,7 +25,10 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class FlexibleLineUpdater extends AbstractProviderEntityUpdater<FlexibleLine> {
 
-    public FlexibleLineUpdater(AbstractProviderEntityMapper<FlexibleLine> mapper, ProviderEntityRepository<FlexibleLine> repository) {
-        super(mapper, repository);
-    }
+  public FlexibleLineUpdater(
+    AbstractProviderEntityMapper<FlexibleLine> mapper,
+    ProviderEntityRepository<FlexibleLine> repository
+  ) {
+    super(mapper, repository);
+  }
 }
