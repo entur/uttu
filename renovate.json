@@ -1,3 +1,10 @@
 {
-  "extends": ["github>entur/ror-renovate-config"]
+  "extends": ["github>entur/ror-renovate-config"],
+  "packageRules": [
+    {
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["graphql-java"],
+      "versioning": "regex:(?<major>\\\\d+)\\\\.(?<minor>\\\\d+)$"
+    }
+  ]
 }
