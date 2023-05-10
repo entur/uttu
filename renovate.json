@@ -3,8 +3,8 @@
   "packageRules": [
     {
       "matchDatasources": ["maven"],
-      "matchPackageNames": ["graphql-java"],
-      "versioning": "regex:(?<major>\\\\d+)\\\\.(?<minor>\\\\d+)$"
+      "matchPackageNames": ["com.graphql-java:graphql-java", "com.graphql-java:graphql-java-extended-scalars"],
+      "versioning": "semver-coerced"
     }
   ]
 }
