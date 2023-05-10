@@ -3,6 +3,10 @@
 
 Back-end for Nplan, a simple timetable editor. Front-end is [Enki](https://github.com/entur/enki).
 
+## Codestyle
+Uttu uses [Prettier Java](https://github.com/jhipster/prettier-java). Use `mvn prettier:write` to reformat code before
+pushing changes. You can also configure your IDE to reformat code when you save a file. 
+
 ## Graphql 
 https://api.dev.entur.io/timetable-admin/v1/flexible-lines/providers/graphql
 
