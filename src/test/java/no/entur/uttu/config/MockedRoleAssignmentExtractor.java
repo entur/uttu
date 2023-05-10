@@ -15,13 +15,12 @@
 
 package no.entur.uttu.config;
 
+import java.util.Arrays;
+import java.util.List;
 import org.rutebanken.helper.organisation.RoleAssignment;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * For assigned user roles in integration tests. Defaults to full access.
@@ -29,35 +28,35 @@ import java.util.List;
 @Service
 public class MockedRoleAssignmentExtractor implements RoleAssignmentExtractor {
 
-    private List<RoleAssignment> nextReturnedRoleAssignmentList;
+  private List<RoleAssignment> nextReturnedRoleAssignmentList;
 
+  @Override
+  public List<RoleAssignment> getRoleAssignmentsForUser() {
+    List<RoleAssignment> returnValue = nextReturnedRoleAssignmentList;
 
-    @Override
-    public List<RoleAssignment> getRoleAssignmentsForUser() {
-        List<RoleAssignment> returnValue = nextReturnedRoleAssignmentList;
-
-        if (returnValue == null) {
-            returnValue = RoleAssignmentListBuilder.builder().withAccessAllAreas().build();
-        }
-
-        return returnValue;
-
+    if (returnValue == null) {
+      returnValue = RoleAssignmentListBuilder.builder().withAccessAllAreas().build();
     }
 
-    @Override
-    public List<RoleAssignment> getRoleAssignmentsForUser(Authentication authentication) {
-        return getRoleAssignmentsForUser();
-    }
+    return returnValue;
+  }
 
-    public void setNextReturnedRoleAssignment(List<RoleAssignment> nextReturnedRoleAssignmentList) {
-        this.nextReturnedRoleAssignmentList = nextReturnedRoleAssignmentList;
-    }
+  @Override
+  public List<RoleAssignment> getRoleAssignmentsForUser(Authentication authentication) {
+    return getRoleAssignmentsForUser();
+  }
 
-    public void setNextReturnedRoleAssignment(RoleAssignment roleAssignment) {
-        this.nextReturnedRoleAssignmentList = Arrays.asList(roleAssignment);
-    }
+  public void setNextReturnedRoleAssignment(
+    List<RoleAssignment> nextReturnedRoleAssignmentList
+  ) {
+    this.nextReturnedRoleAssignmentList = nextReturnedRoleAssignmentList;
+  }
 
-    public void reset() {
-        nextReturnedRoleAssignmentList = null;
-    }
+  public void setNextReturnedRoleAssignment(RoleAssignment roleAssignment) {
+    this.nextReturnedRoleAssignmentList = Arrays.asList(roleAssignment);
+  }
+
+  public void reset() {
+    nextReturnedRoleAssignmentList = null;
+  }
 }

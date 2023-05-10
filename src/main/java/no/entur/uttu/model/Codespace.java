@@ -15,39 +15,40 @@
 
 package no.entur.uttu.model;
 
+import static no.entur.uttu.model.Constraints.CODESPACE_UNIQUE_XMLNS;
+
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 import javax.validation.constraints.NotNull;
 
-import static no.entur.uttu.model.Constraints.CODESPACE_UNIQUE_XMLNS;
-
 @Entity
 @Table(
-        uniqueConstraints = {
-                                    @UniqueConstraint(name = CODESPACE_UNIQUE_XMLNS, columnNames = {"xmlns"})}
+  uniqueConstraints = {
+    @UniqueConstraint(name = CODESPACE_UNIQUE_XMLNS, columnNames = { "xmlns" }),
+  }
 )
 public class Codespace extends IdentifiedEntity {
 
-    @NotNull
-    private String xmlns;
+  @NotNull
+  private String xmlns;
 
-    @NotNull
-    private String xmlnsUrl;
+  @NotNull
+  private String xmlnsUrl;
 
-    public String getXmlnsUrl() {
-        return xmlnsUrl;
-    }
+  public String getXmlnsUrl() {
+    return xmlnsUrl;
+  }
 
-    public void setXmlnsUrl(String xmlnsUrl) {
-        this.xmlnsUrl = xmlnsUrl;
-    }
+  public void setXmlnsUrl(String xmlnsUrl) {
+    this.xmlnsUrl = xmlnsUrl;
+  }
 
-    public String getXmlns() {
-        return xmlns;
-    }
+  public String getXmlns() {
+    return xmlns;
+  }
 
-    public void setXmlns(String xmlns) {
-        this.xmlns = xmlns;
-    }
+  public void setXmlns(String xmlns) {
+    this.xmlns = xmlns;
+  }
 }

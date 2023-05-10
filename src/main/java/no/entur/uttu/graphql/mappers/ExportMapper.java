@@ -15,6 +15,8 @@
 
 package no.entur.uttu.graphql.mappers;
 
+import static no.entur.uttu.graphql.GraphQLNames.*;
+
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.repository.FixedLineRepository;
@@ -24,30 +26,39 @@ import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static no.entur.uttu.graphql.GraphQLNames.*;
-
 @Component
 public class ExportMapper extends AbstractProviderEntityMapper<Export> {
 
-    @Autowired
-    private FixedLineRepository fixedLineRepository;
+  @Autowired
+  private FixedLineRepository fixedLineRepository;
 
-    @Autowired
-    private FlexibleLineRepository flexibleLineRepository;
+  @Autowired
+  private FlexibleLineRepository flexibleLineRepository;
 
-    public ExportMapper(ProviderRepository providerRepository, ProviderEntityRepository<Export> entityRepository) {
-        super(providerRepository, entityRepository);
-    }
+  public ExportMapper(
+    ProviderRepository providerRepository,
+    ProviderEntityRepository<Export> entityRepository
+  ) {
+    super(providerRepository, entityRepository);
+  }
 
-    @Override
-    protected Export createNewEntity(ArgumentWrapper input) {
-        return new Export();
-    }
+  @Override
+  protected Export createNewEntity(ArgumentWrapper input) {
+    return new Export();
+  }
 
-    @Override
-    protected void populateEntityFromInput(Export entity, ArgumentWrapper input) {
-        input.apply(FIELD_NAME, entity::setName);
-        input.apply(FIELD_DRY_RUN, entity::setDryRun);
-        input.applyList(FIELD_EXPORT_LINE_ASSOCIATIONS, new ExportLineAssociationMapper(entity, fixedLineRepository, flexibleLineRepository)::map, entity::setExportLineAssociations);
-    }
+  @Override
+  protected void populateEntityFromInput(Export entity, ArgumentWrapper input) {
+    input.apply(FIELD_NAME, entity::setName);
+    input.apply(FIELD_DRY_RUN, entity::setDryRun);
+    input.applyList(
+      FIELD_EXPORT_LINE_ASSOCIATIONS,
+      new ExportLineAssociationMapper(
+        entity,
+        fixedLineRepository,
+        flexibleLineRepository
+      )::map,
+      entity::setExportLineAssociations
+    );
+  }
 }

@@ -15,69 +15,77 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.util.Preconditions;
-import org.springframework.util.CollectionUtils;
-
+import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.OneToMany;
-import java.time.DayOfWeek;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import no.entur.uttu.util.Preconditions;
+import org.springframework.util.CollectionUtils;
 
 @Entity
 public class DayType extends ProviderEntity {
 
-    @ElementCollection
-    @Enumerated(EnumType.STRING)
-    private List<DayOfWeek> daysOfWeek = new ArrayList<>();
+  @ElementCollection
+  @Enumerated(EnumType.STRING)
+  private List<DayOfWeek> daysOfWeek = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
-    private List<DayTypeAssignment> dayTypeAssignments = new ArrayList<>();
+  @OneToMany(cascade = CascadeType.ALL)
+  private List<DayTypeAssignment> dayTypeAssignments = new ArrayList<>();
 
-    private String name;
+  private String name;
 
-    public List<DayOfWeek> getDaysOfWeek() {
-        return daysOfWeek;
+  public List<DayOfWeek> getDaysOfWeek() {
+    return daysOfWeek;
+  }
+
+  public void setDaysOfWeek(List<DayOfWeek> daysOfWeek) {
+    this.daysOfWeek = daysOfWeek;
+  }
+
+  public List<DayTypeAssignment> getDayTypeAssignments() {
+    return dayTypeAssignments;
+  }
+
+  public void setDayTypeAssignments(List<DayTypeAssignment> dayTypeAssignments) {
+    this.dayTypeAssignments = dayTypeAssignments;
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public void setName(String name) {
+    this.name = name;
+  }
+
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
+    getDayTypeAssignments().stream().forEach(IdentifiedEntity::checkPersistable);
+
+    if (CollectionUtils.isEmpty(daysOfWeek)) {
+      boolean includedPeriod = getDayTypeAssignments()
+        .stream()
+        .anyMatch(dta -> dta.getOperatingPeriod() != null);
+      Preconditions.checkArgument(
+        !includedPeriod,
+        "%s has OperatingPeriod without setting daysOfWeek",
+        identity()
+      );
     }
+  }
 
-    public void setDaysOfWeek(List<DayOfWeek> daysOfWeek) {
-        this.daysOfWeek = daysOfWeek;
-    }
-
-    public List<DayTypeAssignment> getDayTypeAssignments() {
-        return dayTypeAssignments;
-    }
-
-    public void setDayTypeAssignments(List<DayTypeAssignment> dayTypeAssignments) {
-        this.dayTypeAssignments = dayTypeAssignments;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
-        getDayTypeAssignments().stream().forEach(IdentifiedEntity::checkPersistable);
-
-        if (CollectionUtils.isEmpty(daysOfWeek)) {
-            boolean includedPeriod = getDayTypeAssignments().stream().anyMatch(dta -> dta.getOperatingPeriod() != null);
-            Preconditions.checkArgument(!includedPeriod, "%s has OperatingPeriod without setting daysOfWeek", identity());
-        }
-    }
-
-    @Override
-    public boolean isValid(LocalDate from, LocalDate to) {
-        return super.isValid(from, to) && getDayTypeAssignments().stream().anyMatch(e -> e.isValid(from, to));
-    }
+  @Override
+  public boolean isValid(LocalDate from, LocalDate to) {
+    return (
+      super.isValid(from, to) &&
+      getDayTypeAssignments().stream().anyMatch(e -> e.isValid(from, to))
+    );
+  }
 }

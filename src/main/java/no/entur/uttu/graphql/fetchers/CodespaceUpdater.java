@@ -15,51 +15,49 @@
 
 package no.entur.uttu.graphql.fetchers;
 
-import no.entur.uttu.util.Preconditions;
+import static no.entur.uttu.graphql.GraphQLNames.*;
+import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
+
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.repository.CodespaceRepository;
+import no.entur.uttu.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
-import static no.entur.uttu.graphql.GraphQLNames.*;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-
 @Component
 @Transactional
 public class CodespaceUpdater implements DataFetcher<Codespace> {
 
-    @Autowired
-    private CodespaceRepository repository;
+  @Autowired
+  private CodespaceRepository repository;
 
-    @Override
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
-    public Codespace get(DataFetchingEnvironment env) {
-
-        ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
-        String codespaceXmlns = input.get(FIELD_XMLNS);
-        Codespace entity;
-        if (codespaceXmlns == null) {
-            entity = new Codespace();
-        } else {
-            entity = repository.getOneByXmlns(codespaceXmlns);
-            if (entity == null) {
-                entity = new Codespace();
-            }
-        }
-
-        populateEntityFromInput(entity, input);
-
-        return repository.save(entity);
+  @Override
+  @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
+  public Codespace get(DataFetchingEnvironment env) {
+    ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
+    String codespaceXmlns = input.get(FIELD_XMLNS);
+    Codespace entity;
+    if (codespaceXmlns == null) {
+      entity = new Codespace();
+    } else {
+      entity = repository.getOneByXmlns(codespaceXmlns);
+      if (entity == null) {
+        entity = new Codespace();
+      }
     }
 
-    private void populateEntityFromInput(Codespace entity, ArgumentWrapper input) {
-        input.apply(FIELD_XMLNS, entity::setXmlns);
-        input.apply(FIELD_XMLNS_URL, entity::setXmlnsUrl);
-    }
+    populateEntityFromInput(entity, input);
 
+    return repository.save(entity);
+  }
+
+  private void populateEntityFromInput(Codespace entity, ArgumentWrapper input) {
+    input.apply(FIELD_XMLNS, entity::setXmlns);
+    input.apply(FIELD_XMLNS_URL, entity::setXmlnsUrl);
+  }
 }

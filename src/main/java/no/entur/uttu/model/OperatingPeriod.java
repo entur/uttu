@@ -15,44 +15,49 @@
 
 package no.entur.uttu.model;
 
-import no.entur.uttu.util.Preconditions;
-
+import java.time.LocalDate;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
+import no.entur.uttu.util.Preconditions;
 
 @Entity
 public class OperatingPeriod extends IdentifiedEntity {
-    @NotNull
-    private LocalDate fromDate;
-    @NotNull
-    private LocalDate toDate;
 
-    public LocalDate getFromDate() {
-        return fromDate;
-    }
+  @NotNull
+  private LocalDate fromDate;
 
-    public void setFromDate(LocalDate fromDate) {
-        this.fromDate = fromDate;
-    }
+  @NotNull
+  private LocalDate toDate;
 
-    public LocalDate getToDate() {
-        return toDate;
-    }
+  public LocalDate getFromDate() {
+    return fromDate;
+  }
 
-    public void setToDate(LocalDate toDate) {
-        this.toDate = toDate;
-    }
+  public void setFromDate(LocalDate fromDate) {
+    this.fromDate = fromDate;
+  }
 
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
+  public LocalDate getToDate() {
+    return toDate;
+  }
 
-        Preconditions.checkArgument(fromDate != null && toDate != null && !toDate.isBefore(fromDate), "fromDate (%s) cannot be later than toDate(%s)", fromDate, toDate);
-    }
+  public void setToDate(LocalDate toDate) {
+    this.toDate = toDate;
+  }
 
-    public boolean isValid(LocalDate from, LocalDate to) {
-        return !(fromDate.isAfter(to) || toDate.isBefore(from));
-    }
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
 
+    Preconditions.checkArgument(
+      fromDate != null && toDate != null && !toDate.isBefore(fromDate),
+      "fromDate (%s) cannot be later than toDate(%s)",
+      fromDate,
+      toDate
+    );
+  }
+
+  public boolean isValid(LocalDate from, LocalDate to) {
+    return !(fromDate.isAfter(to) || toDate.isBefore(from));
+  }
 }

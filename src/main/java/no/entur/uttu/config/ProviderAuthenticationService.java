@@ -15,7 +15,6 @@
 
 package no.entur.uttu.config;
 
-
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.ProviderRepository;
 import org.rutebanken.helper.organisation.RoleAssignment;
@@ -28,28 +27,35 @@ import org.springframework.stereotype.Service;
 @Service
 public class ProviderAuthenticationService {
 
-    @Autowired
-    private ProviderRepository providerRepository;
+  @Autowired
+  private ProviderRepository providerRepository;
 
-    @Autowired
-    private RoleAssignmentExtractor roleAssignmentExtractor;
+  @Autowired
+  private RoleAssignmentExtractor roleAssignmentExtractor;
 
-    public boolean hasRoleForProvider(Authentication authentication, String role, String providerCode) {
-        if (providerCode == null) {
-            return false;
-        }
-        Provider provider = providerRepository.getOne(providerCode);
-        if (provider == null) {
-            return false;
-        }
-
-        return roleAssignmentExtractor.getRoleAssignmentsForUser(authentication).stream()
-                       .anyMatch(roleAssignment -> match(roleAssignment, role, provider));
+  public boolean hasRoleForProvider(
+    Authentication authentication,
+    String role,
+    String providerCode
+  ) {
+    if (providerCode == null) {
+      return false;
+    }
+    Provider provider = providerRepository.getOne(providerCode);
+    if (provider == null) {
+      return false;
     }
 
-    private boolean match(RoleAssignment roleAssignment, String role, Provider provider) {
-        return role.equals(roleAssignment.getRole()) && provider.getCodespace().getXmlns().equals(roleAssignment.getOrganisation());
-    }
+    return roleAssignmentExtractor
+      .getRoleAssignmentsForUser(authentication)
+      .stream()
+      .anyMatch(roleAssignment -> match(roleAssignment, role, provider));
+  }
 
-
+  private boolean match(RoleAssignment roleAssignment, String role, Provider provider) {
+    return (
+      role.equals(roleAssignment.getRole()) &&
+      provider.getCodespace().getXmlns().equals(roleAssignment.getOrganisation())
+    );
+  }
 }

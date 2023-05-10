@@ -17,29 +17,33 @@ package no.entur.uttu.error;
 
 import graphql.ExceptionWhileDataFetching;
 import graphql.execution.ExecutionPath;
-import no.entur.uttu.error.codedexception.CodedException;
-
 import java.util.HashMap;
 import java.util.Map;
+import no.entur.uttu.error.codedexception.CodedException;
 
 public class CodedGraphQLError extends ExceptionWhileDataFetching {
-    public CodedGraphQLError(ExceptionWhileDataFetching inner) {
-        super(ExecutionPath.fromList(inner.getPath()), inner.getException(), inner.getLocations().get(0));
+
+  public CodedGraphQLError(ExceptionWhileDataFetching inner) {
+    super(
+      ExecutionPath.fromList(inner.getPath()),
+      inner.getException(),
+      inner.getLocations().get(0)
+    );
+  }
+
+  @Override
+  public Map<String, Object> getExtensions() {
+    Map<String, Object> extensions = super.getExtensions();
+    if (extensions == null) {
+      extensions = new HashMap<>();
     }
 
-    @Override
-    public Map<String, Object> getExtensions() {
-        Map<String, Object> extensions = super.getExtensions();
-        if (extensions == null) {
-            extensions = new HashMap<>();
-        }
-
-        if (this.getException() instanceof CodedException) {
-            extensions.put("code", ((CodedException) this.getException()).getCode());
-            extensions.put("subCode", ((CodedException) this.getException()).getSubCode());
-            extensions.put("metadata", ((CodedException) this.getException()).getMetadata());
-        }
-
-        return extensions;
+    if (this.getException() instanceof CodedException) {
+      extensions.put("code", ((CodedException) this.getException()).getCode());
+      extensions.put("subCode", ((CodedException) this.getException()).getSubCode());
+      extensions.put("metadata", ((CodedException) this.getException()).getMetadata());
     }
+
+    return extensions;
+  }
 }

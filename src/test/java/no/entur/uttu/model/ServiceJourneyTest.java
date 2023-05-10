@@ -15,116 +15,129 @@
 
 package no.entur.uttu.model;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
 
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
-
-import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class ServiceJourneyTest {
 
+  @Test
+  public void setPassingTimes_assignsOrder() {
+    ServiceJourney serviceJourney = new ServiceJourney();
 
-    @Test
-    public void setPassingTimes_assignsOrder() {
-        ServiceJourney serviceJourney = new ServiceJourney();
+    List<TimetabledPassingTime> passingTimes = Arrays.asList(
+      new TimetabledPassingTime(),
+      new TimetabledPassingTime(),
+      new TimetabledPassingTime()
+    );
+    serviceJourney.setPassingTimes(passingTimes);
 
-        List<TimetabledPassingTime> passingTimes = Arrays.asList(new TimetabledPassingTime(), new TimetabledPassingTime(), new TimetabledPassingTime());
-        serviceJourney.setPassingTimes(passingTimes);
+    Assert.assertEquals(3, serviceJourney.getPassingTimes().size());
+    Assert.assertEquals(1, serviceJourney.getPassingTimes().get(0).getOrder());
+    Assert.assertEquals(2, serviceJourney.getPassingTimes().get(1).getOrder());
+    Assert.assertEquals(3, serviceJourney.getPassingTimes().get(2).getOrder());
+  }
 
-        Assert.assertEquals(3, serviceJourney.getPassingTimes().size());
-        Assert.assertEquals(1, serviceJourney.getPassingTimes().get(0).getOrder());
-        Assert.assertEquals(2, serviceJourney.getPassingTimes().get(1).getOrder());
-        Assert.assertEquals(3, serviceJourney.getPassingTimes().get(2).getOrder());
+  @Test
+  public void checkPersistable_success() {
+    validServiceJourney().checkPersistable();
+  }
+
+  @Test
+  public void checkPersistable_whenTooFewPassingTimes_thenThrowException() {
+    ServiceJourney serviceJourney = validServiceJourney();
+    serviceJourney.setJourneyPattern(createJP(3));
+    assertCheckPersistableFails(serviceJourney);
+  }
+
+  @Test
+  public void checkPersistable_whenTooManyPassingTimes_thenThrowException() {
+    ServiceJourney serviceJourney = validServiceJourney();
+    serviceJourney.setJourneyPattern(createJP(1));
+    assertCheckPersistableFails(serviceJourney);
+  }
+
+  @Test
+  public void checkPersistable_whenNoOperatorRef_thenThrowException() {
+    ServiceJourney serviceJourney = validServiceJourney();
+    serviceJourney.getJourneyPattern().getLine().setOperatorRef(null);
+    assertCheckPersistableFails(serviceJourney);
+  }
+
+  @Test
+  public void checkPersistable_whenOperatorRefOnServiceJourney_thenSuccess() {
+    ServiceJourney serviceJourney = validServiceJourney();
+    serviceJourney.getJourneyPattern().getLine().setOperatorRef(null);
+    serviceJourney.setOperatorRef("11");
+    serviceJourney.checkPersistable();
+  }
+
+  @Test
+  public void checkPersistable_whenNoDepartureTimeForFirstPassingTime_thenThrowException() {
+    ServiceJourney serviceJourney = validServiceJourney();
+    serviceJourney.getPassingTimes().get(0).setDepartureTime(null);
+    assertCheckPersistableFails(serviceJourney);
+  }
+
+  @Test
+  public void checkPersistable_whenNoArrivalTimeForLastPassingTime_thenThrowException() {
+    ServiceJourney serviceJourney = validServiceJourney();
+    serviceJourney
+      .getPassingTimes()
+      .get(serviceJourney.getPassingTimes().size() - 1)
+      .setArrivalTime(null);
+    assertCheckPersistableFails(serviceJourney);
+  }
+
+  @Test
+  public void checkPersistable_whenPassingTimesNotChronologically_thenThrowException() {
+    ServiceJourney serviceJourney = validServiceJourney();
+
+    TimetabledPassingTime first = serviceJourney.getPassingTimes().get(0);
+    TimetabledPassingTime last = serviceJourney
+      .getPassingTimes()
+      .get(serviceJourney.getPassingTimes().size() - 1);
+
+    last.setArrivalTime(first.getDepartureTime().minusMinutes(5));
+    assertCheckPersistableFails(serviceJourney);
+  }
+
+  protected static ServiceJourney validServiceJourney() {
+    ServiceJourney serviceJourney = new ServiceJourney();
+    serviceJourney.setJourneyPattern(createJP(2));
+
+    List<TimetabledPassingTime> passingTimes = Arrays.asList(
+      passingTime(null, LocalTime.of(10, 0)),
+      passingTime(LocalTime.of(11, 0), null)
+    );
+    serviceJourney.setPassingTimes(passingTimes);
+
+    return serviceJourney;
+  }
+
+  private static JourneyPattern createJP(int size) {
+    JourneyPattern journeyPattern = new JourneyPattern();
+    journeyPattern.setLine(new FlexibleLine());
+    journeyPattern.getLine().setOperatorRef("34");
+    for (int i = 0; i < size; i++) {
+      StopPointInJourneyPattern spijp = new StopPointInJourneyPattern();
+      journeyPattern.getPointsInSequence().add(spijp);
     }
 
-    @Test
-    public void checkPersistable_success() {
-        validServiceJourney().checkPersistable();
-    }
+    return journeyPattern;
+  }
 
-    @Test
-    public void checkPersistable_whenTooFewPassingTimes_thenThrowException() {
-        ServiceJourney serviceJourney = validServiceJourney();
-        serviceJourney.setJourneyPattern(createJP(3));
-        assertCheckPersistableFails(serviceJourney);
-    }
-
-    @Test
-    public void checkPersistable_whenTooManyPassingTimes_thenThrowException() {
-        ServiceJourney serviceJourney = validServiceJourney();
-        serviceJourney.setJourneyPattern(createJP(1));
-        assertCheckPersistableFails(serviceJourney);
-    }
-
-    @Test
-    public void checkPersistable_whenNoOperatorRef_thenThrowException() {
-        ServiceJourney serviceJourney = validServiceJourney();
-        serviceJourney.getJourneyPattern().getLine().setOperatorRef(null);
-        assertCheckPersistableFails(serviceJourney);
-    }
-
-    @Test
-    public void checkPersistable_whenOperatorRefOnServiceJourney_thenSuccess() {
-        ServiceJourney serviceJourney = validServiceJourney();
-        serviceJourney.getJourneyPattern().getLine().setOperatorRef(null);
-        serviceJourney.setOperatorRef("11");
-        serviceJourney.checkPersistable();
-    }
-
-    @Test
-    public void checkPersistable_whenNoDepartureTimeForFirstPassingTime_thenThrowException() {
-        ServiceJourney serviceJourney = validServiceJourney();
-        serviceJourney.getPassingTimes().get(0).setDepartureTime(null);
-        assertCheckPersistableFails(serviceJourney);
-    }
-
-    @Test
-    public void checkPersistable_whenNoArrivalTimeForLastPassingTime_thenThrowException() {
-        ServiceJourney serviceJourney = validServiceJourney();
-        serviceJourney.getPassingTimes().get(serviceJourney.getPassingTimes().size() - 1).setArrivalTime(null);
-        assertCheckPersistableFails(serviceJourney);
-    }
-
-    @Test
-    public void checkPersistable_whenPassingTimesNotChronologically_thenThrowException() {
-        ServiceJourney serviceJourney = validServiceJourney();
-
-        TimetabledPassingTime first = serviceJourney.getPassingTimes().get(0);
-        TimetabledPassingTime last = serviceJourney.getPassingTimes().get(serviceJourney.getPassingTimes().size() - 1);
-
-        last.setArrivalTime(first.getDepartureTime().minusMinutes(5));
-        assertCheckPersistableFails(serviceJourney);
-    }
-
-    protected static ServiceJourney validServiceJourney() {
-        ServiceJourney serviceJourney = new ServiceJourney();
-        serviceJourney.setJourneyPattern(createJP(2));
-
-        List<TimetabledPassingTime> passingTimes = Arrays.asList(passingTime(null, LocalTime.of(10, 0)), passingTime(LocalTime.of(11, 0), null));
-        serviceJourney.setPassingTimes(passingTimes);
-
-        return serviceJourney;
-    }
-
-    private static JourneyPattern createJP(int size) {
-        JourneyPattern journeyPattern = new JourneyPattern();
-        journeyPattern.setLine(new FlexibleLine());
-        journeyPattern.getLine().setOperatorRef("34");
-        for (int i = 0; i < size; i++) {
-            StopPointInJourneyPattern spijp = new StopPointInJourneyPattern();
-            journeyPattern.getPointsInSequence().add(spijp);
-        }
-
-        return journeyPattern;
-    }
-
-    private static TimetabledPassingTime passingTime(LocalTime arrivalTime, LocalTime departureTime) {
-        TimetabledPassingTime passingTime = new TimetabledPassingTime();
-        passingTime.setArrivalTime(arrivalTime);
-        passingTime.setDepartureTime(departureTime);
-        return passingTime;
-    }
+  private static TimetabledPassingTime passingTime(
+    LocalTime arrivalTime,
+    LocalTime departureTime
+  ) {
+    TimetabledPassingTime passingTime = new TimetabledPassingTime();
+    passingTime.setArrivalTime(arrivalTime);
+    passingTime.setDepartureTime(departureTime);
+    return passingTime;
+  }
 }

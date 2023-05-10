@@ -28,22 +28,22 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ExportUpdater extends AbstractProviderEntityUpdater<Export> {
 
-    @Autowired
-    private ExportService exportService;
+  @Autowired
+  private ExportService exportService;
 
+  public ExportUpdater(
+    AbstractProviderEntityMapper<Export> mapper,
+    ProviderEntityRepository<Export> repository
+  ) {
+    super(mapper, repository);
+  }
 
+  @Override
+  protected Export saveEntity(DataFetchingEnvironment env) {
+    Export export = super.saveEntity(env);
 
-    public ExportUpdater(AbstractProviderEntityMapper<Export> mapper, ProviderEntityRepository<Export> repository) {
-        super(mapper, repository);
-    }
-
-
-    @Override
-    protected Export saveEntity(DataFetchingEnvironment env) {
-        Export export = super.saveEntity(env);
-
-        // export dataset to the blob store
-        exportService.exportDataSet(export);
-        return repository.save(export);
-    }
+    // export dataset to the blob store
+    exportService.exportDataSet(export);
+    return repository.save(export);
+  }
 }

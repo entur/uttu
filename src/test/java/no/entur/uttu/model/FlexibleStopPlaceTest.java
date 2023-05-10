@@ -15,44 +15,43 @@
 
 package no.entur.uttu.model;
 
-import org.junit.Test;
-
 import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
+
+import org.junit.Test;
 
 public class FlexibleStopPlaceTest {
 
-    @Test
-    public void checkPersistable_whenOnlyHailAndRideArea_thenSuccess() {
-        FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
-        flexibleStopPlace.setHailAndRideArea(hailAndRideArea("q1", "q2"));
-        flexibleStopPlace.checkPersistable();
-    }
+  @Test
+  public void checkPersistable_whenOnlyHailAndRideArea_thenSuccess() {
+    FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
+    flexibleStopPlace.setHailAndRideArea(hailAndRideArea("q1", "q2"));
+    flexibleStopPlace.checkPersistable();
+  }
 
-    @Test
-    public void checkPersistable_whenOnlyFlexibleArea_thenSuccess() {
-        FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
-        flexibleStopPlace.setFlexibleArea(new FlexibleArea());
-        flexibleStopPlace.checkPersistable();
-    }
+  @Test
+  public void checkPersistable_whenOnlyFlexibleArea_thenSuccess() {
+    FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
+    flexibleStopPlace.setFlexibleArea(new FlexibleArea());
+    flexibleStopPlace.checkPersistable();
+  }
 
-    @Test
-    public void checkPersistable_whenBothFlexibleAreaAndHailAndRideArea_giveException() {
-        FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
-        flexibleStopPlace.setFlexibleArea(new FlexibleArea());
-        flexibleStopPlace.setHailAndRideArea(hailAndRideArea("q1", "q2"));
-        assertCheckPersistableFails(flexibleStopPlace);
-    }
+  @Test
+  public void checkPersistable_whenBothFlexibleAreaAndHailAndRideArea_giveException() {
+    FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
+    flexibleStopPlace.setFlexibleArea(new FlexibleArea());
+    flexibleStopPlace.setHailAndRideArea(hailAndRideArea("q1", "q2"));
+    assertCheckPersistableFails(flexibleStopPlace);
+  }
 
-    @Test
-    public void checkPersistable_whenNeitherFlexibleAreaNorHailAndRideArea_giveException() {
-        assertCheckPersistableFails(new FlexibleStopPlace());
-    }
+  @Test
+  public void checkPersistable_whenNeitherFlexibleAreaNorHailAndRideArea_giveException() {
+    assertCheckPersistableFails(new FlexibleStopPlace());
+  }
 
-
-    private HailAndRideArea hailAndRideArea(String quayStart, String quayEnd) {
-        HailAndRideArea hailAndRideArea = new HailAndRideArea();
-        hailAndRideArea.setStartQuayRef(quayStart);
-        hailAndRideArea.setEndQuayRef(quayEnd);
-        return hailAndRideArea;
-    }
+  private HailAndRideArea hailAndRideArea(String quayStart, String quayEnd) {
+    HailAndRideArea hailAndRideArea = new HailAndRideArea();
+    hailAndRideArea.setStartQuayRef(quayStart);
+    hailAndRideArea.setEndQuayRef(quayEnd);
+    return hailAndRideArea;
+  }
 }

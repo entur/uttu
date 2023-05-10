@@ -15,49 +15,46 @@
 
 package no.entur.uttu.model;
 
-import org.junit.Test;
+import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
 
 import java.time.LocalDate;
-
-import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
+import org.junit.Test;
 
 public class DayTypeAssignmentTest {
 
-    @Test
-    public void checkPersistable_onlyDateSet_success() {
-        DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
-        dayTypeAssignment.setDate(LocalDate.now());
-        dayTypeAssignment.checkPersistable();
-    }
+  @Test
+  public void checkPersistable_onlyDateSet_success() {
+    DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
+    dayTypeAssignment.setDate(LocalDate.now());
+    dayTypeAssignment.checkPersistable();
+  }
 
-    @Test
-    public void checkPersistable_onlyPeriodSet_success() {
-        DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
-        dayTypeAssignment.setOperatingPeriod(period());
-        dayTypeAssignment.checkPersistable();
-    }
+  @Test
+  public void checkPersistable_onlyPeriodSet_success() {
+    DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
+    dayTypeAssignment.setOperatingPeriod(period());
+    dayTypeAssignment.checkPersistable();
+  }
 
-    @Test
-    public void checkPersistable_neitherDateNorPeriodSet_givesException() {
-        DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
-        assertCheckPersistableFails(dayTypeAssignment);
-    }
+  @Test
+  public void checkPersistable_neitherDateNorPeriodSet_givesException() {
+    DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
+    assertCheckPersistableFails(dayTypeAssignment);
+  }
 
-    @Test
-    public void checkPersistable_bothDateAndPeriodSet_givesException() {
-        DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
-        dayTypeAssignment.setDate(LocalDate.now());
-        OperatingPeriod operatingPeriod = period();
-        dayTypeAssignment.setOperatingPeriod(operatingPeriod);
-        assertCheckPersistableFails(dayTypeAssignment);
-    }
+  @Test
+  public void checkPersistable_bothDateAndPeriodSet_givesException() {
+    DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
+    dayTypeAssignment.setDate(LocalDate.now());
+    OperatingPeriod operatingPeriod = period();
+    dayTypeAssignment.setOperatingPeriod(operatingPeriod);
+    assertCheckPersistableFails(dayTypeAssignment);
+  }
 
-    private OperatingPeriod period() {
-        OperatingPeriod operatingPeriod = new OperatingPeriod();
-        operatingPeriod.setFromDate(LocalDate.MIN);
-        operatingPeriod.setToDate(LocalDate.MAX);
-        return operatingPeriod;
-    }
-
-
+  private OperatingPeriod period() {
+    OperatingPeriod operatingPeriod = new OperatingPeriod();
+    operatingPeriod.setFromDate(LocalDate.MIN);
+    operatingPeriod.setToDate(LocalDate.MAX);
+    return operatingPeriod;
+  }
 }

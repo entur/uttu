@@ -1,4 +1,3 @@
-
 /*
  * Licensed under the EUPL, Version 1.2 or – as soon they will be approved by
  * the European Commission - subsequent versions of the EUPL (the "Licence");
@@ -14,12 +13,17 @@
  * limitations under the Licence.
  */
 
-@GenericGenerator(name = "sequence_per_table_generator",
-        strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
-        parameters = {
-                @Parameter(name = SequenceStyleGenerator.CONFIG_PREFER_SEQUENCE_PER_ENTITY, value = "true"),
-                @Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "10")
-        })
+@GenericGenerator(
+  name = "sequence_per_table_generator",
+  strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+  parameters = {
+    @Parameter(
+      name = SequenceStyleGenerator.CONFIG_PREFER_SEQUENCE_PER_ENTITY,
+      value = "true"
+    ),
+    @Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "10"),
+  }
+)
 package no.entur.uttu.model;
 
 import org.hibernate.annotations.GenericGenerator;

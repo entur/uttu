@@ -1,5 +1,7 @@
 package no.entur.uttu.export.netex;
 
+import java.util.Collections;
+import java.util.List;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.Line;
@@ -7,58 +9,57 @@ import no.entur.uttu.model.job.ExportLineAssociation;
 import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Collections;
-import java.util.List;
-
 public class NetexExporterTest {
-    @Test
-    public void findLinesToExportReturnsAll() {
-        NetexExporter exporter = new NetexExporter();
 
-        Line line = new FixedLine();
+  @Test
+  public void findLinesToExportReturnsAll() {
+    NetexExporter exporter = new NetexExporter();
 
-        Assert.assertEquals(
-                1,
-                exporter.findLinesToExport(null, List.of(line)).size()
-        );
-    }
+    Line line = new FixedLine();
 
-    @Test
-    public void findLinesToExportFiltersWithLineAssociation() {
-        NetexExporter exporter = new NetexExporter();
+    Assert.assertEquals(1, exporter.findLinesToExport(null, List.of(line)).size());
+  }
 
-        Line line1 = new FixedLine();
-        Line line2 = new FixedLine();
+  @Test
+  public void findLinesToExportFiltersWithLineAssociation() {
+    NetexExporter exporter = new NetexExporter();
 
-        ExportLineAssociation la = new ExportLineAssociation();
-        la.setLine(line1);
+    Line line1 = new FixedLine();
+    Line line2 = new FixedLine();
 
-        Assert.assertEquals(
-                1,
-                exporter.findLinesToExport(Collections.singletonList(la), List.of(line1, line2)).size()
-        );
-        Assert.assertEquals(
-                line1,
-                exporter.findLinesToExport(Collections.singletonList(la), List.of(line1, line2)).get(0)
-        );
-    }
+    ExportLineAssociation la = new ExportLineAssociation();
+    la.setLine(line1);
 
-    @Test(expected = CodedIllegalArgumentException.class)
-    public void findLinesToExportErrorIfEmpty() {
-        NetexExporter exporter = new NetexExporter();
-        exporter.findLinesToExport(List.of(), List.of());
-    }
+    Assert.assertEquals(
+      1,
+      exporter
+        .findLinesToExport(Collections.singletonList(la), List.of(line1, line2))
+        .size()
+    );
+    Assert.assertEquals(
+      line1,
+      exporter
+        .findLinesToExport(Collections.singletonList(la), List.of(line1, line2))
+        .get(0)
+    );
+  }
 
-    @Test(expected = CodedIllegalArgumentException.class)
-    public void findLinesToExportErrorIfEmptyAfterFiltering() {
-        NetexExporter exporter = new NetexExporter();
+  @Test(expected = CodedIllegalArgumentException.class)
+  public void findLinesToExportErrorIfEmpty() {
+    NetexExporter exporter = new NetexExporter();
+    exporter.findLinesToExport(List.of(), List.of());
+  }
 
-        Line line1 = new FixedLine();
-        Line line2 = new FixedLine();
+  @Test(expected = CodedIllegalArgumentException.class)
+  public void findLinesToExportErrorIfEmptyAfterFiltering() {
+    NetexExporter exporter = new NetexExporter();
 
-        ExportLineAssociation la = new ExportLineAssociation();
-        la.setLine(line1);
+    Line line1 = new FixedLine();
+    Line line2 = new FixedLine();
 
-        exporter.findLinesToExport(List.of(la), List.of(line2));
-    }
+    ExportLineAssociation la = new ExportLineAssociation();
+    la.setLine(line1);
+
+    exporter.findLinesToExport(List.of(la), List.of(line2));
+  }
 }

@@ -15,7 +15,12 @@
 
 package no.entur.uttu.export.netex;
 
-
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DestinationDisplay;
@@ -29,77 +34,73 @@ import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportMessage;
 import no.entur.uttu.model.job.SeverityEnumeration;
 
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
-
 public class NetexExportContext {
 
-    private AvailabilityPeriod availabilityPeriod;
+  private AvailabilityPeriod availabilityPeriod;
 
-    public Provider provider;
+  public Provider provider;
 
-    public Instant publicationTimestamp;
+  public Instant publicationTimestamp;
 
-    public Set<Network> networks = new HashSet<>();
+  public Set<Network> networks = new HashSet<>();
 
-    public Set<FlexibleStopPlace> flexibleStopPlaces = new HashSet<>();
+  public Set<FlexibleStopPlace> flexibleStopPlaces = new HashSet<>();
 
-    public Set<Ref> scheduledStopPointRefs = new HashSet<>();
-    public Set<String> quayRefs = new HashSet<>();
+  public Set<Ref> scheduledStopPointRefs = new HashSet<>();
+  public Set<String> quayRefs = new HashSet<>();
 
-    public Set<Ref> routePointRefs = new HashSet<>();
+  public Set<Ref> routePointRefs = new HashSet<>();
 
-    public Set<String> operatorRefs = new HashSet<>();
+  public Set<String> operatorRefs = new HashSet<>();
 
-    public Set<Notice> notices = new HashSet<>();
+  public Set<Notice> notices = new HashSet<>();
 
-    public Set<DayType> dayTypes = new HashSet<>();
+  public Set<DayType> dayTypes = new HashSet<>();
 
-    public Set<DestinationDisplay> destinationDisplays = new HashSet<>();
+  public Set<DestinationDisplay> destinationDisplays = new HashSet<>();
 
-    private Map<String, AtomicLong> idSequences = new HashMap<>();
+  private Map<String, AtomicLong> idSequences = new HashMap<>();
 
-    private Export export;
+  private Export export;
 
-    public NetexExportContext(Export export) {
-        this.publicationTimestamp = Instant.now();
-        this.export = export;
-        this.provider = export.getProvider();
-    }
+  public NetexExportContext(Export export) {
+    this.publicationTimestamp = Instant.now();
+    this.export = export;
+    this.provider = export.getProvider();
+  }
 
-    public void updateAvailabilityPeriod(AvailabilityPeriod newPeriod) {
-        availabilityPeriod = newPeriod.union(availabilityPeriod);
-    }
+  public void updateAvailabilityPeriod(AvailabilityPeriod newPeriod) {
+    availabilityPeriod = newPeriod.union(availabilityPeriod);
+  }
 
-    public AvailabilityPeriod getAvailabilityPeriod() {
-        return availabilityPeriod;
-    }
+  public AvailabilityPeriod getAvailabilityPeriod() {
+    return availabilityPeriod;
+  }
 
-    public long getAndIncrementIdSequence(String entityName) {
-        AtomicLong sequence = idSequences.get(entityName);
+  public long getAndIncrementIdSequence(String entityName) {
+    AtomicLong sequence = idSequences.get(entityName);
+    if (sequence == null) {
+      synchronized (idSequences) {
+        sequence = idSequences.get(entityName);
+
         if (sequence == null) {
-
-            synchronized (idSequences) {
-                sequence = idSequences.get(entityName);
-
-                if (sequence == null) {
-                    sequence = new AtomicLong(1);
-                    idSequences.put(entityName, sequence);
-                }
-            }
+          sequence = new AtomicLong(1);
+          idSequences.put(entityName, sequence);
         }
-        return sequence.getAndIncrement();
+      }
     }
+    return sequence.getAndIncrement();
+  }
 
-    public <I extends IdentifiedEntity> boolean isValid(I entity) {
-        return entity != null;
-    }
+  public <I extends IdentifiedEntity> boolean isValid(I entity) {
+    return entity != null;
+  }
 
-    public void addExportMessage(SeverityEnumeration severity, String message, Object... params) {
-        export.addMessage(new ExportMessage(severity, message, params));
-    }
+  public void addExportMessage(
+    SeverityEnumeration severity,
+    String message,
+    Object... params
+  ) {
+    export.addMessage(new ExportMessage(severity, message, params));
+  }
 }

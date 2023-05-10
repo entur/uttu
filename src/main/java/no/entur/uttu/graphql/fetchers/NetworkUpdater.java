@@ -15,13 +15,13 @@
 
 package no.entur.uttu.graphql.fetchers;
 
-import no.entur.uttu.repository.FixedLineRepository;
-import no.entur.uttu.util.Preconditions;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.Network;
+import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
+import no.entur.uttu.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,29 +29,39 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("networkUpdater")
 @Transactional
 public class NetworkUpdater extends AbstractProviderEntityUpdater<Network> {
-    @Autowired
-    private FixedLineRepository fixedLineRepository;
 
-    @Autowired
-    private FlexibleLineRepository flexibleLineRepository;
+  @Autowired
+  private FixedLineRepository fixedLineRepository;
 
-    public NetworkUpdater(AbstractProviderEntityMapper<Network> mapper, ProviderEntityRepository<Network> repository) {
-        super(mapper, repository);
+  @Autowired
+  private FlexibleLineRepository flexibleLineRepository;
+
+  public NetworkUpdater(
+    AbstractProviderEntityMapper<Network> mapper,
+    ProviderEntityRepository<Network> repository
+  ) {
+    super(mapper, repository);
+  }
+
+  @Override
+  protected Network deleteEntity(DataFetchingEnvironment env) {
+    return super.deleteEntity(env);
+  }
+
+  @Override
+  protected void verifyDeleteAllowed(String id) {
+    Network network = repository.getOne(id);
+    if (network != null) {
+      int noOfLines =
+        flexibleLineRepository.countByNetwork(network) +
+        fixedLineRepository.countByNetwork(network);
+      Preconditions.checkArgument(
+        noOfLines == 0,
+        "%s cannot be deleted as it is referenced by %s line(s)",
+        network.identity(),
+        noOfLines
+      );
     }
-
-
-    @Override
-    protected Network deleteEntity(DataFetchingEnvironment env) {
-        return super.deleteEntity(env);
-    }
-
-    @Override
-    protected void verifyDeleteAllowed(String id) {
-        Network network = repository.getOne(id);
-        if (network != null) {
-            int noOfLines = flexibleLineRepository.countByNetwork(network) + fixedLineRepository.countByNetwork(network);
-            Preconditions.checkArgument(noOfLines == 0, "%s cannot be deleted as it is referenced by %s line(s)", network.identity(), noOfLines);
-        }
-        super.verifyDeleteAllowed(id);
-    }
+    super.verifyDeleteAllowed(id);
+  }
 }

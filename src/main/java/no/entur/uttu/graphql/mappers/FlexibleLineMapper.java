@@ -26,22 +26,29 @@ import org.springframework.stereotype.Component;
 @Component
 public class FlexibleLineMapper extends LineMapper<FlexibleLine> {
 
-    @Autowired
-    private BookingArrangementMapper bookingArrangementMapper;
+  @Autowired
+  private BookingArrangementMapper bookingArrangementMapper;
 
-    public FlexibleLineMapper(ProviderRepository providerRepository, ProviderEntityRepository<FlexibleLine> repository) {
-        super(providerRepository, repository);
-    }
+  public FlexibleLineMapper(
+    ProviderRepository providerRepository,
+    ProviderEntityRepository<FlexibleLine> repository
+  ) {
+    super(providerRepository, repository);
+  }
 
-    @Override
-    protected FlexibleLine createNewEntity(ArgumentWrapper input) {
-        return new FlexibleLine();
-    }
+  @Override
+  protected FlexibleLine createNewEntity(ArgumentWrapper input) {
+    return new FlexibleLine();
+  }
 
-    @Override
-    protected void populateEntityFromInput(FlexibleLine entity, ArgumentWrapper input) {
-        super.populateEntityFromInput(entity, input);
-        input.apply(GraphQLNames.FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineType);
-        input.apply(GraphQLNames.FIELD_BOOKING_ARRANGEMENT, bookingArrangementMapper::map, entity::setBookingArrangement);
-    }
+  @Override
+  protected void populateEntityFromInput(FlexibleLine entity, ArgumentWrapper input) {
+    super.populateEntityFromInput(entity, input);
+    input.apply(GraphQLNames.FIELD_FLEXIBLE_LINE_TYPE, entity::setFlexibleLineType);
+    input.apply(
+      GraphQLNames.FIELD_BOOKING_ARRANGEMENT,
+      bookingArrangementMapper::map,
+      entity::setBookingArrangement
+    );
+  }
 }

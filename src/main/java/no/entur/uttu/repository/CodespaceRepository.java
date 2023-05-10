@@ -15,17 +15,15 @@
 
 package no.entur.uttu.repository;
 
+import java.util.List;
 import no.entur.uttu.model.Codespace;
 
-import java.util.List;
-
 public interface CodespaceRepository {
+  Codespace getOne(Long id);
 
-    Codespace getOne(Long id);
+  Codespace getOneByXmlns(String xmlns);
 
-    Codespace getOneByXmlns(String xmlns);
+  List<Codespace> findAll();
 
-    List<Codespace> findAll();
-
-    <S extends Codespace> S save(S entity);
+  <S extends Codespace> S save(S entity);
 }

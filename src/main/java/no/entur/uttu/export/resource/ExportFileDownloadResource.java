@@ -15,7 +15,19 @@
 
 package no.entur.uttu.export.resource;
 
+import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
+import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
+
 import io.swagger.annotations.Api;
+import java.io.InputStream;
+import java.nio.file.Paths;
+import javax.persistence.EntityNotFoundException;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.model.job.Export;
@@ -25,56 +37,56 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import javax.persistence.EntityNotFoundException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import java.io.InputStream;
-import java.nio.file.Paths;
-
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
-
 @Component
 @Api
 @Path("/{providerCode}/export/")
 public class ExportFileDownloadResource {
 
-    @Autowired
-    private ExportRepository exportRepository;
+  @Autowired
+  private ExportRepository exportRepository;
 
-    @Autowired
-    private BlobStoreService blobStoreService;
+  @Autowired
+  private BlobStoreService blobStoreService;
 
-    @GET
-    @Path("{id}/download")
-    @Produces({MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON})
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
-    public Response downloadExportFile(@PathParam("providerCode") String providerCode, @PathParam("id") String exportId) {
-        Context.setProvider(providerCode);
-        try {
-            Export export = exportRepository.findByNetexIdAndProviderCode(exportId, providerCode);
-            if (export == null) {
-                throw new EntityNotFoundException("No export with id= " + exportId + " found");
-            }
-            if (StringUtils.isEmpty(export.getFileName())) {
-                throw new EntityNotFoundException("Export with id= " + exportId + " does not have a reference to export file");
-            }
+  @GET
+  @Path("{id}/download")
+  @Produces({ MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON })
+  @PreAuthorize(
+    "hasRole('" +
+    ROLE_ROUTE_DATA_ADMIN +
+    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
+    ROLE_ROUTE_DATA_EDIT +
+    "',#providerCode)"
+  )
+  public Response downloadExportFile(
+    @PathParam("providerCode") String providerCode,
+    @PathParam("id") String exportId
+  ) {
+    Context.setProvider(providerCode);
+    try {
+      Export export = exportRepository.findByNetexIdAndProviderCode(
+        exportId,
+        providerCode
+      );
+      if (export == null) {
+        throw new EntityNotFoundException("No export with id= " + exportId + " found");
+      }
+      if (StringUtils.isEmpty(export.getFileName())) {
+        throw new EntityNotFoundException(
+          "Export with id= " + exportId + " does not have a reference to export file"
+        );
+      }
 
-            InputStream content = blobStoreService.downloadBlob(export.getFileName());
+      InputStream content = blobStoreService.downloadBlob(export.getFileName());
 
-            String fileNameOnly = Paths.get(export.getFileName()).getFileName().toString();
+      String fileNameOnly = Paths.get(export.getFileName()).getFileName().toString();
 
-            return Response
-                           .ok(content, MediaType.APPLICATION_OCTET_STREAM)
-                           .header("content-disposition", "attachment; filename = " + fileNameOnly)
-                           .build();
-        } finally {
-            Context.clear();
-        }
+      return Response
+        .ok(content, MediaType.APPLICATION_OCTET_STREAM)
+        .header("content-disposition", "attachment; filename = " + fileNameOnly)
+        .build();
+    } finally {
+      Context.clear();
     }
-
+  }
 }

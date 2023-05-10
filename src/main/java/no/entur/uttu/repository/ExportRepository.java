@@ -15,24 +15,24 @@
 
 package no.entur.uttu.repository;
 
+import java.time.Instant;
+import java.util.List;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
-import java.util.List;
-
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 public interface ExportRepository extends ProviderEntityRepository<Export> {
+  List<Export> findByCreatedAfterAndProviderCode(Instant from, String provider);
 
-    List<Export> findByCreatedAfterAndProviderCode(Instant from, String provider);
+  Export findFirstByProviderCodeAndDryRunFalseOrderByCreatedDesc(String provider);
 
-    Export findFirstByProviderCodeAndDryRunFalseOrderByCreatedDesc(String provider);
+  @Query(
+    "from Export export0_ where export0_.created in (select max(export1_.created) from Export export1_ where export1_.dryRun=false group by export1_.provider) order by export0_.created desc"
+  )
+  List<Export> getLatestExportByProviders();
 
-    @Query("from Export export0_ where export0_.created in (select max(export1_.created) from Export export1_ where export1_.dryRun=false group by export1_.provider) order by export0_.created desc")
-    List<Export> getLatestExportByProviders();
-
-    Export findByNetexIdAndProviderCode(String netexId,String provider);
+  Export findByNetexIdAndProviderCode(String netexId, String provider);
 }

@@ -15,131 +15,171 @@
 
 package no.entur.uttu.export.netex;
 
-import no.entur.uttu.error.codederror.CodedError;
-import no.entur.uttu.error.codes.ErrorCodeEnumeration;
-import no.entur.uttu.model.Line;
-import no.entur.uttu.model.ProviderEntity;
-import no.entur.uttu.model.job.ExportLineAssociation;
-import no.entur.uttu.repository.FixedLineRepository;
-import no.entur.uttu.repository.generic.ProviderEntityRepository;
-import no.entur.uttu.util.Preconditions;
-import no.entur.uttu.export.model.ExportException;
-import no.entur.uttu.export.netex.producer.common.NetexCommonFileProducer;
-import no.entur.uttu.export.netex.producer.line.NetexLineFileProducer;
-import no.entur.uttu.model.job.Export;
-import no.entur.uttu.repository.FlexibleLineRepository;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.validation.NeTExValidator;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import static javax.xml.bind.JAXBContext.newInstance;
 
-import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static javax.xml.bind.JAXBContext.newInstance;
+import javax.annotation.PostConstruct;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.Marshaller;
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codes.ErrorCodeEnumeration;
+import no.entur.uttu.export.model.ExportException;
+import no.entur.uttu.export.netex.producer.common.NetexCommonFileProducer;
+import no.entur.uttu.export.netex.producer.line.NetexLineFileProducer;
+import no.entur.uttu.model.Line;
+import no.entur.uttu.model.ProviderEntity;
+import no.entur.uttu.model.job.Export;
+import no.entur.uttu.model.job.ExportLineAssociation;
+import no.entur.uttu.repository.FixedLineRepository;
+import no.entur.uttu.repository.FlexibleLineRepository;
+import no.entur.uttu.repository.generic.ProviderEntityRepository;
+import no.entur.uttu.util.Preconditions;
+import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.netex.validation.NeTExValidator;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 @Component
 public class NetexExporter {
 
-    @Autowired
-    private FlexibleLineRepository flexibleLineRepository;
+  @Autowired
+  private FlexibleLineRepository flexibleLineRepository;
 
-    @Autowired
-    private FixedLineRepository fixedLineRepository;
+  @Autowired
+  private FixedLineRepository fixedLineRepository;
 
-    @Autowired
-    private NetexLineFileProducer netexLineFileProducer;
+  @Autowired
+  private NetexLineFileProducer netexLineFileProducer;
 
-    @Autowired
-    private NetexCommonFileProducer commonFileProducer;
+  @Autowired
+  private NetexCommonFileProducer commonFileProducer;
 
-    private JAXBContext jaxbContext;
+  private JAXBContext jaxbContext;
 
-    private NeTExValidator netexValidator;
+  private NeTExValidator netexValidator;
 
-    @PostConstruct
-    public void asyncInit() {
-        new Thread(this::assertInit).start();
+  @PostConstruct
+  public void asyncInit() {
+    new Thread(this::assertInit).start();
+  }
+
+  public List<Line> exportDataSet(
+    Export export,
+    DataSetProducer dataSetProducer,
+    boolean validateAgainstSchema
+  ) {
+    NetexExportContext exportContext = new NetexExportContext(export);
+
+    List<no.entur.uttu.model.FlexibleLine> flexibleLines =
+      findAllValidEntitiesFromRepository(flexibleLineRepository, exportContext);
+    List<no.entur.uttu.model.FixedLine> fixedLines = findAllValidEntitiesFromRepository(
+      fixedLineRepository,
+      exportContext
+    );
+
+    List<Line> lines = Stream
+      .concat(flexibleLines.stream(), fixedLines.stream())
+      .collect(Collectors.toList());
+
+    List<Line> linesToExport = findLinesToExport(
+      export.getExportLineAssociations(),
+      lines
+    );
+
+    linesToExport
+      .stream()
+      .map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
+      .forEach(netexFile ->
+        marshalToFile(netexFile, dataSetProducer, validateAgainstSchema)
+      );
+
+    marshalToFile(
+      commonFileProducer.toCommonFile(exportContext),
+      dataSetProducer,
+      validateAgainstSchema
+    );
+
+    return linesToExport;
+  }
+
+  protected List<Line> findLinesToExport(
+    Collection<ExportLineAssociation> exportLineAssociations,
+    List<Line> lines
+  ) {
+    List<Line> linesToExport = lines;
+
+    if (null != exportLineAssociations && !exportLineAssociations.isEmpty()) {
+      linesToExport =
+        linesToExport
+          .stream()
+          .filter(line ->
+            exportLineAssociations.stream().anyMatch(la -> la.getLine() == line)
+          )
+          .collect(Collectors.toList());
     }
 
-    public List<Line> exportDataSet(Export export, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
-        NetexExportContext exportContext = new NetexExportContext(export);
+    Preconditions.checkArgument(
+      !linesToExport.isEmpty(),
+      CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE),
+      "No valid lines in data space"
+    );
 
-        List<no.entur.uttu.model.FlexibleLine> flexibleLines = findAllValidEntitiesFromRepository(flexibleLineRepository, exportContext);
-        List<no.entur.uttu.model.FixedLine> fixedLines = findAllValidEntitiesFromRepository(fixedLineRepository, exportContext);
+    return linesToExport;
+  }
 
-        List<Line> lines = Stream.concat(
-                flexibleLines.stream(),
-                fixedLines.stream()
-        ).collect(Collectors.toList());
+  private <T extends ProviderEntity> List<T> findAllValidEntitiesFromRepository(
+    ProviderEntityRepository<T> repository,
+    NetexExportContext exportContext
+  ) {
+    return repository
+      .findAll()
+      .stream()
+      .filter(exportContext::isValid)
+      .collect(Collectors.toList());
+  }
 
-        List<Line> linesToExport = findLinesToExport(export.getExportLineAssociations(), lines);
+  private void marshalToFile(
+    NetexFile file,
+    DataSetProducer dataSetProducer,
+    boolean validateAgainstSchema
+  ) {
+    assertInit();
+    try {
+      Marshaller marshaller = jaxbContext.createMarshaller();
 
-        linesToExport.stream()
-                .map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
-                .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema));
+      marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
 
-        marshalToFile(commonFileProducer.toCommonFile(exportContext), dataSetProducer, validateAgainstSchema);
-
-        return linesToExport;
+      if (validateAgainstSchema) {
+        marshaller.setSchema(netexValidator.getSchema());
+      }
+      OutputStream outputStream = dataSetProducer.addFile(file.getFileName());
+      marshaller.marshal(file.getPublicationDeliveryStructure(), outputStream);
+    } catch (Exception e) {
+      throw new ExportException(
+        "Failed to marshal NeTEx XML to file: " + e.getMessage(),
+        e
+      );
     }
+  }
 
-    protected List<Line> findLinesToExport(Collection<ExportLineAssociation> exportLineAssociations, List<Line> lines) {
-        List<Line> linesToExport = lines;
-
-        if (null != exportLineAssociations && !exportLineAssociations.isEmpty()) {
-            linesToExport = linesToExport.stream().filter(line -> exportLineAssociations.stream().anyMatch(la -> la.getLine() == line)).collect(Collectors.toList());
-        }
-
-        Preconditions.checkArgument(!linesToExport.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_VALID_LINES_IN_DATA_SPACE), "No valid lines in data space");
-
-        return linesToExport;
+  private void assertInit() {
+    if (jaxbContext == null) {
+      try {
+        jaxbContext = newInstance(PublicationDeliveryStructure.class);
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     }
-
-    private <T extends ProviderEntity> List<T> findAllValidEntitiesFromRepository(ProviderEntityRepository<T> repository, NetexExportContext exportContext) {
-        return repository.findAll().stream().filter(exportContext::isValid).collect(Collectors.toList());
+    if (netexValidator == null) {
+      try {
+        netexValidator = new NeTExValidator();
+      } catch (Exception e) {
+        throw new RuntimeException(e);
+      }
     }
-
-    private void marshalToFile(NetexFile file, DataSetProducer dataSetProducer, boolean validateAgainstSchema) {
-        assertInit();
-        try {
-
-            Marshaller marshaller = jaxbContext.createMarshaller();
-
-            marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
-
-            if (validateAgainstSchema) {
-                marshaller.setSchema(netexValidator.getSchema());
-            }
-            OutputStream outputStream = dataSetProducer.addFile(file.getFileName());
-            marshaller.marshal(file.getPublicationDeliveryStructure(), outputStream);
-        } catch (Exception e) {
-            throw new ExportException("Failed to marshal NeTEx XML to file: " + e.getMessage(), e);
-        }
-
-    }
-
-    private void assertInit() {
-        if (jaxbContext == null) {
-            try {
-                jaxbContext = newInstance(PublicationDeliveryStructure.class);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (netexValidator == null) {
-            try {
-                netexValidator = new NeTExValidator();
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
+  }
 }

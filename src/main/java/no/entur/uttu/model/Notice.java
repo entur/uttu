@@ -15,37 +15,40 @@
 
 package no.entur.uttu.model;
 
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
 
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-
 @Entity
 public class Notice extends ProviderEntity {
 
-    @NotNull
-    @Size(max = 4000)
-    private String text;
+  @NotNull
+  @Size(max = 4000)
+  private String text;
 
-    public String getText() {
-        return text;
-    }
+  public String getText() {
+    return text;
+  }
 
-    public void setText(String text) {
-        this.text = text;
-    }
+  public void setText(String text) {
+    this.text = text;
+  }
 
-    public Notice withText(String text) {
-        this.text = text;
-        return this;
-    }
+  public Notice withText(String text) {
+    this.text = text;
+    return this;
+  }
 
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
-        Preconditions.checkArgument(text != null && !text.isEmpty(), CodedError.fromErrorCode(ErrorCodeEnumeration.NO_EMPTY_NOTICES), "Notice text cannot be empty");
-    }
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
+    Preconditions.checkArgument(
+      text != null && !text.isEmpty(),
+      CodedError.fromErrorCode(ErrorCodeEnumeration.NO_EMPTY_NOTICES),
+      "Notice text cannot be empty"
+    );
+  }
 }

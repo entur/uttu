@@ -20,8 +20,11 @@ import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ServiceJourneyRepository extends ProviderEntityRepository<ServiceJourney> {
-
-    @Query(value = "SELECT COUNT(*) FROM service_journey sj JOIN service_journey_day_types sjdt ON :dayTypePk = sjdt.day_types_pk WHERE sjdt.service_journey_pk = sj.pk", nativeQuery = true)
-    long countByDayTypePk(@Param("dayTypePk") Long dayTypePk);
+public interface ServiceJourneyRepository
+  extends ProviderEntityRepository<ServiceJourney> {
+  @Query(
+    value = "SELECT COUNT(*) FROM service_journey sj JOIN service_journey_day_types sjdt ON :dayTypePk = sjdt.day_types_pk WHERE sjdt.service_journey_pk = sj.pk",
+    nativeQuery = true
+  )
+  long countByDayTypePk(@Param("dayTypePk") Long dayTypePk);
 }

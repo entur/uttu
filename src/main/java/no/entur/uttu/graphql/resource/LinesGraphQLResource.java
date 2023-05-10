@@ -15,14 +15,13 @@
 
 package no.entur.uttu.graphql.resource;
 
+import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
+import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
+
 import graphql.GraphQL;
 import io.swagger.annotations.Api;
-import no.entur.uttu.config.Context;
-import no.entur.uttu.graphql.LinesGraphQLSchema;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.stereotype.Component;
-
+import java.util.HashMap;
+import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -31,54 +30,77 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.util.HashMap;
-import java.util.Map;
-
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
+import no.entur.uttu.config.Context;
+import no.entur.uttu.graphql.LinesGraphQLSchema;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.stereotype.Component;
 
 @Component
 @Api
 @Path("/{providerCode}/graphql")
 public class LinesGraphQLResource {
 
-    @Autowired
-    private LinesGraphQLSchema linesSchema;
+  @Autowired
+  private LinesGraphQLSchema linesSchema;
 
-    @Autowired
-    private GraphQLResourceHelper graphQLResourceHelper;
+  @Autowired
+  private GraphQLResourceHelper graphQLResourceHelper;
 
-    private GraphQL linesGraphQL;
+  private GraphQL linesGraphQL;
 
-    @PostConstruct
-    public void init() {
-        linesGraphQL = GraphQL.newGraphQL(linesSchema.getGraphQLSchema()).build();
+  @PostConstruct
+  public void init() {
+    linesGraphQL = GraphQL.newGraphQL(linesSchema.getGraphQLSchema()).build();
+  }
+
+  @POST
+  @SuppressWarnings("unchecked")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @PreAuthorize(
+    "hasRole('" +
+    ROLE_ROUTE_DATA_ADMIN +
+    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
+    ROLE_ROUTE_DATA_EDIT +
+    "',#providerCode)"
+  )
+  public Response executeLinesStatement(
+    @PathParam("providerCode") String providerCode,
+    Map<String, Object> request
+  ) {
+    Context.setProvider(providerCode);
+    try {
+      return graphQLResourceHelper.executeStatement(linesGraphQL, request);
+    } finally {
+      Context.clear();
     }
+  }
 
-    @POST
-    @SuppressWarnings("unchecked")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
-    public Response executeLinesStatement(@PathParam("providerCode") String providerCode, Map<String, Object> request) {
-        Context.setProvider(providerCode);
-        try {
-            return graphQLResourceHelper.executeStatement(linesGraphQL, request);
-        } finally {
-            Context.clear();
-        }
+  @POST
+  @Consumes("application/graphql")
+  @Produces(MediaType.APPLICATION_JSON)
+  @PreAuthorize(
+    "hasRole('" +
+    ROLE_ROUTE_DATA_ADMIN +
+    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
+    ROLE_ROUTE_DATA_EDIT +
+    "',#providerCode)"
+  )
+  public Response executeLinesStatement(
+    @PathParam("providerCode") String providerCode,
+    String query
+  ) {
+    Context.setProvider(providerCode);
+    try {
+      return graphQLResourceHelper.getGraphQLResponse(
+        linesGraphQL,
+        "query",
+        query,
+        new HashMap<>()
+      );
+    } finally {
+      Context.clear();
     }
-
-    @POST
-    @Consumes("application/graphql")
-    @Produces(MediaType.APPLICATION_JSON)
-    @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" + ROLE_ROUTE_DATA_EDIT + "',#providerCode)")
-    public Response executeLinesStatement(@PathParam("providerCode") String providerCode, String query) {
-        Context.setProvider(providerCode);
-        try {
-            return graphQLResourceHelper.getGraphQLResponse(linesGraphQL, "query", query, new HashMap<>());
-        } finally {
-            Context.clear();
-        }
-    }
+  }
 }

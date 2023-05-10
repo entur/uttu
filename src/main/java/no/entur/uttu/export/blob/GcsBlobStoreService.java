@@ -16,48 +16,50 @@
 package no.entur.uttu.export.blob;
 
 import com.google.cloud.storage.Storage;
+import java.io.InputStream;
+import javax.annotation.PostConstruct;
 import org.rutebanken.helper.gcp.BlobStoreHelper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.io.InputStream;
-
 @Service
 @Profile("gcs-blobstore")
 public class GcsBlobStoreService implements BlobStoreService {
 
+  @Value("${blobstore.gcs.credential.path:#{null}}")
+  private String credentialPath;
 
-    @Value("${blobstore.gcs.credential.path:#{null}}")
-    private String credentialPath;
+  @Value("${blobstore.gcs.project.id}")
+  private String projectId;
 
+  @Value("${blobstore.gcs.container.name}")
+  private String containerName;
 
-    @Value("${blobstore.gcs.project.id}")
-    private String projectId;
+  private Storage storage;
 
-    @Value("${blobstore.gcs.container.name}")
-    private String containerName;
-
-    private Storage storage;
-
-    @PostConstruct
-    private void init() {
-        if (credentialPath == null || credentialPath.isEmpty()) {
-            // Use default default gcp credentials
-            storage = BlobStoreHelper.getStorage(projectId);
-        } else {
-            storage = BlobStoreHelper.getStorage(credentialPath, projectId);
-        }
+  @PostConstruct
+  private void init() {
+    if (credentialPath == null || credentialPath.isEmpty()) {
+      // Use default default gcp credentials
+      storage = BlobStoreHelper.getStorage(projectId);
+    } else {
+      storage = BlobStoreHelper.getStorage(credentialPath, projectId);
     }
+  }
 
-    public void uploadBlob(String name, boolean makePublic, InputStream inputStream) {
-        BlobStoreHelper.uploadBlobWithRetry(storage, containerName, name, inputStream, makePublic);
-    }
+  public void uploadBlob(String name, boolean makePublic, InputStream inputStream) {
+    BlobStoreHelper.uploadBlobWithRetry(
+      storage,
+      containerName,
+      name,
+      inputStream,
+      makePublic
+    );
+  }
 
-    @Override
-    public InputStream downloadBlob(String name) {
-        return BlobStoreHelper.getBlob(storage, containerName, name);
-    }
+  @Override
+  public InputStream downloadBlob(String name) {
+    return BlobStoreHelper.getBlob(storage, containerName, name);
+  }
 }
-
