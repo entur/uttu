@@ -20,7 +20,7 @@ configMap:
       clientId: AXXN2zBqjVWKOp2uJGXv44ehaQwkHUJS
   orgRegister:
     audience: https://api.staging.entur.io
-  pubsubProjectId: entur-ror-test
+  pubsubProjectId: ent-marduk-tst
   blobstoreProjectId: entur-ror-test
   blobstoreContainerName: ror-marduk-exchange-test
   logLevel: INFO
