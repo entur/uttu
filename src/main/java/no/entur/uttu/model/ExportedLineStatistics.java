@@ -21,7 +21,6 @@ import java.util.List;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import no.entur.uttu.model.job.Export;
-import no.entur.uttu.export.linestatistics.LineType;
 
 @Entity
 public class ExportedLineStatistics {
@@ -33,9 +32,8 @@ public class ExportedLineStatistics {
   @NotNull
   protected String lineName;
 
-  @Enumerated(EnumType.STRING)
   @NotNull
-  private LineType lineType;
+  private String lineType;
 
   @NotNull
   private LocalDate operatingPeriodFrom;
@@ -67,11 +65,11 @@ public class ExportedLineStatistics {
     this.lineName = lineName;
   }
 
-  public LineType getLineType() {
+  public String getLineType() {
     return lineType;
   }
 
-  public void setLineType(LineType lineType) {
+  public void setLineType(String lineType) {
     this.lineType = lineType;
   }
 

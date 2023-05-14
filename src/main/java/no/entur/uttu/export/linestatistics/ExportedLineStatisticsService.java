@@ -58,8 +58,11 @@ public class ExportedLineStatisticsService {
     return exportedLineStatistics;
   }
 
-  protected static LineType getLineType(Line line) {
-    return line instanceof FixedLine ? LineType.FIXED : LineType.FLEXIBLE;
+  protected static String getLineType(Line line) {
+    if (line instanceof FlexibleLine flexibleLine) {
+      return flexibleLine.getFlexibleLineType().toString();
+    }
+    return "FIXED_TIMETABLE";
   }
 
   protected static List<ExportedDayTypeStatistics> calculateExportedDayTypesStatisticsForLine(
@@ -79,17 +82,17 @@ public class ExportedLineStatisticsService {
     ServiceJourney serviceJourney
   ) {
     String serviceJourneyName = serviceJourney.getName();
-      List<ExportedDayTypeStatistics> statistics = serviceJourney
+    List<ExportedDayTypeStatistics> statistics = serviceJourney
       .getDayTypes()
       .stream()
       .map(ExportedLineStatisticsService::getExportedDayTypeStatisticsForDayType)
       .filter(Objects::nonNull)
       .collect(Collectors.toList());
 
-      statistics.forEach(
-              exportedDayTypeStatistics -> exportedDayTypeStatistics.setServiceJourneyName(serviceJourneyName)
-      );
-      return statistics;
+    statistics.forEach(exportedDayTypeStatistics ->
+      exportedDayTypeStatistics.setServiceJourneyName(serviceJourneyName)
+    );
+    return statistics;
   }
 
   protected static ExportedDayTypeStatistics getExportedDayTypeStatisticsForDayType(
