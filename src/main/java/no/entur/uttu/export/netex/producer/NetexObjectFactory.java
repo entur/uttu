@@ -483,9 +483,6 @@ public class NetexObjectFactory {
       operatingPeriodsInFrameRelStructure
         .getOperatingPeriodOrUicOperatingPeriod()
         .addAll(operatingPeriods);
-      operatingPeriodsInFrameRelStructure
-        .getOperatingPeriodOrUicOperatingPeriod()
-        .sort(Comparator.comparing(OperatingPeriod_VersionStructure::getFromDate));
     }
 
     OperatingDaysInFrame_RelStructure operatingDaysInFrameRelStructure = null;
