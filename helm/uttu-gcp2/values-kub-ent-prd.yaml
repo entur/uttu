@@ -23,7 +23,7 @@ configMap:
       clientId: 1ZZMds7c0urOXHAMuklhv2puDcdVUQIW
   orgRegister:
     audience: https://api.entur.io
-  pubsubProjectId: entur-ror-prod
+  pubsubProjectId: ent-marduk-prd
   blobstoreProjectId: entur-ror-prod
   blobstoreContainerName: ror-marduk-exchange-production
   logLevel: INFO
