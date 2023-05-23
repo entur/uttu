@@ -453,7 +453,8 @@ public class NetexObjectFactory {
     NetexExportContext context,
     Collection<DayType> dayTypes,
     Collection<DayTypeAssignment> dayTypeAssignments,
-    Collection<OperatingPeriod> operatingPeriods
+    Collection<OperatingPeriod> operatingPeriods,
+    Collection<OperatingDay> operatingDays
   ) {
     String frameId = NetexIdProducer.generateId(ServiceCalendarFrame.class, context);
 
@@ -482,9 +483,15 @@ public class NetexObjectFactory {
       operatingPeriodsInFrameRelStructure
         .getOperatingPeriodOrUicOperatingPeriod()
         .addAll(operatingPeriods);
-      operatingPeriodsInFrameRelStructure
-        .getOperatingPeriodOrUicOperatingPeriod()
-        .sort(Comparator.comparing(OperatingPeriod_VersionStructure::getFromDate));
+    }
+
+    OperatingDaysInFrame_RelStructure operatingDaysInFrameRelStructure = null;
+    if (!CollectionUtils.isEmpty(operatingDays)) {
+      operatingDaysInFrameRelStructure = new OperatingDaysInFrame_RelStructure();
+      operatingDaysInFrameRelStructure.getOperatingDay().addAll(operatingDays);
+      operatingDaysInFrameRelStructure
+        .getOperatingDay()
+        .sort(Comparator.comparing(OperatingDay_VersionStructure::getCalendarDate));
     }
 
     return objectFactory
@@ -493,7 +500,8 @@ public class NetexObjectFactory {
       .withId(frameId)
       .withDayTypes(dayTypesStruct)
       .withDayTypeAssignments(dayTypeAssignmentsInFrameRelStructure)
-      .withOperatingPeriods(operatingPeriodsInFrameRelStructure);
+      .withOperatingPeriods(operatingPeriodsInFrameRelStructure)
+      .withOperatingDays(operatingDaysInFrameRelStructure);
   }
 
   public JAXBElement<AvailabilityCondition> createAvailabilityCondition(

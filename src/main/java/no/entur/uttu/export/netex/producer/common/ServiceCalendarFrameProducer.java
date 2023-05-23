@@ -36,6 +36,8 @@ import no.entur.uttu.model.Ref;
 import org.rutebanken.netex.model.DayOfWeekEnumeration;
 import org.rutebanken.netex.model.DayTypeAssignment;
 import org.rutebanken.netex.model.DayTypeRefStructure;
+import org.rutebanken.netex.model.OperatingDay;
+import org.rutebanken.netex.model.OperatingDayRefStructure;
 import org.rutebanken.netex.model.OperatingPeriod;
 import org.rutebanken.netex.model.OperatingPeriodRefStructure;
 import org.rutebanken.netex.model.PropertiesOfDay_RelStructure;
@@ -68,6 +70,7 @@ public class ServiceCalendarFrameProducer {
     List<org.rutebanken.netex.model.DayType> netexDayTypes = new ArrayList<>();
     List<DayTypeAssignment> netexDayTypeAssignments = new ArrayList<>();
     List<OperatingPeriod> netexOperatingPeriods = new ArrayList<>();
+    List<OperatingDay> netexOperatingDays = new ArrayList<>();
 
     int dayTypeAssignmentOrder = 1;
     for (DayType localDayType : context.dayTypes) {
@@ -81,9 +84,13 @@ public class ServiceCalendarFrameProducer {
       for (no.entur.uttu.model.DayTypeAssignment localDayTypeAssignment : validDayTypeAssignments) {
         OperatingPeriod operatingPeriod = null;
         if (context.isValid(localDayTypeAssignment.getOperatingPeriod())) {
-          operatingPeriod =
-            mapOperatingPeriod(localDayTypeAssignment.getOperatingPeriod(), context);
-          netexOperatingPeriods.add(operatingPeriod);
+          var mappedOperatingPeriod = mapOperatingPeriod(
+            localDayTypeAssignment.getOperatingPeriod(),
+            context
+          );
+          netexOperatingPeriods.add(mappedOperatingPeriod.getOperatingPeriod());
+          netexOperatingDays.addAll(mappedOperatingPeriod.getOperatingDays());
+          operatingPeriod = mappedOperatingPeriod.getOperatingPeriod();
         }
         netexDayTypeAssignments.add(
           mapDayTypeAssignment(
@@ -103,7 +110,8 @@ public class ServiceCalendarFrameProducer {
       context,
       netexDayTypes,
       netexDayTypeAssignments,
-      netexOperatingPeriods
+      netexOperatingPeriods,
+      netexOperatingDays
     );
   }
 
@@ -126,16 +134,40 @@ public class ServiceCalendarFrameProducer {
       .withProperties(properties);
   }
 
-  private OperatingPeriod mapOperatingPeriod(
+  private MappedOperatingPeriod mapOperatingPeriod(
     no.entur.uttu.model.OperatingPeriod local,
     NetexExportContext context
   ) {
-    String id = NetexIdProducer.generateId(OperatingPeriod.class, context);
-    return new org.rutebanken.netex.model.OperatingPeriod()
+    var id = NetexIdProducer.generateId(OperatingPeriod.class, context);
+
+    var fromDate = new OperatingDay()
+      .withId(NetexIdProducer.generateId(OperatingDay.class, context))
+      .withVersion("0")
+      .withCalendarDate(local.getFromDate().atStartOfDay());
+    var toDate = new OperatingDay()
+      .withId(NetexIdProducer.generateId(OperatingDay.class, context))
+      .withVersion("0")
+      .withCalendarDate(local.getToDate().atStartOfDay());
+
+    var operatingPeriod = new org.rutebanken.netex.model.OperatingPeriod()
       .withId(id)
       .withVersion(Objects.toString(local.getVersion()))
-      .withFromDate(local.getFromDate().atStartOfDay())
-      .withToDate(local.getToDate().atStartOfDay());
+      .withFromOperatingDayRef(
+        objectFactory.populateRefStructure(
+          new OperatingDayRefStructure(),
+          new Ref(fromDate.getId(), fromDate.getVersion()),
+          false
+        )
+      )
+      .withToOperatingDayRef(
+        objectFactory.populateRefStructure(
+          new OperatingDayRefStructure(),
+          new Ref(toDate.getId(), toDate.getVersion()),
+          false
+        )
+      );
+
+    return new MappedOperatingPeriod(operatingPeriod, List.of(fromDate, toDate));
   }
 
   private DayTypeAssignment mapDayTypeAssignment(
