@@ -156,14 +156,14 @@ public class ServiceCalendarFrameProducer {
         objectFactory.populateRefStructure(
           new OperatingDayRefStructure(),
           new Ref(fromDate.getId(), fromDate.getVersion()),
-          false
+          true
         )
       )
       .withToOperatingDayRef(
         objectFactory.populateRefStructure(
           new OperatingDayRefStructure(),
           new Ref(toDate.getId(), toDate.getVersion()),
-          false
+          true
         )
       );
 
