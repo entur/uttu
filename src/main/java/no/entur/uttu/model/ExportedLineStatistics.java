@@ -33,6 +33,9 @@ public class ExportedLineStatistics {
   protected String lineName;
 
   @NotNull
+  private String lineType;
+
+  @NotNull
   private LocalDate operatingPeriodFrom;
 
   @NotNull
@@ -60,6 +63,14 @@ public class ExportedLineStatistics {
 
   public void setLineName(String lineName) {
     this.lineName = lineName;
+  }
+
+  public String getLineType() {
+    return lineType;
+  }
+
+  public void setLineType(String lineType) {
+    this.lineType = lineType;
   }
 
   public LocalDate getOperatingPeriodFrom() {

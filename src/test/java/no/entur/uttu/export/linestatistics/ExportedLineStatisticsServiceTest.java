@@ -176,7 +176,7 @@ public class ExportedLineStatisticsServiceTest {
 
   @Test
   public void lineToExportedLineStatisticsDoneRight() {
-    Line line = new FlexibleLine();
+    FlexibleLine line = new FlexibleLine();
     OperatingPeriod operatingPeriod1 = new OperatingPeriod();
     operatingPeriod1.setFromDate(LocalDate.of(2022, 3, 1));
     operatingPeriod1.setToDate(LocalDate.of(2022, 3, 7));
@@ -188,6 +188,7 @@ public class ExportedLineStatisticsServiceTest {
         createJourneyPatternForGivenOperatingPeriods(operatingPeriod1, operatingPeriod2)
       )
     );
+    line.setFlexibleLineType(FlexibleLineTypeEnumeration.FIXED_STOP_AREA_WIDE);
 
     ExportedLineStatistics exportedLineStatistics =
       ExportedLineStatisticsService.toExportedLineStatistics(line);

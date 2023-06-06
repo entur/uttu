@@ -1,0 +1,1 @@
+ALTER TABLE exported_line_statistics ADD COLUMN line_type character varying(255);
