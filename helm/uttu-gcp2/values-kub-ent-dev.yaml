@@ -23,7 +23,7 @@ configMap:
     audience: https://api.dev.entur.io
   pubsubProjectId: ent-marduk-dev
   blobstoreProjectId: entur-ror-dev
-  blobstoreContainerName: ror-marduk-exchange-dev
+  blobstoreContainerName: marduk-exchange-dev
   logLevel: DEBUG
   flywayTable: schema_version
   exportQueueName: FlexibleLinesExportQueue
