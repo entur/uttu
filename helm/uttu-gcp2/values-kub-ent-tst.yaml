@@ -22,7 +22,7 @@ configMap:
     audience: https://api.staging.entur.io
   pubsubProjectId: ent-marduk-tst
   blobstoreProjectId: entur-ror-test
-  blobstoreContainerName: ror-marduk-exchange-test
+  blobstoreContainerName: marduk-exchange-test
   logLevel: INFO
   flywayTable: flyway_schema_history
   exportQueueName: FlexibleLinesExportQueue
