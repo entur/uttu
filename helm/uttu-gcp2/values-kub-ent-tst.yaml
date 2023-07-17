@@ -21,7 +21,7 @@ configMap:
   orgRegister:
     audience: https://api.staging.entur.io
   pubsubProjectId: ent-marduk-tst
-  blobstoreProjectId: entur-ror-test
+  blobstoreProjectId: ent-marduk-tst
   blobstoreContainerName: marduk-exchange-test
   logLevel: INFO
   flywayTable: flyway_schema_history

@@ -22,7 +22,7 @@ configMap:
   orgRegister:
     audience: https://api.dev.entur.io
   pubsubProjectId: ent-marduk-dev
-  blobstoreProjectId: entur-ror-dev
+  blobstoreProjectId: ent-marduk-dev
   blobstoreContainerName: marduk-exchange-dev
   logLevel: DEBUG
   flywayTable: schema_version

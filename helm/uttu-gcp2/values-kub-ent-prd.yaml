@@ -24,8 +24,8 @@ configMap:
   orgRegister:
     audience: https://api.entur.io
   pubsubProjectId: ent-marduk-prd
-  blobstoreProjectId: entur-ror-prod
-  blobstoreContainerName: ror-marduk-exchange-production
+  blobstoreProjectId: ent-marduk-prd
+  blobstoreContainerName: marduk-exchange-production
   logLevel: INFO
   flywayTable: flyway_schema_history
   exportQueueName: FlexibleLinesExportQueue
