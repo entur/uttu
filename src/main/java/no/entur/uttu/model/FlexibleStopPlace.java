@@ -15,12 +15,15 @@
 
 package no.entur.uttu.model;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -45,14 +48,19 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
   @NotNull
   private VehicleModeEnumeration transportMode;
 
-  @OneToOne(cascade = CascadeType.ALL)
-  private FlexibleArea flexibleArea;
+  @OneToMany(
+    mappedBy = "flexibleStopPlace",
+    cascade = CascadeType.ALL,
+    orphanRemoval = true,
+    fetch = FetchType.EAGER
+  )
+  private List<FlexibleArea> flexibleAreas = new ArrayList<>();
 
   @OneToOne(cascade = CascadeType.ALL)
   private HailAndRideArea hailAndRideArea;
 
   public FlexibleArea getFlexibleArea() {
-    return flexibleArea;
+    return flexibleAreas.isEmpty() ? null : flexibleAreas.get(0);
   }
 
   @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
@@ -60,7 +68,9 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
   protected Map<String, Value> keyValues = new HashMap<>();
 
   public void setFlexibleArea(FlexibleArea flexibleArea) {
-    this.flexibleArea = flexibleArea;
+    this.flexibleAreas.clear();
+    flexibleArea.setFlexibleStopPlace(this);
+    this.flexibleAreas.add(flexibleArea);
   }
 
   public HailAndRideArea getHailAndRideArea() {
@@ -92,13 +102,13 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
   public void checkPersistable() {
     super.checkPersistable();
     Preconditions.checkArgument(
-      flexibleArea != null ^ hailAndRideArea != null,
+      !flexibleAreas.isEmpty() ^ hailAndRideArea != null,
       "%s exactly one of flexibleArea and hailAndRideArea must be set",
       identity()
     );
 
-    if (flexibleArea != null) {
-      flexibleArea.checkPersistable();
+    if (!flexibleAreas.isEmpty()) {
+      flexibleAreas.forEach(IdentifiedEntity::checkPersistable);
     }
     if (hailAndRideArea != null) {
       hailAndRideArea.checkPersistable();

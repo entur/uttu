@@ -18,12 +18,16 @@ package no.entur.uttu.model;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import org.locationtech.jts.geom.Polygon;
 
 @Entity
 public class FlexibleArea extends IdentifiedEntity {
+
+  @ManyToOne
+  private FlexibleStopPlace flexibleStopPlace;
 
   /**
    * Polygon is wrapped in PersistablePolygon.
@@ -46,5 +50,13 @@ public class FlexibleArea extends IdentifiedEntity {
     } else {
       this.polygon = new PersistablePolygon(polygon);
     }
+  }
+
+  public void setFlexibleStopPlace(FlexibleStopPlace flexibleStopPlace) {
+    this.flexibleStopPlace = flexibleStopPlace;
+  }
+
+  public FlexibleStopPlace getFlexibleStopPlace() {
+    return flexibleStopPlace;
   }
 }
