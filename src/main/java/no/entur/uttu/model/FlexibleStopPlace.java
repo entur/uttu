@@ -54,10 +54,15 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
     orphanRemoval = true,
     fetch = FetchType.EAGER
   )
+  @NotNull
   private List<FlexibleArea> flexibleAreas = new ArrayList<>();
 
   @OneToOne(cascade = CascadeType.ALL)
   private HailAndRideArea hailAndRideArea;
+
+  public List<FlexibleArea> getFlexibleAreas() {
+    return flexibleAreas;
+  }
 
   public FlexibleArea getFlexibleArea() {
     return flexibleAreas.isEmpty() ? null : flexibleAreas.get(0);
@@ -67,10 +72,10 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   protected Map<String, Value> keyValues = new HashMap<>();
 
-  public void setFlexibleArea(FlexibleArea flexibleArea) {
+  public void setFlexibleAreas(List<FlexibleArea> flexibleAreas) {
     this.flexibleAreas.clear();
-    flexibleArea.setFlexibleStopPlace(this);
-    this.flexibleAreas.add(flexibleArea);
+    flexibleAreas.forEach(flexibleArea -> flexibleArea.setFlexibleStopPlace(this));
+    this.flexibleAreas.addAll(flexibleAreas);
   }
 
   public HailAndRideArea getHailAndRideArea() {

@@ -17,6 +17,7 @@ package no.entur.uttu.model;
 
 import static no.entur.uttu.model.ModelTestUtil.assertCheckPersistableFails;
 
+import java.util.List;
 import org.junit.Test;
 
 public class FlexibleStopPlaceTest {
@@ -31,14 +32,14 @@ public class FlexibleStopPlaceTest {
   @Test
   public void checkPersistable_whenOnlyFlexibleArea_thenSuccess() {
     FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
-    flexibleStopPlace.setFlexibleArea(new FlexibleArea());
+    flexibleStopPlace.setFlexibleAreas(List.of(new FlexibleArea()));
     flexibleStopPlace.checkPersistable();
   }
 
   @Test
   public void checkPersistable_whenBothFlexibleAreaAndHailAndRideArea_giveException() {
     FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
-    flexibleStopPlace.setFlexibleArea(new FlexibleArea());
+    flexibleStopPlace.setFlexibleAreas(List.of(new FlexibleArea()));
     flexibleStopPlace.setHailAndRideArea(hailAndRideArea("q1", "q2"));
     assertCheckPersistableFails(flexibleStopPlace);
   }

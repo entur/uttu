@@ -68,7 +68,7 @@ public class FlexibleStopPlaceMapper
     ArgumentWrapper input
   ) {
     input.apply(FIELD_TRANSPORT_MODE, entity::setTransportMode);
-    input.apply(FIELD_FLEXIBLE_AREA, this::mapFlexibleArea, entity::setFlexibleArea);
+    input.apply(FIELD_FLEXIBLE_AREA, this::mapFlexibleAreas, entity::setFlexibleAreas);
     input.apply(
       FIELD_HAIL_AND_RIDE_AREA,
       this::mapHailAndRideArea,
@@ -77,12 +77,12 @@ public class FlexibleStopPlaceMapper
     input.apply(FIELD_KEY_VALUES, this::mapKeyValues, entity::replaceKeyValues);
   }
 
-  protected FlexibleArea mapFlexibleArea(Map<String, Object> inputMap) {
+  protected List<FlexibleArea> mapFlexibleAreas(Map<String, Object> inputMap) {
     ArgumentWrapper input = new ArgumentWrapper(inputMap);
 
     FlexibleArea entity = new FlexibleArea();
     input.apply(FIELD_POLYGON, geometryMapper::createJTSPolygon, entity::setPolygon);
-    return entity;
+    return List.of(entity);
   }
 
   protected HailAndRideArea mapHailAndRideArea(Map<String, Object> inputMap) {

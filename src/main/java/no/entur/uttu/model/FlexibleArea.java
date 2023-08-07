@@ -27,6 +27,7 @@ import org.locationtech.jts.geom.Polygon;
 public class FlexibleArea extends IdentifiedEntity {
 
   @ManyToOne
+  @NotNull
   private FlexibleStopPlace flexibleStopPlace;
 
   /**
