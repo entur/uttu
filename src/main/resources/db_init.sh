@@ -12,7 +12,10 @@ for f in ./db/migration/V1__Base_version.sql \
            ./db/migration/V10__Drop_fromDate_to_Date_on_Export.sql \
            ./db/migration/V11__Add_exported_line_statistics.sql \
            ./db/migration/V12__Add_service_journey_name.sql \
-           ./db/migration/V13__Day_type_Service_journey_many_to_many.sql
+           ./db/migration/V13__Day_type_Service_journey_many_to_many.sql \
+           ./db/migration/V14__Use_time_no_timestamp_in_timetable.sql \
+           ./db/migration/V15__Add_line_type.sql \
+           ./db/migration/V16__Flexible_stop_place_flexible_areas_one_to_many.sql
 do
   echo "Running migration for ${f}"
   PGPASSWORD=uttu psql -U uttu -h localhost -p 5432 -f $f
