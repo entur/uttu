@@ -37,6 +37,15 @@ public class FlexibleStopPlaceTest {
   }
 
   @Test
+  public void checkPersistable_withMultipleFlexibleAreas_thenSuccess() {
+    FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
+    flexibleStopPlace.setFlexibleAreas(
+      List.of(new FlexibleArea(), new FlexibleArea(), new FlexibleArea())
+    );
+    flexibleStopPlace.checkPersistable();
+  }
+
+  @Test
   public void checkPersistable_whenBothFlexibleAreaAndHailAndRideArea_giveException() {
     FlexibleStopPlace flexibleStopPlace = new FlexibleStopPlace();
     flexibleStopPlace.setFlexibleAreas(List.of(new FlexibleArea()));
