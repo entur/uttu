@@ -461,6 +461,18 @@ public class LinesGraphQLSchema {
       .name("FlexibleArea")
       .field(
         newFieldDefinition()
+          .name(FIELD_KEY_VALUES)
+          .type(new GraphQLList(keyValuesObjectType))
+          .dataFetcher(env ->
+            ((FlexibleArea) env.getSource()).getKeyValues()
+              .entrySet()
+              .stream()
+              .map(entry -> new KeyValuesWrapper(entry.getKey(), entry.getValue()))
+              .collect(Collectors.toList())
+          )
+      )
+      .field(
+        newFieldDefinition()
           .name(FIELD_POLYGON)
           .type(new GraphQLNonNull(geoJSONObjectType))
           .dataFetcher(env -> ((FlexibleArea) env.getSource()).getPolygon())
@@ -486,7 +498,15 @@ public class LinesGraphQLSchema {
         .name("FlexibleStopPlace")
         .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(vehicleModeEnum))
         .field(
-          newFieldDefinition().name(FIELD_FLEXIBLE_AREA).type(flexibleAreaObjectType)
+          newFieldDefinition()
+            .name(FIELD_FLEXIBLE_AREA)
+            .type(flexibleAreaObjectType)
+            .deprecate("Use 'flexibleAreas' instead")
+        )
+        .field(
+          newFieldDefinition()
+            .name(FIELD_FLEXIBLE_AREAS)
+            .type(new GraphQLList(flexibleAreaObjectType))
         )
         .field(
           newFieldDefinition().name(FIELD_HAIL_AND_RIDE_AREA).type(hailAndRideAreaType)
@@ -1097,14 +1117,28 @@ public class LinesGraphQLSchema {
       )
       .build();
 
+    GraphQLInputObjectType keyValuesInputType = newInputObject()
+      .name("KeyValuesInput")
+      .field(newInputObjectField().name(FIELD_KEY).type(GraphQLString))
+      .field(
+        newInputObjectField().name(FIELD_VALUES).type(new GraphQLList(GraphQLString))
+      )
+      .build();
+
     GraphQLInputObjectType flexibleAreaInput = newInputObject(groupOfEntitiesInputType)
       .name("FlexibleAreaInput")
+      .field(
+        newInputObjectField()
+          .name(FIELD_KEY_VALUES)
+          .type(new GraphQLList(keyValuesInputType))
+      )
       .field(
         newInputObjectField()
           .name(FIELD_POLYGON)
           .type(new GraphQLNonNull(geoJSONInputType))
       )
       .build();
+
     GraphQLInputObjectType hailAndRideAreaInput = newInputObject(groupOfEntitiesInputType)
       .name("HailAndRideAreaInput")
       .field(
@@ -1119,14 +1153,6 @@ public class LinesGraphQLSchema {
       )
       .build();
 
-    GraphQLInputObjectType keyValuesInputType = newInputObject()
-      .name("KeyValuesInput")
-      .field(newInputObjectField().name(FIELD_KEY).type(GraphQLString))
-      .field(
-        newInputObjectField().name(FIELD_VALUES).type(new GraphQLList(GraphQLString))
-      )
-      .build();
-
     GraphQLInputObjectType flexibleStopPlaceInputType = newInputObject(
       groupOfEntitiesInputType
     )
@@ -1136,7 +1162,17 @@ public class LinesGraphQLSchema {
           .name(FIELD_TRANSPORT_MODE)
           .type(new GraphQLNonNull(vehicleModeEnum))
       )
-      .field(newInputObjectField().name(FIELD_FLEXIBLE_AREA).type(flexibleAreaInput))
+      .field(
+        newInputObjectField()
+          .name(FIELD_FLEXIBLE_AREA)
+          .type(flexibleAreaInput)
+          .deprecate("Use 'flexibleAreas' instead")
+      )
+      .field(
+        newInputObjectField()
+          .name(FIELD_FLEXIBLE_AREAS)
+          .type(new GraphQLList(flexibleAreaInput))
+      )
       .field(
         newInputObjectField().name(FIELD_HAIL_AND_RIDE_AREA).type(hailAndRideAreaInput)
       )
