@@ -90,6 +90,7 @@ public class FlexibleStopPlaceProducer {
             new org.rutebanken.netex.model.FlexibleArea(),
             flexibleStopPlace.getRef()
           )
+          .withKeyList(objectFactory.mapKeyValues(localArea.getKeyValues()))
           .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon(), context))
       )
       .toList();
