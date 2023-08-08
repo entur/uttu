@@ -16,10 +16,8 @@
 package no.entur.uttu.export.netex.producer.common;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
-import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.HailAndRideArea;
 import org.rutebanken.netex.model.FlexibleStopPlace_VersionStructure;
@@ -41,19 +39,19 @@ public class FlexibleStopPlaceProducer {
     return context.flexibleStopPlaces
       .stream()
       .map(localStopPlace -> mapFlexibleStopPlace(localStopPlace, context))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   private org.rutebanken.netex.model.FlexibleStopPlace mapFlexibleStopPlace(
     FlexibleStopPlace localStopPlace,
     NetexExportContext context
   ) {
-    org.rutebanken.netex.model.FlexibleQuay_VersionStructure netexQuay;
+    List<? extends org.rutebanken.netex.model.FlexibleQuay_VersionStructure> netexQuays;
 
     if (localStopPlace.getFlexibleArea() != null) {
-      netexQuay = mapFlexibleArea(localStopPlace, context);
+      netexQuays = mapFlexibleArea(localStopPlace, context);
     } else {
-      netexQuay = mapHailAndRideArea(localStopPlace, context);
+      netexQuays = List.of(mapHailAndRideArea(localStopPlace, context));
     }
 
     return new org.rutebanken.netex.model.FlexibleStopPlace()
@@ -74,22 +72,27 @@ public class FlexibleStopPlaceProducer {
       )
       .withAreas(
         new FlexibleStopPlace_VersionStructure.Areas()
-          .withFlexibleAreaOrFlexibleAreaRefOrHailAndRideArea(netexQuay)
+          .withFlexibleAreaOrFlexibleAreaRefOrHailAndRideArea(netexQuays)
       )
       .withKeyList(objectFactory.mapKeyValues(localStopPlace.getKeyValues()));
   }
 
-  private org.rutebanken.netex.model.FlexibleArea mapFlexibleArea(
+  private List<org.rutebanken.netex.model.FlexibleArea> mapFlexibleArea(
     FlexibleStopPlace flexibleStopPlace,
     NetexExportContext context
   ) {
-    FlexibleArea localArea = flexibleStopPlace.getFlexibleArea();
-    return objectFactory
-      .populateId(
-        new org.rutebanken.netex.model.FlexibleArea(),
-        flexibleStopPlace.getRef()
+    return flexibleStopPlace
+      .getFlexibleAreas()
+      .stream()
+      .map(localArea ->
+        objectFactory
+          .populateId(
+            new org.rutebanken.netex.model.FlexibleArea(),
+            flexibleStopPlace.getRef()
+          )
+          .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon(), context))
       )
-      .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon(), context));
+      .toList();
   }
 
   private org.rutebanken.netex.model.HailAndRideArea mapHailAndRideArea(
