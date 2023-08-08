@@ -17,6 +17,7 @@ package no.entur.uttu.graphql.mappers;
 
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_END_QUAY_REF;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_FLEXIBLE_AREA;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_FLEXIBLE_AREAS;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_HAIL_AND_RIDE_AREA;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_KEY;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_KEY_VALUES;
@@ -69,6 +70,11 @@ public class FlexibleStopPlaceMapper
   ) {
     input.apply(FIELD_TRANSPORT_MODE, entity::setTransportMode);
     input.apply(FIELD_FLEXIBLE_AREA, this::mapFlexibleAreas, entity::setFlexibleAreas);
+    input.applyList(
+      FIELD_FLEXIBLE_AREAS,
+      this::mapFlexibleArea,
+      entity::setFlexibleAreas
+    );
     input.apply(
       FIELD_HAIL_AND_RIDE_AREA,
       this::mapHailAndRideArea,
@@ -78,12 +84,16 @@ public class FlexibleStopPlaceMapper
   }
 
   protected List<FlexibleArea> mapFlexibleAreas(Map<String, Object> inputMap) {
+    return List.of(mapFlexibleArea(inputMap));
+  }
+
+  protected FlexibleArea mapFlexibleArea(Map<String, Object> inputMap) {
     ArgumentWrapper input = new ArgumentWrapper(inputMap);
 
     FlexibleArea entity = new FlexibleArea();
     input.apply(FIELD_POLYGON, geometryMapper::createJTSPolygon, entity::setPolygon);
     input.apply(FIELD_KEY_VALUES, this::mapKeyValues, entity::replaceKeyValues);
-    return List.of(entity);
+    return entity;
   }
 
   protected HailAndRideArea mapHailAndRideArea(Map<String, Object> inputMap) {
