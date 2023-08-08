@@ -77,6 +77,16 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         coordinates
       }
     }
+    flexibleAreas {
+      keyValues {
+        key
+        values
+      }
+      polygon {
+        type
+        coordinates
+      }
+    }
     hailAndRideArea {
       startQuayRef
       endQuayRef 
@@ -122,6 +132,48 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         "type": "Polygon"
       }
     }
+  }
+}
+        """
+        executeGraphQL(createStopPlaceQuery, variables)
+    }
+
+    ValidatableResponse createFlexibleStopPlaceWithFlexibleAreas(String name) {
+
+
+        String variables = """
+{
+  "flexibleStopPlace": {
+    "name": "$name",
+    "description": "flexible area desc",
+    "transportMode": "water",
+    "flexibleAreas": [{
+      "keyValues": [{
+        "key": "foo",
+        "values": ["bar", "baz"]
+      }],
+      "polygon": {
+        "coordinates": [
+          [
+            2.1,
+            3.3
+          ],
+          [
+            4.1,
+            5.2
+          ],
+          [
+            4.9,
+            5.9
+          ],
+          [
+            2.1,
+            3.3
+          ]
+        ],
+        "type": "Polygon"
+      }
+    }]
   }
 }
         """
