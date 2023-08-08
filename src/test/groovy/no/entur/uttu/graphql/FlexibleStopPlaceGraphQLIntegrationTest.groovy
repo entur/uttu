@@ -40,6 +40,7 @@ mutation deleteFlexibleStopPlace(\$id: ID!) {
 """
 
     String flexAreaName = "FlexibleAreaTest"
+    String flexAreasName = "FlexibleAreasTest"
 
     @Test
     void createFlexibleStopPlaceWithFlexibleAreaTest() {
@@ -51,6 +52,18 @@ mutation deleteFlexibleStopPlace(\$id: ID!) {
         String queryForFlexibleArea = """ {flexibleStopPlace (id:"$id") {id name keyValues { key values } flexibleArea { polygon {type coordinates}}}}"""
 
         assertFlexibleAreaResponse(executeGraphqQLQueryOnly(queryForFlexibleArea), "flexibleStopPlace");
+    }
+
+    @Test
+    void createFlexibleStopPlaceWithFlexibleAreasTest() {
+
+        ValidatableResponse response = createFlexibleStopPlaceWithFlexibleAreas(flexAreasName)
+        assertFlexibleAreasResponse(response, "mutateFlexibleStopPlace")
+
+        String id = extractId(response, "mutateFlexibleStopPlace")
+        String queryForFlexibleAreas = """ {flexibleStopPlace (id:"$id") {id name flexibleAreas { keyValues { key values } polygon {type coordinates}}}}"""
+
+        assertFlexibleAreasResponse(executeGraphqQLQueryOnly(queryForFlexibleAreas), "flexibleStopPlace");
     }
 
     @Test
@@ -80,6 +93,15 @@ mutation deleteFlexibleStopPlace(\$id: ID!) {
                 .body("data." + path + ".keyValues[0].key", equalTo("foo"))
                 .body("data." + path + ".flexibleArea.polygon.type", equalTo("Polygon"))
                 .body("data." + path + ".flexibleArea.polygon.coordinates", hasSize(4))
+
+    }
+
+    void assertFlexibleAreasResponse(ValidatableResponse rsp, String path) {
+        rsp.body("data." + path + ".id", startsWith("TST:FlexibleStopPlace"))
+                .body("data." + path + ".name", equalTo(flexAreasName))
+                .body("data." + path + ".flexibleAreas[0].keyValues[0].key", equalTo("foo"))
+                .body("data." + path + ".flexibleAreas[0].polygon.type", equalTo("Polygon"))
+                .body("data." + path + ".flexibleAreas[0].polygon.coordinates", hasSize(4))
 
     }
 
