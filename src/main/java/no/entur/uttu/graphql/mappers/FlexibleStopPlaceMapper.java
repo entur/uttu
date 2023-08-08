@@ -82,6 +82,7 @@ public class FlexibleStopPlaceMapper
 
     FlexibleArea entity = new FlexibleArea();
     input.apply(FIELD_POLYGON, geometryMapper::createJTSPolygon, entity::setPolygon);
+    input.apply(FIELD_KEY_VALUES, this::mapKeyValues, entity::replaceKeyValues);
     return List.of(entity);
   }
 

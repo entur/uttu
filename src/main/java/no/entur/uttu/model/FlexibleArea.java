@@ -15,12 +15,17 @@
 
 package no.entur.uttu.model;
 
+import java.util.HashMap;
+import java.util.Map;
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.locationtech.jts.geom.Polygon;
 
 @Entity
@@ -37,6 +42,10 @@ public class FlexibleArea extends IdentifiedEntity {
   @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
   @NotNull
   private PersistablePolygon polygon;
+
+  @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+  @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+  protected Map<String, Value> keyValues = new HashMap<>();
 
   public Polygon getPolygon() {
     if (polygon == null) {
@@ -59,5 +68,14 @@ public class FlexibleArea extends IdentifiedEntity {
 
   public FlexibleStopPlace getFlexibleStopPlace() {
     return flexibleStopPlace;
+  }
+
+  public Map<String, Value> getKeyValues() {
+    return keyValues;
+  }
+
+  public void replaceKeyValues(Map<String, Value> keyValues) {
+    this.keyValues.clear();
+    this.keyValues.putAll(keyValues);
   }
 }
