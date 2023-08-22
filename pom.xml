@@ -53,7 +53,7 @@
         <javax.jdo.jdo2-api.version>2.3-20090302111651</javax.jdo.jdo2-api.version>
 
         <commons-io.version>2.13.0</commons-io.version>
-        <groovy-all.version>3.0.18</groovy-all.version>
+        <groovy-all.version>3.0.19</groovy-all.version>
         <rest-assured.version>4.5.1</rest-assured.version>
         <graphql.version>20.2</graphql.version>
         <netex-java-model.version>1.0.14</netex-java-model.version>
