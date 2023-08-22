@@ -18,9 +18,12 @@ package no.entur.uttu.export.netex.producer.common;
 import java.util.Collection;
 import java.util.List;
 import no.entur.uttu.export.netex.NetexExportContext;
+import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.HailAndRideArea;
+import no.entur.uttu.model.Ref;
+import org.rutebanken.netex.model.FlexibleArea;
 import org.rutebanken.netex.model.FlexibleQuay_VersionStructure;
 import org.rutebanken.netex.model.FlexibleStopPlace_VersionStructure;
 import org.rutebanken.netex.model.PointRefStructure;
@@ -89,8 +92,8 @@ public class FlexibleStopPlaceProducer {
       .map(localArea ->
         objectFactory
           .populateId(
-            new org.rutebanken.netex.model.FlexibleArea(),
-            flexibleStopPlace.getRef()
+            new FlexibleArea(),
+            new Ref(NetexIdProducer.generateId(FlexibleArea.class, context), "0")
           )
           .withKeyList(objectFactory.mapKeyValues(localArea.getKeyValues()))
           .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon(), context))
