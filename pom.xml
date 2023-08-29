@@ -59,7 +59,7 @@
         <netex-java-model.version>1.0.14</netex-java-model.version>
 
         <prettier-java.version>2.1.0</prettier-java.version>
-        <prettier-maven-plugin.version>0.20</prettier-maven-plugin.version>
+        <prettier-maven-plugin.version>0.21</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
     </properties>
     <repositories>
