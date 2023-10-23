@@ -48,14 +48,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class JourneyPatternProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+  private final ContactStructureProducer contactStructureProducer;
+  private final StopPlaceRegistry stopPlaceRegistry;
 
   @Autowired
-  private ContactStructureProducer contactStructureProducer;
-
-  @Autowired
-  private StopPlaceRegistry stopPlaceRegistry;
+  public JourneyPatternProducer(
+    NetexObjectFactory objectFactory,
+    ContactStructureProducer contactStructureProducer,
+    StopPlaceRegistry stopPlaceRegistry
+  ) {
+    this.objectFactory = objectFactory;
+    this.contactStructureProducer = contactStructureProducer;
+    this.stopPlaceRegistry = stopPlaceRegistry;
+  }
 
   public org.rutebanken.netex.model.JourneyPattern produce(
     JourneyPattern local,
