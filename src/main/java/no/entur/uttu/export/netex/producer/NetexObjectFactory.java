@@ -53,13 +53,17 @@ public class NetexObjectFactory {
   @Value("${netex.export.version:1.11:NO-NeTEx-networktimetable:1.3}")
   private String netexVersion;
 
-  private ObjectFactory objectFactory = new ObjectFactory();
+  private final ObjectFactory objectFactory = new ObjectFactory();
+
+  private final DateUtils dateUtils;
+
+  private final ExportTimeZone exportTimeZone;
 
   @Autowired
-  private DateUtils dateUtils;
-
-  @Autowired
-  private ExportTimeZone exportTimeZone;
+  public NetexObjectFactory(DateUtils dateUtils, ExportTimeZone exportTimeZone) {
+    this.dateUtils = dateUtils;
+    this.exportTimeZone = exportTimeZone;
+  }
 
   public <E> JAXBElement<E> wrapAsJAXBElement(E entity) {
     if (entity == null) {

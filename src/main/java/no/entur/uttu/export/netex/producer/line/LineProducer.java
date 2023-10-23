@@ -40,14 +40,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class LineProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+  private final ContactStructureProducer contactStructureProducer;
+  private final OrganisationProducer organisationProducer;
 
   @Autowired
-  private ContactStructureProducer contactStructureProducer;
-
-  @Autowired
-  private OrganisationProducer organisationProducer;
+  public LineProducer(
+    NetexObjectFactory objectFactory,
+    ContactStructureProducer contactStructureProducer,
+    OrganisationProducer organisationProducer
+  ) {
+    this.objectFactory = objectFactory;
+    this.contactStructureProducer = contactStructureProducer;
+    this.organisationProducer = organisationProducer;
+  }
 
   public org.rutebanken.netex.model.Line_VersionStructure produce(
     Line line,
