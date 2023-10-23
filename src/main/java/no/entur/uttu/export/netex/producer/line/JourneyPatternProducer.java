@@ -82,12 +82,7 @@ public class JourneyPatternProducer {
     );
 
     noticeAssignments.addAll(
-      objectFactory.createNoticeAssignments(
-        local,
-        JourneyPatternRefStructure.class,
-        local.getNotices(),
-        context
-      )
+      objectFactory.createNoticeAssignments(local, local.getNotices(), context)
     );
     context.notices.addAll(local.getNotices());
 
@@ -153,12 +148,7 @@ public class JourneyPatternProducer {
       );
 
     noticeAssignments.addAll(
-      objectFactory.createNoticeAssignments(
-        local,
-        StopPointInJourneyPatternRefStructure.class,
-        local.getNotices(),
-        context
-      )
+      objectFactory.createNoticeAssignments(local, local.getNotices(), context)
     );
     context.notices.addAll(local.getNotices());
 

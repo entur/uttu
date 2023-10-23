@@ -107,12 +107,7 @@ public class ServiceJourneyProducer {
       );
 
     noticeAssignments.addAll(
-      objectFactory.createNoticeAssignments(
-        local,
-        ServiceJourneyRefStructure.class,
-        local.getNotices(),
-        context
-      )
+      objectFactory.createNoticeAssignments(local, local.getNotices(), context)
     );
     context.notices.addAll(local.getNotices());
 
@@ -177,12 +172,7 @@ public class ServiceJourneyProducer {
       : null;
 
     noticeAssignments.addAll(
-      objectFactory.createNoticeAssignments(
-        local,
-        TimetabledPassingTimeRefStructure.class,
-        local.getNotices(),
-        context
-      )
+      objectFactory.createNoticeAssignments(local, local.getNotices(), context)
     );
     context.notices.addAll(local.getNotices());
 

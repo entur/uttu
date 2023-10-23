@@ -148,12 +148,7 @@ public class LineProducer {
     public void visitFixedLine(FixedLine fixedLine) {
       org.rutebanken.netex.model.Line netexLine = new org.rutebanken.netex.model.Line();
       noticeAssignments.addAll(
-        objectFactory.createNoticeAssignments(
-          fixedLine,
-          LineRefStructure.class,
-          fixedLine.getNotices(),
-          context
-        )
+        objectFactory.createNoticeAssignments(fixedLine, fixedLine.getNotices(), context)
       );
       mapCommon(fixedLine, netexLine, context);
       line = NetexIdProducer.copyIdAndVersion(netexLine, fixedLine);
@@ -172,7 +167,6 @@ public class LineProducer {
       noticeAssignments.addAll(
         objectFactory.createNoticeAssignments(
           flexibleLine,
-          FlexibleLineRefStructure.class,
           flexibleLine.getNotices(),
           context
         )
