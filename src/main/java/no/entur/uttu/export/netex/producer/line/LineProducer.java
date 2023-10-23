@@ -27,9 +27,7 @@ import no.entur.uttu.model.Line;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
-import org.rutebanken.netex.model.FlexibleLineRefStructure;
 import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
-import org.rutebanken.netex.model.LineRefStructure;
 import org.rutebanken.netex.model.Line_VersionStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
@@ -152,12 +150,7 @@ public class LineProducer {
     public void visitFixedLine(FixedLine fixedLine) {
       org.rutebanken.netex.model.Line netexLine = new org.rutebanken.netex.model.Line();
       noticeAssignments.addAll(
-        objectFactory.createNoticeAssignments(
-          fixedLine,
-          LineRefStructure.class,
-          fixedLine.getNotices(),
-          context
-        )
+        objectFactory.createNoticeAssignments(fixedLine, fixedLine.getNotices(), context)
       );
       mapCommon(fixedLine, netexLine, context);
       line = NetexIdProducer.copyIdAndVersion(netexLine, fixedLine);
@@ -176,7 +169,6 @@ public class LineProducer {
       noticeAssignments.addAll(
         objectFactory.createNoticeAssignments(
           flexibleLine,
-          FlexibleLineRefStructure.class,
           flexibleLine.getNotices(),
           context
         )
