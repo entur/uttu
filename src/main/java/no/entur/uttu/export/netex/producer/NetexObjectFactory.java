@@ -30,7 +30,6 @@ import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;
-import no.entur.uttu.export.model.ExportException;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.Ref;
@@ -386,43 +385,27 @@ public class NetexObjectFactory {
       .withVehicleJourneys(journeysInFrameRelStructure);
   }
 
-  public <
-    T extends ProviderEntity, N extends VersionOfObjectRefStructure
-  > List<NoticeAssignment> createNoticeAssignments(
+  public <T extends ProviderEntity> List<NoticeAssignment> createNoticeAssignments(
     T entity,
-    Class<N> refStructureClass,
     Collection<no.entur.uttu.model.Notice> notices,
     NetexExportContext context
   ) {
     return notices
       .stream()
-      .map(notice -> createNoticeAssignment(entity, refStructureClass, notice, context))
+      .map(notice -> createNoticeAssignment(entity, notice, context))
       .collect(Collectors.toList());
   }
 
-  public <
-    T extends ProviderEntity, N extends VersionOfObjectRefStructure
-  > NoticeAssignment createNoticeAssignment(
+  public <T extends ProviderEntity> NoticeAssignment createNoticeAssignment(
     T entity,
-    Class<N> refStructureClass,
     no.entur.uttu.model.Notice notice,
     NetexExportContext context
   ) {
     String netexId = NetexIdProducer.generateId(NoticeAssignment.class, context);
-    N refStructure;
-    try {
-      refStructure = refStructureClass.newInstance();
-    } catch (Exception e) {
-      throw new ExportException(
-        "Failed to instantiate ref structure class (" +
-        refStructureClass.getSimpleName() +
-        "): " +
-        e.getMessage(),
-        e
-      );
-    }
 
-    populateRefStructure(refStructure, entity.getRef(), true);
+    VersionOfObjectRefStructure noticedObjectRef = new VersionOfObjectRefStructure()
+      .withRef(entity.getNetexId())
+      .withVersion(entity.getNetexVersion());
 
     return objectFactory
       .createNoticeAssignment()
@@ -431,7 +414,7 @@ public class NetexObjectFactory {
       .withNoticeRef(
         populateRefStructure(new NoticeRefStructure(), notice.getRef(), false)
       )
-      .withNoticedObjectRef(refStructure);
+      .withNoticedObjectRef(noticedObjectRef);
   }
 
   private NoticeAssignmentsInFrame_RelStructure wrapNoticeAssignments(

@@ -34,7 +34,6 @@ import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.DestinationDisplayRefStructure;
-import org.rutebanken.netex.model.JourneyPatternRefStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PointInLinkSequence_VersionedChildStructure;
 import org.rutebanken.netex.model.PointsInJourneyPattern_RelStructure;
@@ -43,7 +42,6 @@ import org.rutebanken.netex.model.PurchaseWhenEnumeration;
 import org.rutebanken.netex.model.RouteRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
-import org.rutebanken.netex.model.StopPointInJourneyPatternRefStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -82,12 +80,7 @@ public class JourneyPatternProducer {
     );
 
     noticeAssignments.addAll(
-      objectFactory.createNoticeAssignments(
-        local,
-        JourneyPatternRefStructure.class,
-        local.getNotices(),
-        context
-      )
+      objectFactory.createNoticeAssignments(local, local.getNotices(), context)
     );
     context.notices.addAll(local.getNotices());
 
@@ -153,12 +146,7 @@ public class JourneyPatternProducer {
       );
 
     noticeAssignments.addAll(
-      objectFactory.createNoticeAssignments(
-        local,
-        StopPointInJourneyPatternRefStructure.class,
-        local.getNotices(),
-        context
-      )
+      objectFactory.createNoticeAssignments(local, local.getNotices(), context)
     );
     context.notices.addAll(local.getNotices());
 
