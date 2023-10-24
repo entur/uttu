@@ -23,12 +23,12 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.HailAndRideArea;
 import no.entur.uttu.model.Ref;
+import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.FlexibleArea;
 import org.rutebanken.netex.model.FlexibleQuay_VersionStructure;
 import org.rutebanken.netex.model.FlexibleStopPlace_VersionStructure;
 import org.rutebanken.netex.model.PointRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
-import org.rutebanken.netex.model.VehicleModeEnumeration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -72,7 +72,7 @@ public class FlexibleStopPlaceProducer {
       .withTransportMode(
         objectFactory.mapEnum(
           localStopPlace.getTransportMode(),
-          VehicleModeEnumeration.class
+          AllVehicleModesOfTransportEnumeration.class
         )
       )
       .withPrivateCode(
