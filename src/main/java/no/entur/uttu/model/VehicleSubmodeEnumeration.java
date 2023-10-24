@@ -130,7 +130,10 @@ public enum VehicleSubmodeEnumeration {
   CABLE_FERRY("cableFerry", VehicleModeEnumeration.WATER),
   RIVER_BUS("riverBus", VehicleModeEnumeration.WATER),
   SCHEDULED_FERRY("scheduledFerry", VehicleModeEnumeration.WATER),
-  SHUTTLE_FERRY_SERVICE("shuttleFerryService", VehicleModeEnumeration.WATER);
+  SHUTTLE_FERRY_SERVICE("shuttleFerryService", VehicleModeEnumeration.WATER),
+  CHARTER_TAXI("charterTaxi", VehicleModeEnumeration.TAXI),
+  COMMUNAL_TAXI("communalTaxi", VehicleModeEnumeration.TAXI),
+  WATER_TAXI("waterTaxi", VehicleModeEnumeration.TAXI);
 
   private final String value;
 

@@ -28,6 +28,7 @@ public enum VehicleModeEnumeration {
   CABLEWAY("cableway"),
   FUNICULAR("funicular"),
   LIFT("lift"),
+  TAXI("taxi"),
   OTHER("other");
 
   private final String value;
