@@ -24,7 +24,7 @@ import no.entur.uttu.model.Network;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.organisation.OrganisationRegistry;
 import org.rutebanken.netex.model.Authority;
-import org.rutebanken.netex.model.AuthorityRefStructure;
+import org.rutebanken.netex.model.AuthorityRef;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.Operator;
@@ -55,18 +55,17 @@ public class OrganisationProducer {
       .collect(Collectors.toList());
   }
 
-  public AuthorityRefStructure produceAuthorityRef(
+  public AuthorityRef produceAuthorityRef(
     String authorityRef,
     boolean withVersion,
     NetexExportContext context
   ) {
     Authority authority = mapAuthority(authorityRef, context);
-    AuthorityRefStructure authorityRefStruct = new AuthorityRefStructure()
-      .withRef(authority.getId());
+    AuthorityRef authorityRefElement = new AuthorityRef().withRef(authority.getId());
     if (withVersion) {
-      authorityRefStruct.withVersion(authority.getVersion());
+      authorityRefElement.withVersion(authority.getVersion());
     }
-    return authorityRefStruct;
+    return authorityRefElement;
   }
 
   public OperatorRefStructure produceOperatorRef(
