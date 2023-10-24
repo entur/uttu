@@ -443,7 +443,7 @@
     </build>
     <profiles>
         <profile>
-            <id>travis</id>
+            <id>ci</id>
             <activation>
                 <property>
                     <name>env.CI</name>
@@ -453,6 +453,21 @@
                 <!-- But in our CI environment we want to validate that code is formatted -->
                 <plugin.prettier.goal>check</plugin.prettier.goal>
             </properties>
+        </profile>
+        <profile>
+            <id>prettierSkip</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>com.hubspot.maven.plugins</groupId>
+                        <artifactId>prettier-maven-plugin</artifactId>
+                        <version>${prettier-maven-plugin.version}</version>
+                        <configuration>
+                            <skip>true</skip>
+                        </configuration>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>

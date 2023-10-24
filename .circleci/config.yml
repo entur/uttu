@@ -40,13 +40,13 @@ aliases:
       docker tag $IMAGE "${IMAGE}":"${VERSION}"
       docker login -u _json_key --password-stdin https://eu.gcr.io < ${HOME}/account-auth.json
       docker push "${IMAGE}":"${VERSION}"
-
   - &sonar-scan
     name: Sonar scan
     command: |
       mvn -s .circleci/settings.xml \
         org.jacoco:jacoco-maven-plugin:prepare-agent verify \
         org.jacoco:jacoco-maven-plugin:report sonar:sonar \
+        -P prettierSkip \
         -Dmaven.main.skip \
         -DskipTests \
         -Dsonar.projectKey=entur_${CIRCLE_PROJECT_REPONAME} \
@@ -57,8 +57,11 @@ aliases:
 
 jobs:
   build:
-    machine:
-      image: ubuntu-2204:2022.04.2
+    docker:
+      - image: cimg/openjdk:17.0.8-node
+        auth:
+          username: $DOCKERHUB_LOGIN
+          password: $DOCKERHUB_PASSWORD
     environment:
       MAVEN_OPTS: -Xmx3G
     steps:
@@ -81,7 +84,7 @@ jobs:
       # Cannot use -o because of snapshot dependencies.
       - run:
           name: Run Maven verify
-          command: mvn verify -s .circleci/settings.xml
+          command: mvn verify -s .circleci/settings.xml -Dprettier.nodePath=node -Dprettier.npmPath=npm
       - run: *sonar-scan
       - run:
           name: Save test results
