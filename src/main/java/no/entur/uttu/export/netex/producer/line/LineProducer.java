@@ -34,7 +34,6 @@ import org.rutebanken.netex.model.Line_VersionStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PurchaseMomentEnumeration;
 import org.rutebanken.netex.model.PurchaseWhenEnumeration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -44,7 +43,6 @@ public class LineProducer {
   private final ContactStructureProducer contactStructureProducer;
   private final OrganisationProducer organisationProducer;
 
-  @Autowired
   public LineProducer(
     NetexObjectFactory objectFactory,
     ContactStructureProducer contactStructureProducer,

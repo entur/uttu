@@ -34,14 +34,16 @@ import org.rutebanken.netex.model.PointOnRoute;
 import org.rutebanken.netex.model.PointsOnRoute_RelStructure;
 import org.rutebanken.netex.model.Route;
 import org.rutebanken.netex.model.RoutePointRefStructure;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class RouteProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+
+  public RouteProducer(NetexObjectFactory objectFactory) {
+    this.objectFactory = objectFactory;
+  }
 
   public List<Route> produce(Line line, NetexExportContext context) {
     return line

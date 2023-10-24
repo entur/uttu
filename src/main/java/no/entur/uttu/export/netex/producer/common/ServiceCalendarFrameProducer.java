@@ -43,15 +43,17 @@ import org.rutebanken.netex.model.OperatingPeriodRefStructure;
 import org.rutebanken.netex.model.PropertiesOfDay_RelStructure;
 import org.rutebanken.netex.model.PropertyOfDay;
 import org.rutebanken.netex.model.ServiceCalendarFrame;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 @Component
 public class ServiceCalendarFrameProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+
+  public ServiceCalendarFrameProducer(NetexObjectFactory objectFactory) {
+    this.objectFactory = objectFactory;
+  }
 
   private static final Map<DayOfWeek, DayOfWeekEnumeration> dayOfWeekMap =
     new HashMap<>();

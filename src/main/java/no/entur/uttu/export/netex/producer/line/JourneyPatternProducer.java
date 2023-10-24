@@ -44,7 +44,6 @@ import org.rutebanken.netex.model.RouteRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 import org.rutebanken.netex.model.StopPointInJourneyPatternRefStructure;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -54,7 +53,6 @@ public class JourneyPatternProducer {
   private final ContactStructureProducer contactStructureProducer;
   private final StopPlaceRegistry stopPlaceRegistry;
 
-  @Autowired
   public JourneyPatternProducer(
     NetexObjectFactory objectFactory,
     ContactStructureProducer contactStructureProducer,

@@ -37,7 +37,6 @@ import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.VehicleSubmodeEnumeration;
 import no.entur.uttu.util.DateUtils;
 import org.rutebanken.netex.model.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -54,12 +53,9 @@ public class NetexObjectFactory {
   private String netexVersion;
 
   private final ObjectFactory objectFactory = new ObjectFactory();
-
   private final DateUtils dateUtils;
-
   private final ExportTimeZone exportTimeZone;
 
-  @Autowired
   public NetexObjectFactory(DateUtils dateUtils, ExportTimeZone exportTimeZone) {
     this.dateUtils = dateUtils;
     this.exportTimeZone = exportTimeZone;

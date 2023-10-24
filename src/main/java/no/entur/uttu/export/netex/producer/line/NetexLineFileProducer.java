@@ -32,26 +32,30 @@ import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Route;
 import org.rutebanken.netex.model.ServiceFrame;
 import org.rutebanken.netex.model.TimetableFrame;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NetexLineFileProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+  private final LineProducer lineProducer;
+  private final RouteProducer routeProducer;
+  private final JourneyPatternProducer journeyPatternProducer;
+  private final ServiceJourneyProducer serviceJourneyProducer;
 
-  @Autowired
-  private LineProducer lineProducer;
-
-  @Autowired
-  private RouteProducer routeProducer;
-
-  @Autowired
-  private JourneyPatternProducer journeyPatternProducer;
-
-  @Autowired
-  private ServiceJourneyProducer serviceJourneyProducer;
+  public NetexLineFileProducer(
+    NetexObjectFactory objectFactory,
+    LineProducer lineProducer,
+    RouteProducer routeProducer,
+    JourneyPatternProducer journeyPatternProducer,
+    ServiceJourneyProducer serviceJourneyProducer
+  ) {
+    this.objectFactory = objectFactory;
+    this.lineProducer = lineProducer;
+    this.routeProducer = routeProducer;
+    this.journeyPatternProducer = journeyPatternProducer;
+    this.serviceJourneyProducer = serviceJourneyProducer;
+  }
 
   public NetexFile toNetexFile(Line line, NetexExportContext context) {
     String fileName = ExportUtil.createLineFilename(line);

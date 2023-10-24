@@ -30,14 +30,16 @@ import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrganisationProducer {
 
-  @Autowired
-  private OrganisationRegistry organisationRegistry;
+  private final OrganisationRegistry organisationRegistry;
+
+  public OrganisationProducer(OrganisationRegistry organisationRegistry) {
+    this.organisationRegistry = organisationRegistry;
+  }
 
   public List<Authority> produceAuthorities(NetexExportContext context) {
     return context.networks

@@ -18,14 +18,16 @@ package no.entur.uttu.export.netex.producer.line;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Contact;
 import org.rutebanken.netex.model.ContactStructure;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ContactStructureProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+
+  public ContactStructureProducer(NetexObjectFactory objectFactory) {
+    this.objectFactory = objectFactory;
+  }
 
   public ContactStructure mapContactStructure(Contact local) {
     if (local == null) {
