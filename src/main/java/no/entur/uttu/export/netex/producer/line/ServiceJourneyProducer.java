@@ -47,20 +47,24 @@ import org.rutebanken.netex.model.ServiceJourneyRefStructure;
 import org.rutebanken.netex.model.StopPointInJourneyPatternRefStructure;
 import org.rutebanken.netex.model.TimetabledPassingTimeRefStructure;
 import org.rutebanken.netex.model.TimetabledPassingTimes_RelStructure;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ServiceJourneyProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+  private final ContactStructureProducer contactStructureProducer;
+  private final OrganisationProducer organisationProducer;
 
-  @Autowired
-  private ContactStructureProducer contactStructureProducer;
-
-  @Autowired
-  private OrganisationProducer organisationProducer;
+  public ServiceJourneyProducer(
+    NetexObjectFactory objectFactory,
+    ContactStructureProducer contactStructureProducer,
+    OrganisationProducer organisationProducer
+  ) {
+    this.objectFactory = objectFactory;
+    this.contactStructureProducer = contactStructureProducer;
+    this.organisationProducer = organisationProducer;
+  }
 
   public org.rutebanken.netex.model.ServiceJourney produce(
     ServiceJourney local,

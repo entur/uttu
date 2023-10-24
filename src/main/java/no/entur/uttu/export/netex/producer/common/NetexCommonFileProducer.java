@@ -49,30 +49,34 @@ import org.rutebanken.netex.model.ServiceCalendarFrame;
 import org.rutebanken.netex.model.ServiceFrame;
 import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.netex.model.StopAssignment_VersionStructure;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NetexCommonFileProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
-
-  @Autowired
-  private OrganisationProducer organisationProducer;
-
-  @Autowired
-  private FlexibleStopPlaceProducer flexibleStopPlaceProducer;
-
-  @Autowired
-  private ServiceCalendarFrameProducer serviceCalendarFrameProducer;
-
-  @Autowired
-  private NetworkProducer networkProducer;
+  private final NetexObjectFactory objectFactory;
+  private final OrganisationProducer organisationProducer;
+  private final FlexibleStopPlaceProducer flexibleStopPlaceProducer;
+  private final ServiceCalendarFrameProducer serviceCalendarFrameProducer;
+  private final NetworkProducer networkProducer;
 
   @Value("${export.blob.commonFileFilenameSuffix:_flexible_shared_data}")
   private String commonFileFilenameSuffix;
+
+  public NetexCommonFileProducer(
+    NetexObjectFactory objectFactory,
+    OrganisationProducer organisationProducer,
+    FlexibleStopPlaceProducer flexibleStopPlaceProducer,
+    ServiceCalendarFrameProducer serviceCalendarFrameProducer,
+    NetworkProducer networkProducer
+  ) {
+    this.objectFactory = objectFactory;
+    this.organisationProducer = organisationProducer;
+    this.flexibleStopPlaceProducer = flexibleStopPlaceProducer;
+    this.serviceCalendarFrameProducer = serviceCalendarFrameProducer;
+    this.networkProducer = networkProducer;
+  }
 
   public NetexFile toCommonFile(NetexExportContext context) {
     ResourceFrame resourceFrame = createResourceFrame(context);

@@ -29,14 +29,16 @@ import org.rutebanken.netex.model.FlexibleStopPlace_VersionStructure;
 import org.rutebanken.netex.model.PointRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 import org.rutebanken.netex.model.VehicleModeEnumeration;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class FlexibleStopPlaceProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+
+  public FlexibleStopPlaceProducer(NetexObjectFactory objectFactory) {
+    this.objectFactory = objectFactory;
+  }
 
   public List<org.rutebanken.netex.model.FlexibleStopPlace> produce(
     NetexExportContext context

@@ -20,17 +20,21 @@ import java.util.stream.Collectors;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Network;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class NetworkProducer {
 
-  @Autowired
-  private NetexObjectFactory objectFactory;
+  private final NetexObjectFactory objectFactory;
+  private final OrganisationProducer organisationProducer;
 
-  @Autowired
-  private OrganisationProducer organisationProducer;
+  public NetworkProducer(
+    NetexObjectFactory objectFactory,
+    OrganisationProducer organisationProducer
+  ) {
+    this.objectFactory = objectFactory;
+    this.organisationProducer = organisationProducer;
+  }
 
   public List produce(NetexExportContext context) {
     return context.networks
