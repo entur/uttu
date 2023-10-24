@@ -57,11 +57,8 @@ aliases:
 
 jobs:
   build:
-    docker:
-      - image: cimg/openjdk:17.0.8-node
-        auth:
-          username: $DOCKERHUB_LOGIN
-          password: $DOCKERHUB_PASSWORD
+    machine:
+      image: ubuntu-2204:2022.04.2
     environment:
       MAVEN_OPTS: -Xmx3G
     steps:
