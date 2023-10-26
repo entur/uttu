@@ -65,7 +65,10 @@ public class NorwegianProfile implements Profile {
       LOCAL_CAR_FERRY,
       LOCAL_PASSENGER_FERRY,
       NATIONAL_CAR_FERRY,
-      SIGHTSEEING_SERVICE
+      SIGHTSEEING_SERVICE,
+      CHARTER_TAXI,
+      COMMUNAL_TAXI,
+      WATER_TAXI
     );
 
   @Override
