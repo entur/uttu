@@ -572,6 +572,10 @@ public class NetexObjectFactory {
           mapEnum(submode, TelecabinSubmodeEnumeration.class)
         );
         break;
+      case TAXI:
+        submodeStructure.withTaxiSubmode(
+          mapEnum(submode, TaxiSubmodeEnumeration.class)
+        );
     }
 
     return submodeStructure;
