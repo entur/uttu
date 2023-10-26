@@ -532,6 +532,7 @@ public class NetexObjectFactory {
     if (submode == null) {
       return null;
     }
+
     TransportSubmodeStructure submodeStructure = new TransportSubmodeStructure();
     switch (submode.getVehicleMode()) {
       case TROLLEY_BUS:
@@ -572,6 +573,8 @@ public class NetexObjectFactory {
           mapEnum(submode, TelecabinSubmodeEnumeration.class)
         );
         break;
+      case TAXI:
+        submodeStructure.withTaxiSubmode(mapEnum(submode, TaxiSubmodeEnumeration.class));
     }
 
     return submodeStructure;
