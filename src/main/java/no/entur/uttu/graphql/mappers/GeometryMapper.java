@@ -18,7 +18,6 @@ package no.entur.uttu.graphql.mappers;
 import static no.entur.uttu.error.codes.ErrorCodeEnumeration.INVALID_POLYGON;
 
 import java.util.Map;
-import no.entur.uttu.error.CodedGraphQLError;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import org.locationtech.jts.geom.Coordinate;
@@ -26,14 +25,16 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class GeometryMapper {
 
-  @Autowired
-  private GeometryFactory geometryFactory;
+  private final GeometryFactory geometryFactory;
+
+  public GeometryMapper(GeometryFactory geometryFactory) {
+    this.geometryFactory = geometryFactory;
+  }
 
   public Polygon createJTSPolygon(Map map) {
     if (map.get("type") != null && map.get("coordinates") != null) {
