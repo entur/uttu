@@ -58,4 +58,9 @@ public enum ErrorCodeEnumeration implements ErrorCode {
    * Flexible lines must have booking information on line, journey pattern and/or service journey
    */
   FLEXIBLE_LINE_REQUIRES_BOOKING,
+
+  INVALID_POLYGON,
+  /**
+   * Flexible areas must have valid polygons
+   */
 }

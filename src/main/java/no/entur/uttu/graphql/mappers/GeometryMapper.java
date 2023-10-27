@@ -15,7 +15,12 @@
 
 package no.entur.uttu.graphql.mappers;
 
+import static no.entur.uttu.error.codes.ErrorCodeEnumeration.INVALID_POLYGON;
+
 import java.util.Map;
+import no.entur.uttu.error.CodedGraphQLError;
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
@@ -34,7 +39,14 @@ public class GeometryMapper {
     if (map.get("type") != null && map.get("coordinates") != null) {
       if ("Polygon".equals(map.get("type"))) {
         Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
-        return geometryFactory.createPolygon(coordinates);
+        Polygon polygon = geometryFactory.createPolygon(coordinates);
+        if (!polygon.isValid()) {
+          throw new CodedIllegalArgumentException(
+            "Invalid polygon",
+            CodedError.fromErrorCode(INVALID_POLYGON)
+          );
+        }
+        return polygon;
       }
     }
     return null;
