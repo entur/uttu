@@ -43,7 +43,7 @@ public class GeometryMapper {
         Polygon polygon = geometryFactory.createPolygon(coordinates);
         if (!polygon.isValid()) {
           throw new CodedIllegalArgumentException(
-            "Invalid polygon",
+            "The polygon has an invalid geometry",
             CodedError.fromErrorCode(INVALID_POLYGON)
           );
         }

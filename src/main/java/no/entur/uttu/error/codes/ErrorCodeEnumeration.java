@@ -60,7 +60,7 @@ public enum ErrorCodeEnumeration implements ErrorCode {
   FLEXIBLE_LINE_REQUIRES_BOOKING,
 
   /**
-   * Flexible areas must have valid polygons
+   * Flexible areas must have polygons with valid geometry
    */
   INVALID_POLYGON,
 }
