@@ -22,8 +22,6 @@ import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.LineString;
-import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.springframework.stereotype.Component;
 
