@@ -52,27 +52,4 @@ public class GeometryMapper {
     }
     return null;
   }
-
-  public LineString createGeoJsonLineString(Map map) {
-    if (map.get("type") != null && map.get("coordinates") != null) {
-      if ("LineString".equals(map.get("type"))) {
-        Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
-        return geometryFactory.createLineString(coordinates);
-      }
-    }
-    return null;
-  }
-
-  public Point createGeoJsonPoint(Map map) {
-    if (map == null) {
-      return null;
-    }
-    if (map.get("type") != null && map.get("coordinates") != null) {
-      if ("Point".equals(map.get("type"))) {
-        Coordinate[] coordinates = (Coordinate[]) map.get("coordinates");
-        return geometryFactory.createPoint(coordinates[0]);
-      }
-    }
-    return null;
-  }
 }
