@@ -38,7 +38,7 @@ public class PubSubMessagingService implements MessagingService {
    * @param codespace the current provider's codespace.
    */
   @Override
-  public void notifyExport(final String codespace) {
+  public void notifyExport(final String codespace, String filename) {
     if (enableNotification) {
       Map<String, String> pubSubAttributes = new HashMap<>();
       pubSubAttributes.put(
@@ -47,7 +47,7 @@ public class PubSubMessagingService implements MessagingService {
       );
       pubSubAttributes.put(HEADER_USERNAME, Context.getUsername() + " (via NPlan)");
       pubSubAttributes.put(HEADER_CORRELATION_ID, UUID.randomUUID().toString());
-      pubSubTemplate.publish(queueName, "", pubSubAttributes);
+      pubSubTemplate.publish(queueName, filename, pubSubAttributes);
 
       logger.debug("Sent export notification for codespace {}.", codespace);
     } else {

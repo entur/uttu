@@ -32,7 +32,6 @@ import no.entur.uttu.util.ExportUtil;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -41,23 +40,30 @@ public class ExportService {
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  @Autowired
-  private NetexExporter exporter;
+  private final NetexExporter exporter;
 
-  @Autowired
-  private BlobStoreService blobStoreService;
+  private final BlobStoreService blobStoreService;
 
-  @Autowired
-  private MessagingService messagingService;
+  private final MessagingService messagingService;
 
   @Value("${export.working.folder:tmp}")
   private String workingFolder;
 
-  @Value("${export.blob.folder:inbound/netex/}")
-  private String exportFolder = "inbound/netex/";
+  @Value("${export.blob.folder:inbound/uttu/}")
+  private String exportFolder;
 
   @Value("${export.blob.filenameSuffix:-flexible-lines}")
   private String exportedFilenameSuffix;
+
+  public ExportService(
+    NetexExporter exporter,
+    BlobStoreService blobStoreService,
+    MessagingService messagingService
+  ) {
+    this.exporter = exporter;
+    this.blobStoreService = blobStoreService;
+    this.messagingService = messagingService;
+  }
 
   public void exportDataSet(Export export) {
     export.checkPersistable();
@@ -77,16 +83,18 @@ public class ExportService {
       ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 
       if (!export.isDryRun() && !exportHasErrors(export)) {
-        String blobName =
-          exportFolder +
-          ExportUtil.createExportedDataSetFilename(
-            export.getProvider(),
-            exportedFilenameSuffix
-          );
+        String exportedDataSetFilename = ExportUtil.createExportedDataSetFilename(
+          export.getProvider(),
+          exportedFilenameSuffix
+        );
+        String blobName = exportFolder + exportedDataSetFilename;
         blobStoreService.uploadBlob(blobName, false, bis);
         bis.reset();
         // notify Marduk that a new export is available
-        messagingService.notifyExport(export.getProvider().getCode().toLowerCase());
+        messagingService.notifyExport(
+          export.getProvider().getCode().toLowerCase(),
+          exportedDataSetFilename
+        );
         exportedLines
           .stream()
           .map(ExportedLineStatisticsService::toExportedLineStatistics)
@@ -95,10 +103,7 @@ public class ExportService {
       export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
       blobStoreService.uploadBlob(export.getFileName(), false, bis);
     } catch (CodedIllegalArgumentException iae) {
-      ExportMessage msg = new ExportMessage(
-        SeverityEnumeration.ERROR,
-        iae.getCode().toString()
-      );
+      ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getCode());
       export.addMessage(msg);
       logger.info(
         export.identity() + " Export failed with exception: " + iae.getMessage(),
