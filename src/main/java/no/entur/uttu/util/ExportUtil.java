@@ -17,6 +17,7 @@ package no.entur.uttu.util;
 
 import java.text.StringCharacterIterator;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.model.Line;
@@ -29,11 +30,12 @@ public class ExportUtil {
   private static final String MAIN_SEPARATOR = "_";
   private static final String SECONDARY_SEPARATOR = "-";
 
-  private static final String DATE_PATTERN = "yyyyMMdd";
-
   private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern(
-    DATE_PATTERN
+    "yyyyMMdd"
   );
+
+  private static final DateTimeFormatter TIMESTAMP_FORMATTER =
+    DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
   // In Marduk providers are identified with their migrated provider referential, thus the codespace must be prefixed.
   public static final String MIGRATED_PROVIDER_PREFIX = "rb_";
@@ -46,6 +48,8 @@ public class ExportUtil {
       MIGRATED_PROVIDER_PREFIX +
       provider.getCode().toLowerCase() +
       exportedFilenameSuffix +
+      '-' +
+      LocalDateTime.now().format(TIMESTAMP_FORMATTER) +
       ".zip"
     );
   }

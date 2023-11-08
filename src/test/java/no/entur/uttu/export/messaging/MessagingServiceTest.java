@@ -18,20 +18,20 @@ package no.entur.uttu.export.messaging;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.pubsub.v1.PubsubMessage;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import no.entur.uttu.UttuIntegrationTest;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
 import org.junit.Assert;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 public class MessagingServiceTest extends UttuIntegrationTest {
 
   public static final String TEST_CODESPACE = "rut";
-  private final Logger logger = LoggerFactory.getLogger(getClass());
+
+  public static final String TEST_EXPORT_FILE_NAME = "netex.zip";
 
   @Autowired
   private MessagingService messagingService;
@@ -49,14 +49,18 @@ public class MessagingServiceTest extends UttuIntegrationTest {
   public void testNotifyExport() {
     enturGooglePubSubAdmin.createSubscriptionIfMissing(queueName);
 
-    messagingService.notifyExport(TEST_CODESPACE);
+    messagingService.notifyExport(TEST_CODESPACE, TEST_EXPORT_FILE_NAME);
 
     List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
     Assert.assertEquals(messages.size(), 1);
-    String codespace = messages
-      .get(0)
+    PubsubMessage pubsubMessage = messages.get(0);
+    String codespace = pubsubMessage
       .getAttributesMap()
       .get(PubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
-    Assert.assertEquals(codespace, "rb_" + TEST_CODESPACE);
+    Assert.assertEquals("rb_" + TEST_CODESPACE, codespace);
+    Assert.assertEquals(
+      TEST_EXPORT_FILE_NAME,
+      pubsubMessage.getData().toString(StandardCharsets.UTF_8)
+    );
   }
 }
