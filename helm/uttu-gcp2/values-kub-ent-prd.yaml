@@ -29,4 +29,4 @@ configMap:
   logLevel: INFO
   flywayTable: flyway_schema_history
   exportQueueName: FlexibleLinesExportQueue
-  exportBlobFolder: inbound/netex/
+  exportBlobFolder: inbound/uttu/
