@@ -237,6 +237,8 @@ public class NetexCommonFileProducer {
           true
         )
       )
-      .withQuayRef(new QuayRefStructure().withRef(quayRef));
+      .withQuayRef(
+        objectFactory.wrapAsJAXBElement(new QuayRefStructure().withRef(quayRef))
+      );
   }
 }

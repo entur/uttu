@@ -48,7 +48,7 @@ public class NetexObjectFactory {
   public static final String NSR_XMLNS = "NSR";
   public static final String NSR_XMLNSURL = "http://www.rutebanken.org/ns/nsr";
 
-  @Value("${netex.export.version:1.11:NO-NeTEx-networktimetable:1.3}")
+  @Value("${netex.export.version:1.15:NO-NeTEx-networktimetable:1.5}")
   private String netexVersion;
 
   private final ObjectFactory objectFactory = new ObjectFactory();
@@ -532,6 +532,7 @@ public class NetexObjectFactory {
     if (submode == null) {
       return null;
     }
+
     TransportSubmodeStructure submodeStructure = new TransportSubmodeStructure();
     switch (submode.getVehicleMode()) {
       case TROLLEY_BUS:
@@ -572,6 +573,8 @@ public class NetexObjectFactory {
           mapEnum(submode, TelecabinSubmodeEnumeration.class)
         );
         break;
+      case TAXI:
+        submodeStructure.withTaxiSubmode(mapEnum(submode, TaxiSubmodeEnumeration.class));
     }
 
     return submodeStructure;

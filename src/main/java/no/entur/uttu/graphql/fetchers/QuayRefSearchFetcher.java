@@ -37,7 +37,7 @@ public class QuayRefSearchFetcher
         .getQuays()
         .getQuayRefOrQuay()
         .stream()
-        .map(v -> (org.rutebanken.netex.model.Quay) v)
+        .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
         .map(this::mapQuay)
         .collect(Collectors.toList())
     );
