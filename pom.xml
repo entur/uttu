@@ -56,7 +56,7 @@
         <groovy-all.version>3.0.19</groovy-all.version>
         <rest-assured.version>4.5.1</rest-assured.version>
         <graphql.version>20.2</graphql.version>
-        <netex-java-model.version>1.0.15</netex-java-model.version>
+        <netex-java-model.version>2.0.15</netex-java-model.version>
 
         <prettier-java.version>2.1.0</prettier-java.version>
         <prettier-maven-plugin.version>0.21</prettier-maven-plugin.version>
