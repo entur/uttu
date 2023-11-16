@@ -16,6 +16,7 @@
 package no.entur.uttu.export.netex.producer;
 
 import static no.entur.uttu.export.netex.producer.NetexIdProducer.getEntityName;
+import static no.entur.uttu.export.netex.producer.NetexIdProducer.getObjectIdSuffix;
 
 import java.math.BigInteger;
 import java.util.Arrays;
@@ -495,6 +496,12 @@ public class NetexObjectFactory {
       AvailabilityCondition.class,
       context
     );
+
+    availabilityConditionId =
+      NetexIdProducer.updateIdSuffix(
+        availabilityConditionId,
+        getObjectIdSuffix(availabilityConditionId) + "_UTTU"
+      );
 
     AvailabilityCondition availabilityCondition = objectFactory
       .createAvailabilityCondition()
