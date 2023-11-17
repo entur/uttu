@@ -100,6 +100,10 @@ public class NetexIdProducer {
     return objectId.replaceFirst(getObjectIdPrefix(objectId), getIdPrefix(context));
   }
 
+  public static String updateIdSuffix(String objectId, String newSuffix) {
+    return objectId.replaceFirst(getObjectIdSuffix(objectId), newSuffix);
+  }
+
   public static String getObjectIdPrefix(String objectId) {
     return objectId.split(SEPARATOR)[0];
   }
