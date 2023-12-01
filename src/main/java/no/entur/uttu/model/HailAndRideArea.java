@@ -15,7 +15,7 @@
 
 package no.entur.uttu.model;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import no.entur.uttu.util.Preconditions;
 

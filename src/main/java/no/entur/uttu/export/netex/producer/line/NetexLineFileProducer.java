@@ -15,10 +15,10 @@
 
 package no.entur.uttu.export.netex.producer.line;
 
+import jakarta.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexFile;

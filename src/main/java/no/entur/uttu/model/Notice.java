@@ -15,7 +15,7 @@
 
 package no.entur.uttu.model;
 
-import javax.persistence.Entity;
+import jakarta.persistence.Entity;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import no.entur.uttu.error.codederror.CodedError;

@@ -19,15 +19,15 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
 
 import io.swagger.annotations.Api;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.io.InputStream;
 import java.nio.file.Paths;
-import javax.persistence.EntityNotFoundException;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.model.job.Export;

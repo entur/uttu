@@ -16,13 +16,13 @@
 package no.entur.uttu.model;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalTime;
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import no.entur.uttu.util.Preconditions;

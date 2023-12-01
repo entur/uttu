@@ -15,16 +15,16 @@
 
 package no.entur.uttu.model.job;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToMany;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToMany;
 import javax.validation.constraints.NotNull;
 import no.entur.uttu.model.ExportedLineStatistics;
 import no.entur.uttu.model.ProviderEntity;

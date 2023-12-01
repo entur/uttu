@@ -15,6 +15,7 @@
 
 package no.entur.uttu.export.netex.producer.common;
 
+import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.time.DayOfWeek;
 import java.time.LocalDateTime;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;

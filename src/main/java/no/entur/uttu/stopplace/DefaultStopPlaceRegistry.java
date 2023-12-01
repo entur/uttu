@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
-import javax.jdo.annotations.Cacheable;
 import no.entur.uttu.config.NetexHttpMessageConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,6 +69,24 @@ public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
           public org.rutebanken.netex.model.StopPlace load(String quayRef) {
             return lookupStopPlaceByQuayRef(quayRef);
           }
+
+          private org.rutebanken.netex.model.StopPlace lookupStopPlaceByQuayRef(
+            String quayRef
+          ) {
+            try {
+              return restTemplate
+                .exchange(
+                  stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place",
+                  HttpMethod.GET,
+                  createHttpEntity(),
+                  org.rutebanken.netex.model.StopPlace.class
+                )
+                .getBody();
+            } catch (Exception e) {
+              logger.warn(e.getMessage());
+              return null;
+            }
+          }
         }
       );
 
@@ -80,7 +97,6 @@ public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
   }
 
   @Override
-  @Cacheable("stopPlacesByQuayRef")
   public Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(
     String quayRef
   ) {
@@ -89,22 +105,6 @@ public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
     } catch (ExecutionException e) {
       logger.warn("Failed to get stop place by quay ref ${}", quayRef);
       return Optional.empty();
-    }
-  }
-
-  private org.rutebanken.netex.model.StopPlace lookupStopPlaceByQuayRef(String quayRef) {
-    try {
-      return restTemplate
-        .exchange(
-          stopPlaceRegistryUrl + "/quays/" + quayRef + "/stop-place",
-          HttpMethod.GET,
-          createHttpEntity(),
-          org.rutebanken.netex.model.StopPlace.class
-        )
-        .getBody();
-    } catch (Exception e) {
-      logger.warn(e.getMessage());
-      return null;
     }
   }
 

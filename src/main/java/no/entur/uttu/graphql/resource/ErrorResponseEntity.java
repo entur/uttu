@@ -15,10 +15,10 @@
 
 package no.entur.uttu.graphql.resource;
 
+import jakarta.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import javax.xml.bind.annotation.XmlRootElement;
 import no.entur.uttu.error.codederror.CodedError;
 
 @XmlRootElement

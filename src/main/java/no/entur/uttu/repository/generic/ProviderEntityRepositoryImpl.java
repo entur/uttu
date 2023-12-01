@@ -15,8 +15,8 @@
 
 package no.entur.uttu.repository.generic;
 
+import jakarta.persistence.EntityManager;
 import java.util.List;
-import javax.persistence.EntityManager;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.util.Preconditions;

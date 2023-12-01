@@ -15,16 +15,16 @@
 
 package no.entur.uttu.export.netex;
 
-import static javax.xml.bind.JAXBContext.newInstance;
+import static jakarta.xml.bind.JAXBContext.newInstance;
 
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.Marshaller;
 import java.io.OutputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.Marshaller;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.export.model.ExportException;

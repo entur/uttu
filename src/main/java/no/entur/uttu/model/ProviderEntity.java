@@ -16,14 +16,14 @@
 package no.entur.uttu.model;
 
 import com.google.common.base.Joiner;
+import jakarta.persistence.Column;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.UUID;
-import javax.persistence.Column;
-import javax.persistence.ManyToOne;
-import javax.persistence.MappedSuperclass;
-import javax.persistence.PrePersist;
-import javax.persistence.PreUpdate;
 import javax.validation.constraints.NotNull;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.util.Preconditions;

@@ -15,7 +15,7 @@
 
 package no.entur.uttu.model;
 
-import javax.persistence.MappedSuperclass;
+import jakarta.persistence.MappedSuperclass;
 import javax.validation.constraints.Size;
 
 @MappedSuperclass

@@ -17,11 +17,11 @@ package no.entur.uttu.export.netex.producer.line;
 
 import static no.entur.uttu.export.netex.producer.NetexObjectFactory.VERSION_ONE;
 
+import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;

@@ -1,16 +1,17 @@
 package no.entur.uttu.config;
 
-import static org.springframework.security.config.Customizer.withDefaults;
-
-import java.util.Arrays;
 import java.util.List;
 import org.entur.oauth2.RorAuthenticationConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -22,9 +23,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  */
 @Profile("!local & !test")
 @EnableWebSecurity
-@EnableGlobalMethodSecurity(prePostEnabled = true)
+@EnableMethodSecurity(prePostEnabled = true)
 @Component
-public class UttuSecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class UttuSecurityConfiguration {
 
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
@@ -37,29 +38,31 @@ public class UttuSecurityConfiguration extends WebSecurityConfigurerAdapter {
     return source;
   }
 
-  @Override
-  public void configure(HttpSecurity http) throws Exception {
-    http
-      .cors(withDefaults())
-      .csrf()
-      .disable()
-      .authorizeRequests()
-      .antMatchers("/services/swagger.json")
-      .permitAll()
-      // exposed internally only, on a different port (pod-level)
-      .antMatchers("/actuator/prometheus")
-      .permitAll()
-      .antMatchers("/actuator/health")
-      .permitAll()
-      .antMatchers("/actuator/health/liveness")
-      .permitAll()
-      .antMatchers("/actuator/health/readiness")
-      .permitAll()
-      .anyRequest()
-      .authenticated()
-      .and()
-      .oauth2ResourceServer()
-      .jwt()
-      .jwtAuthenticationConverter(new RorAuthenticationConverter());
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    return http
+      .csrf(AbstractHttpConfigurer::disable)
+      .authorizeHttpRequests(auth ->
+        auth
+          .requestMatchers(AntPathRequestMatcher.antMatcher("/services/swagger.json"))
+          .permitAll()
+          .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/prometheus"))
+          .permitAll()
+          .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health"))
+          .permitAll()
+          .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health/liveness"))
+          .permitAll()
+          .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health/readiness"))
+          .permitAll()
+          .anyRequest()
+          .authenticated()
+      )
+      .oauth2ResourceServer(configurer -> configurer.jwt(Customizer.withDefaults()))
+      .build();
+  }
+
+  @Bean
+  public JwtAuthenticationConverter customJwtAuthenticationConverter() {
+    return new RorAuthenticationConverter();
   }
 }

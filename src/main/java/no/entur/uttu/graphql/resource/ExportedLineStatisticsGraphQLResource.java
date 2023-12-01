@@ -20,11 +20,11 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 
 import graphql.GraphQL;
 import io.swagger.annotations.Api;
+import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.util.Map;
 import javax.annotation.PostConstruct;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.LinesGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>1.68</version>
+        <version>2.5</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -37,10 +37,10 @@
     </scm>
 
     <properties>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <entur.google.pubsub.emulator.download.skip>false</entur.google.pubsub.emulator.download.skip>
 
-        <entur.helpers.version>1.101</entur.helpers.version>
+        <entur.helpers.version>2.5</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
@@ -50,13 +50,15 @@
         <wololo.version>0.18.1</wololo.version>
 
         <swagger-jersey2.version>1.6.12</swagger-jersey2.version>
-        <javax.jdo.jdo2-api.version>2.3-20090302111651</javax.jdo.jdo2-api.version>
 
         <commons-io.version>2.15.1</commons-io.version>
         <groovy-all.version>3.0.19</groovy-all.version>
         <rest-assured.version>4.5.1</rest-assured.version>
         <graphql.version>20.2</graphql.version>
-        <netex-java-model.version>1.0.15</netex-java-model.version>
+        <netex-java-model.version>2.0.15</netex-java-model.version>
+
+        <jakarta-xml-bind.version>4.0.1</jakarta-xml-bind.version>
+        <glassfish-jaxb.version>4.0.4</glassfish-jaxb.version>
 
         <prettier-java.version>2.1.0</prettier-java.version>
         <prettier-maven-plugin.version>0.21</prettier-maven-plugin.version>
@@ -147,7 +149,7 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
             <exclusions>
                 <exclusion>
-                    <groupId>org.hibernate</groupId>
+                    <groupId>org.hibernate.orm</groupId>
                     <artifactId>hibernate-core</artifactId>
                 </exclusion>
             </exclusions>
@@ -171,13 +173,18 @@
         <!-- Other -->
 
         <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+            <version>${jakarta-xml-bind.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
+            <version>${glassfish-jaxb.version}</version>
+            <scope>runtime</scope>
         </dependency>
+
 
         <dependency>
             <groupId>com.graphql-java</groupId>
@@ -194,11 +201,6 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.jdo</groupId>
-            <artifactId>jdo2-api</artifactId>
-            <version>${javax.jdo.jdo2-api.version}</version>
         </dependency>
 
         <dependency>
@@ -234,20 +236,13 @@
         </dependency>
 
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-spatial</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.hibernate</groupId>
+            <groupId>org.hibernate.orm</groupId>
             <artifactId>hibernate-core</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>

@@ -15,11 +15,11 @@
 
 package no.entur.uttu.model;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.OneToOne;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.OneToOne;
 import javax.validation.constraints.NotNull;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;

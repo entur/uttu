@@ -1,6 +1,6 @@
 package no.entur.uttu.config;
 
-import javax.xml.bind.JAXBException;
+import jakarta.xml.bind.JAXBException;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.rutebanken.netex.model.StopPlace;
