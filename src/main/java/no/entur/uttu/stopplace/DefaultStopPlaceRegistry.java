@@ -87,6 +87,14 @@ public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
               return null;
             }
           }
+
+          private HttpEntity<Void> createHttpEntity() {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
+            headers.set(ET_CLIENT_NAME_HEADER, clientName);
+            headers.set(ET_CLIENT_ID_HEADER, clientId);
+            return new HttpEntity<>(headers);
+          }
         }
       );
 
@@ -106,13 +114,5 @@ public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
       logger.warn("Failed to get stop place by quay ref ${}", quayRef);
       return Optional.empty();
     }
-  }
-
-  private HttpEntity<Void> createHttpEntity() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setAccept(Collections.singletonList(MediaType.APPLICATION_XML));
-    headers.set(ET_CLIENT_NAME_HEADER, clientName);
-    headers.set(ET_CLIENT_ID_HEADER, clientId);
-    return new HttpEntity<>(headers);
   }
 }
