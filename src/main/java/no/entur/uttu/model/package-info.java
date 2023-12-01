@@ -15,7 +15,7 @@
 
 @GenericGenerator(
   name = "sequence_per_table_generator",
-  strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+  type = org.hibernate.id.enhanced.SequenceStyleGenerator.class,
   parameters = {
     @Parameter(
       name = SequenceStyleGenerator.CONFIG_SEQUENCE_PER_ENTITY_SUFFIX,
