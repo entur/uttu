@@ -27,7 +27,6 @@ data:
     spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
 
     # Database properties
-    spring.jpa.properties.hibernate.dialect=org.hibernate.spatial.dialect.postgis.PostgisDialect
     spring.jpa.open-in-view=false
     spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false
     spring.jpa.database=POSTGRESQL
