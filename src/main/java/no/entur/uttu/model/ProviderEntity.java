@@ -21,10 +21,10 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MappedSuperclass;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
+import jakarta.validation.constraints.NotNull;
 import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.UUID;
-import javax.validation.constraints.NotNull;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.util.Preconditions;
 

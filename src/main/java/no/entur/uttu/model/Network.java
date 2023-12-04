@@ -20,7 +20,7 @@ import static no.entur.uttu.model.Constraints.NETWORK_UNIQUE_NAME;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 import no.entur.uttu.util.Preconditions;
 
 @Entity

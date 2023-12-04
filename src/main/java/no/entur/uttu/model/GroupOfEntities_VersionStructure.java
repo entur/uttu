@@ -16,7 +16,7 @@
 package no.entur.uttu.model;
 
 import jakarta.persistence.MappedSuperclass;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 @MappedSuperclass
 public abstract class GroupOfEntities_VersionStructure extends ProviderEntity {

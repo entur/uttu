@@ -16,7 +16,7 @@
 package no.entur.uttu.model;
 
 import jakarta.persistence.Entity;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 
 @Entity
 public class Contact extends IdentifiedEntity {

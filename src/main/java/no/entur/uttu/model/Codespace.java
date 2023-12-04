@@ -20,7 +20,7 @@ import static no.entur.uttu.model.Constraints.CODESPACE_UNIQUE_XMLNS;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
-import javax.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 @Table(

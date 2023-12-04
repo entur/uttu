@@ -16,8 +16,8 @@
 package no.entur.uttu.model;
 
 import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import javax.validation.constraints.NotNull;
 import no.entur.uttu.util.Preconditions;
 
 @Entity

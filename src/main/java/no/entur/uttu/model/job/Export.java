@@ -20,12 +20,12 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import javax.validation.constraints.NotNull;
 import no.entur.uttu.model.ExportedLineStatistics;
 import no.entur.uttu.model.ProviderEntity;
 
