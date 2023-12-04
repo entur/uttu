@@ -19,7 +19,7 @@
   parameters = {
     @Parameter(
       name = SequenceStyleGenerator.CONFIG_SEQUENCE_PER_ENTITY_SUFFIX,
-      value = "true"
+      value = "_seq"
     ),
     @Parameter(name = OptimizableGenerator.INCREMENT_PARAM, value = "10"),
   }
