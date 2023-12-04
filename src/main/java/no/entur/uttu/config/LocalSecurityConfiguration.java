@@ -28,14 +28,14 @@ public class LocalSecurityConfiguration {
     return http
       .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth -> auth.anyRequest().permitAll())
-            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .build();
   }
 
   CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.addAllowedOriginPattern("*");
-    configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+    configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
     configuration.setAllowedHeaders(Arrays.asList("*"));
     configuration.setExposedHeaders(Arrays.asList("*"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
