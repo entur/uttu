@@ -16,7 +16,6 @@
 package no.entur.uttu.graphql.resource;
 
 import graphql.GraphQL;
-import io.swagger.annotations.Api;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -31,7 +30,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 @Component
-@Api
 @Path("/providers/graphql")
 public class ProviderGraphQLResource {
 

@@ -19,7 +19,6 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
 
 import graphql.GraphQL;
-import io.swagger.annotations.Api;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -32,7 +31,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 @Component
-@Api
 @Path("exportedLineStatistics/graphql")
 public class ExportedLineStatisticsGraphQLResource {
 

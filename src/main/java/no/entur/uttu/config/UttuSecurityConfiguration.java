@@ -1,7 +1,6 @@
 package no.entur.uttu.config;
 
 import java.util.Arrays;
-import java.util.List;
 import org.entur.oauth2.RorAuthenticationConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
@@ -20,7 +19,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 /**
  * Authentication and authorization configuration for Uttu.
- * All requests must be authenticated except for the Swagger and Actuator endpoints.
+ * All requests must be authenticated except for the Actuator endpoints.
  */
 @Profile("!local & !test")
 @EnableWebSecurity
@@ -34,8 +33,6 @@ public class UttuSecurityConfiguration {
       .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth ->
         auth
-          .requestMatchers(AntPathRequestMatcher.antMatcher("/services/swagger.json"))
-          .permitAll()
           .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/prometheus"))
           .permitAll()
           .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health"))

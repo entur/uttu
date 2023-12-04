@@ -21,7 +21,6 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 import graphql.GraphQL;
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.idl.RuntimeWiring;
-import io.swagger.annotations.Api;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -39,7 +38,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 @Component
-@Api
 @Path("/{providerCode}/graphql")
 public class LinesGraphQLResource {
 
