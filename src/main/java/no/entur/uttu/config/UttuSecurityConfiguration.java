@@ -1,5 +1,6 @@
 package no.entur.uttu.config;
 
+import java.util.Arrays;
 import java.util.List;
 import org.entur.oauth2.RorAuthenticationConverter;
 import org.springframework.context.annotation.Bean;
@@ -28,17 +29,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class UttuSecurityConfiguration {
 
   @Bean
-  CorsConfigurationSource corsConfigurationSource() {
-    CorsConfiguration configuration = new CorsConfiguration();
-    configuration.setAllowedHeaders(List.of("*"));
-    configuration.addAllowedOrigin("*");
-    configuration.setAllowedMethods(List.of("GET", "PUT", "POST", "DELETE"));
-    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-    source.registerCorsConfiguration("/**", configuration);
-    return source;
-  }
-
-  @Bean
   public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     return http
       .csrf(AbstractHttpConfigurer::disable)
@@ -58,7 +48,19 @@ public class UttuSecurityConfiguration {
           .authenticated()
       )
       .oauth2ResourceServer(configurer -> configurer.jwt(Customizer.withDefaults()))
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .build();
+  }
+
+  CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.addAllowedOriginPattern("*");
+    configuration.setAllowedMethods(Arrays.asList("GET","POST"));
+    configuration.setAllowedHeaders(Arrays.asList("*"));
+    configuration.setExposedHeaders(Arrays.asList("*"));
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
   }
 
   @Bean
