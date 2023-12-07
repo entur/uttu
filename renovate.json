@@ -2,6 +2,7 @@
   "extends": ["github>entur/ror-renovate-config"],
   "packageRules": [
     {
+      "groupName": "com.graphql-java",
       "matchDatasources": ["maven"],
       "matchPackageNames": ["com.graphql-java:graphql-java", "com.graphql-java:graphql-java-extended-scalars"],
       "versioning": "semver-coerced"
