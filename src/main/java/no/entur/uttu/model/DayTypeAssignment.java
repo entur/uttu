@@ -15,10 +15,10 @@
 
 package no.entur.uttu.model;
 
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToOne;
 import java.time.LocalDate;
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.OneToOne;
 import no.entur.uttu.util.Preconditions;
 
 @Entity

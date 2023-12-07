@@ -15,8 +15,8 @@
 
 package no.entur.uttu.model;
 
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 
 @Entity
 public class DestinationDisplay extends ProviderEntity {

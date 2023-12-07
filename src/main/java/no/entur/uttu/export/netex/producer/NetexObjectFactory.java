@@ -18,6 +18,7 @@ package no.entur.uttu.export.netex.producer;
 import static no.entur.uttu.export.netex.producer.NetexIdProducer.getEntityName;
 import static no.entur.uttu.export.netex.producer.NetexIdProducer.getObjectIdSuffix;
 
+import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
 import javax.xml.namespace.QName;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;

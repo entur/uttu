@@ -15,7 +15,7 @@
 
 package no.entur.uttu.model;
 
-import javax.xml.bind.annotation.XmlEnumValue;
+import jakarta.xml.bind.annotation.XmlEnumValue;
 
 public enum FlexibleLineTypeEnumeration {
   @XmlEnumValue("corridorService")

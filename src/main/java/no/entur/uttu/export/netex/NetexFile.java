@@ -15,7 +15,7 @@
 
 package no.entur.uttu.export.netex;
 
-import javax.xml.bind.JAXBElement;
+import jakarta.xml.bind.JAXBElement;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 
 public class NetexFile {

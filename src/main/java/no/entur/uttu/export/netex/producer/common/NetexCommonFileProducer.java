@@ -15,11 +15,11 @@
 
 package no.entur.uttu.export.netex.producer.common;
 
+import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-import javax.xml.bind.JAXBElement;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexFile;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;

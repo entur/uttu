@@ -15,17 +15,18 @@
 
 @GenericGenerator(
   name = "sequence_per_table_generator",
-  strategy = "org.hibernate.id.enhanced.SequenceStyleGenerator",
+  type = org.hibernate.id.enhanced.SequenceStyleGenerator.class,
   parameters = {
     @Parameter(
-      name = SequenceStyleGenerator.CONFIG_PREFER_SEQUENCE_PER_ENTITY,
-      value = "true"
+      name = SequenceStyleGenerator.CONFIG_SEQUENCE_PER_ENTITY_SUFFIX,
+      value = "_seq"
     ),
-    @Parameter(name = SequenceStyleGenerator.INCREMENT_PARAM, value = "10"),
+    @Parameter(name = OptimizableGenerator.INCREMENT_PARAM, value = "10"),
   }
 )
 package no.entur.uttu.model;
 
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
+import org.hibernate.id.OptimizableGenerator;
 import org.hibernate.id.enhanced.SequenceStyleGenerator;

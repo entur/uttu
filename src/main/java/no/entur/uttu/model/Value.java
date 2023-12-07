@@ -16,12 +16,12 @@
 package no.entur.uttu.model;
 
 import com.google.common.base.MoreObjects;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.*;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 

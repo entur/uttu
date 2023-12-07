@@ -15,11 +15,11 @@
 
 package no.entur.uttu.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 import no.entur.uttu.model.job.Export;
 
 @Entity
