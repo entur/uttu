@@ -50,7 +50,7 @@
         <wololo.version>0.18.1</wololo.version>
 
         <commons-io.version>2.15.1</commons-io.version>
-        <groovy-all.version>3.0.19</groovy-all.version>
+        <groovy-all.version>4.0.16</groovy-all.version>
         <rest-assured.version>5.3.2</rest-assured.version>
         <graphql.version>21.3</graphql.version>
         <graphql-extended-scalars.version>21.0</graphql-extended-scalars.version>
@@ -298,7 +298,7 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.codehaus.groovy</groupId>
+            <groupId>org.apache.groovy</groupId>
             <artifactId>groovy-all</artifactId>
             <version>${groovy-all.version}</version>
             <type>pom</type>
