@@ -15,13 +15,13 @@ variable "gcp_pubsub_project" {
 }
 
 resource "google_sql_database_instance" "db_instance_pg13" {
-  name = "uttu-db-pg13"
+  name    = "uttu-db-pg13"
   project = var.gcp_resources_project
-  region = "europe-west1"
+  region  = "europe-west1"
 
   settings {
-    tier = var.db_tier
-    user_labels = var.labels
+    tier              = var.db_tier
+    user_labels       = var.labels
     availability_type = "ZONAL"
     backup_configuration {
       enabled = true
@@ -34,23 +34,28 @@ resource "google_sql_database_instance" "db_instance_pg13" {
 }
 
 resource "google_sql_database" "db_pg13" {
-  name = "uttu"
-  project = var.gcp_resources_project
+  name     = "uttu"
+  project  = var.gcp_resources_project
   instance = google_sql_database_instance.db_instance_pg13.name
 }
 
-resource "google_sql_user" "db-user_pg13" {
-  name = "uttu"
+data "google_secret_manager_secret_version" "db_password" {
+  secret  = "SPRING_DATASOURCE_PASSWORD"
   project = var.gcp_resources_project
+}
+
+resource "google_sql_user" "db-user_pg13" {
+  project  = var.gcp_resources_project
   instance = google_sql_database_instance.db_instance_pg13.name
-  password = var.ror-uttu-db-password
+  name     = "uttu"
+  password = data.google_secret_manager_secret_version.db_password.secret_data
 }
 
 # add service account as member to pubsub service in the gcp2 project
 
 resource "google_pubsub_topic_iam_member" "pubsub_topic_iam_member" {
   project = var.gcp_pubsub_project
-  topic = var.pubsub_topic_name
-  role = var.service_account_pubsub_role
-  member = var.uttu_service_account
+  topic   = var.pubsub_topic_name
+  role    = var.service_account_pubsub_role
+  member  = var.uttu_service_account
 }
