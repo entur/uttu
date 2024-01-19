@@ -1,21 +1,16 @@
-{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   labels:
     traffic-type: api
-    {{- include "common.labels" . | indent 4 }}
+    {{- include "uttu.common.labels" . | indent 4 }}
   annotations:
     kubernetes.io/ingress.class: traefik
   name: timetable-admin-v1-flexible-lines
   namespace: {{ .Release.Namespace }}
 spec:
   rules:
-  {{- if eq .Values.env "prod"}}
-  - host: timetable-admin-v1-flexible-lines-{{ .Release.Namespace }}.entur.io
-  {{ else }}
-  - host: timetable-admin-v1-flexible-lines-{{ .Release.Namespace }}.{{ .Release.Namespace }}.entur.io
-  {{- end}}
+  - host: timetable-admin-v1-flexible-lines{{ .Values.ingress.domainName }}
     http:
       paths:
         - pathType: ImplementationSpecific
@@ -23,5 +18,4 @@ spec:
             service:
               name: {{ template "app.name" . }}
               port:
-                number: {{ .Values.service.http.externalPort }}
-  {{- end }}
+                number: {{ .Values.common.service.externalPort }}

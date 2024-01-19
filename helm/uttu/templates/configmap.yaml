@@ -1,31 +1,32 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ template "app.name" . }}-config
+  name: {{ template "app.name" . }}-application
   namespace: {{ .Release.Namespace }}
   labels:
-  {{- include "common.labels" . | indent 4 }}
+  {{- include "uttu.common.labels" . | indent 4 }}
 data:
   application.properties: |-
     organisation.registry.url={{ .Values.configMap.organisationRegistryUrl }}
+    stopplace.registry.url={{ .Values.configMap.stopplaceRegistryUrl }}
     export.notify.enabled=true
-    export.notify.queue.name=FlexibleLinesExportQueue
+    export.notify.queue.name={{ .Values.configMap.exportQueueName }}
+    export.blob.folder={{ .Values.configMap.exportBlobFolder }}
+    export.blob.filenameSuffix=-flexible-lines
+    export.blob.commonFileFilenameSuffix=_flexible_shared_data
     export.working.folder=/tmp/export
 
     # gcs
     blobstore.gcs.project.id={{ .Values.configMap.blobstoreProjectId }}
-    blobstore.gcs.credential.path=/etc/uttu/credentials.json
     blobstore.gcs.container.name={{ .Values.configMap.blobstoreContainerName }}
 
     # pubsub
     spring.cloud.gcp.pubsub.project-id={{ .Values.configMap.pubsubProjectId }}
-    spring.cloud.gcp.pubsub.credentials.location=file:/etc/uttu/credentials.json
     spring.cloud.gcp.pubsub.subscriber.parallel-pull-count=1
     spring.cloud.gcp.pubsub.subscriber.executor-threads=30
     spring.cloud.gcp.pubsub.subscriber.max-ack-extension-period=36000
 
     # Database properties
-    spring.jpa.properties.hibernate.dialect=org.hibernate.spatial.dialect.postgis.PostgisDialect
     spring.jpa.open-in-view=false
     spring.jpa.properties.hibernate.temp.use_jdbc_metadata_defaults=false
     spring.jpa.database=POSTGRESQL
@@ -48,7 +49,7 @@ data:
     orgregister.oauth2.client.audience={{ .Values.configMap.orgRegister.audience }}
 
     # Spring Actuator
-    management.server.port=9001
+    management.server.port= {{ .Values.common.service.internalPort }}
     management.endpoints.enabled-by-default=false
     management.endpoint.info.enabled=true
     management.endpoint.health.enabled=true

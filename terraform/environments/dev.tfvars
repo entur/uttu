@@ -1,5 +1,0 @@
-gcp_project = "entur-ror-dev"
-kube_namespace = "dev"
-cloudsql_project = "entur-ror-dev"
-pubsub_project = "entur-ror-dev"
-storage_bucket_name = "ror-marduk-exchange-dev"
