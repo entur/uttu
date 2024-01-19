@@ -1,0 +1,32 @@
+common:
+  env: prd
+  replicas: 2
+  container:
+    forceReplicas: 2
+
+sql:
+  instance: ent-uttu-prd:europe-west1:uttu-db-pg13=tcp:5432
+
+ingress:
+  domainName: -gcp2.entur.io
+
+
+configMap:
+  organisationRegistryUrl: https://api.entur.io/organisations/v1/register/organisations
+  stopplaceRegistryUrl: https://api.entur.io/stop-places/v1/read
+  auth0:
+    ror:
+      url: https://auth2.entur.org/
+      audience: https://ror.api.entur.io
+    partner:
+      tokenUri: https://partner.entur.org/oauth/token
+      clientId: 1ZZMds7c0urOXHAMuklhv2puDcdVUQIW
+  orgRegister:
+    audience: https://api.entur.io
+  pubsubProjectId: ent-marduk-prd
+  blobstoreProjectId: ent-marduk-prd
+  blobstoreContainerName: marduk-exchange-production
+  logLevel: INFO
+  flywayTable: flyway_schema_history
+  exportQueueName: FlexibleLinesExportQueue
+  exportBlobFolder: inbound/uttu/
