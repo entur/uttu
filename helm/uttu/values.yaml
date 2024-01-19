@@ -9,10 +9,9 @@ common:
     internalPort: 8080
   container:
     forceReplicas: 1
-    image: ${artifact.metadata.image}
+    image: <+artifacts.primary.image>
     cpu: 1
     memory: 2000
-    cpuLimit: 2000m
     memoryLimit: 3000
     probes:
       liveness:
@@ -34,7 +33,6 @@ common:
   postgres:
     enabled: true
     memory: 40
-
   configmap:
     data:
       JDK_JAVA_OPTIONS:  -server -Xmx2048m -Xss1024m -Dspring.config.location=/etc/application-config/application.properties

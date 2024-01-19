@@ -1,0 +1,29 @@
+common:
+  env: tst
+  replicas: 1
+
+sql:
+  instance: ent-uttu-tst:europe-west1:uttu-db-pg13=tcp:5432
+
+ingress:
+  domainName: -gcp2.staging.entur.io
+
+configMap:
+  organisationRegistryUrl: https://api.staging.entur.io/organisations/v1/register/organisations
+  stopplaceRegistryUrl: https://api.staging.entur.io/stop-places/v1/read
+  auth0:
+    ror:
+      url: https://ror-entur-staging.eu.auth0.com/
+      audience: https://ror.api.staging.entur.io
+    partner:
+      tokenUri: https://partner.staging.entur.org/oauth/token
+      clientId: AXXN2zBqjVWKOp2uJGXv44ehaQwkHUJS
+  orgRegister:
+    audience: https://api.staging.entur.io
+  pubsubProjectId: ent-marduk-tst
+  blobstoreProjectId: ent-marduk-tst
+  blobstoreContainerName: marduk-exchange-test
+  logLevel: INFO
+  flywayTable: flyway_schema_history
+  exportQueueName: FlexibleLinesExportQueue
+  exportBlobFolder: inbound/uttu/

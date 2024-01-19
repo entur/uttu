@@ -14,20 +14,6 @@ variable "gcp_pubsub_project" {
   default = "The GCP pubsub project gcp2"
 }
 
-resource "kubernetes_secret" "uttu-psql-credentials" {
-  metadata {
-    name = "uttu-psql-credentials"
-    namespace = var.kube_namespace
-  }
-
-  data = {
-    "SPRING_DATASOURCE_PASSWORD" = var.ror-uttu-db-password
-    "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ORGREGISTER_CLIENT_SECRET" = var.ror-partner-auth0-secret
-  }
-}
-
-
-
 resource "google_sql_database_instance" "db_instance_pg13" {
   name = "uttu-db-pg13"
   project = var.gcp_resources_project

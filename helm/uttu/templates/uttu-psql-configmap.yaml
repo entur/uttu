@@ -1,0 +1,9 @@
+apiVersion: v1
+data:
+  INSTANCES: {{.Values.sql.instance}}
+kind: ConfigMap
+metadata:
+  name: uttu-psql-connection
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "uttu.common.labels" . | indent 4 }}
