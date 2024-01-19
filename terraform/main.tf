@@ -1,70 +1,36 @@
+# Contains main description of bulk of terraform?
 terraform {
   required_version = ">= 0.13.2"
 }
 
 provider "google" {
-  version = "~> 3.74.0"
+  version = "~> 4.84.0"
 }
-
 provider "kubernetes" {
-  version = "~> 1.13.4"
-  load_config_file = var.load_config_file
+  version = ">= 2.13.1"
 }
 
-resource "google_service_account" "uttu_service_account" {
-  account_id   = "${var.labels.team}-${var.labels.app}-sa"
-  display_name = "${var.labels.team}-${var.labels.app} service account"
-  project = var.gcp_project
+variable "gcp_pubsub_project" {
+  default = "The GCP pubsub project gcp2"
 }
 
-resource "google_project_iam_member" "uttu_cloudsql_iam_member" {
-  project = var.cloudsql_project
-  role    = var.service_account_cloudsql_role
-  member = "serviceAccount:${google_service_account.uttu_service_account.email}"
-}
-
-resource "google_pubsub_topic_iam_member" "uttu_pubsub_iam_member" {
-  project = var.pubsub_project
-  topic = var.pubsub_topic
-  role = var.service_account_pubsub_role
-  member = "serviceAccount:${google_service_account.uttu_service_account.email}"
-}
-
-resource "google_storage_bucket_iam_member" "uttu_storage_iam_member" {
-  bucket = var.storage_bucket_name
-  role = var.service_account_storage_role
-  member = "serviceAccount:${google_service_account.uttu_service_account.email}"
-}
-
-resource "google_service_account_key" "uttu_service_account_key" {
-  service_account_id = google_service_account.uttu_service_account.name
-}
-
-resource "kubernetes_secret" "uttu_service_account_credentials" {
+resource "kubernetes_secret" "uttu-psql-credentials" {
   metadata {
-    name      = "${var.labels.team}-${var.labels.app}-sa-key"
-    namespace = var.kube_namespace
-  }
-  data = {
-    "credentials.json" = base64decode(google_service_account_key.uttu_service_account_key.private_key)
-  }
-}
-
-resource "kubernetes_secret" "ror-uttu-secret" {
-  metadata {
-    name      = "${var.labels.team}-${var.labels.app}-secret"
+    name = "uttu-psql-credentials"
     namespace = var.kube_namespace
   }
 
   data = {
-    "uttu-db-password" = var.ror-uttu-db-password
-    "partner-auth0-secret" = var.ror-partner-auth0-secret
+    "SPRING_DATASOURCE_PASSWORD" = var.ror-uttu-db-password
+    "SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ORGREGISTER_CLIENT_SECRET" = var.ror-partner-auth0-secret
   }
 }
+
+
 
 resource "google_sql_database_instance" "db_instance_pg13" {
   name = "uttu-db-pg13"
-  project = var.gcp_project
+  project = var.gcp_resources_project
   region = "europe-west1"
 
   settings {
@@ -83,13 +49,22 @@ resource "google_sql_database_instance" "db_instance_pg13" {
 
 resource "google_sql_database" "db_pg13" {
   name = "uttu"
-  project = var.gcp_project
+  project = var.gcp_resources_project
   instance = google_sql_database_instance.db_instance_pg13.name
 }
 
 resource "google_sql_user" "db-user_pg13" {
   name = "uttu"
-  project = var.gcp_project
+  project = var.gcp_resources_project
   instance = google_sql_database_instance.db_instance_pg13.name
   password = var.ror-uttu-db-password
+}
+
+# add service account as member to pubsub service in the gcp2 project
+
+resource "google_pubsub_topic_iam_member" "pubsub_topic_iam_member" {
+  project = var.gcp_pubsub_project
+  topic = var.pubsub_topic_name
+  role = var.service_account_pubsub_role
+  member = var.uttu_service_account
 }

@@ -3,7 +3,7 @@
 Expand the name of the chart.
 */}}
 {{- define "app.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+uttu
 {{- end -}}
 
 {{/*
@@ -26,12 +26,12 @@ If release name contains chart name it will be used as a full name.
 
 
 {{/* Generate basic labels */}}
-{{- define "common.labels" }}
+{{- define "uttu.common.labels" }}
 app: {{ template "app.name" . }}
 chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
 release: {{ .Release.Name }}
 team: ror
 slack: talk-ror
-environment: {{ .Values.env }}
+environment: {{ .Values.common.env }}
 namespace: {{ .Release.Namespace }}
 {{- end }}

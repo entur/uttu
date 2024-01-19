@@ -1,9 +1,10 @@
-variable "gcp_project" {
+variable "gcp_resources_project" {
   description = "The GCP project id"
 }
 
 variable "kube_namespace" {
   description = "The Kubernetes namespace"
+  default = "uttu"
 }
 
 variable "labels" {
@@ -17,43 +18,6 @@ variable "labels" {
   }
 }
 
-variable "cloudsql_project" {
-  description = "GCP project of sql database"
-}
-
-variable "service_account_cloudsql_role" {
-  description = "cloudsql client role"
-  default     = "roles/cloudsql.client"
-}
-
-variable "service_account_pubsub_role" {
-  description = "pubsub publisher role"
-  default     = "roles/pubsub.publisher"
-}
-
-variable "pubsub_topic" {
-  description = "pubsub topic for publishing export notifications"
-  default     = "ChouetteMergeWithFlexibleLinesQueue"
-}
-
-variable "pubsub_project" {
-  description = "GCP project of pubsub topic"
-}
-
-variable "service_account_storage_role" {
-  description = "storage objects create role"
-  default     = "roles/storage.objectAdmin"
-}
-
-variable "storage_bucket_name" {
-  description = "name of storage bucket for exports"
-  default     = "marduk-exchange"
-}
-
-variable "load_config_file" {
-  description = "Do not load kube config file"
-  default     = false
-}
 
 variable "db_tier" {
   description = "Database instance tier"
@@ -71,4 +35,18 @@ variable ror-uttu-db-password {
 
 variable ror-partner-auth0-secret {
   description = "Auth0 client secret for Entur partner tenant"
+}
+
+variable "pubsub_topic_name" {
+  description = "PubSub Topic name"
+  default = "FlexibleLinesExportQueue"
+}
+
+variable "service_account_pubsub_role" {
+  description = "Role of the Service Account - more about roles https://cloud.google.com/pubsub/docs/access-control"
+  default = "roles/pubsub.publisher"
+}
+
+variable "uttu_service_account" {
+  description = "application service account"
 }
