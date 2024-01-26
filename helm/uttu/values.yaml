@@ -33,6 +33,7 @@ common:
   postgres:
     enabled: true
     memory: 40
+
   configmap:
     data:
       JDK_JAVA_OPTIONS: -server -Xmx2048m -Xss1024m -Dspring.config.location=/etc/application-config/application.properties
@@ -41,5 +42,7 @@ common:
     enabled: true
     toEnv: true
   secrets:
-    psql-credentials: SPRING_DATASOURCE_PASSWORD
-    auth: SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ORGREGISTER_CLIENT_SECRET
+    psql-credentials:
+      - SPRING_DATASOURCE_PASSWORD
+    auth:
+      - SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_ORGREGISTER_CLIENT_SECRET

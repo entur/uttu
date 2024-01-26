@@ -1,6 +1,7 @@
 common:
   env: tst
-  replicas: 1
+  deployment:
+    replicas: 1
 
 sql:
   instance: ent-uttu-tst:europe-west1:uttu-db-pg13=tcp:5432

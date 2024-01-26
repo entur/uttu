@@ -1,6 +1,7 @@
 common:
   env: prd
-  replicas: 2
+  deployment:
+    replicas: 2
   container:
     forceReplicas: 2
 

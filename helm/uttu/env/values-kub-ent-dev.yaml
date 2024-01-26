@@ -1,6 +1,7 @@
 common:
   env: dev
-  replicas: 1
+  deployment:
+    replicas: 1
 
 sql:
   instance: ent-uttu-dev:europe-west1:uttu-db-pg13=tcp:5432
