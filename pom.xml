@@ -60,7 +60,7 @@
         <glassfish-jaxb.version>4.0.4</glassfish-jaxb.version>
 
         <prettier-java.version>2.1.0</prettier-java.version>
-        <prettier-maven-plugin.version>0.21</prettier-maven-plugin.version>
+        <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
     </properties>
     <repositories>
