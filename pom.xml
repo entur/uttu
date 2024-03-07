@@ -56,7 +56,7 @@
         <graphql-extended-scalars.version>21.0</graphql-extended-scalars.version>
         <netex-java-model.version>2.0.15</netex-java-model.version>
 
-        <jakarta-xml-bind.version>4.0.1</jakarta-xml-bind.version>
+        <jakarta-xml-bind.version>4.0.2</jakarta-xml-bind.version>
         <glassfish-jaxb.version>4.0.5</glassfish-jaxb.version>
 
         <prettier-java.version>2.1.0</prettier-java.version>
