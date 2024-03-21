@@ -2,6 +2,7 @@ package no.entur.uttu.config;
 
 import java.util.Arrays;
 import org.entur.oauth2.RorAuthenticationConverter;
+import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.config.Customizer;
@@ -28,7 +29,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class UttuSecurityConfiguration {
 
   @Bean
-  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+  public SecurityFilterChain filterChain(
+    HttpSecurity http,
+    MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver
+  ) throws Exception {
     return http
       .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth ->
@@ -44,7 +48,9 @@ public class UttuSecurityConfiguration {
           .anyRequest()
           .authenticated()
       )
-      .oauth2ResourceServer(configurer -> configurer.jwt(Customizer.withDefaults()))
+      .oauth2ResourceServer(configurer ->
+        configurer.authenticationManagerResolver(multiIssuerAuthenticationManagerResolver)
+      )
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .build();
   }

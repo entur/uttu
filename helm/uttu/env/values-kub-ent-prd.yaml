@@ -20,6 +20,8 @@ configMap:
       url: https://auth2.entur.org/
       audience: https://ror.api.entur.io
     partner:
+      url: https://partner.entur.org/
+    client:
       tokenUri: https://partner.entur.org/oauth/token
       clientId: 1ZZMds7c0urOXHAMuklhv2puDcdVUQIW
   orgRegister:
