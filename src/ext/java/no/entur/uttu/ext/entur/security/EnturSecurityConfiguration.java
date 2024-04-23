@@ -1,9 +1,10 @@
 package no.entur.uttu.ext.entur.security;
 
 import jakarta.servlet.http.HttpServletRequest;
+import no.entur.uttu.ext.entur.security.permissionstore.PermissionStoreClient;
+import no.entur.uttu.ext.entur.security.permissionstore.PermissionStoreRestRoleAssignmentExtractor;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.security.spi.UserContextService;
-import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.RorAuthenticationConverter;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolverBuilder;
 import org.entur.oauth2.user.JwtUserInfoExtractor;
@@ -26,8 +27,10 @@ public class EnturSecurityConfiguration {
   }
 
   @Bean
-  public RoleAssignmentExtractor roleAssignmentExtractor() {
-    return new JwtRoleAssignmentExtractor();
+  public RoleAssignmentExtractor roleAssignmentExtractor(
+    PermissionStoreClient permissionStoreClient
+  ) {
+    return new PermissionStoreRestRoleAssignmentExtractor(permissionStoreClient, "uttu");
   }
 
   @Bean

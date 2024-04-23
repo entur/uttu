@@ -12,7 +12,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 @Profile("!test & entur-legacy-organisation-registry")
 public class OAuthClientConfiguration {
 
-  @Bean
+  @Bean("oauth2WebClient")
   WebClient webClient(
     WebClient.Builder webClientBuilder,
     OAuth2ClientProperties properties,

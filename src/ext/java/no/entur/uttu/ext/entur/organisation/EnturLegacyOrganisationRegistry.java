@@ -42,6 +42,7 @@ import org.rutebanken.netex.model.MultilingualString;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
@@ -93,7 +94,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
       "${organisation.registry.url:https://tjenester.entur.org/organisations/v1/organisations}"
     ) String organisationRegistryUrl,
     @Value("${organisation.registry.retry.max:3}") int maxRetryAttempts,
-    @Autowired WebClient orgRegisterClient
+    @Autowired @Qualifier("oauth2WebClient") WebClient orgRegisterClient
   ) {
     this.organisationRegistryUrl = organisationRegistryUrl;
     this.orgRegisterClient =
