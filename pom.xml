@@ -59,6 +59,9 @@
         <jakarta-xml-bind.version>4.0.2</jakarta-xml-bind.version>
         <glassfish-jaxb.version>4.0.5</glassfish-jaxb.version>
 
+        <permission-client.version>2.11.0-SNAPSHOT</permission-client.version>
+        <oidc-auth.version>3.12.0</oidc-auth.version>
+
         <prettier-java.version>2.1.0</prettier-java.version>
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
@@ -117,6 +120,32 @@
             <artifactId>oauth2</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.entur.auth</groupId>
+            <artifactId>oauth2-rs-spring-boot-3</artifactId>
+            <version>${oidc-auth.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.entur.auth</groupId>
+            <artifactId>oidc-auth-client-spring-boot-starter</artifactId>
+            <version>${oidc-auth.version}</version>
+        </dependency>
+
+
+        <dependency>
+            <groupId>org.entur.auth</groupId>
+            <artifactId>permission-client</artifactId>
+            <version>${permission-client.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.httpcomponents.client5</groupId>
+            <artifactId>httpclient5</artifactId>
+        </dependency>
+
+
 
         <!-- Spring -->
 
