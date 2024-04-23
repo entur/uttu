@@ -54,21 +54,14 @@ aliases:
         -Dsonar.projectName=${CIRCLE_PROJECT_REPONAME} \
         -Dsonar.host.url=https://sonarcloud.io \
         -Dsonar.login=${ENTUR_SONAR_PASSWORD}
-  - &install-jdk21
-    name: Install jdk21
-    command: |
-      sudo apt install openjdk-21-jdk
-      java --version
-      echo $JAVA_HOME
 jobs:
   build:
     machine:
-      image: ubuntu-2204:2023.10.1
+      image: ubuntu-2204:2024.04.3
     environment:
       MAVEN_OPTS: -Xmx3G
     steps:
       - checkout
-      - run: *install-jdk21
       - restore_cache:
           keys:
             - dep-cache-v2-{{ checksum "pom.xml" }}
