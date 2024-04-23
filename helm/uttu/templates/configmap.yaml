@@ -57,6 +57,25 @@ data:
     spring.security.oauth2.client.registration.orgregister.authorization-grant-type=client_credentials
     orgregister.oauth2.client.audience={{ .Values.configMap.orgRegister.audience }}
 
+    # permission store
+    entur.clients.auth0.permission-store.clientId=MaeAEogTaq99jYsA02y4M0yqWCVGjnZC
+    entur.clients.auth0.permission-store.secret=
+    entur.clients.auth0.permission-store.domain=internal.dev.entur.org
+    entur.clients.auth0.permission-store.audience=https://api.dev.entur.io
+
+    entur.clients.shouldRefreshThreshold=30
+    entur.clients.mustRefreshThreshold=10
+
+    entur.permission.scheduler=poll
+    entur.permission.bean=client
+    entur.permission.permissionCache.type=IN_MEMORY
+    entur.permission.permissionCache.url=https://api.dev.entur.io/permission-store/v1
+    entur.permission.permissionCache.applicationName=uttu
+    entur.permission.permissionCache.refreshRate=300
+    entur.permission.permissionCache.authQualifier=permission-store
+
+    entur.permission.businessCapabilities.ror-nplan-providers=LES
+
     # Spring Actuator
     management.server.port= {{ .Values.common.service.internalPort }}
     management.endpoints.enabled-by-default=false
