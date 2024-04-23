@@ -1,4 +1,4 @@
-FROM bellsoft/liberica-openjdk-alpine:21.0.1-12
+FROM bellsoft/liberica-openjdk-alpine:21.0.3-10
 RUN apk update && apk upgrade && apk add --no-cache \
     tini
 WORKDIR /deployments
