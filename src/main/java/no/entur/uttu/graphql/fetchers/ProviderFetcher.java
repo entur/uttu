@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProviderFetcher implements DataFetcher<List<Provider>> {
 
-  private static final String ROR_UTTU_PROVIDERS = "ror-nplan-providers";
+  private static final String ROR_NPLAN_PROVIDERS = "ror-nplan-providers";
 
   @Autowired
   private ProviderRepository repository;
@@ -25,7 +25,7 @@ public class ProviderFetcher implements DataFetcher<List<Provider>> {
                   ROLE_ROUTE_DATA_EDIT +
                   "',filterObject.getCode())"
   )*/
-  @PostFilter("hasPermission('" + ROR_UTTU_PROVIDERS + "', 'les')")
+  @PostFilter("hasPermission('" + ROR_NPLAN_PROVIDERS + "', 'les')")
   public List<Provider> get(DataFetchingEnvironment dataFetchingEnvironment) {
     return repository.findAll();
   }
