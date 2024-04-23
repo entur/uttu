@@ -1,8 +1,5 @@
 package no.entur.uttu.graphql.fetchers;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
-
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import java.util.List;
@@ -15,17 +12,20 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProviderFetcher implements DataFetcher<List<Provider>> {
 
+  private static final String ROR_NPLAN_PROVIDERS = "ror-nplan-providers";
+
   @Autowired
   private ProviderRepository repository;
 
   @Override
-  @PostFilter(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "',filterObject.getCode())"
-  )
+  /*@PostFilter(
+          "hasRole('" +
+                  ROLE_ROUTE_DATA_ADMIN +
+                  "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
+                  ROLE_ROUTE_DATA_EDIT +
+                  "',filterObject.getCode())"
+  )*/
+  @PostFilter("hasPermission('" + ROR_NPLAN_PROVIDERS + "', 'les')")
   public List<Provider> get(DataFetchingEnvironment dataFetchingEnvironment) {
     return repository.findAll();
   }

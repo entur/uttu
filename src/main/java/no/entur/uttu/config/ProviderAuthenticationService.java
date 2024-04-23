@@ -18,9 +18,7 @@ package no.entur.uttu.config;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.ProviderRepository;
 import org.rutebanken.helper.organisation.RoleAssignment;
-import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +27,6 @@ public class ProviderAuthenticationService {
 
   @Autowired
   private ProviderRepository providerRepository;
-
-  @Autowired
-  private RoleAssignmentExtractor roleAssignmentExtractor;
 
   public boolean hasRoleForProvider(
     Authentication authentication,
@@ -46,10 +41,8 @@ public class ProviderAuthenticationService {
       return false;
     }
 
-    return roleAssignmentExtractor
-      .getRoleAssignmentsForUser(authentication)
-      .stream()
-      .anyMatch(roleAssignment -> match(roleAssignment, role, provider));
+    //TODO permission-store
+    return true;
   }
 
   private boolean match(RoleAssignment roleAssignment, String role, Provider provider) {
