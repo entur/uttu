@@ -58,8 +58,27 @@ data:
     orgregister.oauth2.client.audience={{ .Values.configMap.orgRegister.audience }}
 
     # permission store
-    entur.auth.tenants.environment= dev | tst | prd
-    entur.auth.tenants.include= partner,internal
+    entur.auth.tenants.environment=dev
+    entur.auth.tenants.include=partner
+    entur.auth.apis[0].issuerUrl=https://partner.dev.entur.org/
+    entur.auth.apis[0].audiences=https://ror.api.dev.entur.io
+
+    entur.auth.authorization.permit-all[0].matcher.patterns=/actuator/health
+    entur.auth.authorization.permit-all[1].matcher.patterns=/actuator/health/liveness
+    entur.auth.authorization.permit-all[2].matcher.patterns=/actuator/health/readiness
+
+    entur.clients.auth0.permission-store.clientId=MaeAEogTaq99jYsA02y4M0yqWCVGjnZC
+    entur.clients.auth0.permission-store.secret=
+    entur.clients.auth0.permission-store.domain=internal.dev.entur.org
+    entur.clients.auth0.permission-store.audience=https://api.dev.entur.io
+
+    entur.clients.auth0.orgregister.clientId=4a5zhKZaENqIl1u0m5blot8sYKVTUIec
+    entur.clients.auth0.orgregister.secret=
+    entur.clients.auth0.orgregister.domain=partner.dev.entur.org
+    entur.clients.auth0.orgregister.audience=https://api.dev.entur.io
+
+    entur.clients.shouldRefreshThreshold=30
+    entur.clients.mustRefreshThreshold=10
 
     entur.permission.scheduler=poll
     entur.permission.bean=client
@@ -70,13 +89,6 @@ data:
     entur.permission.permissionCache.authQualifier=permission-store
 
     entur.permission.businessCapabilities.ror-nplan-providers=LES
-
-    entur.clients.auth0.permission-store.clientId=MaeAEogTaq99jYsA02y4M0yqWCVGjnZC
-    entur.clients.auth0.permission-store.secret=
-    entur.clients.auth0.permission-store.domain=internal.dev.entur.org
-    entur.clients.auth0.permission-store.audience=https://api.dev.entur.io
-    entur.clients.shouldRefreshThreshold=30
-    entur.clients.mustRefreshThreshold=10
 
     # Spring Actuator
     management.server.port= {{ .Values.common.service.internalPort }}
