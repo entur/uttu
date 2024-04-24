@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile({ "local", "test" })
+@Profile({ "local", "test", "local-disk-blobstore" })
 public class LocalDiskBlobStoreService implements BlobStoreService {
 
   @Value("${blobstore.local.folder:files/blob}")
