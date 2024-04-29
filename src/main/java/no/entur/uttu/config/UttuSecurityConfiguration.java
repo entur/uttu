@@ -1,11 +1,15 @@
 package no.entur.uttu.config;
 
 import java.util.Arrays;
+import no.entur.uttu.repository.ProviderRepository;
+import no.entur.uttu.security.EnturUserContextService;
+import no.entur.uttu.security.UserContextService;
 import org.entur.oauth2.RorAuthenticationConverter;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
+import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -69,5 +73,14 @@ public class UttuSecurityConfiguration {
   @Bean
   public JwtAuthenticationConverter customJwtAuthenticationConverter() {
     return new RorAuthenticationConverter();
+  }
+
+  @Bean
+  @ConditionalOnProperty(value = "uttu.user-context-service", havingValue = "entur")
+  public UserContextService userContextService(
+    ProviderRepository providerRepository,
+    RoleAssignmentExtractor roleAssignmentExtractor
+  ) {
+    return new EnturUserContextService(providerRepository, roleAssignmentExtractor);
   }
 }

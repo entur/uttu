@@ -15,6 +15,7 @@
 
 package no.entur.uttu.graphql;
 
+import static graphql.Scalars.GraphQLBoolean;
 import static graphql.Scalars.GraphQLString;
 import static graphql.scalars.ExtendedScalars.GraphQLLong;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
@@ -32,6 +33,8 @@ import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import no.entur.uttu.config.Context;
+import no.entur.uttu.graphql.model.UserContext;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.ProviderCodeScalar;
 import no.entur.uttu.model.Codespace;
@@ -59,6 +62,9 @@ public class ProviderGraphQLSchema {
   private DataFetcher<List<Provider>> providerFetcher;
 
   @Autowired
+  private DataFetcher<UserContext> userContextFetcher;
+
+  @Autowired
   private DateTimeScalar dateTimeScalar;
 
   public GraphQLSchema graphQLSchema;
@@ -66,6 +72,7 @@ public class ProviderGraphQLSchema {
   private GraphQLObjectType identifiedEntityObjectType;
   private GraphQLObjectType codespaceObjectType;
   private GraphQLObjectType providerObjectType;
+  private GraphQLObjectType userContextObjectType;
 
   @PostConstruct
   public void init() {
@@ -137,10 +144,29 @@ public class ProviderGraphQLSchema {
             .type(new GraphQLNonNull(codespaceObjectType))
         )
         .build();
+
+    userContextObjectType =
+      newObject()
+        .name("UserContext")
+        .field(
+          newFieldDefinition()
+            .name("preferredName")
+            .type(new GraphQLNonNull(GraphQLString))
+        )
+        .field(
+          newFieldDefinition().name("isAdmin").type(new GraphQLNonNull(GraphQLBoolean))
+        )
+        .field(
+          newFieldDefinition()
+            .name("providers")
+            .type(new GraphQLList(providerObjectType))
+            .dataFetcher(providerFetcher)
+        )
+        .build();
   }
 
   private GraphQLObjectType createQueryObject() {
-    GraphQLObjectType queryType = newObject()
+    return newObject()
       .name("Queries")
       .description("Query and search for data")
       .field(
@@ -157,9 +183,14 @@ public class ProviderGraphQLSchema {
           .description("Search for Providers")
           .dataFetcher(providerFetcher)
       )
+      .field(
+        newFieldDefinition()
+          .type(userContextObjectType)
+          .name("userContext")
+          .description("Context-aware user object")
+          .dataFetcher(userContextFetcher)
+      )
       .build();
-
-    return queryType;
   }
 
   private GraphQLObjectType createMutationObject() {
