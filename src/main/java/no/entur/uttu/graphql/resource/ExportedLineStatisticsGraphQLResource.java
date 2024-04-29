@@ -52,15 +52,7 @@ public class ExportedLineStatisticsGraphQLResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @PreAuthorize(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') " +
-    "or hasRole('" +
-    ROLE_ROUTE_DATA_EDIT +
-    "') " +
-    "and @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "', #request.get('variables').get('providerCode'))"
+    "@userContextService.hasAccessToProvider('#request.get('variables').get('providerCode'))')"
   )
   public Response executeLinesStatement(Map<String, Object> request) {
     try {

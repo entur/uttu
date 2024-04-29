@@ -49,13 +49,7 @@ public class ExportFileDownloadResource {
   @GET
   @Path("{id}/download")
   @Produces({ MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON })
-  @PreAuthorize(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "',#providerCode)"
-  )
+  @PreAuthorize("@userContextService.hasAccessToProvider('#providerCode')")
   public Response downloadExportFile(
     @PathParam("providerCode") String providerCode,
     @PathParam("id") String exportId

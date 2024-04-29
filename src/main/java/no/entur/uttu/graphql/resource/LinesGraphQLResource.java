@@ -59,13 +59,7 @@ public class LinesGraphQLResource {
   @SuppressWarnings("unchecked")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @PreAuthorize(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "',#providerCode)"
-  )
+  @PreAuthorize("@userContextService.hasAccessToProvider('#providerCode')")
   public Response executeLinesStatement(
     @PathParam("providerCode") String providerCode,
     Map<String, Object> request
@@ -81,13 +75,7 @@ public class LinesGraphQLResource {
   @POST
   @Consumes("application/graphql")
   @Produces(MediaType.APPLICATION_JSON)
-  @PreAuthorize(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "',#providerCode)"
-  )
+  @PreAuthorize("@userContextService.hasAccessToProvider('#providerCode')")
   public Response executeLinesStatement(
     @PathParam("providerCode") String providerCode,
     String query

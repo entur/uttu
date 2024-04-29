@@ -1,20 +1,20 @@
 package no.entur.uttu.config;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import no.entur.uttu.repository.ProviderRepository;
-import no.entur.uttu.security.EnturUserContextService;
+import java.util.List;
+import no.entur.uttu.security.DefaultUserContextService;
 import no.entur.uttu.security.UserContextService;
-import org.entur.oauth2.RorAuthenticationConverter;
-import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
-import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
@@ -35,7 +35,7 @@ public class UttuSecurityConfiguration {
   @Bean
   public SecurityFilterChain filterChain(
     HttpSecurity http,
-    MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver
+    AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver
   ) throws Exception {
     return http
       .csrf(AbstractHttpConfigurer::disable)
@@ -53,13 +53,13 @@ public class UttuSecurityConfiguration {
           .authenticated()
       )
       .oauth2ResourceServer(configurer ->
-        configurer.authenticationManagerResolver(multiIssuerAuthenticationManagerResolver)
+        configurer.authenticationManagerResolver(authenticationManagerResolver)
       )
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .build();
   }
 
-  CorsConfigurationSource corsConfigurationSource() {
+  private CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.addAllowedOriginPattern("*");
     configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
@@ -70,17 +70,17 @@ public class UttuSecurityConfiguration {
     return source;
   }
 
+  @ConditionalOnMissingBean
   @Bean
-  public JwtAuthenticationConverter customJwtAuthenticationConverter() {
-    return new RorAuthenticationConverter();
+  public UserContextService userContextService() {
+    return new DefaultUserContextService();
   }
 
+  @ConditionalOnMissingBean
   @Bean
-  @ConditionalOnProperty(value = "uttu.user-context-service", havingValue = "entur")
-  public UserContextService userContextService(
-    ProviderRepository providerRepository,
-    RoleAssignmentExtractor roleAssignmentExtractor
+  public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver(
+    @Value("uttu.jwt.issuer") String issuer
   ) {
-    return new EnturUserContextService(providerRepository, roleAssignmentExtractor);
+    return JwtIssuerAuthenticationManagerResolver.fromTrustedIssuers(List.of(issuer));
   }
 }

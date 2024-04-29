@@ -416,6 +416,8 @@
                         <!-- These are the default patterns, you can omit <inputGlobs> entirely unless you want to override them -->
                         <inputGlob>src/main/java/**/*.java</inputGlob>
                         <inputGlob>src/test/java/**/*.java</inputGlob>
+                        <inputGlob>src/ext/java/**/*.java</inputGlob>
+                        <inputGlob>src/ext-test/java/**/*.java</inputGlob>
                     </inputGlobs>
                 </configuration>
                 <executions>
