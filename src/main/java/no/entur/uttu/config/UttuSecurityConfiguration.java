@@ -3,10 +3,11 @@ package no.entur.uttu.config;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
-import no.entur.uttu.security.DefaultUserContextService;
+import no.entur.uttu.security.FullAccessUserContextService;
 import no.entur.uttu.security.UserContextService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
@@ -71,15 +72,19 @@ public class UttuSecurityConfiguration {
   }
 
   @ConditionalOnMissingBean
+  @ConditionalOnProperty(
+    value = "uttu.security.user-context-service",
+    havingValue = "full-access"
+  )
   @Bean
   public UserContextService userContextService() {
-    return new DefaultUserContextService();
+    return new FullAccessUserContextService();
   }
 
   @ConditionalOnMissingBean
   @Bean
   public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver(
-    @Value("uttu.jwt.issuer") String issuer
+    @Value("uttu.security.jwt.issuer") String issuer
   ) {
     return JwtIssuerAuthenticationManagerResolver.fromTrustedIssuers(List.of(issuer));
   }

@@ -1,6 +1,6 @@
 package no.entur.uttu.security;
 
-public class DefaultUserContextService implements UserContextService {
+public class FullAccessUserContextService implements UserContextService {
 
   @Override
   public String getPreferredName() {
