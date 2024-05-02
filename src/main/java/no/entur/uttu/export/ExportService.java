@@ -19,7 +19,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
-import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.export.messaging.MessagingService;
 import no.entur.uttu.export.netex.DataSetProducer;
@@ -30,6 +29,7 @@ import no.entur.uttu.model.job.ExportMessage;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.util.ExportUtil;
 import org.apache.commons.io.IOUtils;
+import org.rutebanken.helper.gcp.repository.BlobStoreRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +42,7 @@ public class ExportService {
 
   private final NetexExporter exporter;
 
-  private final BlobStoreService blobStoreService;
+  private final BlobStoreRepository blobStoreRepository;
 
   private final MessagingService messagingService;
 
@@ -57,11 +57,11 @@ public class ExportService {
 
   public ExportService(
     NetexExporter exporter,
-    BlobStoreService blobStoreService,
+    BlobStoreRepository blobStoreRepository,
     MessagingService messagingService
   ) {
     this.exporter = exporter;
-    this.blobStoreService = blobStoreService;
+    this.blobStoreRepository = blobStoreRepository;
     this.messagingService = messagingService;
   }
 
@@ -88,7 +88,7 @@ public class ExportService {
           exportedFilenameSuffix
         );
         String blobName = exportFolder + exportedDataSetFilename;
-        blobStoreService.uploadBlob(blobName, false, bis);
+        blobStoreRepository.uploadBlob(blobName, bis);
         bis.reset();
         // notify Marduk that a new export is available
         messagingService.notifyExport(
@@ -101,7 +101,7 @@ public class ExportService {
           .forEach(export::addExportedLineStatistics);
       }
       export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
-      blobStoreService.uploadBlob(export.getFileName(), false, bis);
+      blobStoreRepository.uploadBlob(export.getFileName(), bis);
     } catch (CodedIllegalArgumentException iae) {
       ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getCode());
       export.addMessage(msg);
