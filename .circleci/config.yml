@@ -54,6 +54,8 @@ aliases:
         -Dsonar.projectName=${CIRCLE_PROJECT_REPONAME} \
         -Dsonar.host.url=https://sonarcloud.io \
         -Dsonar.login=${ENTUR_SONAR_PASSWORD}
+        -Dsonar.sources=src/main/,src/ext/
+        -Dsonar.tests=src/test/,src/ext-test/
 jobs:
   build:
     machine:
