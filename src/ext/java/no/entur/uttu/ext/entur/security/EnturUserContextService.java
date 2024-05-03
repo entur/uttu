@@ -68,8 +68,10 @@ public class EnturUserContextService implements UserContextService {
     return roleAssignments
       .stream()
       .anyMatch(roleAssignment ->
-              (roleAssignment.getRole().equals(ROLE_ROUTE_DATA_ADMIN) &&
-        roleAssignment.getOrganisation().equals("RB")) ||
+        (
+          roleAssignment.getRole().equals(ROLE_ROUTE_DATA_ADMIN) &&
+          roleAssignment.getOrganisation().equals("RB")
+        ) ||
         match(roleAssignment, ROLE_ROUTE_DATA_EDIT, provider)
       );
   }

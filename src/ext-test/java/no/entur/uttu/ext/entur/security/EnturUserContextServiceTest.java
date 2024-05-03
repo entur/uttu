@@ -1,5 +1,7 @@
 package no.entur.uttu.ext.entur.security;
 
+import static org.mockito.Mockito.when;
+
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.ProviderRepository;
@@ -13,81 +15,92 @@ import org.mockito.Mockito;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.mockito.Mockito.when;
-
-
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration
 class EnturUserContextServiceTest {
-    @Mock
-    ProviderRepository mockProviderRepository;
 
-    EnturUserContextService subject;
+  @Mock
+  ProviderRepository mockProviderRepository;
 
-    @BeforeEach
-    void setUp() {
-        mockProviderRepository = Mockito.mock(ProviderRepository.class);
-        subject = new EnturUserContextService(mockProviderRepository, new JwtRoleAssignmentExtractor());
-    }
+  EnturUserContextService subject;
 
-    @Test
-    @WithMockCustomUser(preferredName = "John", roles = {})
-    void testGetPreferredName() {
-        Assertions.assertEquals("John", subject.getPreferredName());
-    }
+  @BeforeEach
+  void setUp() {
+    mockProviderRepository = Mockito.mock(ProviderRepository.class);
+    subject =
+      new EnturUserContextService(
+        mockProviderRepository,
+        new JwtRoleAssignmentExtractor()
+      );
+  }
 
-    @Test
-    @WithMockCustomUser(preferredName = "John", roles = {})
-    void testIsAdminForNonAdminReturnsFalse() {
-        Assertions.assertFalse(subject.isAdmin());
-    }
+  @Test
+  @WithMockCustomUser(preferredName = "John", roles = {})
+  void testGetPreferredName() {
+    Assertions.assertEquals("John", subject.getPreferredName());
+  }
 
-    @Test
-    @WithMockCustomUser(preferredName = "John", roles = {"{\"r\": \"adminEditRouteData\", \"o\": \"RB\"}"})
-    void testIsAdminForAdminReturnsTrue() {
-        Assertions.assertTrue(subject.isAdmin());
-    }
+  @Test
+  @WithMockCustomUser(preferredName = "John", roles = {})
+  void testIsAdminForNonAdminReturnsFalse() {
+    Assertions.assertFalse(subject.isAdmin());
+  }
 
-    @Test
-    void testHasAccessToProviderReturnsFalseWithNullProviderCode() {
-        Assertions.assertFalse(subject.hasAccessToProvider(null));
-    }
+  @Test
+  @WithMockCustomUser(
+    preferredName = "John",
+    roles = { "{\"r\": \"adminEditRouteData\", \"o\": \"RB\"}" }
+  )
+  void testIsAdminForAdminReturnsTrue() {
+    Assertions.assertTrue(subject.isAdmin());
+  }
 
-    @Test
-    void testHasAccessToProviderReturnsFalseWithNonExistingProviderForCode() {
-        when(mockProviderRepository.getOne("foo")).thenReturn(null);
-        Assertions.assertFalse(subject.hasAccessToProvider("foo"));
-    }
+  @Test
+  void testHasAccessToProviderReturnsFalseWithNullProviderCode() {
+    Assertions.assertFalse(subject.hasAccessToProvider(null));
+  }
 
-    @Test
-    @WithMockCustomUser(preferredName = "John", roles = {"{\"r\": \"adminEditRouteData\", \"o\": \"RB\"}"})
-    void testHasAccessToProviderReturnsTrueWithAdminUser() {
-        when(mockProviderRepository.getOne("foo")).thenReturn(createProvider("foo"));
-        Assertions.assertTrue(subject.hasAccessToProvider("foo"));
-    }
+  @Test
+  void testHasAccessToProviderReturnsFalseWithNonExistingProviderForCode() {
+    when(mockProviderRepository.getOne("foo")).thenReturn(null);
+    Assertions.assertFalse(subject.hasAccessToProvider("foo"));
+  }
 
-    @Test
-    @WithMockCustomUser(preferredName = "John", roles = {})
-    void testHasAccessToProviderReturnsFalseForNonAdminUserWithoutPermission() {
-        when(mockProviderRepository.getOne("foo")).thenReturn(createProvider("foo"));
-        Assertions.assertFalse(subject.hasAccessToProvider("foo"));
-    }
+  @Test
+  @WithMockCustomUser(
+    preferredName = "John",
+    roles = { "{\"r\": \"adminEditRouteData\", \"o\": \"RB\"}" }
+  )
+  void testHasAccessToProviderReturnsTrueWithAdminUser() {
+    when(mockProviderRepository.getOne("foo")).thenReturn(createProvider("foo"));
+    Assertions.assertTrue(subject.hasAccessToProvider("foo"));
+  }
 
-    @Test
-    @WithMockCustomUser(preferredName = "John", roles = {"{\"r\": \"editRouteData\", \"o\": \"FOO\"}"})
-    void testHasAccessToProviderReturnsTrueForNonAdminUserWithPermission() {
-        when(mockProviderRepository.getOne("foo")).thenReturn(createProvider("foo"));
-        Assertions.assertTrue(subject.hasAccessToProvider("foo"));
-    }
+  @Test
+  @WithMockCustomUser(preferredName = "John", roles = {})
+  void testHasAccessToProviderReturnsFalseForNonAdminUserWithoutPermission() {
+    when(mockProviderRepository.getOne("foo")).thenReturn(createProvider("foo"));
+    Assertions.assertFalse(subject.hasAccessToProvider("foo"));
+  }
 
-    private Provider createProvider(String code) {
-        Provider provider = new Provider();
-        provider.setCode(code);
+  @Test
+  @WithMockCustomUser(
+    preferredName = "John",
+    roles = { "{\"r\": \"editRouteData\", \"o\": \"FOO\"}" }
+  )
+  void testHasAccessToProviderReturnsTrueForNonAdminUserWithPermission() {
+    when(mockProviderRepository.getOne("foo")).thenReturn(createProvider("foo"));
+    Assertions.assertTrue(subject.hasAccessToProvider("foo"));
+  }
 
-        Codespace codespace = new Codespace();
-        codespace.setXmlns(code.toUpperCase());
+  private Provider createProvider(String code) {
+    Provider provider = new Provider();
+    provider.setCode(code);
 
-        provider.setCodespace(codespace);
-        return provider;
-    }
+    Codespace codespace = new Codespace();
+    codespace.setXmlns(code.toUpperCase());
+
+    provider.setCodespace(codespace);
+    return provider;
+  }
 }
