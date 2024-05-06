@@ -27,7 +27,7 @@ import org.springframework.test.context.junit4.SpringRunner;
   webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
   classes = UttuTestApp.class
 )
-@ActiveProfiles({ "google-pubsub-emulator", "test", "local-disk-blobstore" })
+@ActiveProfiles({ "google-pubsub-emulator", "test" })
 @EnableAspectJAutoProxy(proxyTargetClass = true)
 public abstract class UttuIntegrationTest {
 
