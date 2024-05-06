@@ -2,7 +2,6 @@ package no.entur.uttu.config;
 
 import no.entur.uttu.ext.entur.security.EnturUserContextService;
 import no.entur.uttu.repository.ProviderRepository;
-import no.entur.uttu.security.FullAccessUserContextService;
 import no.entur.uttu.security.UserContextService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
