@@ -15,7 +15,6 @@
 
 package no.entur.uttu.graphql
 
-import io.restassured.response.ValidatableResponse
 import no.entur.uttu.config.MockedRoleAssignmentExtractor
 import org.junit.Test
 import org.rutebanken.helper.organisation.RoleAssignment
@@ -52,15 +51,9 @@ class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationT
 
     @Test
     void getProvidersTest() {
-        mockedRoleAssignmentExtractor.setNextReturnedRoleAssignment(
-                RoleAssignment.builder().withRole("editRouteData").withOrganisation("TST").build()
-        )
-
         executeGraphqQLQueryOnly(getProvidersQuery)
                 .body("data.providers", iterableWithSize(1))
                 .body("data.providers[0].code", equalTo("tst"))
-
-        mockedRoleAssignmentExtractor.reset()
     }
 
     @Test
