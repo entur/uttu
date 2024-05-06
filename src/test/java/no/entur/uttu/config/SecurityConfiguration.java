@@ -1,5 +1,7 @@
 package no.entur.uttu.config;
 
+import no.entur.uttu.security.FullAccessUserContextService;
+import no.entur.uttu.security.UserContextService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -49,5 +51,10 @@ public class SecurityConfiguration {
         .build()
     );
     return manager;
+  }
+
+  @Bean
+  public UserContextService userContextService() {
+    return new FullAccessUserContextService();
   }
 }
