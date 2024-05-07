@@ -84,7 +84,7 @@ public class UttuSecurityConfiguration {
   @ConditionalOnMissingBean
   @Bean
   public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver(
-    @Value("uttu.security.jwt.issuer") String issuer
+    @Value("${uttu.security.jwt.issuer-uri}") String issuer
   ) {
     return JwtIssuerAuthenticationManagerResolver.fromTrustedIssuers(List.of(issuer));
   }
