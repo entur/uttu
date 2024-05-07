@@ -3,6 +3,7 @@ package no.entur.uttu.config;
 import no.entur.uttu.ext.entur.security.EnturUserContextService;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.security.UserContextService;
+import no.entur.uttu.stubs.UserContextServiceStub;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -54,11 +55,14 @@ public class SecurityConfiguration {
     return manager;
   }
 
+  @Bean UserContextServiceStub userContextServiceStub() {
+    return new UserContextServiceStub();
+  }
+
   @Bean
   public UserContextService userContextService(
-    ProviderRepository providerRepository,
-    MockedRoleAssignmentExtractor mockedRoleAssignmentExtractor
+          UserContextServiceStub userContextServiceStub
   ) {
-    return new EnturUserContextService(providerRepository, mockedRoleAssignmentExtractor);
+    return userContextServiceStub;
   }
 }

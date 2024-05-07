@@ -21,10 +21,8 @@ import io.restassured.http.ContentType
 import io.restassured.response.ValidatableResponse
 import io.restassured.specification.RequestSpecification
 import no.entur.uttu.UttuIntegrationTest
-import no.entur.uttu.config.MockedRoleAssignmentExtractor
-import org.junit.After
+import no.entur.uttu.stubs.UserContextServiceStub
 import org.junit.Before
-import org.rutebanken.helper.organisation.RoleAssignment
 import org.springframework.beans.factory.annotation.Autowired
 
 import java.time.LocalDate
@@ -34,7 +32,7 @@ import static io.restassured.RestAssured.given
 abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTest {
 
     @Autowired
-    MockedRoleAssignmentExtractor mockedRoleAssignmentExtractor;
+    UserContextServiceStub userContextServiceStub;
 
     protected static final LocalDate TODAY=LocalDate.now();
 
@@ -43,16 +41,11 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = port
 
-        mockedRoleAssignmentExtractor.setNextReturnedRoleAssignment(
-                RoleAssignment.builder().withRole("editRouteData").withOrganisation("TST").build()
-        )
+        userContextServiceStub.setPreferredName("John Doe")
+        userContextServiceStub.setAdmin(false)
+        userContextServiceStub.setHasAccessToProvider("tst", true)
+        userContextServiceStub.setHasAccessToProvider("foo", false)
     }
-
-    @After
-    void cleanup() {
-        mockedRoleAssignmentExtractor.reset()
-    }
-
 
     ValidatableResponse createNetwork(String name) {
         String query = """
