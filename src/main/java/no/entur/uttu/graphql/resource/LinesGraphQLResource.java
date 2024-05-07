@@ -15,9 +15,6 @@
 
 package no.entur.uttu.graphql.resource;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
-
 import graphql.GraphQL;
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.idl.RuntimeWiring;

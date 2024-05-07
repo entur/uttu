@@ -15,9 +15,6 @@
 
 package no.entur.uttu.export.resource;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;

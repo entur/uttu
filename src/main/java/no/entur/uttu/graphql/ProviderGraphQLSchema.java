@@ -33,7 +33,6 @@ import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.model.UserContext;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.ProviderCodeScalar;
@@ -49,30 +48,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProviderGraphQLSchema {
 
-  @Autowired
-  private CodespaceRepository codespaceRepository;
+  private final CodespaceRepository codespaceRepository;
+  private final DataFetcher<Codespace> codespaceUpdater;
+  private final DataFetcher<Provider> providerUpdater;
+  private final DataFetcher<List<Provider>> providerFetcher;
+  private final DataFetcher<UserContext> userContextFetcher;
+  private final DateTimeScalar dateTimeScalar;
 
-  @Autowired
-  private DataFetcher<Codespace> codespaceUpdater;
-
-  @Autowired
-  private DataFetcher<Provider> providerUpdater;
-
-  @Autowired
-  private DataFetcher<List<Provider>> providerFetcher;
-
-  @Autowired
-  private DataFetcher<UserContext> userContextFetcher;
-
-  @Autowired
-  private DateTimeScalar dateTimeScalar;
-
-  public GraphQLSchema graphQLSchema;
-
+  private GraphQLSchema graphQLSchema;
   private GraphQLObjectType identifiedEntityObjectType;
   private GraphQLObjectType codespaceObjectType;
   private GraphQLObjectType providerObjectType;
   private GraphQLObjectType userContextObjectType;
+
+  public ProviderGraphQLSchema(
+    CodespaceRepository codespaceRepository,
+    DataFetcher<Codespace> codespaceUpdater,
+    DataFetcher<Provider> providerUpdater,
+    DataFetcher<List<Provider>> providerFetcher,
+    DataFetcher<UserContext> userContextFetcher,
+    DateTimeScalar dateTimeScalar
+  ) {
+    this.codespaceRepository = codespaceRepository;
+    this.codespaceUpdater = codespaceUpdater;
+    this.providerUpdater = providerUpdater;
+    this.providerFetcher = providerFetcher;
+    this.userContextFetcher = userContextFetcher;
+    this.dateTimeScalar = dateTimeScalar;
+  }
 
   @PostConstruct
   public void init() {
@@ -83,6 +86,10 @@ public class ProviderGraphQLSchema {
         .query(createQueryObject())
         .mutation(createMutationObject())
         .build();
+  }
+
+  public GraphQLSchema getGraphQLSchema() {
+    return graphQLSchema;
   }
 
   private void initCommonTypes() {

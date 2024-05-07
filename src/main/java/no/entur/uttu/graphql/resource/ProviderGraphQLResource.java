@@ -43,7 +43,7 @@ public class ProviderGraphQLResource {
 
   @PostConstruct
   public void init() {
-    providerGraphQL = GraphQL.newGraphQL(providerSchema.graphQLSchema).build();
+    providerGraphQL = GraphQL.newGraphQL(providerSchema.getGraphQLSchema()).build();
   }
 
   @POST
