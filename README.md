@@ -5,10 +5,7 @@ Back-end for Nplan, a simple timetable editor. Front-end is [Enki](https://githu
 
 ## Codestyle
 Uttu uses [Prettier Java](https://github.com/jhipster/prettier-java). Use `mvn prettier:write` to reformat code before
-pushing changes. You can also configure your IDE to reformat code when you save a file. 
-
-## Graphql 
-https://api.dev.entur.io/timetable-admin/v1/flexible-lines/providers/graphql
+pushing changes. You can also configure your IDE to reformat code when you save a file.
 
 ## Security
 
@@ -22,7 +19,7 @@ In addition, a UserContextService implementation must be selected. The following
 
 ## Running locally
 ### Build
-To build the project from source, you need Java 17 and Maven 3.
+To build the project from source, you need Java 21 and Maven 3.
 
 To run the unit tests you need additionally to install the [Google PubSub emulator](https://cloud.google.com/pubsub/docs/emulator).  
 The emulator can be installed locally with the following commands:
