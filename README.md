@@ -12,7 +12,7 @@ https://api.dev.entur.io/timetable-admin/v1/flexible-lines/providers/graphql
 
 ## Security
 
-Running uttu with vanilla security features requires an Oauth2 issues, which can be set with the following property:
+Running uttu with vanilla security features requires an Oauth2 issuer, which can be set with the following property:
 
     uttu.security.jwt.issuer-uri=https://my-jwt-issuer
 
