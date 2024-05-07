@@ -4,7 +4,6 @@ package no.entur.uttu.security;
  *  This interface provides authorization features to the app
  */
 public interface UserContextService {
-
   /**
    * Get the user's display name
    */

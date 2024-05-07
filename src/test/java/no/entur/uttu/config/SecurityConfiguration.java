@@ -55,13 +55,14 @@ public class SecurityConfiguration {
     return manager;
   }
 
-  @Bean UserContextServiceStub userContextServiceStub() {
+  @Bean
+  UserContextServiceStub userContextServiceStub() {
     return new UserContextServiceStub();
   }
 
   @Bean
   public UserContextService userContextService(
-          UserContextServiceStub userContextServiceStub
+    UserContextServiceStub userContextServiceStub
   ) {
     return userContextServiceStub;
   }
