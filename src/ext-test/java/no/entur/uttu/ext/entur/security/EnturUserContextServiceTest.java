@@ -65,6 +65,15 @@ class EnturUserContextServiceTest {
   }
 
   @Test
+  @WithMockCustomUser(
+    preferredName = "John",
+    roles = { "{\"r\": \"editRouteData\", \"o\": \"FOO\"}" }
+  )
+  void testIsAdminForAdminWithNonAdminRoleReturnsFalse() {
+    Assertions.assertFalse(subject.isAdmin());
+  }
+
+  @Test
   void testHasAccessToProviderReturnsFalseWithNullProviderCode() {
     Assertions.assertFalse(subject.hasAccessToProvider(null));
   }
