@@ -10,6 +10,16 @@ pushing changes. You can also configure your IDE to reformat code when you save 
 ## Graphql 
 https://api.dev.entur.io/timetable-admin/v1/flexible-lines/providers/graphql
 
+## Security
+
+Running uttu with vanilla security features requires an Oauth2 issues, which can be set with the following property:
+
+    uttu.security.jwt.issuer-uri=https://my-jwt-issuer
+
+In addition, a UserContextService implementation must be selected. The following gives full access to all authenticated users:
+
+    uttu.security.user-context-service=full-access
+
 ## Running locally
 ### Build
 To build the project from source, you need Java 17 and Maven 3.
@@ -46,7 +56,6 @@ To stop, find its ID from `docker ps`, and run `docker stop theid` (beginning of
 
 Run the [script](./src/main/resources/db_init.sh).
 
-
 ### Run
 **IntelliJ**: Right-click on `App.java` and choose Run (or Cmd+Shift+F10). Open Run -> Edit configurations, choose the
 correct configuration (Spring Boot -> App), and add `local` to Active profiles. Save the configuration.
@@ -61,7 +70,7 @@ http://localhost:11701/services/flexible-lines/rut/graphql
 ## Netex Export
 This api exports generated netex file to gcp storage, which is used to build graph.
 
-### Error code extension
+## Error code extension
 
 Some errors are augmented with a code extension. See [ErrorCodeEnumeration](src/main/java/no/entur/uttu/error/ErrorCodeEnumeration.java) for complete list of codes.
 
