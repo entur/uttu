@@ -56,6 +56,15 @@ class EnturUserContextServiceTest {
   }
 
   @Test
+  @WithMockCustomUser(
+    preferredName = "John",
+    roles = { "{\"r\": \"adminEditRouteData\", \"o\": \"BAR\"}" }
+  )
+  void testIsAdminForAdminWithIncorrectOrgReturnsFalse() {
+    Assertions.assertFalse(subject.isAdmin());
+  }
+
+  @Test
   void testHasAccessToProviderReturnsFalseWithNullProviderCode() {
     Assertions.assertFalse(subject.hasAccessToProvider(null));
   }
@@ -74,6 +83,16 @@ class EnturUserContextServiceTest {
   void testHasAccessToProviderReturnsTrueWithAdminUser() {
     when(mockProviderRepository.getOne("foo")).thenReturn(createProvider("foo"));
     Assertions.assertTrue(subject.hasAccessToProvider("foo"));
+  }
+
+  @Test
+  @WithMockCustomUser(
+    preferredName = "John",
+    roles = { "{\"r\": \"adminEditRouteData\", \"o\": \"BAR\"}" }
+  )
+  void testHasAccessToProviderReturnsFalseWithAdminUserAndIncorrectOrg() {
+    when(mockProviderRepository.getOne("foo")).thenReturn(createProvider("foo"));
+    Assertions.assertFalse(subject.hasAccessToProvider("foo"));
   }
 
   @Test
