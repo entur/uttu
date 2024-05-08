@@ -25,7 +25,7 @@ import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
-import java.util.HashMap;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Set;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
@@ -42,10 +42,10 @@ public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
     GeneralExceptionMapper.class
   );
 
-  private Map<Response.Status, Set<Class<?>>> mapping;
+  private final Map<Response.Status, Set<Class<?>>> mapping;
 
   public GeneralExceptionMapper() {
-    mapping = new HashMap<>();
+    mapping = new EnumMap<>(Response.Status.class);
     mapping.put(
       Response.Status.BAD_REQUEST,
       Sets.newHashSet(
@@ -66,8 +66,8 @@ public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
   public Response toResponse(Exception ex) {
     Throwable rootCause = getRootCause(ex);
     int status;
-    if (rootCause instanceof WebApplicationException) {
-      status = ((WebApplicationException) rootCause).getResponse().getStatus();
+    if (rootCause instanceof WebApplicationException webApplicationException) {
+      status = webApplicationException.getResponse().getStatus();
     } else {
       status = toStatus(rootCause);
     }
@@ -103,12 +103,13 @@ public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
     if (getMappedStatus(e) != null) {
       return e;
     }
-    if (e instanceof NestedRuntimeException) {
-      NestedRuntimeException nestedRuntimeException = ((NestedRuntimeException) e);
-      if (nestedRuntimeException.getRootCause() != null) {
-        rootCause = nestedRuntimeException.getRootCause();
-      }
+    if (
+      e instanceof NestedRuntimeException nestedRuntimeException &&
+      nestedRuntimeException.getRootCause() != null
+    ) {
+      rootCause = nestedRuntimeException.getRootCause();
     }
+
     return rootCause;
   }
 }
