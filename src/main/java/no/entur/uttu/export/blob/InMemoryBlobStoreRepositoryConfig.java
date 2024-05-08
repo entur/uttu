@@ -20,10 +20,10 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.rutebanken.helper.gcp.repository.BlobStoreRepository;
 import org.rutebanken.helper.gcp.repository.InMemoryBlobStoreRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.Scope;
 
 @Configuration
 @Profile("in-memory-blobstore")
@@ -35,10 +35,13 @@ public class InMemoryBlobStoreRepositoryConfig {
   }
 
   @Bean
-  @Scope("prototype")
   BlobStoreRepository blobStoreRepository(
+    @Value("${blobstore.gcs.container.name}") String containerName,
     Map<String, Map<String, byte[]>> blobsInContainers
   ) {
-    return new InMemoryBlobStoreRepository(blobsInContainers);
+    InMemoryBlobStoreRepository inMemoryBlobStoreRepository =
+      new InMemoryBlobStoreRepository(blobsInContainers);
+    inMemoryBlobStoreRepository.setContainerName(containerName);
+    return inMemoryBlobStoreRepository;
   }
 }

@@ -22,18 +22,22 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.Scope;
 
 @Configuration
 @Profile("gcs-blobstore")
 public class GcsBlobStoreRepositoryConfig {
 
   @Bean
-  @Scope("prototype")
   BlobStoreRepository blobStoreRepository(
     @Value("${blobstore.gcs.project.id}") String projectId,
+    @Value("${blobstore.gcs.container.name}") String containerName,
     @Value("${blobstore.gcs.credential.path:#{null}}") String credentialPath
   ) {
-    return new GcsBlobStoreRepository(projectId, credentialPath);
+    GcsBlobStoreRepository gcsBlobStoreRepository = new GcsBlobStoreRepository(
+      projectId,
+      credentialPath
+    );
+    gcsBlobStoreRepository.setContainerName(containerName);
+    return gcsBlobStoreRepository;
   }
 }
