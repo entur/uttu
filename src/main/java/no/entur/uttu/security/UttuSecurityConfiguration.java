@@ -27,7 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * Authentication and authorization configuration for Uttu.
  * All requests must be authenticated except for the Actuator endpoints.
  */
-@Profile("!local & !test")
+@Profile("!local-no-authentication & !test")
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @Component
