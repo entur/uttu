@@ -28,9 +28,9 @@ import jakarta.ws.rs.core.Response;
 import java.io.InputStream;
 import java.nio.file.Paths;
 import no.entur.uttu.config.Context;
-import no.entur.uttu.export.blob.BlobStoreService;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.repository.ExportRepository;
+import org.rutebanken.helper.gcp.repository.BlobStoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -44,7 +44,7 @@ public class ExportFileDownloadResource {
   private ExportRepository exportRepository;
 
   @Autowired
-  private BlobStoreService blobStoreService;
+  private BlobStoreRepository blobStoreRepository;
 
   @GET
   @Path("{id}/download")
@@ -75,7 +75,7 @@ public class ExportFileDownloadResource {
         );
       }
 
-      InputStream content = blobStoreService.downloadBlob(export.getFileName());
+      InputStream content = blobStoreRepository.getBlob(export.getFileName());
 
       String fileNameOnly = Paths.get(export.getFileName()).getFileName().toString();
 
