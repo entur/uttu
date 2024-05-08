@@ -1,4 +1,4 @@
-package no.entur.uttu.security;
+package no.entur.uttu.security.spi;
 
 /**
  * Fallback implementation giving full access to all operations for authenticated users,

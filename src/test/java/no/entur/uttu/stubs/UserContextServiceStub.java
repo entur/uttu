@@ -2,7 +2,7 @@ package no.entur.uttu.stubs;
 
 import java.util.HashMap;
 import java.util.Map;
-import no.entur.uttu.security.UserContextService;
+import no.entur.uttu.security.spi.UserContextService;
 
 public class UserContextServiceStub implements UserContextService {
 

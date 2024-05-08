@@ -154,9 +154,11 @@ public class ProviderGraphQLSchema {
     userContextObjectType =
       newObject()
         .name("UserContext")
+        .description("Context-aware object")
         .field(
           newFieldDefinition()
             .name("preferredName")
+            .description("User's preferred (display) name")
             .type(new GraphQLNonNull(GraphQLString))
         )
         .field(
@@ -165,6 +167,9 @@ public class ProviderGraphQLSchema {
         .field(
           newFieldDefinition()
             .name("providers")
+            .description(
+              "List of providers for which this user has access to manage data"
+            )
             .type(new GraphQLList(providerObjectType))
             .dataFetcher(providerFetcher)
         )

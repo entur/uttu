@@ -2,7 +2,7 @@ package no.entur.uttu.ext.entur.security;
 
 import jakarta.servlet.http.HttpServletRequest;
 import no.entur.uttu.repository.ProviderRepository;
-import no.entur.uttu.security.UserContextService;
+import no.entur.uttu.security.spi.UserContextService;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.RorAuthenticationConverter;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolverBuilder;

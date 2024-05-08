@@ -6,7 +6,7 @@ import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROU
 import java.util.List;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.ProviderRepository;
-import no.entur.uttu.security.UserContextService;
+import no.entur.uttu.security.spi.UserContextService;
 import org.rutebanken.helper.organisation.RoleAssignment;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.springframework.security.core.Authentication;

@@ -1,7 +1,8 @@
-package no.entur.uttu.security;
+package no.entur.uttu.security.spi;
 
 /**
- *  This interface provides authorization features to the app
+ *  This interface provides authorization features to the app. Can be used to
+ *  extend or customize authorization features.
  */
 public interface UserContextService {
   /**

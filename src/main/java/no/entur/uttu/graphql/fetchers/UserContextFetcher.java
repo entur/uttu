@@ -3,7 +3,7 @@ package no.entur.uttu.graphql.fetchers;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.model.UserContext;
-import no.entur.uttu.security.UserContextService;
+import no.entur.uttu.security.spi.UserContextService;
 import org.springframework.stereotype.Component;
 
 @Component
