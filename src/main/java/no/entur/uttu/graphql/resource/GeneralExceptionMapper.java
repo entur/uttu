@@ -29,12 +29,18 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import org.rutebanken.helper.organisation.NotAuthenticatedException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.NestedRuntimeException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.access.AccessDeniedException;
 
 @Provider
 public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(
+    GeneralExceptionMapper.class
+  );
 
   private Map<Response.Status, Set<Class<?>>> mapping;
 
@@ -74,8 +80,10 @@ public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
 
   protected int toStatus(Throwable e) {
     Integer entry = getMappedStatus(e);
-    if (entry != null) return entry;
-
+    if (entry != null) {
+      return entry;
+    }
+    LOGGER.error("Internal Server Error", e);
     return Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
   }
 
