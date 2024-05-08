@@ -39,7 +39,6 @@ public class UttuSecurityConfiguration {
     AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver
   ) throws Exception {
     return http
-      .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth ->
         auth
           .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/prometheus"))
