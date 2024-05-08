@@ -22,17 +22,19 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.Scope;
 
 @Configuration
 @Profile({ "local", "test", "local-disk-blobstore" })
 public class LocalDiskBlobStoreRepositoryConfig {
 
   @Bean
-  @Scope("prototype")
   BlobStoreRepository blobStoreRepository(
-    @Value("${blobstore.local.folder:files/blob}") String baseFolder
+    @Value("${blobstore.local.folder:files/blob}") String baseFolder,
+    @Value("${blobstore.gcs.container.name}") String containerName
   ) {
-    return new LocalDiskBlobStoreRepository(baseFolder);
+    LocalDiskBlobStoreRepository localDiskBlobStoreRepository =
+      new LocalDiskBlobStoreRepository(baseFolder);
+    localDiskBlobStoreRepository.setContainerName(containerName);
+    return localDiskBlobStoreRepository;
   }
 }
