@@ -63,8 +63,8 @@ public class UttuSecurityConfiguration {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.addAllowedOriginPattern("*");
     configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-    configuration.setAllowedHeaders(Arrays.asList("*"));
-    configuration.setExposedHeaders(Arrays.asList("*"));
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setExposedHeaders(List.of("*"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
