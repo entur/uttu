@@ -15,9 +15,9 @@
 
 package no.entur.uttu;
 
-import no.entur.uttu.security.UttuSecurityConfiguration;
 import no.entur.uttu.organisation.legacy.EnturLegacyOrganisationRegistry;
 import no.entur.uttu.repository.generic.ProviderEntityRepositoryImpl;
+import no.entur.uttu.security.UttuSecurityConfiguration;
 import no.entur.uttu.stopplace.DefaultStopPlaceRegistry;
 import org.entur.pubsub.base.config.GooglePubSubConfig;
 import org.springframework.boot.SpringApplication;
