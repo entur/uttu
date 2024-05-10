@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.organisation.legacy;
+package no.entur.uttu.ext.entur.organisation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.organisation.legacy;
+package no.entur.uttu.ext.entur.organisation;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
@@ -53,6 +54,7 @@ import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 @Component
+@Profile("entur-legacy-organisation-registry")
 public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -1,4 +1,4 @@
-package no.entur.uttu.config;
+package no.entur.uttu.ext.entur.organisation.client;
 
 import org.entur.oauth2.AuthorizedWebClientBuilder;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
-@Profile("!test")
+@Profile("!test & entur-legacy-organisation-registry")
 public class OAuthClientConfiguration {
 
   @Bean
