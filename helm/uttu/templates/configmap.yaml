@@ -72,3 +72,4 @@ data:
 
     # Profile
     spring.profiles.active=gcs-blobstore,entur
+    spring.main.allow-bean-definition-overriding=true
