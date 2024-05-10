@@ -17,6 +17,11 @@ In addition, a UserContextService implementation must be selected. The following
 
     uttu.security.user-context-service=full-access
 
+### Run without authentication
+
+For the purpose of running locally, authentication can be switched off altogether by combining the
+full-access property above with the `local-no-authentication` profile.
+
 ## Running locally
 ### Build
 To build the project from source, you need Java 21 and Maven 3.
