@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PublicationDelivery version="1.08:NO-NeTEx-fares:1.0" xmlns="http://www.netex.org.uk/netex">
+    <PublicationTimestamp>2024-01-22T11:40:00</PublicationTimestamp>
+    <ParticipantRef>NOG</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame id="NOG:ResourceFrame:1" version="1">
+            <organisations>
+                <GeneralOrganisation created="2023-06-30T12:00:00" id="NOG:GeneralOrganisation:1" version="1">
+                    <validityConditions>
+                        <AvailabilityCondition id="NOG:AvailabilityCondition:1" version="1">
+                            <FromDate>2023-06-20T00:00:00</FromDate>
+                        </AvailabilityCondition>
+                    </validityConditions>
+                    <PrivateCode>1</PrivateCode>
+                    <CompanyNumber>123456789</CompanyNumber>
+                    <Name lang="en">Fake Organisation</Name>
+                    <LegalName>Fake Organisation LLC</LegalName>
+                    <TradingName lang="en">This is really fake</TradingName>
+                    <ContactDetails>
+                        <Email/>
+                        <Phone>+15551234545</Phone>
+                        <Url>https://www.fake.com/</Url>
+                    </ContactDetails>
+                </GeneralOrganisation>
+            </organisations>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>
