@@ -2,7 +2,6 @@ package no.entur.uttu.organisation;
 
 import java.util.List;
 import java.util.Optional;
-
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import org.rutebanken.netex.model.GeneralOrganisation;
 
