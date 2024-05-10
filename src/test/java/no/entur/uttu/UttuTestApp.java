@@ -42,10 +42,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
     @ComponentScan.Filter(
       type = FilterType.ASSIGNABLE_TYPE,
-      value = EnturLegacyOrganisationRegistry.class
-    ),
-    @ComponentScan.Filter(
-      type = FilterType.ASSIGNABLE_TYPE,
       value = DefaultStopPlaceRegistry.class
     ),
   }

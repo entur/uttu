@@ -8,7 +8,6 @@ import org.rutebanken.netex.model.GeneralOrganisation;
  *
  */
 public interface OrganisationRegistry {
-
   /**
    *
    * @return

@@ -36,14 +36,14 @@ class FlexibleLineGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLInt
 
     @Test
     void createFlexibleLineWithInvalidOperator() {
-        createFlexibleLine(testFlexibleLineWithInvalidOperatorName, '6')
-            .body("errors[0].extensions.code", equalTo("ORGANISATION_NOT_VALID_OPERATOR"))
+        createFlexibleLine(testFlexibleLineWithInvalidOperatorName, 'NOG:GeneralOrganisation:2')
+            .body("errors[0].extensions.code", equalTo("ORGANISATION_NOT_IN_ORGANISATION_REGISTRY"))
     }
 
     @Test
     void createFlexibleLineWithExistingName() {
         String name = "foobar"
-        String operatorRef = "22"
+        String operatorRef = "NOG:GeneralOrganisation:1"
         String networkId = getNetworkId(createNetwork(name))
         String flexAreaStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithFlexibleArea(name + "FlexArea"))
         String hailAndRideStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithHailAndRideArea(name + "HailAndRide"))

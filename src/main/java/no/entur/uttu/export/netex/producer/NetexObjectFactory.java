@@ -26,8 +26,13 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;
@@ -213,10 +218,14 @@ public class NetexObjectFactory {
     OrganisationsInFrame_RelStructure organisationsStruct = objectFactory
       .createOrganisationsInFrame_RelStructure()
       .withOrganisation_(
-        authorities.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())
-      )
-      .withOrganisation_(
-        operators.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())
+        Stream
+          .concat(
+            authorities.stream().map(Organisation_VersionStructure.class::cast),
+            operators.stream().map(Organisation_VersionStructure.class::cast)
+          )
+          .filter(distinctByKey(Organisation_VersionStructure::getId))
+          .map(this::wrapAsJAXBElement)
+          .collect(Collectors.toList())
       );
 
     return objectFactory
@@ -224,6 +233,11 @@ public class NetexObjectFactory {
       .withOrganisations(organisationsStruct)
       .withVersion(VERSION_ONE)
       .withId(resourceFrameId);
+  }
+
+  private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
+    Set<Object> seen = ConcurrentHashMap.newKeySet();
+    return t -> seen.add(keyExtractor.apply(t));
   }
 
   public SiteFrame createSiteFrame(
