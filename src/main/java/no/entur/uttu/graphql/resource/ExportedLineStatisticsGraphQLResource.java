@@ -15,9 +15,6 @@
 
 package no.entur.uttu.graphql.resource;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
-
 import graphql.GraphQL;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
@@ -52,15 +49,7 @@ public class ExportedLineStatisticsGraphQLResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @PreAuthorize(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') " +
-    "or hasRole('" +
-    ROLE_ROUTE_DATA_EDIT +
-    "') " +
-    "and @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "', #request.get('variables').get('providerCode'))"
+    "@userContextService.hasAccessToProvider('#request.get('variables').get('providerCode'))')"
   )
   public Response executeLinesStatement(Map<String, Object> request) {
     try {

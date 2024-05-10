@@ -15,9 +15,6 @@
 
 package no.entur.uttu.export.resource;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
-
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
@@ -49,13 +46,7 @@ public class ExportFileDownloadResource {
   @GET
   @Path("{id}/download")
   @Produces({ MediaType.APPLICATION_OCTET_STREAM, MediaType.APPLICATION_JSON })
-  @PreAuthorize(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "',#providerCode)"
-  )
+  @PreAuthorize("@userContextService.hasAccessToProvider(#providerCode)")
   public Response downloadExportFile(
     @PathParam("providerCode") String providerCode,
     @PathParam("id") String exportId

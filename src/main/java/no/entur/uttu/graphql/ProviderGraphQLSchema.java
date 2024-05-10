@@ -15,6 +15,7 @@
 
 package no.entur.uttu.graphql;
 
+import static graphql.Scalars.GraphQLBoolean;
 import static graphql.Scalars.GraphQLString;
 import static graphql.scalars.ExtendedScalars.GraphQLLong;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
@@ -32,12 +33,12 @@ import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import no.entur.uttu.graphql.model.UserContext;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.ProviderCodeScalar;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodespaceRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -46,26 +47,34 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProviderGraphQLSchema {
 
-  @Autowired
-  private CodespaceRepository codespaceRepository;
+  private final CodespaceRepository codespaceRepository;
+  private final DataFetcher<Codespace> codespaceUpdater;
+  private final DataFetcher<Provider> providerUpdater;
+  private final DataFetcher<List<Provider>> providerFetcher;
+  private final DataFetcher<UserContext> userContextFetcher;
+  private final DateTimeScalar dateTimeScalar;
 
-  @Autowired
-  private DataFetcher<Codespace> codespaceUpdater;
-
-  @Autowired
-  private DataFetcher<Provider> providerUpdater;
-
-  @Autowired
-  private DataFetcher<List<Provider>> providerFetcher;
-
-  @Autowired
-  private DateTimeScalar dateTimeScalar;
-
-  public GraphQLSchema graphQLSchema;
-
+  private GraphQLSchema graphQLSchema;
   private GraphQLObjectType identifiedEntityObjectType;
   private GraphQLObjectType codespaceObjectType;
   private GraphQLObjectType providerObjectType;
+  private GraphQLObjectType userContextObjectType;
+
+  public ProviderGraphQLSchema(
+    CodespaceRepository codespaceRepository,
+    DataFetcher<Codespace> codespaceUpdater,
+    DataFetcher<Provider> providerUpdater,
+    DataFetcher<List<Provider>> providerFetcher,
+    DataFetcher<UserContext> userContextFetcher,
+    DateTimeScalar dateTimeScalar
+  ) {
+    this.codespaceRepository = codespaceRepository;
+    this.codespaceUpdater = codespaceUpdater;
+    this.providerUpdater = providerUpdater;
+    this.providerFetcher = providerFetcher;
+    this.userContextFetcher = userContextFetcher;
+    this.dateTimeScalar = dateTimeScalar;
+  }
 
   @PostConstruct
   public void init() {
@@ -76,6 +85,10 @@ public class ProviderGraphQLSchema {
         .query(createQueryObject())
         .mutation(createMutationObject())
         .build();
+  }
+
+  public GraphQLSchema getGraphQLSchema() {
+    return graphQLSchema;
   }
 
   private void initCommonTypes() {
@@ -137,10 +150,34 @@ public class ProviderGraphQLSchema {
             .type(new GraphQLNonNull(codespaceObjectType))
         )
         .build();
+
+    userContextObjectType =
+      newObject()
+        .name("UserContext")
+        .description("Context-aware object")
+        .field(
+          newFieldDefinition()
+            .name("preferredName")
+            .description("User's preferred (display) name")
+            .type(new GraphQLNonNull(GraphQLString))
+        )
+        .field(
+          newFieldDefinition().name("isAdmin").type(new GraphQLNonNull(GraphQLBoolean))
+        )
+        .field(
+          newFieldDefinition()
+            .name("providers")
+            .description(
+              "List of providers for which this user has access to manage data"
+            )
+            .type(new GraphQLList(providerObjectType))
+            .dataFetcher(providerFetcher)
+        )
+        .build();
   }
 
   private GraphQLObjectType createQueryObject() {
-    GraphQLObjectType queryType = newObject()
+    return newObject()
       .name("Queries")
       .description("Query and search for data")
       .field(
@@ -157,9 +194,14 @@ public class ProviderGraphQLSchema {
           .description("Search for Providers")
           .dataFetcher(providerFetcher)
       )
+      .field(
+        newFieldDefinition()
+          .type(userContextObjectType)
+          .name("userContext")
+          .description("Context-aware user object")
+          .dataFetcher(userContextFetcher)
+      )
       .build();
-
-    return queryType;
   }
 
   private GraphQLObjectType createMutationObject() {

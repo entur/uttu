@@ -1,16 +1,21 @@
-package no.entur.uttu.config;
+package no.entur.uttu.security;
 
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
-import org.entur.oauth2.RorAuthenticationConverter;
-import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolver;
+import java.util.List;
+import no.entur.uttu.security.spi.FullAccessUserContextService;
+import no.entur.uttu.security.spi.UserContextService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AuthenticationManagerResolver;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
+import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
@@ -22,7 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
  * Authentication and authorization configuration for Uttu.
  * All requests must be authenticated except for the Actuator endpoints.
  */
-@Profile("!local & !test")
+@Profile("!local-no-authentication & !test")
 @EnableWebSecurity
 @EnableMethodSecurity(prePostEnabled = true)
 @Component
@@ -31,10 +36,9 @@ public class UttuSecurityConfiguration {
   @Bean
   public SecurityFilterChain filterChain(
     HttpSecurity http,
-    MultiIssuerAuthenticationManagerResolver multiIssuerAuthenticationManagerResolver
+    AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver
   ) throws Exception {
     return http
-      .csrf(AbstractHttpConfigurer::disable)
       .authorizeHttpRequests(auth ->
         auth
           .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/prometheus"))
@@ -49,25 +53,38 @@ public class UttuSecurityConfiguration {
           .authenticated()
       )
       .oauth2ResourceServer(configurer ->
-        configurer.authenticationManagerResolver(multiIssuerAuthenticationManagerResolver)
+        configurer.authenticationManagerResolver(authenticationManagerResolver)
       )
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .build();
   }
 
-  CorsConfigurationSource corsConfigurationSource() {
+  private CorsConfigurationSource corsConfigurationSource() {
     CorsConfiguration configuration = new CorsConfiguration();
     configuration.addAllowedOriginPattern("*");
     configuration.setAllowedMethods(Arrays.asList("GET", "POST"));
-    configuration.setAllowedHeaders(Arrays.asList("*"));
-    configuration.setExposedHeaders(Arrays.asList("*"));
+    configuration.setAllowedHeaders(List.of("*"));
+    configuration.setExposedHeaders(List.of("*"));
     UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
     source.registerCorsConfiguration("/**", configuration);
     return source;
   }
 
+  @ConditionalOnMissingBean
+  @ConditionalOnProperty(
+    value = "uttu.security.user-context-service",
+    havingValue = "full-access"
+  )
   @Bean
-  public JwtAuthenticationConverter customJwtAuthenticationConverter() {
-    return new RorAuthenticationConverter();
+  public UserContextService userContextService() {
+    return new FullAccessUserContextService();
+  }
+
+  @ConditionalOnMissingBean
+  @Bean
+  public AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver(
+    @Value("${uttu.security.jwt.issuer-uri}") String issuer
+  ) {
+    return JwtIssuerAuthenticationManagerResolver.fromTrustedIssuers(List.of(issuer));
   }
 }

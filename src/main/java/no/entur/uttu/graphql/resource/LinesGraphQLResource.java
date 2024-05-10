@@ -15,9 +15,6 @@
 
 package no.entur.uttu.graphql.resource;
 
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_EDIT;
-
 import graphql.GraphQL;
 import graphql.scalars.ExtendedScalars;
 import graphql.schema.idl.RuntimeWiring;
@@ -59,13 +56,7 @@ public class LinesGraphQLResource {
   @SuppressWarnings("unchecked")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  @PreAuthorize(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "',#providerCode)"
-  )
+  @PreAuthorize("@userContextService.hasAccessToProvider(#providerCode)")
   public Response executeLinesStatement(
     @PathParam("providerCode") String providerCode,
     Map<String, Object> request
@@ -81,13 +72,7 @@ public class LinesGraphQLResource {
   @POST
   @Consumes("application/graphql")
   @Produces(MediaType.APPLICATION_JSON)
-  @PreAuthorize(
-    "hasRole('" +
-    ROLE_ROUTE_DATA_ADMIN +
-    "') or @providerAuthenticationService.hasRoleForProvider(authentication,'" +
-    ROLE_ROUTE_DATA_EDIT +
-    "',#providerCode)"
-  )
+  @PreAuthorize("@userContextService.hasAccessToProvider(#providerCode)")
   public Response executeLinesStatement(
     @PathParam("providerCode") String providerCode,
     String query

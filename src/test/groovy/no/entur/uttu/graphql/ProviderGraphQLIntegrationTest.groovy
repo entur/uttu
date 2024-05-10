@@ -15,10 +15,8 @@
 
 package no.entur.uttu.graphql
 
-import io.restassured.response.ValidatableResponse
-import no.entur.uttu.config.MockedRoleAssignmentExtractor
+import no.entur.uttu.stubs.UserContextServiceStub
 import org.junit.Test
-import org.rutebanken.helper.organisation.RoleAssignment
 import org.springframework.beans.factory.annotation.Autowired
 
 import javax.annotation.concurrent.NotThreadSafe
@@ -27,8 +25,9 @@ import static org.hamcrest.Matchers.*
 
 @NotThreadSafe
 class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationTest {
+
     @Autowired
-    MockedRoleAssignmentExtractor mockedRoleAssignmentExtractor;
+    UserContextServiceStub userContextServiceStub;
 
     String getProvidersQuery = """
    query GetProviders {
@@ -37,6 +36,19 @@ class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationT
        code
      }
    } 
+"""
+
+    String getUserContextQuery = """
+   query GetUserContext {
+    userContext {
+        preferredName
+        isAdmin
+        providers {
+            name
+            code
+        }
+     }
+   }
 """
 
     protected String getUrl() {
@@ -52,27 +64,27 @@ class ProviderGraphQLIntegrationTest extends AbstractGraphQLResourceIntegrationT
 
     @Test
     void getProvidersTest() {
-        mockedRoleAssignmentExtractor.setNextReturnedRoleAssignment(
-                RoleAssignment.builder().withRole("editRouteData").withOrganisation("TST").build()
-        )
-
         executeGraphqQLQueryOnly(getProvidersQuery)
                 .body("data.providers", iterableWithSize(1))
                 .body("data.providers[0].code", equalTo("tst"))
-
-        mockedRoleAssignmentExtractor.reset()
     }
 
     @Test
     void getMoreProvidersTest() {
-        mockedRoleAssignmentExtractor.setNextReturnedRoleAssignment(
-                RoleAssignment.builder().withRole("editRouteData").withOrganisation("FOO").build()
-        )
+        userContextServiceStub.setHasAccessToProvider("tst", false)
+        userContextServiceStub.setHasAccessToProvider("foo", true)
 
         executeGraphqQLQueryOnly(getProvidersQuery)
                 .body("data.providers", iterableWithSize(1))
                 .body("data.providers[0].code", equalTo("foo"))
+    }
 
-        mockedRoleAssignmentExtractor.reset()
+    @Test
+    void getUserContextTest() {
+        executeGraphqQLQueryOnly(getUserContextQuery)
+            .body("data.userContext.preferredName", equalTo("John Doe"))
+            .body("data.userContext.isAdmin", equalTo(false))
+            .body("data.userContext.providers", iterableWithSize(1))
+            .body("data.userContext.providers[0].code", equalTo("tst"))
     }
 }

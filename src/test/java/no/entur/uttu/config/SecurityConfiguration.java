@@ -1,5 +1,7 @@
 package no.entur.uttu.config;
 
+import no.entur.uttu.security.spi.UserContextService;
+import no.entur.uttu.stubs.UserContextServiceStub;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -49,5 +51,17 @@ public class SecurityConfiguration {
         .build()
     );
     return manager;
+  }
+
+  @Bean
+  UserContextServiceStub userContextServiceStub() {
+    return new UserContextServiceStub();
+  }
+
+  @Bean
+  public UserContextService userContextService(
+    UserContextServiceStub userContextServiceStub
+  ) {
+    return userContextServiceStub;
   }
 }

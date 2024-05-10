@@ -21,7 +21,9 @@ import io.restassured.http.ContentType
 import io.restassured.response.ValidatableResponse
 import io.restassured.specification.RequestSpecification
 import no.entur.uttu.UttuIntegrationTest
+import no.entur.uttu.stubs.UserContextServiceStub
 import org.junit.Before
+import org.springframework.beans.factory.annotation.Autowired
 
 import java.time.LocalDate
 
@@ -29,12 +31,20 @@ import static io.restassured.RestAssured.given
 
 abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTest {
 
+    @Autowired
+    UserContextServiceStub userContextServiceStub;
+
     protected static final LocalDate TODAY=LocalDate.now();
 
     @Before
     void configureRestAssured() {
         RestAssured.baseURI = "http://localhost"
         RestAssured.port = port
+
+        userContextServiceStub.setPreferredName("John Doe")
+        userContextServiceStub.setAdmin(false)
+        userContextServiceStub.setHasAccessToProvider("tst", true)
+        userContextServiceStub.setHasAccessToProvider("foo", false)
     }
 
     ValidatableResponse createNetwork(String name) {
