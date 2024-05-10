@@ -80,6 +80,9 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
     return organisations.stream().filter(org -> org.getId().equals(id)).findFirst();
   }
 
+  /**
+   * By default, all organisations in the registry are valid operators
+   */
   @Override
   public String getVerifiedOperatorRef(String operatorRef) {
     Preconditions.checkArgument(
@@ -93,6 +96,9 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
     return operatorRef;
   }
 
+  /**
+   * By default, all organisations in the registry are valid authorities
+   */
   @Override
   public String getVerifiedAuthorityRef(String authorityRef) {
     Preconditions.checkArgument(
