@@ -71,4 +71,4 @@ data:
     logging.level.no.entur.uttu.health.rest.HealthResource=INFO
 
     # Profile
-    spring.profiles.active=gcs-blobstore
+    spring.profiles.active=gcs-blobstore,entur
