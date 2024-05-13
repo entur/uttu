@@ -14,6 +14,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
+import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.Organisation;

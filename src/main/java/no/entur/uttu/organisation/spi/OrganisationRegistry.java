@@ -1,4 +1,4 @@
-package no.entur.uttu.organisation;
+package no.entur.uttu.organisation.spi;
 
 import java.util.List;
 import java.util.Optional;

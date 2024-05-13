@@ -19,11 +19,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
+
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.job.SeverityEnumeration;
-import no.entur.uttu.organisation.OrganisationRegistry;
+import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.AuthorityRef;
 import org.rutebanken.netex.model.GeneralOrganisation;

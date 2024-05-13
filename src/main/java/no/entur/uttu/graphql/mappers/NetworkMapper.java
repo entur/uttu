@@ -19,7 +19,7 @@ import static no.entur.uttu.graphql.GraphQLNames.FIELD_AUTHORITY_REF;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Network;
-import no.entur.uttu.organisation.OrganisationRegistry;
+import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;

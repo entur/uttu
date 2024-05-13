@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
-import no.entur.uttu.organisation.OrganisationRegistry;
+import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
 import org.rutebanken.netex.model.ContactStructure;
 import org.rutebanken.netex.model.GeneralOrganisation;
