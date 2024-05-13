@@ -3,7 +3,6 @@ package no.entur.uttu.security;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
-
 import no.entur.uttu.security.spi.UserContextService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
