@@ -2,12 +2,12 @@ package no.entur.uttu.organisation;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
 
+import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
@@ -34,6 +34,8 @@ import org.springframework.stereotype.Component;
 public class NetexPublicationDeliveryFileOrganisationRegistry
   implements OrganisationRegistry {
 
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
   private List<GeneralOrganisation> organisations = List.of();
 
   private static final Logger log = LoggerFactory.getLogger(
@@ -50,24 +52,30 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
 
   @PostConstruct
   public void init() {
-    PublicationDeliveryStructure publicationDeliveryStructure = readFromSource(
-      new StreamSource(new File(netexFileUri))
-    );
-    publicationDeliveryStructure
-      .getDataObjects()
-      .getCompositeFrameOrCommonFrame()
-      .forEach(frame -> {
-        var frameValue = frame.getValue();
-        if (frameValue instanceof ResourceFrame resourceFrame) {
-          organisations =
-            resourceFrame
-              .getOrganisations()
-              .getOrganisation_()
-              .stream()
-              .map(org -> (GeneralOrganisation) org.getValue())
-              .toList();
-        }
-      });
+    try {
+      PublicationDeliveryStructure publicationDeliveryStructure = readFromSource(
+        new StreamSource(new File(netexFileUri))
+      );
+      publicationDeliveryStructure
+        .getDataObjects()
+        .getCompositeFrameOrCommonFrame()
+        .forEach(frame -> {
+          var frameValue = frame.getValue();
+          if (frameValue instanceof ResourceFrame resourceFrame) {
+            organisations =
+              resourceFrame
+                .getOrganisations()
+                .getOrganisation_()
+                .stream()
+                .map(org -> (GeneralOrganisation) org.getValue())
+                .toList();
+          }
+        });
+    } catch (JAXBException e) {
+      logger.warn(
+        "Unable to unmarshal organisations xml, organisation registry will be an empty list"
+      );
+    }
   }
 
   @Override
@@ -113,13 +121,9 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
     return authorityRef;
   }
 
-  private <T> T readFromSource(Source source) {
-    try {
-      JAXBElement<T> element = (JAXBElement<T>) getUnmarshaller().unmarshal(source);
-      return element.getValue();
-    } catch (JAXBException e) {
-      throw new RuntimeException(e);
-    }
+  private <T> T readFromSource(Source source) throws JAXBException {
+    JAXBElement<T> element = (JAXBElement<T>) getUnmarshaller().unmarshal(source);
+    return element.getValue();
   }
 
   private Unmarshaller getUnmarshaller() throws JAXBException {
