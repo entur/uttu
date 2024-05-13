@@ -6,7 +6,7 @@ import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import java.util.stream.Collectors;
 import no.entur.uttu.model.TimetabledPassingTime;
-import no.entur.uttu.stopplace.StopPlaceRegistry;
+import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

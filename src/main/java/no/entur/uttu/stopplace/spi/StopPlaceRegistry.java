@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.stopplace;
+package no.entur.uttu.stopplace.spi;
 
 import java.util.Optional;
 

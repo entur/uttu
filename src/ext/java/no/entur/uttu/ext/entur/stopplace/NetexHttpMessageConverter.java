@@ -1,4 +1,4 @@
-package no.entur.uttu.config;
+package no.entur.uttu.ext.entur.stopplace;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
 
