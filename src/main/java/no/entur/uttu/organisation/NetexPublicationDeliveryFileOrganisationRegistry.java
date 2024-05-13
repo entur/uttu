@@ -2,7 +2,6 @@ package no.entur.uttu.organisation;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
 
-import jakarta.xml.bind.JAXB;
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.JAXBElement;
 import jakarta.xml.bind.JAXBException;
@@ -92,7 +91,7 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
    * By default, all organisations in the registry are valid operators
    */
   @Override
-  public String getVerifiedOperatorRef(String operatorRef) {
+  public void validateOperatorRef(String operatorRef) {
     Preconditions.checkArgument(
       organisations.stream().anyMatch(org -> org.getId().equals(operatorRef)),
       CodedError.fromErrorCode(
@@ -101,14 +100,13 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
       "Organisation with ref %s not found in organisation registry",
       operatorRef
     );
-    return operatorRef;
   }
 
   /**
    * By default, all organisations in the registry are valid authorities
    */
   @Override
-  public String getVerifiedAuthorityRef(String authorityRef) {
+  public void validateAuthorityRef(String authorityRef) {
     Preconditions.checkArgument(
       organisations.stream().anyMatch(org -> org.getId().equals(authorityRef)),
       CodedError.fromErrorCode(
@@ -117,8 +115,6 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
       "Organisation with ref %s not found in organisation registry",
       authorityRef
     );
-
-    return authorityRef;
   }
 
   private <T> T readFromSource(Source source) throws JAXBException {

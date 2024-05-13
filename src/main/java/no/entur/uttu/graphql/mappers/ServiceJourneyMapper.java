@@ -65,7 +65,10 @@ public class ServiceJourneyMapper extends AbstractGroupOfEntitiesMapper<ServiceJ
     input.apply(FIELD_PUBLIC_CODE, entity::setPublicCode);
     input.apply(
       FIELD_OPERATOR_REF,
-      organisationRegistry::getVerifiedOperatorRef,
+      (String operatorRef) -> {
+        organisationRegistry.validateOperatorRef(operatorRef);
+        return operatorRef;
+      },
       entity::setOperatorRef
     );
     input.apply(

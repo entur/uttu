@@ -156,13 +156,10 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     ((WebClientResponseException) throwable).getStatusCode().is5xxServerError();
 
   /**
-   * Return provided operatorRef if valid, else throw exception.
+   * Throw exception if ref is not a valid operator
    */
   @Override
-  public String getVerifiedOperatorRef(String operatorRef) {
-    if (operatorRef == null || operatorRef.isEmpty()) {
-      return null;
-    }
+  public void validateOperatorRef(String operatorRef) {
     Organisation organisation = lookupOrganisation(operatorRef);
     Preconditions.checkArgument(
       organisation != null,
@@ -175,17 +172,13 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
       "Organisation with ref %s is not a valid operator",
       operatorRef
     );
-    return operatorRef;
   }
 
   /**
-   * Return provided authorityRef if valid, else throw exception.
+   * Throw exception if ref is not a valid authority
    */
   @Override
-  public String getVerifiedAuthorityRef(String authorityRef) {
-    if (authorityRef == null || authorityRef.isEmpty()) {
-      return null;
-    }
+  public void validateAuthorityRef(String authorityRef) {
     Organisation organisation = lookupOrganisation(authorityRef);
     Preconditions.checkArgument(
       organisation != null,
@@ -197,7 +190,6 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
       "Organisation with ref %s is not a valid authority",
       authorityRef
     );
-    return authorityRef;
   }
 
   protected Organisation lookupOrganisation(String id) {

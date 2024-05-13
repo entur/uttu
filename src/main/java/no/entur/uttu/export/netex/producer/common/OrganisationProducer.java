@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.job.SeverityEnumeration;
@@ -88,10 +89,7 @@ public class OrganisationProducer {
     Optional<GeneralOrganisation> orgRegAuthority = organisationRegistry.getOrganisation(
       authorityRef
     );
-    if (
-      orgRegAuthority.isEmpty() ||
-      organisationRegistry.getVerifiedAuthorityRef(authorityRef) == null
-    ) {
+    if (orgRegAuthority.isEmpty()) {
       context.addExportMessage(
         SeverityEnumeration.ERROR,
         "Authority [id:{0}] not found",
@@ -125,10 +123,8 @@ public class OrganisationProducer {
     Optional<GeneralOrganisation> orgRegOperator = organisationRegistry.getOrganisation(
       operatorRef
     );
-    if (
-      orgRegOperator.isEmpty() ||
-      organisationRegistry.getVerifiedOperatorRef(operatorRef) == null
-    ) {
+
+    if (orgRegOperator.isEmpty()) {
       context.addExportMessage(
         SeverityEnumeration.ERROR,
         "Operator [id:{0}] not found",

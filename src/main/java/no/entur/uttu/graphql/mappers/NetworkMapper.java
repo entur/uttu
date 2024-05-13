@@ -47,7 +47,10 @@ public class NetworkMapper extends AbstractGroupOfEntitiesMapper<Network> {
   protected void populateEntityFromInput(Network entity, ArgumentWrapper input) {
     input.apply(
       FIELD_AUTHORITY_REF,
-      organisationRegistry::getVerifiedAuthorityRef,
+      (String authorityRef) -> {
+        organisationRegistry.validateAuthorityRef(authorityRef);
+        return authorityRef;
+      },
       entity::setAuthorityRef
     );
   }

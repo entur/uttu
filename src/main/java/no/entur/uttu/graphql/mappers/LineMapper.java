@@ -42,11 +42,16 @@ public abstract class LineMapper<T extends Line>
     input.apply(FIELD_TRANSPORT_MODE, entity::setTransportMode);
     input.apply(FIELD_TRANSPORT_SUBMODE, entity::setTransportSubmode);
     input.applyReference(FIELD_NETWORK_REF, networkRepository, entity::setNetwork);
+
     input.apply(
       FIELD_OPERATOR_REF,
-      organisationRegistry::getVerifiedOperatorRef,
+      (String operatorRef) -> {
+        organisationRegistry.validateOperatorRef(operatorRef);
+        return operatorRef;
+      },
       entity::setOperatorRef
     );
+
     input.applyList(
       FIELD_JOURNEY_PATTERNS,
       journeyPatternMapper::map,
