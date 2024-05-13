@@ -16,8 +16,8 @@
 
 package no.entur.uttu.export.blob;
 
-import org.rutebanken.helper.gcp.repository.BlobStoreRepository;
 import org.rutebanken.helper.gcp.repository.GcsBlobStoreRepository;
+import org.rutebanken.helper.storage.repository.BlobStoreRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

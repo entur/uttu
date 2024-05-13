@@ -27,8 +27,7 @@ import java.nio.file.Paths;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.repository.ExportRepository;
-import org.rutebanken.helper.gcp.repository.BlobStoreRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.rutebanken.helper.storage.repository.BlobStoreRepository;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -37,11 +36,17 @@ import org.springframework.util.StringUtils;
 @Path("/{providerCode}/export/")
 public class ExportFileDownloadResource {
 
-  @Autowired
-  private ExportRepository exportRepository;
+  private final ExportRepository exportRepository;
 
-  @Autowired
-  private BlobStoreRepository blobStoreRepository;
+  private final BlobStoreRepository blobStoreRepository;
+
+  public ExportFileDownloadResource(
+    ExportRepository exportRepository,
+    BlobStoreRepository blobStoreRepository
+  ) {
+    this.exportRepository = exportRepository;
+    this.blobStoreRepository = blobStoreRepository;
+  }
 
   @GET
   @Path("{id}/download")
@@ -60,7 +65,7 @@ public class ExportFileDownloadResource {
       if (export == null) {
         throw new EntityNotFoundException("No export with id= " + exportId + " found");
       }
-      if (StringUtils.isEmpty(export.getFileName())) {
+      if (!StringUtils.hasText(export.getFileName())) {
         throw new EntityNotFoundException(
           "Export with id= " + exportId + " does not have a reference to export file"
         );
