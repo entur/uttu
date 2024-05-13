@@ -1,4 +1,6 @@
-package no.entur.uttu.security.spi;
+package no.entur.uttu.security;
+
+import no.entur.uttu.security.spi.UserContextService;
 
 /**
  * Fallback implementation giving full access to all operations for authenticated users,
