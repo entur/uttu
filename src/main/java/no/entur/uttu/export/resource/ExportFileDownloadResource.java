@@ -27,7 +27,7 @@ import java.nio.file.Paths;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.repository.ExportRepository;
-import org.rutebanken.helper.gcp.repository.BlobStoreRepository;
+import org.rutebanken.helper.storage.repository.BlobStoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;

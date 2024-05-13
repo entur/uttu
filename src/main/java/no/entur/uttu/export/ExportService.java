@@ -29,7 +29,7 @@ import no.entur.uttu.model.job.ExportMessage;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.util.ExportUtil;
 import org.apache.commons.io.IOUtils;
-import org.rutebanken.helper.gcp.repository.BlobStoreRepository;
+import org.rutebanken.helper.storage.repository.BlobStoreRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
