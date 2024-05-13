@@ -17,6 +17,12 @@ In addition, a UserContextService implementation must be selected. The following
 
     uttu.security.user-context-service=full-access
 
+### Run without authentication
+
+For the purpose of running locally, authentication can be switched off altogether by combining the
+full-access property above with the `local-no-authentication` profile.
+
+
 ## Organisation registry
 
 Uttu needs an organisation registry in order to populate authority and operator references. You may
@@ -27,12 +33,7 @@ provide a NeTEx file of organisations with
 or provide your own implementation of the `OrganisationRegistry` interface 
 see `src/main/java/no/entur/uttu/organisation/spi/OrganisationRegistry.java`.
 
-See `src/test/resources/fixutres/organisations.xml` for example of a NeTEx file with organisations.
-
-### Run without authentication
-
-For the purpose of running locally, authentication can be switched off altogether by combining the
-full-access property above with the `local-no-authentication` profile.
+See `src/test/resources/fixtures/organisations.xml` for an example of a NeTEx file with organisations.
 
 ## Running locally
 ### Build
