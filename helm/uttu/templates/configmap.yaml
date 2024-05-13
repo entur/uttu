@@ -71,5 +71,5 @@ data:
     logging.level.no.entur.uttu.health.rest.HealthResource=INFO
 
     # Profile
-    spring.profiles.active=gcs-blobstore,entur
+    spring.profiles.active=gcs-blobstore,entur,entur-legacy-organisation-registry
     spring.main.allow-bean-definition-overriding=true
