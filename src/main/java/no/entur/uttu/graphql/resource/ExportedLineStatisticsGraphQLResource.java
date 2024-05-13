@@ -49,7 +49,7 @@ public class ExportedLineStatisticsGraphQLResource {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   @PreAuthorize(
-    "@userContextService.hasAccessToProvider('#request.get('variables').get('providerCode'))')"
+    "@userContextService.hasAccessToProvider(#request.get('variables').get('providerCode'))"
   )
   public Response executeLinesStatement(Map<String, Object> request) {
     try {
