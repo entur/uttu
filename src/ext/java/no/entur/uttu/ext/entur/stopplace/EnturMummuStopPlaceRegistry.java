@@ -27,6 +27,7 @@ import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,7 @@ import org.springframework.web.client.RestTemplate;
  * to retrieve a stop place given the ID of one of its quays.
  */
 @Component
+@Profile("entur-mummu-stop-place-registry")
 public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
 
   private static final Logger logger = LoggerFactory.getLogger(

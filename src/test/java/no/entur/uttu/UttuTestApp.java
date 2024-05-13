@@ -39,10 +39,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
       value = UttuSecurityConfiguration.class
     ),
     @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
-    @ComponentScan.Filter(
-      type = FilterType.ASSIGNABLE_TYPE,
-      value = EnturMummuStopPlaceRegistry.class
-    ),
   }
 )
 public class UttuTestApp {

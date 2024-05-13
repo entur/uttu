@@ -1,4 +1,4 @@
-package no.entur.uttu.organisation;
+package no.entur.uttu.stopplace;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
 
@@ -8,18 +8,21 @@ import jakarta.xml.bind.JAXBException;
 import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import no.entur.uttu.error.codederror.CodedError;
-import no.entur.uttu.error.codes.ErrorCodeEnumeration;
-import no.entur.uttu.organisation.spi.OrganisationRegistry;
-import no.entur.uttu.util.Preconditions;
+import no.entur.uttu.organisation.NetexPublicationDeliveryFileOrganisationRegistry;
+import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.Organisation;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
+import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.ResourceFrame;
+import org.rutebanken.netex.model.SiteFrame;
+import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,24 +31,23 @@ import org.springframework.stereotype.Component;
 
 @Component
 @ConditionalOnMissingBean(
-  value = OrganisationRegistry.class,
-  ignored = NetexPublicationDeliveryFileOrganisationRegistry.class
+  value = StopPlaceRegistry.class,
+  ignored = NetexPublicationDeliveryFileStopPlaceRegistry.class
 )
-public class NetexPublicationDeliveryFileOrganisationRegistry
-  implements OrganisationRegistry {
+public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceRegistry {
 
   private static final Logger logger = LoggerFactory.getLogger(
     NetexPublicationDeliveryFileOrganisationRegistry.class
   );
-
-  private List<GeneralOrganisation> organisations = List.of();
 
   private static final JAXBContext publicationDeliveryContext = createContext(
     PublicationDeliveryStructure.class,
     Organisation.class
   );
 
-  @Value("${uttu.organisations.netex-file-uri}")
+  private Map<String, StopPlace> stopPlaceByQuayRefIndex = new ConcurrentHashMap<>();
+
+  @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
 
   @PostConstruct
@@ -59,61 +61,36 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
         .getCompositeFrameOrCommonFrame()
         .forEach(frame -> {
           var frameValue = frame.getValue();
-          if (frameValue instanceof ResourceFrame resourceFrame) {
-            organisations =
-              resourceFrame
-                .getOrganisations()
-                .getOrganisation_()
+          if (frameValue instanceof SiteFrame siteFrame) {
+            List<StopPlace> stopPlaces = siteFrame
+              .getStopPlaces()
+              .getStopPlace_()
+              .stream()
+              .map(stopPlace -> (StopPlace) stopPlace.getValue())
+              .toList();
+
+            stopPlaces.forEach(stopPlace -> {
+              stopPlace
+                .getQuays()
+                .getQuayRefOrQuay()
                 .stream()
-                .map(org -> (GeneralOrganisation) org.getValue())
-                .toList();
+                .forEach(quayRefOrQuay -> {
+                  Quay quay = (Quay) quayRefOrQuay.getValue();
+                  stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+                });
+            });
           }
         });
     } catch (JAXBException e) {
       logger.warn(
-        "Unable to unmarshal organisations xml, organisation registry will be an empty list"
+        "Unable to unmarshal stop places xml, stop place registry will be an empty list"
       );
     }
   }
 
   @Override
-  public List<GeneralOrganisation> getOrganisations() {
-    return organisations;
-  }
-
-  @Override
-  public Optional<GeneralOrganisation> getOrganisation(String id) {
-    return organisations.stream().filter(org -> org.getId().equals(id)).findFirst();
-  }
-
-  /**
-   * By default, all organisations in the registry are valid operators
-   */
-  @Override
-  public void validateOperatorRef(String operatorRef) {
-    Preconditions.checkArgument(
-      organisations.stream().anyMatch(org -> org.getId().equals(operatorRef)),
-      CodedError.fromErrorCode(
-        ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY
-      ),
-      "Organisation with ref %s not found in organisation registry",
-      operatorRef
-    );
-  }
-
-  /**
-   * By default, all organisations in the registry are valid authorities
-   */
-  @Override
-  public void validateAuthorityRef(String authorityRef) {
-    Preconditions.checkArgument(
-      organisations.stream().anyMatch(org -> org.getId().equals(authorityRef)),
-      CodedError.fromErrorCode(
-        ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY
-      ),
-      "Organisation with ref %s not found in organisation registry",
-      authorityRef
-    );
+  public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
+    return Optional.ofNullable(stopPlaceByQuayRefIndex.get(quayRef));
   }
 
   private <T> T readFromSource(Source source) throws JAXBException {
