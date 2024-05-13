@@ -106,14 +106,18 @@ public class ExportService {
       ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getCode());
       export.addMessage(msg);
       logger.info(
-        export.identity() + " Export failed with exception: " + iae.getMessage(),
+        "{} Export failed with exception: {}",
+        export.identity(),
+        iae.getMessage(),
         iae
       );
     } catch (IllegalArgumentException iae) {
       ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getMessage());
       export.addMessage(msg);
       logger.info(
-        export.identity() + " Export failed with exception: " + iae.getMessage(),
+        "{} Export failed with exception: {}",
+        export.identity(),
+        iae.getMessage(),
         iae
       );
     } catch (Exception e) {
