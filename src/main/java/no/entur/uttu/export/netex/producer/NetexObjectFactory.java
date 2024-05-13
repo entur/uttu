@@ -29,14 +29,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
+import no.entur.uttu.ext.entur.organisation.Organisation;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.VehicleSubmodeEnumeration;
@@ -223,7 +228,10 @@ public class NetexObjectFactory {
             authorities.stream().map(Organisation_VersionStructure.class::cast),
             operators.stream().map(Organisation_VersionStructure.class::cast)
           )
-          .filter(distinctByKey(Organisation_VersionStructure::getId))
+          .distinct()
+          .collect(toDistinctOrganisation())
+          .values()
+          .stream()
           .map(this::wrapAsJAXBElement)
           .collect(Collectors.toList())
       );
@@ -235,9 +243,12 @@ public class NetexObjectFactory {
       .withId(resourceFrameId);
   }
 
-  private <T> Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
-    Set<Object> seen = ConcurrentHashMap.newKeySet();
-    return t -> seen.add(keyExtractor.apply(t));
+  private static Collector<Organisation_VersionStructure, ?, Map<String, Organisation_VersionStructure>> toDistinctOrganisation() {
+    return Collectors.toMap(
+      Organisation_VersionStructure::getId,
+      Function.identity(),
+      (o1, o2) -> o1
+    );
   }
 
   public SiteFrame createSiteFrame(
