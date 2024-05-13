@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.organisation.legacy;
+package no.entur.uttu.ext.entur.organisation;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
-import no.entur.uttu.organisation.OrganisationRegistry;
+import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
 import org.rutebanken.netex.model.ContactStructure;
 import org.rutebanken.netex.model.GeneralOrganisation;
@@ -43,6 +43,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
@@ -53,6 +54,7 @@ import reactor.netty.http.client.HttpClient;
 import reactor.util.retry.Retry;
 
 @Component
+@Profile("entur-legacy-organisation-registry")
 public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -154,13 +156,10 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     ((WebClientResponseException) throwable).getStatusCode().is5xxServerError();
 
   /**
-   * Return provided operatorRef if valid, else throw exception.
+   * Throw exception if ref is not a valid operator
    */
   @Override
-  public String getVerifiedOperatorRef(String operatorRef) {
-    if (operatorRef == null || operatorRef.isEmpty()) {
-      return null;
-    }
+  public void validateOperatorRef(String operatorRef) {
     Organisation organisation = lookupOrganisation(operatorRef);
     Preconditions.checkArgument(
       organisation != null,
@@ -173,17 +172,13 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
       "Organisation with ref %s is not a valid operator",
       operatorRef
     );
-    return operatorRef;
   }
 
   /**
-   * Return provided authorityRef if valid, else throw exception.
+   * Throw exception if ref is not a valid authority
    */
   @Override
-  public String getVerifiedAuthorityRef(String authorityRef) {
-    if (authorityRef == null || authorityRef.isEmpty()) {
-      return null;
-    }
+  public void validateAuthorityRef(String authorityRef) {
     Organisation organisation = lookupOrganisation(authorityRef);
     Preconditions.checkArgument(
       organisation != null,
@@ -195,7 +190,6 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
       "Organisation with ref %s is not a valid authority",
       authorityRef
     );
-    return authorityRef;
   }
 
   protected Organisation lookupOrganisation(String id) {

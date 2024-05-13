@@ -5,7 +5,7 @@ import static no.entur.uttu.graphql.GraphQLNames.FIELD_NOTICES;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Line;
-import no.entur.uttu.organisation.OrganisationRegistry;
+import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.repository.NetworkRepository;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
@@ -42,11 +42,16 @@ public abstract class LineMapper<T extends Line>
     input.apply(FIELD_TRANSPORT_MODE, entity::setTransportMode);
     input.apply(FIELD_TRANSPORT_SUBMODE, entity::setTransportSubmode);
     input.applyReference(FIELD_NETWORK_REF, networkRepository, entity::setNetwork);
+
     input.apply(
       FIELD_OPERATOR_REF,
-      organisationRegistry::getVerifiedOperatorRef,
+      (String operatorRef) -> {
+        organisationRegistry.validateOperatorRef(operatorRef);
+        return operatorRef;
+      },
       entity::setOperatorRef
     );
+
     input.applyList(
       FIELD_JOURNEY_PATTERNS,
       journeyPatternMapper::map,

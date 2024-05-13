@@ -19,7 +19,7 @@ import static no.entur.uttu.graphql.GraphQLNames.FIELD_AUTHORITY_REF;
 
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Network;
-import no.entur.uttu.organisation.OrganisationRegistry;
+import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,10 @@ public class NetworkMapper extends AbstractGroupOfEntitiesMapper<Network> {
   protected void populateEntityFromInput(Network entity, ArgumentWrapper input) {
     input.apply(
       FIELD_AUTHORITY_REF,
-      organisationRegistry::getVerifiedAuthorityRef,
+      (String authorityRef) -> {
+        organisationRegistry.validateAuthorityRef(authorityRef);
+        return authorityRef;
+      },
       entity::setAuthorityRef
     );
   }

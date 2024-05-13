@@ -20,7 +20,7 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.ServiceJourney;
-import no.entur.uttu.organisation.OrganisationRegistry;
+import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.stereotype.Component;
@@ -65,7 +65,10 @@ public class ServiceJourneyMapper extends AbstractGroupOfEntitiesMapper<ServiceJ
     input.apply(FIELD_PUBLIC_CODE, entity::setPublicCode);
     input.apply(
       FIELD_OPERATOR_REF,
-      organisationRegistry::getVerifiedOperatorRef,
+      (String operatorRef) -> {
+        organisationRegistry.validateOperatorRef(operatorRef);
+        return operatorRef;
+      },
       entity::setOperatorRef
     );
     input.apply(

@@ -11,6 +11,11 @@ public enum ErrorCodeEnumeration implements ErrorCode {
   ORGANISATION_NOT_VALID_OPERATOR,
 
   /**
+   * Organisation not found in the organisation registry
+   */
+  ORGANISATION_NOT_IN_ORGANISATION_REGISTRY,
+
+  /**
    * Service journey must have operator or inherit one from flexible line
    */
   MISSING_OPERATOR,

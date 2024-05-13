@@ -2,7 +2,6 @@ package no.entur.uttu.security;
 
 import java.util.Arrays;
 import java.util.List;
-import no.entur.uttu.security.spi.FullAccessUserContextService;
 import no.entur.uttu.security.spi.UserContextService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Profile;

@@ -26,12 +26,22 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.xml.namespace.QName;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
+import no.entur.uttu.ext.entur.organisation.Organisation;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.VehicleSubmodeEnumeration;
@@ -213,10 +223,17 @@ public class NetexObjectFactory {
     OrganisationsInFrame_RelStructure organisationsStruct = objectFactory
       .createOrganisationsInFrame_RelStructure()
       .withOrganisation_(
-        authorities.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())
-      )
-      .withOrganisation_(
-        operators.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())
+        Stream
+          .concat(
+            authorities.stream().map(Organisation_VersionStructure.class::cast),
+            operators.stream().map(Organisation_VersionStructure.class::cast)
+          )
+          .distinct()
+          .collect(toDistinctOrganisation())
+          .values()
+          .stream()
+          .map(this::wrapAsJAXBElement)
+          .collect(Collectors.toList())
       );
 
     return objectFactory
@@ -224,6 +241,14 @@ public class NetexObjectFactory {
       .withOrganisations(organisationsStruct)
       .withVersion(VERSION_ONE)
       .withId(resourceFrameId);
+  }
+
+  private static Collector<Organisation_VersionStructure, ?, Map<String, Organisation_VersionStructure>> toDistinctOrganisation() {
+    return Collectors.toMap(
+      Organisation_VersionStructure::getId,
+      Function.identity(),
+      (o1, o2) -> o1
+    );
   }
 
   public SiteFrame createSiteFrame(
