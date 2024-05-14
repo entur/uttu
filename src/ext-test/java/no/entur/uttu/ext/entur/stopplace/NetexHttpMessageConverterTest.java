@@ -1,6 +1,6 @@
 package no.entur.uttu.ext.entur.stopplace;
 
-import jakarta.xml.bind.JAXBException;
+import no.entur.uttu.netex.NetexUnmarshallerReadFromSourceException;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.rutebanken.netex.model.StopPlace;
@@ -11,7 +11,7 @@ import org.xmlunit.builder.Input;
 public class NetexHttpMessageConverterTest {
 
   @Test
-  public void testConvertStopPlace() throws JAXBException {
+  public void testConvertStopPlace() throws NetexUnmarshallerReadFromSourceException {
     NetexHttpMessageConverter converter = new NetexHttpMessageConverter();
 
     Assertions.assertTrue(converter.supports(StopPlace.class));

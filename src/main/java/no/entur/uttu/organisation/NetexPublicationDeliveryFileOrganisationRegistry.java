@@ -1,23 +1,17 @@
 package no.entur.uttu.organisation;
 
-import static jakarta.xml.bind.JAXBContext.newInstance;
-
-import jakarta.xml.bind.JAXBContext;
-import jakarta.xml.bind.JAXBElement;
-import jakarta.xml.bind.JAXBException;
-import jakarta.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
-import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
+import no.entur.uttu.netex.NetexUnmarshaller;
+import no.entur.uttu.netex.NetexUnmarshallerReadFromSourceException;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
 import org.rutebanken.netex.model.GeneralOrganisation;
-import org.rutebanken.netex.model.Organisation;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
 import org.slf4j.Logger;
@@ -38,12 +32,10 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
     NetexPublicationDeliveryFileOrganisationRegistry.class
   );
 
-  private List<GeneralOrganisation> organisations = List.of();
+  private static final NetexUnmarshaller publicationDeliveryUnmarshaller =
+    new NetexUnmarshaller(PublicationDeliveryStructure.class);
 
-  private static final JAXBContext publicationDeliveryContext = createContext(
-    PublicationDeliveryStructure.class,
-    Organisation.class
-  );
+  private List<GeneralOrganisation> organisations = List.of();
 
   @Value("${uttu.organisations.netex-file-uri}")
   String netexFileUri;
@@ -51,9 +43,10 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
   @PostConstruct
   public void init() {
     try {
-      PublicationDeliveryStructure publicationDeliveryStructure = readFromSource(
-        new StreamSource(new File(netexFileUri))
-      );
+      PublicationDeliveryStructure publicationDeliveryStructure =
+        publicationDeliveryUnmarshaller.unmarshalFromSource(
+          new StreamSource(new File(netexFileUri))
+        );
       publicationDeliveryStructure
         .getDataObjects()
         .getCompositeFrameOrCommonFrame()
@@ -69,7 +62,7 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
                 .toList();
           }
         });
-    } catch (JAXBException e) {
+    } catch (NetexUnmarshallerReadFromSourceException e) {
       logger.warn(
         "Unable to unmarshal organisations xml, organisation registry will be an empty list"
       );
@@ -114,29 +107,5 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
       "Organisation with ref %s not found in organisation registry",
       authorityRef
     );
-  }
-
-  private <T> T readFromSource(Source source) throws JAXBException {
-    JAXBElement<T> element = (JAXBElement<T>) getUnmarshaller().unmarshal(source);
-    return element.getValue();
-  }
-
-  private Unmarshaller getUnmarshaller() throws JAXBException {
-    return publicationDeliveryContext.createUnmarshaller();
-  }
-
-  private static JAXBContext createContext(Class... clazz) {
-    try {
-      JAXBContext jaxbContext = newInstance(clazz);
-      logger.info("Created context {}", jaxbContext.getClass());
-      return jaxbContext;
-    } catch (JAXBException e) {
-      String message = "Could not create instance of jaxb context for class " + clazz;
-      logger.warn(message, e);
-      throw new RuntimeException(
-        "Could not create instance of jaxb context for class " + clazz,
-        e
-      );
-    }
   }
 }
