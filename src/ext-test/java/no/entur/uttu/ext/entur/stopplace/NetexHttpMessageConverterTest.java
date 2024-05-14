@@ -23,7 +23,7 @@ public class NetexHttpMessageConverterTest {
     StopPlace stopPlace = (StopPlace) converter.readFromSource(
       StopPlace.class,
       HttpHeaders.EMPTY,
-      Input.fromFile("src/test/resources/stopPlaceFixture.xml").build()
+      Input.fromFile("src/ext-test/resources/stopPlaceFixture.xml").build()
     );
 
     Assertions.assertEquals("NSR:StopPlace:337", stopPlace.getId());
