@@ -14,13 +14,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
-import no.entur.uttu.organisation.NetexPublicationDeliveryFileOrganisationRegistry;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
-import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.Organisation;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Quay;
-import org.rutebanken.netex.model.ResourceFrame;
 import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
@@ -37,15 +34,16 @@ import org.springframework.stereotype.Component;
 public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceRegistry {
 
   private static final Logger logger = LoggerFactory.getLogger(
-    NetexPublicationDeliveryFileOrganisationRegistry.class
+    NetexPublicationDeliveryFileStopPlaceRegistry.class
   );
 
   private static final JAXBContext publicationDeliveryContext = createContext(
     PublicationDeliveryStructure.class,
-    Organisation.class
+    StopPlace.class
   );
 
-  private Map<String, StopPlace> stopPlaceByQuayRefIndex = new ConcurrentHashMap<>();
+  private final Map<String, StopPlace> stopPlaceByQuayRefIndex =
+    new ConcurrentHashMap<>();
 
   @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
