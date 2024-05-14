@@ -29,7 +29,6 @@ aliases:
         -Dsonar.token=${ENTUR_SONAR_PASSWORD}
 jobs:
   test:
-    executor: machine
     machine:
       image: ubuntu-2204:2024.04.3
     environment:
