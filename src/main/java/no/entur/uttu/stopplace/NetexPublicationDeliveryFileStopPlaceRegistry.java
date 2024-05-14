@@ -8,7 +8,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.netex.NetexUnmarshaller;
-import no.entur.uttu.netex.NetexUnmarshallerReadFromSourceException;
+import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Quay;
@@ -27,12 +27,13 @@ import org.springframework.stereotype.Component;
 )
 public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceRegistry {
 
-  private static final Logger logger = LoggerFactory.getLogger(
+  private final Logger logger = LoggerFactory.getLogger(
     NetexPublicationDeliveryFileStopPlaceRegistry.class
   );
 
-  private static final NetexUnmarshaller publicationDeliveryUnmarshaller =
-    new NetexUnmarshaller(PublicationDeliveryStructure.class);
+  private final NetexUnmarshaller netexUnmarshaller = new NetexUnmarshaller(
+    PublicationDeliveryStructure.class
+  );
 
   private final Map<String, StopPlace> stopPlaceByQuayRefIndex =
     new ConcurrentHashMap<>();
@@ -44,9 +45,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   public void init() {
     try {
       PublicationDeliveryStructure publicationDeliveryStructure =
-        publicationDeliveryUnmarshaller.unmarshalFromSource(
-          new StreamSource(new File(netexFileUri))
-        );
+        netexUnmarshaller.unmarshalFromSource(new StreamSource(new File(netexFileUri)));
       publicationDeliveryStructure
         .getDataObjects()
         .getCompositeFrameOrCommonFrame()
@@ -74,7 +73,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
             );
           }
         });
-    } catch (NetexUnmarshallerReadFromSourceException e) {
+    } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
       logger.warn(
         "Unable to unmarshal stop places xml, stop place registry will be an empty list"
       );

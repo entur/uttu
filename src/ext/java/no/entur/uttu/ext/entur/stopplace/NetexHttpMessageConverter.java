@@ -4,7 +4,7 @@ import java.util.List;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
 import no.entur.uttu.netex.NetexUnmarshaller;
-import no.entur.uttu.netex.NetexUnmarshallerReadFromSourceException;
+import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import org.rutebanken.netex.model.StopPlace;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -12,14 +12,14 @@ import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
 
 public class NetexHttpMessageConverter extends AbstractXmlHttpMessageConverter<Object> {
 
-  private final NetexUnmarshaller publicationDeliveryUnmarshaller = new NetexUnmarshaller(
+  private final NetexUnmarshaller netexUnmarshaller = new NetexUnmarshaller(
     StopPlace.class
   );
 
   @Override
   protected Object readFromSource(Class<?> clazz, HttpHeaders headers, Source source)
-    throws NetexUnmarshallerReadFromSourceException {
-    return publicationDeliveryUnmarshaller.unmarshalFromSource(source);
+    throws NetexUnmarshallerUnmarshalFromSourceException {
+    return netexUnmarshaller.unmarshalFromSource(source);
   }
 
   @Override

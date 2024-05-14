@@ -22,13 +22,13 @@ public class NetexUnmarshaller {
   }
 
   public <T> T unmarshalFromSource(Source source)
-    throws NetexUnmarshallerReadFromSourceException {
+    throws NetexUnmarshallerUnmarshalFromSourceException {
     try {
       // the Unmarshaller is not thread safe so must be created on every call
       JAXBElement<T> element = (JAXBElement<T>) getUnmarshaller().unmarshal(source);
       return element.getValue();
     } catch (JAXBException e) {
-      throw new NetexUnmarshallerReadFromSourceException(source, e);
+      throw new NetexUnmarshallerUnmarshalFromSourceException(source, e);
     }
   }
 

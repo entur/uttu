@@ -1,6 +1,6 @@
 package no.entur.uttu.ext.entur.stopplace;
 
-import no.entur.uttu.netex.NetexUnmarshallerReadFromSourceException;
+import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.rutebanken.netex.model.StopPlace;
@@ -11,7 +11,8 @@ import org.xmlunit.builder.Input;
 public class NetexHttpMessageConverterTest {
 
   @Test
-  public void testConvertStopPlace() throws NetexUnmarshallerReadFromSourceException {
+  public void testConvertStopPlace()
+    throws NetexUnmarshallerUnmarshalFromSourceException {
     NetexHttpMessageConverter converter = new NetexHttpMessageConverter();
 
     Assertions.assertTrue(converter.supports(StopPlace.class));
