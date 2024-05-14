@@ -70,14 +70,19 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
               .toList();
 
             stopPlaces.forEach(stopPlace -> {
-              stopPlace
-                .getQuays()
-                .getQuayRefOrQuay()
-                .stream()
-                .forEach(quayRefOrQuay -> {
-                  Quay quay = (Quay) quayRefOrQuay.getValue();
-                  stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
-                });
+              Optional
+                .ofNullable(stopPlace.getQuays())
+                .ifPresentOrElse(
+                  quays -> {
+                    quays
+                      .getQuayRefOrQuay()
+                      .forEach(quayRefOrQuay -> {
+                        Quay quay = (Quay) quayRefOrQuay.getValue();
+                        stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+                      });
+                  },
+                  () -> {}
+                );
             });
           }
         });

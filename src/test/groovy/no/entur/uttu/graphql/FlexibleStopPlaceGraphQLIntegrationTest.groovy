@@ -72,8 +72,8 @@ mutation deleteFlexibleStopPlace(\$id: ID!) {
         createFlexibleStopPlaceWithHailAndRideArea(hailAndRideTest)
                 .body("data.mutateFlexibleStopPlace.id", startsWith("TST:FlexibleStopPlace"))
                 .body("data.mutateFlexibleStopPlace.name", equalTo(hailAndRideTest))
-                .body("data.mutateFlexibleStopPlace.hailAndRideArea.startQuayRef", equalTo("NSR:Quay:start"))
-                .body("data.mutateFlexibleStopPlace.hailAndRideArea.endQuayRef", equalTo("NSR:Quay:end"))
+                .body("data.mutateFlexibleStopPlace.hailAndRideArea.startQuayRef", equalTo("NSR:Quay:565"))
+                .body("data.mutateFlexibleStopPlace.hailAndRideArea.endQuayRef", equalTo("NSR:Quay:494"))
     }
 
     @Test
