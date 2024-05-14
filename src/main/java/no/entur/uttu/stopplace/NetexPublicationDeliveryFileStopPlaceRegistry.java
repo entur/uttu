@@ -15,7 +15,6 @@ import javax.annotation.PostConstruct;
 import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
-import org.rutebanken.netex.model.Organisation;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.SiteFrame;
@@ -67,21 +66,17 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
               .map(stopPlace -> (StopPlace) stopPlace.getValue())
               .toList();
 
-            stopPlaces.forEach(stopPlace -> {
-              Optional
-                .ofNullable(stopPlace.getQuays())
-                .ifPresentOrElse(
-                  quays -> {
-                    quays
-                      .getQuayRefOrQuay()
-                      .forEach(quayRefOrQuay -> {
-                        Quay quay = (Quay) quayRefOrQuay.getValue();
-                        stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
-                      });
-                  },
-                  () -> {}
-                );
-            });
+            stopPlaces.forEach(stopPlace -> Optional
+              .ofNullable(stopPlace.getQuays())
+              .ifPresentOrElse(
+                quays -> quays
+                  .getQuayRefOrQuay()
+                  .forEach(quayRefOrQuay -> {
+                    Quay quay = (Quay) quayRefOrQuay.getValue();
+                    stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+                  }),
+                () -> {}
+              ));
           }
         });
     } catch (JAXBException e) {

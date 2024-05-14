@@ -15,7 +15,6 @@
 
 package no.entur.uttu;
 
-import no.entur.uttu.ext.entur.stopplace.EnturMummuStopPlaceRegistry;
 import no.entur.uttu.repository.generic.ProviderEntityRepositoryImpl;
 import no.entur.uttu.security.UttuSecurityConfiguration;
 import org.entur.pubsub.base.config.GooglePubSubConfig;
