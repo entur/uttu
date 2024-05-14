@@ -10,6 +10,9 @@ import javax.xml.transform.Source;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Thread safe NetexUnmarshaller service
+ */
 public class NetexUnmarshaller {
 
   private static final Logger logger = LoggerFactory.getLogger(NetexUnmarshaller.class);
