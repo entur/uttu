@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 aliases:
   - &jfrog-login
     name: Rename jfrog environment variable for maven setting.xml
@@ -102,18 +102,15 @@ jobs:
       - run: mvn deploy -s .circleci/settings.xml -P prettierSkip -DskipTests
       - run: *post_build
 workflows:
-  version: 2
   release:
     jobs:
       - test:
-          name: test-release
           context: global
       - build:
-          name: build-release
           context: global
           filters:
             branches:
               only:
                 - master
           requires:
-            - test-release
+            - test
