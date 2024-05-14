@@ -102,7 +102,7 @@ jobs:
       - run: mvn deploy -s .circleci/settings.xml -P prettierSkip -DskipTests
       - run: *post_build
 workflows:
-  version: 2.1
+  version: 2
   release:
     jobs:
       - test:
