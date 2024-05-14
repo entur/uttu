@@ -66,17 +66,20 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
               .map(stopPlace -> (StopPlace) stopPlace.getValue())
               .toList();
 
-            stopPlaces.forEach(stopPlace -> Optional
-              .ofNullable(stopPlace.getQuays())
-              .ifPresentOrElse(
-                quays -> quays
-                  .getQuayRefOrQuay()
-                  .forEach(quayRefOrQuay -> {
-                    Quay quay = (Quay) quayRefOrQuay.getValue();
-                    stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
-                  }),
-                () -> {}
-              ));
+            stopPlaces.forEach(stopPlace ->
+              Optional
+                .ofNullable(stopPlace.getQuays())
+                .ifPresentOrElse(
+                  quays ->
+                    quays
+                      .getQuayRefOrQuay()
+                      .forEach(quayRefOrQuay -> {
+                        Quay quay = (Quay) quayRefOrQuay.getValue();
+                        stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+                      }),
+                  () -> {}
+                )
+            );
           }
         });
     } catch (JAXBException e) {
