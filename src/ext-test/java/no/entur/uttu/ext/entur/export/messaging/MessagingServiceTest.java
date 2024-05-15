@@ -24,7 +24,7 @@ import com.google.pubsub.v1.PubsubMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import no.entur.uttu.UttuIntegrationTest;
-import no.entur.uttu.export.messaging.MessagingService;
+import no.entur.uttu.export.messaging.spi.MessagingService;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
 import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;

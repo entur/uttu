@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.util.List;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
-import no.entur.uttu.export.messaging.MessagingService;
+import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.export.netex.DataSetProducer;
 import no.entur.uttu.export.netex.NetexExporter;
 import no.entur.uttu.model.Line;

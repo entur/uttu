@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import no.entur.uttu.config.Context;
-import no.entur.uttu.export.messaging.MessagingService;
+import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.util.ExportUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
