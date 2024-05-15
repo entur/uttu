@@ -40,7 +40,7 @@ import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
 @ActiveProfiles({ "test", "entur-pubsub-messaging-service" })
-public class MessagingServiceTest extends UttuIntegrationTest {
+public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
 
   public static final String TEST_CODESPACE = "rut";
 
