@@ -24,11 +24,14 @@ import no.entur.uttu.UttuIntegrationTest;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.After;
+import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.utility.DockerImageName;
 
 public class MessagingServiceTest extends UttuIntegrationTest {
-
   public static final String TEST_CODESPACE = "rut";
 
   public static final String TEST_EXPORT_FILE_NAME = "netex.zip";
@@ -44,6 +47,21 @@ public class MessagingServiceTest extends UttuIntegrationTest {
 
   @Value("${export.notify.queue.name:FlexibleLinesExportQueue}")
   private String queueName;
+
+  static GenericContainer<?> pubsubEmulator = new GenericContainer<>(DockerImageName.parse("gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"))
+          .withCommand("gcloud beta emulators pubsub start --project=test")
+          .withExposedPorts(8085);
+
+  @Before
+  public void setUp() {
+    pubsubEmulator.start();
+  }
+
+  @After
+  public void tearDown() {
+    pubsubEmulator.stop();
+  }
+
 
   @Test
   public void testNotifyExport() {
