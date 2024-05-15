@@ -65,6 +65,10 @@ public class MessagingServiceTest extends UttuIntegrationTest {
       "spring.cloud.gcp.pubsub.emulator-host",
       pubsubEmulator::getEmulatorEndpoint
     );
+    registry.add("spring.cloud.gcp.project-id", () -> "test");
+    registry.add("spring.cloud.gcp.pubsub.project-id", () -> "test");
+    registry.add("export.notify.enabled", () -> true);
+    registry.add("export.notify.queue.name", () -> "FlexibleLinesExportQueue");
   }
 
   @BeforeClass
