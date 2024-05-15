@@ -16,25 +16,35 @@
 
 package no.entur.uttu.export.messaging;
 
+import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
+
+import com.google.api.gax.core.CredentialsProvider;
+import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
+import com.google.cloud.spring.pubsub.core.subscriber.PubSubSubscriberTemplate;
 import com.google.pubsub.v1.PubsubMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import no.entur.uttu.UttuIntegrationTest;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
-import org.junit.Assert;
-import org.junit.Test;
-import org.junit.After;
-import org.junit.Before;
+import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.testcontainers.containers.GenericContainer;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
+import org.testcontainers.containers.PubSubEmulatorContainer;
+import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
+@Testcontainers
 public class MessagingServiceTest extends UttuIntegrationTest {
+
   public static final String TEST_CODESPACE = "rut";
 
   public static final String TEST_EXPORT_FILE_NAME = "netex.zip";
+  private static PubSubEmulatorContainer pubsubEmulator;
 
   @Autowired
   private MessagingService messagingService;
@@ -43,30 +53,74 @@ public class MessagingServiceTest extends UttuIntegrationTest {
   private PubSubTemplate pubSubTemplate;
 
   @Autowired
+  PubSubSubscriberTemplate subscriberTemplate;
+
+  @Autowired
   private EnturGooglePubSubAdmin enturGooglePubSubAdmin;
 
   @Value("${export.notify.queue.name:FlexibleLinesExportQueue}")
   private String queueName;
 
-  static GenericContainer<?> pubsubEmulator = new GenericContainer<>(DockerImageName.parse("gcr.io/google.com/cloudsdktool/google-cloud-cli:latest"))
-          .withCommand("gcloud beta emulators pubsub start --project=test")
-          .withExposedPorts(8085);
-
-  @Before
-  public void setUp() {
+  @DynamicPropertySource
+  static void emulatorProperties(DynamicPropertyRegistry registry) {
+    pubsubEmulator =
+      new PubSubEmulatorContainer(
+        DockerImageName.parse("gcr.io/google.com/cloudsdktool/cloud-sdk:emulators")
+      );
     pubsubEmulator.start();
+    registry.add(
+      "spring.cloud.gcp.pubsub.emulator-host",
+      pubsubEmulator::getEmulatorEndpoint
+    );
   }
 
-  @After
-  public void tearDown() {
+  @AfterClass
+  public static void tearDown() {
     pubsubEmulator.stop();
   }
 
+  @Before
+  public void setup() {
+    enturGooglePubSubAdmin.createSubscriptionIfMissing(queueName);
+  }
+
+  @After
+  public void teardown() {
+    // Drain any messages that are still in the subscription so that they don't interfere with
+    // subsequent tests.
+    await().until(() -> subscriberTemplate.pullAndAck(queueName, 1000, true).isEmpty());
+  }
+
+  // By default, autoconfiguration will initialize application default credentials.
+  // For testing purposes, don't use any credentials. Bootstrap w/ NoCredentialsProvider.
+  @TestConfiguration
+  static class PubSubEmulatorConfiguration {
+
+    @Bean
+    CredentialsProvider googleCredentials() {
+      return NoCredentialsProvider.create();
+    }
+  }
 
   @Test
   public void testNotifyExport() {
-    enturGooglePubSubAdmin.createSubscriptionIfMissing(queueName);
+    messagingService.notifyExport(TEST_CODESPACE, TEST_EXPORT_FILE_NAME);
 
+    List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
+    Assert.assertEquals(messages.size(), 1);
+    PubsubMessage pubsubMessage = messages.get(0);
+    String codespace = pubsubMessage
+      .getAttributesMap()
+      .get(PubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
+    Assert.assertEquals("rb_" + TEST_CODESPACE, codespace);
+    Assert.assertEquals(
+      TEST_EXPORT_FILE_NAME,
+      pubsubMessage.getData().toString(StandardCharsets.UTF_8)
+    );
+  }
+
+  @Test
+  public void testNotifyExport2() {
     messagingService.notifyExport(TEST_CODESPACE, TEST_EXPORT_FILE_NAME);
 
     List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
