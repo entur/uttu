@@ -16,8 +16,6 @@
 
 package no.entur.uttu.export.messaging;
 
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
-
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
@@ -90,9 +88,7 @@ public class MessagingServiceTest extends UttuIntegrationTest {
 
   @After
   public void teardown() {
-    // Drain any messages that are still in the subscription so that they don't interfere with
-    // subsequent tests.
-    await().until(() -> subscriberTemplate.pullAndAck(queueName, 1000, true).isEmpty());
+    enturGooglePubSubAdmin.deleteAllSubscriptions();
   }
 
   // By default, autoconfiguration will initialize application default credentials.
