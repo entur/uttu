@@ -63,15 +63,19 @@ public class MessagingServiceTest extends UttuIntegrationTest {
 
   @DynamicPropertySource
   static void emulatorProperties(DynamicPropertyRegistry registry) {
+    registry.add(
+      "spring.cloud.gcp.pubsub.emulator-host",
+      pubsubEmulator::getEmulatorEndpoint
+    );
+  }
+
+  @BeforeClass
+  public static void init() {
     pubsubEmulator =
       new PubSubEmulatorContainer(
         DockerImageName.parse("gcr.io/google.com/cloudsdktool/cloud-sdk:emulators")
       );
     pubsubEmulator.start();
-    registry.add(
-      "spring.cloud.gcp.pubsub.emulator-host",
-      pubsubEmulator::getEmulatorEndpoint
-    );
   }
 
   @AfterClass
