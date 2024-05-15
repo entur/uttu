@@ -1,6 +1,6 @@
-package no.entur.uttu.config;
+package no.entur.uttu.ext.entur.stopplace;
 
-import jakarta.xml.bind.JAXBException;
+import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.rutebanken.netex.model.StopPlace;
@@ -11,7 +11,8 @@ import org.xmlunit.builder.Input;
 public class NetexHttpMessageConverterTest {
 
   @Test
-  public void testConvertStopPlace() throws JAXBException {
+  public void testConvertStopPlace()
+    throws NetexUnmarshallerUnmarshalFromSourceException {
     NetexHttpMessageConverter converter = new NetexHttpMessageConverter();
 
     Assertions.assertTrue(converter.supports(StopPlace.class));
@@ -23,7 +24,7 @@ public class NetexHttpMessageConverterTest {
     StopPlace stopPlace = (StopPlace) converter.readFromSource(
       StopPlace.class,
       HttpHeaders.EMPTY,
-      Input.fromFile("src/test/resources/stopPlaceFixture.xml").build()
+      Input.fromFile("src/ext-test/resources/stopPlaceFixture.xml").build()
     );
 
     Assertions.assertEquals("NSR:StopPlace:337", stopPlace.getId());

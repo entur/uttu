@@ -13,10 +13,18 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.stopplace;
+package no.entur.uttu.stopplace.spi;
 
 import java.util.Optional;
 
+/**
+ * Represents a stop place registry used to lookup stop places from quay refs
+ */
 public interface StopPlaceRegistry {
+  /**
+   * Lookup a stop place entity from a quay ref
+   * @param quayRef The id of a quay
+   * @return The stop place that the quay belongs to
+   */
   Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef);
 }

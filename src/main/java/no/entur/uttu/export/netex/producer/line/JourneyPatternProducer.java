@@ -29,7 +29,7 @@ import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.model.job.SeverityEnumeration;
-import no.entur.uttu.stopplace.StopPlaceRegistry;
+import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
 import org.rutebanken.netex.model.BookingMethodEnumeration;

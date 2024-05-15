@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.stopplace;
+package no.entur.uttu.ext.entur.stopplace;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -23,10 +23,11 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
-import no.entur.uttu.config.NetexHttpMessageConverter;
+import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -39,10 +40,11 @@ import org.springframework.web.client.RestTemplate;
  * to retrieve a stop place given the ID of one of its quays.
  */
 @Component
-public class DefaultStopPlaceRegistry implements StopPlaceRegistry {
+@Profile("entur-mummu-stop-place-registry")
+public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
 
   private static final Logger logger = LoggerFactory.getLogger(
-    DefaultStopPlaceRegistry.class
+    EnturMummuStopPlaceRegistry.class
   );
 
   private RestTemplate restTemplate = new RestTemplate();

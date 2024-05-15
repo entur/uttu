@@ -9,13 +9,14 @@ class StopPlaceByQuayGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQL
 
     @Test
     void getStopPlaceByQuayRefTest() {
-        String id = "NSR:StopPlace:337"
-        String query = """ { stopPlaceByQuayRef(id:"$id") { id, name { lang value }, quays { id publicCode }}}"""
-        assertResponse(executeGraphqQLQueryOnly(query), "stopPlaceByQuayRef")
+        String quayId = "NSR:Quay:494";
+        String expectedStopPlaceId = "NSR:StopPlace:301"
+        String query = """ { stopPlaceByQuayRef(id:"$quayId") { id, name { lang value }, quays { id publicCode }}}"""
+        assertResponse(executeGraphqQLQueryOnly(query), "stopPlaceByQuayRef", expectedStopPlaceId)
     }
 
-    void assertResponse(ValidatableResponse rsp, String path) {
-        rsp.body("data. "+path+".id", equalTo("NSR:StopPlace:337"))
+    void assertResponse(ValidatableResponse rsp, String path, String expectedId) {
+        rsp.body("data. "+path+".id", equalTo(expectedId))
     }
 }
 
