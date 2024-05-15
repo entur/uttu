@@ -14,7 +14,7 @@
  *
  */
 
-package no.entur.uttu.export.messaging;
+package no.entur.uttu.ext.entur.export.messaging;
 
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.core.NoCredentialsProvider;
@@ -24,12 +24,14 @@ import com.google.pubsub.v1.PubsubMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import no.entur.uttu.UttuIntegrationTest;
+import no.entur.uttu.export.messaging.MessagingService;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
 import org.junit.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PubSubEmulatorContainer;
@@ -37,6 +39,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
+@ActiveProfiles({"test", "entur-pubsub-messaging-service"})
 public class MessagingServiceTest extends UttuIntegrationTest {
 
   public static final String TEST_CODESPACE = "rut";
@@ -115,7 +118,7 @@ public class MessagingServiceTest extends UttuIntegrationTest {
     PubsubMessage pubsubMessage = messages.get(0);
     String codespace = pubsubMessage
       .getAttributesMap()
-      .get(PubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
+      .get(EnturPubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
     Assert.assertEquals("rb_" + TEST_CODESPACE, codespace);
     Assert.assertEquals(
       TEST_EXPORT_FILE_NAME,
