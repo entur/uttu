@@ -114,7 +114,7 @@ public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
     messagingService.notifyExport(TEST_CODESPACE, TEST_EXPORT_FILE_NAME);
 
     List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
-    Assert.assertEquals(messages.size(), 1);
+    Assert.assertEquals(1, messages.size());
     PubsubMessage pubsubMessage = messages.get(0);
     String codespace = pubsubMessage
       .getAttributesMap()
