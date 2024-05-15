@@ -122,21 +122,4 @@ public class MessagingServiceTest extends UttuIntegrationTest {
       pubsubMessage.getData().toString(StandardCharsets.UTF_8)
     );
   }
-
-  @Test
-  public void testNotifyExport2() {
-    messagingService.notifyExport(TEST_CODESPACE, TEST_EXPORT_FILE_NAME);
-
-    List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
-    Assert.assertEquals(messages.size(), 1);
-    PubsubMessage pubsubMessage = messages.get(0);
-    String codespace = pubsubMessage
-      .getAttributesMap()
-      .get(PubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
-    Assert.assertEquals("rb_" + TEST_CODESPACE, codespace);
-    Assert.assertEquals(
-      TEST_EXPORT_FILE_NAME,
-      pubsubMessage.getData().toString(StandardCharsets.UTF_8)
-    );
-  }
 }
