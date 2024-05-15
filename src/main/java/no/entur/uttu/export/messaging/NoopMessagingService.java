@@ -9,11 +9,13 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @ConditionalOnMissingBean(
-        value = MessagingService.class, ignored = NoopMessagingService.class
+  value = MessagingService.class,
+  ignored = NoopMessagingService.class
 )
 public class NoopMessagingService implements MessagingService {
-    @Override
-    public void notifyExport(String codespace, String filename) {
-        // intentionally empty
-    }
+
+  @Override
+  public void notifyExport(String codespace, String filename) {
+    // intentionally empty
+  }
 }
