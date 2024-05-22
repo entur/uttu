@@ -36,7 +36,7 @@ import no.entur.uttu.model.HailAndRideArea;
 import no.entur.uttu.model.Value;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
-import no.entur.uttu.stopplace.StopPlaceRegistry;
+import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

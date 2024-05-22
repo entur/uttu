@@ -191,7 +191,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
           "key": "foo",
           "values": ["bar", "baz"]
         }],
-        "hailAndRideArea": {"startQuayRef": "NSR:Quay:start","endQuayRef": "NSR:Quay:end"}
+        "hailAndRideArea": {"startQuayRef": "NSR:Quay:565","endQuayRef": "NSR:Quay:494"}
     }
         }"""
 
@@ -268,7 +268,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
             "flexibleStopPlaceRef": "$flexAreaStopPlaceId"
           },
           {
-            "quayRef": "NSR:Quay:3513"
+            "quayRef": "NSR:Quay:563"
           }
         ],
         "serviceJourneys": [
@@ -306,7 +306,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
         ,
         
         {
-            "quayRef": "NSR:Quay:3513"
+            "quayRef": "NSR:Quay:494"
          }
         ],
         "serviceJourneys": [
