@@ -28,7 +28,6 @@ import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication(exclude = { UserDetailsServiceAutoConfiguration.class })
-@Import(GooglePubSubConfig.class)
 @EnableJpaRepositories(
   basePackages = { "no.entur.uttu.repository" },
   repositoryBaseClass = ProviderEntityRepositoryImpl.class

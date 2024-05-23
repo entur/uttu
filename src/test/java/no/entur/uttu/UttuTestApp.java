@@ -26,7 +26,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
 @SpringBootApplication
-@Import(GooglePubSubConfig.class)
 @EnableJpaRepositories(
   basePackages = { "no.entur.uttu.repository" },
   repositoryBaseClass = ProviderEntityRepositoryImpl.class

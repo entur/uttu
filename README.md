@@ -57,14 +57,6 @@ provide an implementation of the `MessagingService` interface –– see
 
 The default MessagingService implementation is a noop.
 
-## Additional properties
-
-The following properties are needed by a GCP pubsub dependency, and auto-configuration
-will fail without them. If you don't use pubsub, you can set them to dummy values:
-
-    spring.cloud.gcp.project-id=test
-    spring.cloud.gcp.pubsub.project-id=test
-
 ## Running locally
 ### Build
 To build the project from source, you need Java 21 and Maven 3.
