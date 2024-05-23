@@ -57,6 +57,13 @@ provide an implementation of the `MessagingService` interface –– see
 
 The default MessagingService implementation is a noop.
 
+## Disable Google PubSub autoconfiguration
+
+If you don't use Google PubSub, sett this property:
+
+    # This property is needed to avoid pubsub autoconfiguration
+    spring.cloud.gcp.pubsub.enabled=false
+
 ## Running locally
 ### Build
 To build the project from source, you need Java 21 and Maven 3.
