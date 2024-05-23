@@ -49,6 +49,21 @@ see `src/main/java/no/entur/uttu/stopplace/spi/StopPlaceRegistry.java`.
 
 Refer to `src/test/resources/fixtures/stopplace.xml` for an example of a NeTEx file with stop places.
 
+## Optional export notification message
+
+If you want to notify an external system about a NeTEx file export, you can
+provide an implementation of the `MessagingService` interface –– see
+`src/main/java/no/entur/uttu/export/messaging/spi/MessagingService.java`.
+
+The default MessagingService implementation is a noop.
+
+## Disable Google PubSub autoconfiguration
+
+If you don't use Google PubSub, sett this property:
+
+    # This property is needed to avoid pubsub autoconfiguration
+    spring.cloud.gcp.pubsub.enabled=false
+
 ## Running locally
 ### Build
 To build the project from source, you need Java 21 and Maven 3.

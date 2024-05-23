@@ -1,18 +1,21 @@
-package no.entur.uttu.export.messaging;
+package no.entur.uttu.ext.entur.export.messaging;
 
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 import no.entur.uttu.config.Context;
+import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.util.ExportUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-public class PubSubMessagingService implements MessagingService {
+@Profile("entur-pubsub-messaging-service")
+public class EnturPubSubMessagingService implements MessagingService {
 
   public static final String HEADER_CHOUETTE_REFERENTIAL =
     "RutebankenChouetteReferential";
@@ -29,7 +32,7 @@ public class PubSubMessagingService implements MessagingService {
   @Value("${export.notify.queue.name:FlexibleLinesExportQueue}")
   private String queueName;
 
-  public PubSubMessagingService(PubSubTemplate pubSubTemplate) {
+  public EnturPubSubMessagingService(PubSubTemplate pubSubTemplate) {
     this.pubSubTemplate = pubSubTemplate;
   }
 
