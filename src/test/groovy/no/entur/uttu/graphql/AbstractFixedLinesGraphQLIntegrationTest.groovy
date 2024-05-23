@@ -117,13 +117,13 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
                   {
                     "pointsInSequence": [
                       {
-                        "quayRef": "NSR:Quay:69",
+                        "quayRef": "NSR:Quay:494",
                         "destinationDisplay": {
                           "frontText": "Første stopp"
                         }
                       },
                       {
-                        "quayRef": "NSR:Quay:70"
+                        "quayRef": "NSR:Quay:563"
                       }
                     ],
                     "serviceJourneys": [

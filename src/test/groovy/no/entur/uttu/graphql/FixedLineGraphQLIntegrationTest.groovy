@@ -29,7 +29,7 @@ class FixedLineGraphQLIntegrationTest extends AbstractFixedLinesGraphQLIntegrati
         createFixedLine(testFixedLineName)
                 .body("data.mutateFixedLine.id", startsWith("TST:Line"))
                 .body("data.mutateFixedLine.name", equalTo(testFixedLineName))
-                .body("data.mutateFixedLine.journeyPatterns[0].pointsInSequence[0].quayRef", equalTo("NSR:Quay:69"))
+                .body("data.mutateFixedLine.journeyPatterns[0].pointsInSequence[0].quayRef", equalTo("NSR:Quay:494"))
                 .body("data.mutateFixedLine.journeyPatterns[0].serviceJourneys[0].passingTimes[0].departureTime", equalTo("07:00:00"))
     }
 }
