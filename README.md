@@ -65,27 +65,13 @@ If you don't use Google PubSub, sett this property:
     spring.cloud.gcp.pubsub.enabled=false
 
 ## Running locally
+
 ### Build
+
 To build the project from source, you need Java 21 and Maven 3.
 
-To run the unit tests you need additionally to install the [Google PubSub emulator](https://cloud.google.com/pubsub/docs/emulator).  
-The emulator can be installed locally with the following commands:
-```
-gcloud components install pubsub-emulator
-gcloud components update
-```
-You can then locate the installation directory of the GCloud tool kit with the following command:
-
-```
-gcloud info --format="value(installation.sdk_root)"
-```
-The emulator executable is located under the sub-folder ```platform/pubsub-emulator/lib```  
-and can be used in unit tests by setting the following property in the Spring Boot properties file:
-```
-entur.pubsub.emulator.path=/usr/lib/google-cloud-sdk/platform/pubsub-emulator/lib/cloud-pubsub-emulator-0.6.0.jar
-```
-
 ### Database
+
 #### Via Docker
 
 Install Docker.
@@ -98,21 +84,43 @@ Now a Docker container is running in the background. Check its status with `dock
 
 To stop, find its ID from `docker ps`, and run `docker stop theid` (beginning of hash). To restart it, find the ID from `docker container list` and run `docker restart theid`.
 
-Run the [script](./src/main/resources/db_init.sh).
+Run the [database init script](./src/main/resources/db_init.sh).
 
 ### Run
+
 **IntelliJ**: Right-click on `App.java` and choose Run (or Cmd+Shift+F10). Open Run -> Edit configurations, choose the
 correct configuration (Spring Boot -> App), and add `local` to Active profiles. Save the configuration.
 
-If you want to run with google pubsub emulator also add `google-pubsub-emulator` to Active profiles.
-
 **Command line**: `mvn spring-boot:run`
 
-### GraphQL endpoint
-http://localhost:11701/services/flexible-lines/rut/graphql
+Uttu web server will expose APIs on port 11701 by default.
+
+### GraphQL endpoints
+
+Provider-independent GraphQL endpoint:
+
+    /services/flexible-lines/providers/graphql
+
+Provider-specific GraphQL endpoint (replace {providerCode} with provider's codespace code):
+
+    /services/flexible-lines/{providerCode}/graphql
 
 ## Netex Export
-This api exports generated netex file to gcp storage, which is used to build graph.
+
+Uttu provides possibility (via provider specific GraphQL API) to export generated NeTEx file to a blobstore repository.
+Choose one of three implementations with profiles:
+
+- `in-memory-blobstore` - stores exports in memory, exports are lost on restarts, suitable for development and testing
+- `disk-blobstore` - stores exports on disk
+- `gcp-blobstore` - stores exports in Google Cloud Storage, requires additional configuration
+
+Alternatively, provide a
+[BlobStoreRepository](https://github.com/entur/rutebanken-helpers/blob/master/storage/src/main/java/org/rutebanken/helper/storage/repository/BlobStoreRepository.java)
+bean for custom behavior.
+
+The following endpoint exposes exports for direct download:
+
+    /services/flexible-lines/{providerCode}/export/
 
 ## Error code extension
 
