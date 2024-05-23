@@ -15,7 +15,6 @@
 
 package no.entur.uttu;
 
-import java.util.Map;
 import no.entur.uttu.repository.generic.ProviderEntityRepositoryImpl;
 import no.entur.uttu.security.UttuSecurityConfiguration;
 import org.springframework.boot.SpringApplication;
