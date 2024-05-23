@@ -38,15 +38,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
   }
 )
-public class UttuTestApp extends SpringApplication {
+public class UttuTestApp {
 
   public static void main(String[] args) {
     SpringApplication.run(UttuTestApp.class, args);
-  }
-
-  @Override
-  public void setDefaultProperties(Map<String, Object> defaultProperties) {
-    defaultProperties.put("spring.cloud.gcp.pubsub.enabled", false);
-    super.setDefaultProperties(defaultProperties);
   }
 }
