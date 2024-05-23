@@ -15,6 +15,7 @@
 
 package no.entur.uttu;
 
+import java.util.Map;
 import no.entur.uttu.repository.generic.ProviderEntityRepositoryImpl;
 import no.entur.uttu.security.UttuSecurityConfiguration;
 import org.springframework.boot.SpringApplication;
@@ -37,9 +38,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
     @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, value = App.class),
   }
 )
-public class UttuTestApp {
+public class UttuTestApp extends SpringApplication {
 
   public static void main(String[] args) {
     SpringApplication.run(UttuTestApp.class, args);
+  }
+
+  @Override
+  public void setDefaultProperties(Map<String, Object> defaultProperties) {
+    defaultProperties.put("spring.cloud.gcp.pubsub.enabled", false);
+    super.setDefaultProperties(defaultProperties);
   }
 }

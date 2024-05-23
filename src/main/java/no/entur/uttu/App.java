@@ -15,6 +15,7 @@
 
 package no.entur.uttu;
 
+import java.util.Map;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.generic.ProviderEntityRepositoryImpl;
 import org.springframework.boot.SpringApplication;
@@ -32,9 +33,15 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 )
 @EntityScan(basePackageClasses = { Provider.class, Jsr310JpaConverters.class })
 @EnableCaching
-public class App {
+public class App extends SpringApplication {
 
   public static void main(String[] args) {
     SpringApplication.run(App.class, args);
+  }
+
+  @Override
+  public void setDefaultProperties(Map<String, Object> defaultProperties) {
+    defaultProperties.put("spring.cloud.gcp.pubsub.enabled", false);
+    super.setDefaultProperties(defaultProperties);
   }
 }

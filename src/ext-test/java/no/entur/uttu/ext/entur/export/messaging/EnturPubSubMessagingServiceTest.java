@@ -68,6 +68,7 @@ public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
       "spring.cloud.gcp.pubsub.emulator-host",
       pubsubEmulator::getEmulatorEndpoint
     );
+    registry.add("spring.cloud.gcp.pubsub.enabled", () -> true);
     registry.add("spring.cloud.gcp.project-id", () -> "uttu-gcp-test-project");
     registry.add("spring.cloud.gcp.pubsub.project-id", () -> "uttu-gcp-test-project");
     registry.add("export.notify.enabled", () -> true);
