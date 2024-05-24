@@ -4,6 +4,7 @@
 Back-end for Nplan, a simple timetable editor. Front-end is [Enki](https://github.com/entur/enki).
 
 ## Codestyle
+
 Uttu uses [Prettier Java](https://github.com/jhipster/prettier-java). Use `mvn prettier:write` to reformat code before
 pushing changes. You can also configure your IDE to reformat code when you save a file.
 
@@ -11,29 +12,35 @@ pushing changes. You can also configure your IDE to reformat code when you save 
 
 Running uttu with vanilla security features requires an Oauth2 issuer, which can be set with the following property:
 
-    uttu.security.jwt.issuer-uri=https://my-jwt-issuer
+```properties
+uttu.security.jwt.issuer-uri=https://my-jwt-issuer
+```
 
-In addition, a UserContextService implementation must be selected. The following gives full access to all authenticated users:
+In addition, a UserContextService implementation must be selected. The following gives full access to all authenticated 
+users:
 
-    uttu.security.user-context-service=full-access
+```properties
+uttu.security.user-context-service=full-access
+```
 
 ### Run without authentication
 
 For the purpose of running locally, authentication can be switched off altogether by combining the
 full-access property above with the `local-no-authentication` profile.
 
-
 ## Organisation registry
 
 Uttu needs an organisation registry in order to populate authority and operator references. You may
 provide a NeTEx file of organisations with 
 
-    uttu.organisations.netex-file-uri=<path-to-file>
+```properties
+uttu.organisations.netex-file-uri=<path-to-file>
+```
 
-or provide your own implementation of the `OrganisationRegistry` interface ––
-see `src/main/java/no/entur/uttu/organisation/spi/OrganisationRegistry.java`.
+or provide your own implementation of the [`OrganisationRegistry`](src/main/java/no/entur/uttu/organisation/spi/OrganisationRegistry.java) interface.
 
-Refer to `src/test/resources/fixtures/organisations.xml` for an example of a NeTEx file with organisations.
+Refer to [`src/test/resources/fixtures/organisations.xml`](src/test/resources/fixtures/organisations.xml) for an example 
+of a NeTEx file with organisations.
 
 ## Stop place registry
 
@@ -42,12 +49,14 @@ journey patterns with fixed transit stops, and with hail-and-ride areas.
 
 You may provide a NeTEx file of stop places with
 
-    uttu.stopplace.netex-file-uri=<path-to-file>
+```properties
+uttu.stopplace.netex-file-uri=<path-to-file>
+```
 
-or provide your own implementation of the `StopPlaceRegistry` interface ––
-see `src/main/java/no/entur/uttu/stopplace/spi/StopPlaceRegistry.java`.
+or provide your own implementation of the [`StopPlaceRegistry`](src/main/java/no/entur/uttu/stopplace/spi/StopPlaceRegistry.java) interface.
 
-Refer to `src/test/resources/fixtures/stopplace.xml` for an example of a NeTEx file with stop places.
+Refer to [`src/test/resources/fixtures/stopplace.xml`](src/test/resources/fixtures/stopplace.xml) for an example of a 
+NeTEx file with stop places.
 
 ## Optional export notification message
 
@@ -76,17 +85,20 @@ To build the project from source, you need Java 21 and Maven 3.
 
 Install Docker.
 
-```bash
+```shell
 docker run --platform linux/amd64 --name=uttu -d -e POSTGRES_USER=uttu -e POSTGRES_PASSWORD=uttu -e POSTGRES_DB=uttu -p 
 5432:5432 -v db_local:/var/lib/postgresql --restart=always postgis/postgis:13-3.3
 ```
 
 Now a Docker container is running in the background. Check its status with `docker ps`.
 
-To stop, find its ID from `docker ps`, and run `docker stop theid` (beginning of hash). To restart it, find the ID from `docker container list` and run `docker restart theid`.
+To stop, find its ID from `docker ps`, and run `docker stop theid` (beginning of hash). To restart it, find the ID from 
+`docker container list` and run `docker restart theid`.
+
+Run the [database initialization script](./src/main/resources/db_init.sh).
 
 Run the [database init script](./src/main/resources/db_init.sh).
-```bash
+```shell
 (cd src/main/resources && ./db_init.sh)
 ```
 
@@ -103,7 +115,7 @@ Uttu web server will expose APIs on port 11701 by default.
 
 Provider-independent GraphQL endpoint:
 
-    /services/flexible-lines/providers/graphql
+/services/flexible-lines/providers/graphql
 
 Provider-specific GraphQL endpoint (replace {providerCode} with provider's codespace code):
 
@@ -119,7 +131,7 @@ Choose one of three implementations with profiles:
 - `gcp-blobstore` - stores exports in Google Cloud Storage, requires additional configuration
 
 Alternatively, provide a
-[BlobStoreRepository](https://github.com/entur/rutebanken-helpers/blob/master/storage/src/main/java/org/rutebanken/helper/storage/repository/BlobStoreRepository.java)
+[`BlobStoreRepository`](https://github.com/entur/rutebanken-helpers/blob/master/storage/src/main/java/org/rutebanken/helper/storage/repository/BlobStoreRepository.java)
 bean for custom behavior.
 
 The following endpoint exposes exports for direct download:
@@ -128,33 +140,38 @@ The following endpoint exposes exports for direct download:
 
 ## Error code extension
 
-Some errors are augmented with a code extension. See [ErrorCodeEnumeration](src/main/java/no/entur/uttu/error/ErrorCodeEnumeration.java) for complete list of codes.
+Some errors are augmented with a code extension. See [`ErrorCodeEnumeration`](src/main/java/no/entur/uttu/error/codes/ErrorCodeEnumeration.java) 
+for complete list of codes.
 
 The code is optionally accompanied by a key-value metadata map under the `metadata` extension.
 
 The extension appears in the response as follows (example is trimmed):
 
+```json
+{
+    "errors": [
         {
-            "errors": [
-                {
-                    "extensions": {
-                        "code": "ORGANISATION_NOT_VALID_OPERATOR"
-                    }
-                }
-            ]
+            "extensions": {
+                "code": "ORGANISATION_NOT_VALID_OPERATOR"
+            }
         }
+    ]
+}
+```
 
 With metadata: 
-        
+       
+```json
+{
+    "errors": [
         {
-            "errors": [
-                {
-                    "extensions": {
-                        "code": "ENTITY_IS_REFERENCED",
-                        "metadata": {
-                            "numberOfReferences": 1
-                         }
-                    }
-                }
-            ]
+            "extensions": {
+                "code": "ENTITY_IS_REFERENCED",
+                "metadata": {
+                    "numberOfReferences": 1
+                 }
+            }
         }
+    ]
+}
+``` 
