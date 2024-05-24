@@ -86,6 +86,9 @@ Now a Docker container is running in the background. Check its status with `dock
 To stop, find its ID from `docker ps`, and run `docker stop theid` (beginning of hash). To restart it, find the ID from `docker container list` and run `docker restart theid`.
 
 Run the [database init script](./src/main/resources/db_init.sh).
+```bash
+(cd src/main/resources && ./db_init.sh)
+```
 
 ### Run
 
