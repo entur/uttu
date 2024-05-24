@@ -106,7 +106,6 @@ To stop, find its ID from `docker ps`, and run `docker stop theid` (beginning of
 
 Run the [database initialization script](./src/main/resources/db_init.sh).
 
-Run the [database init script](./src/main/resources/db_init.sh).
 ```shell
 (cd src/main/resources && ./db_init.sh)
 ```
@@ -124,7 +123,7 @@ Uttu web server will expose APIs on port 11701 by default.
 
 Provider-independent GraphQL endpoint:
 
-/services/flexible-lines/providers/graphql
+    /services/flexible-lines/providers/graphql
 
 Provider-specific GraphQL endpoint (replace {providerCode} with provider's codespace code):
 
@@ -132,7 +131,7 @@ Provider-specific GraphQL endpoint (replace {providerCode} with provider's codes
 
 ## Netex Export
 
-Uttu provides possibility (via provider specific GraphQL API) to export generated NeTEx file to a blobstore repository.
+Uttu exports (via provider specific GraphQL API) generated NeTEx file to a blobstore repository.
 Choose one of three implementations with profiles:
 
 - `in-memory-blobstore` - stores exports in memory, exports are lost on restarts, suitable for development and testing
