@@ -19,15 +19,20 @@ package no.entur.uttu.export.blob;
 import org.rutebanken.helper.storage.repository.BlobStoreRepository;
 import org.rutebanken.helper.storage.repository.LocalDiskBlobStoreRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile({ "local", "test", "local-disk-blobstore" })
+@Profile({ "local-disk-blobstore" })
 public class LocalDiskBlobStoreRepositoryConfig {
 
   @Bean
+  @ConditionalOnMissingBean(
+    value = BlobStoreRepository.class,
+    ignored = LocalDiskBlobStoreRepository.class
+  )
   BlobStoreRepository blobStoreRepository(
     @Value("${blobstore.local.folder:files/blob}") String baseFolder,
     @Value("${blobstore.gcs.container.name}") String containerName

@@ -24,11 +24,13 @@ import no.entur.uttu.UttuIntegrationTest
 import no.entur.uttu.stubs.UserContextServiceStub
 import org.junit.Before
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.test.context.ActiveProfiles;
 
 import java.time.LocalDate
 
 import static io.restassured.RestAssured.given
 
+@ActiveProfiles([ "local-disk-blobstore" ])
 abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTest {
 
     @Autowired

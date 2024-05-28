@@ -88,12 +88,16 @@ All Docker Compose commands run in relation to the `docker-compose.yml` file loc
 command is executed.
 
 ```shell
-# run with defaults
+# run with defaults - use ^C to shutdown containers
 docker compose up
+# run with additional profiles, e.g. with LocalStack based AWS simulator
+docker compose --profile aws up
 # run in background
 docker compose up -d # or --detach
 # shutdown containers
 docker compose down
+# shutdown containers included in specific profile
+docker compose --profile aws down
 ```
 
 See [Docker Compose reference](https://docs.docker.com/compose/reference/) for more details.
@@ -144,6 +148,8 @@ Choose one from the available implementations with matching profile:
 - `in-memory-blobstore` - stores exports in memory, exports are lost on restarts, suitable for development and testing
 - `disk-blobstore` - stores exports on disk
 - `gcp-blobstore` - stores exports in Google Cloud Storage, requires additional configuration
+- `s3-blobstore` - stores exports in Amazon Web Services Simple Storage Service (AWS S3), requires additional 
+  configuration
 
 Alternatively, provide a
 [`BlobStoreRepository`](https://github.com/entur/rutebanken-helpers/blob/master/storage/src/main/java/org/rutebanken/helper/storage/repository/BlobStoreRepository.java)
