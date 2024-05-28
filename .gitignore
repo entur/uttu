@@ -95,3 +95,6 @@ files
 dataset.zip
 
 **/.terraform/*
+
+# LocalStack default volume directory if override is not provided through environment variables
+./volume
