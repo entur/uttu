@@ -1,0 +1,24 @@
+name: 'uttu'
+
+services:
+  db:
+    container_name: '${COMPOSE_PROJECT_NAME}_postgis13'
+    image: postgis/postgis:13-3.3
+    platform: linux/amd64
+    restart: always
+    environment:
+      POSTGRES_USER: uttu
+      POSTGRES_PASSWORD: uttu
+      POSTGRES_DB: uttu
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql
+    networks:
+      - uttu
+
+volumes:
+  postgres-data:
+
+networks:
+  uttu:
