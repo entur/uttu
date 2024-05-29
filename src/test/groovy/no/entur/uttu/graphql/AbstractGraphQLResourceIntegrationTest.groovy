@@ -30,7 +30,7 @@ import java.time.LocalDate
 
 import static io.restassured.RestAssured.given
 
-@ActiveProfiles([ "local-disk-blobstore" ])
+@ActiveProfiles([ "in-memory-blobstore" ])
 abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTest {
 
     @Autowired

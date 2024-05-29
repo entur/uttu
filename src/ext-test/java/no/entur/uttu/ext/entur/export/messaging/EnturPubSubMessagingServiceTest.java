@@ -21,6 +21,8 @@ import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
 import com.google.cloud.spring.pubsub.core.subscriber.PubSubSubscriberTemplate;
 import com.google.pubsub.v1.PubsubMessage;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import no.entur.uttu.UttuIntegrationTest;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
@@ -41,11 +43,8 @@ import org.testcontainers.containers.PubSubEmulatorContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-
 @Testcontainers
-@ActiveProfiles({ "local-disk-blobstore", "entur-pubsub-messaging-service" })
+@ActiveProfiles({ "in-memory-blobstore", "entur-pubsub-messaging-service" })
 public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
 
   public static final String TEST_CODESPACE = "rut";

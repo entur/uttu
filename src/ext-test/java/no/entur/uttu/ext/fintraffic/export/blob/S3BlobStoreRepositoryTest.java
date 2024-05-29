@@ -1,5 +1,8 @@
 package no.entur.uttu.ext.fintraffic.export.blob;
 
+import java.io.ByteArrayInputStream;
+import java.nio.charset.StandardCharsets;
+import java.util.concurrent.ExecutionException;
 import no.entur.uttu.UttuIntegrationTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -20,10 +23,6 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
-
-import java.io.ByteArrayInputStream;
-import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
 
 @Testcontainers
 @ActiveProfiles({ "s3-blobstore" })
