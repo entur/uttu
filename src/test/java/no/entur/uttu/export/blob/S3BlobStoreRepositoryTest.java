@@ -1,4 +1,4 @@
-package no.entur.uttu.ext.fintraffic.export.blob;
+package no.entur.uttu.export.blob;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
