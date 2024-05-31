@@ -10,7 +10,7 @@ pushing changes. You can also configure your IDE to reformat code when you save 
 
 ## Security
 
-Running uttu with vanilla security features requires an Oauth2 issuer, which can be set with the following property:
+Running uttu with vanilla security features requires an OAuth2 issuer, which can be set with the following property:
 
 ```properties
 uttu.security.jwt.issuer-uri=https://my-jwt-issuer
@@ -75,34 +75,45 @@ If you don't use Google PubSub, sett this property:
 
 ## Running locally
 
+### Local Environment through Docker Compose
+
+Uttu has [docker-compose.yml](./docker-compose.yml) which contains all necessary dependent services for running uttu in
+various configurations. It is assumed this environment is always running when the service is being run locally 
+(see below).
+
+> **Note!** This uses the compose version included with modern versions of Docker, not the separately installable 
+> `docker-compose` command.
+
+All Docker Compose commands run in relation to the `docker-compose.yml` file located in the same directory in which the 
+command is executed.
+
+```shell
+# run with defaults - use ^C to shutdown containers
+docker compose up
+# run with additional profiles, e.g. with LocalStack based AWS simulator
+docker compose --profile aws up
+# run in background
+docker compose up -d # or --detach
+# shutdown containers
+docker compose down
+# shutdown containers included in specific profile
+docker compose --profile aws down
+```
+
+See [Docker Compose reference](https://docs.docker.com/compose/reference/) for more details.
+
 ### Build
 
 To build the project from source, you need Java 21 and Maven 3.
 
 ### Database
 
-#### Via Docker
+#### Via Docker Compose
 
-Install Docker.
-
+Ensure database is up with
 ```shell
-docker run \
-    --platform linux/amd64 \
-    --name=uttu \
-    -d \
-    -e POSTGRES_USER=uttu \
-    -e POSTGRES_PASSWORD=uttu \
-    -e POSTGRES_DB=uttu \
-    -p 5432:5432 \
-    -v db_local:/var/lib/postgresql \
-    --restart=always \
-    postgis/postgis:13-3.3
+docker compose up -d
 ```
-
-Now a Docker container is running in the background. Check its status with `docker ps`.
-
-To stop, find its ID from `docker ps`, and run `docker stop theid` (beginning of hash). To restart it, find the ID from 
-`docker container list` and run `docker restart theid`.
 
 Run the [database initialization script](./src/main/resources/db_init.sh).
 
@@ -129,14 +140,16 @@ Provider-specific GraphQL endpoint (replace {providerCode} with provider's codes
 
     /services/flexible-lines/{providerCode}/graphql
 
-## Netex Export
+## NeTEx Export
 
 Uttu exports (via provider specific GraphQL API) generated NeTEx file to a blobstore repository.
-Choose one of three implementations with profiles:
+Choose one from the available implementations with matching profile:
 
 - `in-memory-blobstore` - stores exports in memory, exports are lost on restarts, suitable for development and testing
 - `disk-blobstore` - stores exports on disk
 - `gcp-blobstore` - stores exports in Google Cloud Storage, requires additional configuration
+- `s3-blobstore` - stores exports in Amazon Web Services Simple Storage Service (AWS S3), requires additional 
+  configuration
 
 Alternatively, provide a
 [`BlobStoreRepository`](https://github.com/entur/rutebanken-helpers/blob/master/storage/src/main/java/org/rutebanken/helper/storage/repository/BlobStoreRepository.java)

@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile({ "local", "test", "local-disk-blobstore" })
+@Profile({ "local-disk-blobstore" })
 public class LocalDiskBlobStoreRepositoryConfig {
 
   @Bean

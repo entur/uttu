@@ -26,7 +26,12 @@ import java.util.List;
 import no.entur.uttu.UttuIntegrationTest;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
-import org.junit.*;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -39,7 +44,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
-@ActiveProfiles({ "test", "entur-pubsub-messaging-service" })
+@ActiveProfiles({ "in-memory-blobstore", "entur-pubsub-messaging-service" })
 public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
 
   public static final String TEST_CODESPACE = "rut";
