@@ -52,8 +52,8 @@
         <commons-io.version>2.16.1</commons-io.version>
         <groovy-all.version>4.0.21</groovy-all.version>
         <rest-assured.version>5.4.0</rest-assured.version>
-        <graphql.version>21.5</graphql.version>
-        <graphql-extended-scalars.version>21.0</graphql-extended-scalars.version>
+        <graphql.version>22.1</graphql.version>
+        <graphql-extended-scalars.version>22.0</graphql-extended-scalars.version>
         <netex-java-model.version>2.0.15</netex-java-model.version>
 
         <jakarta-xml-bind.version>4.0.2</jakarta-xml-bind.version>
