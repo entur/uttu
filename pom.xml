@@ -284,6 +284,18 @@
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
 
+        <!-- AWS: enable use of Secrets Manager as parameter source in configurations -->
+        <dependency>
+            <groupId>io.awspring.cloud</groupId>
+            <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <!-- AWS: acquire and refresh jdbc credentials from Secrets Manager in cloud environments -->
+        <dependency>
+            <groupId>com.amazonaws.secretsmanager</groupId>
+            <artifactId>aws-secretsmanager-jdbc</artifactId>
+            <version>2.0.2</version>
+        </dependency>
 
         <dependency>
             <groupId>org.junit.vintage</groupId>
