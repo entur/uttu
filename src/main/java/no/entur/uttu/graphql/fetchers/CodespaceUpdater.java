@@ -37,7 +37,7 @@ public class CodespaceUpdater implements DataFetcher<Codespace> {
   private CodespaceRepository repository;
 
   @Override
-  @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
+  @PreAuthorize("@userContextService.isAdmin()")
   public Codespace get(DataFetchingEnvironment env) {
     ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
     String codespaceXmlns = input.get(FIELD_XMLNS);
