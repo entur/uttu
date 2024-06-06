@@ -68,10 +68,21 @@ The default MessagingService implementation is a noop.
 
 ## Disable Google PubSub autoconfiguration
 
-If you don't use Google PubSub, sett this property:
+If you don't use Google PubSub, set this property:
 
     # This property is needed to avoid pubsub autoconfiguration
     spring.cloud.gcp.pubsub.enabled=false
+
+## Disable AWS S3 autoconfiguration
+
+If you don't use AWS S3 through AWSpring, set this property:
+
+    # This property is needed to avoid AWS S3 autoconfiguration
+    spring.cloud.aws.s3.enabled=false
+
+This feature is automatically enabled due to transitive dependency activation from 
+`spring-cloud-aws-starter-secrets-manager` and should never be needed when running uttu in any of the available 
+configurations.
 
 ## Running locally
 
