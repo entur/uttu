@@ -6,7 +6,9 @@ import no.entur.uttu.security.spi.UserContextService;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.RorAuthenticationConverter;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolverBuilder;
+import org.entur.oauth2.user.JwtUserInfoExtractor;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
+import org.rutebanken.helper.organisation.user.UserInfoExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,16 +26,26 @@ public class EnturSecurityConfiguration {
   }
 
   @Bean
-  public UserContextService userContextService(
-    ProviderRepository providerRepository,
-    RoleAssignmentExtractor roleAssignmentExtractor
-  ) {
-    return new EnturUserContextService(providerRepository, roleAssignmentExtractor);
+  public RoleAssignmentExtractor roleAssignmentExtractor() {
+    return new JwtRoleAssignmentExtractor();
   }
 
   @Bean
-  public RoleAssignmentExtractor roleAssignmentExtractor() {
-    return new JwtRoleAssignmentExtractor();
+  public UserInfoExtractor userInfoExtractor() {
+    return new JwtUserInfoExtractor();
+  }
+
+  @Bean
+  public UserContextService userContextService(
+    ProviderRepository providerRepository,
+    RoleAssignmentExtractor roleAssignmentExtractor,
+    UserInfoExtractor userInfoExtractor
+  ) {
+    return new EnturUserContextService(
+      providerRepository,
+      roleAssignmentExtractor,
+      userInfoExtractor
+    );
   }
 
   @Bean

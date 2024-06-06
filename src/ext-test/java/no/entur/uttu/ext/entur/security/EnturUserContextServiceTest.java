@@ -6,6 +6,7 @@ import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.ProviderRepository;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
+import org.entur.oauth2.user.JwtUserInfoExtractor;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,7 +31,8 @@ class EnturUserContextServiceTest {
     subject =
       new EnturUserContextService(
         mockProviderRepository,
-        new JwtRoleAssignmentExtractor()
+        new JwtRoleAssignmentExtractor(),
+        new JwtUserInfoExtractor()
       );
   }
 
