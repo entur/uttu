@@ -17,10 +17,8 @@ package no.entur.uttu.graphql.fetchers;
 
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CODE;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_CODE_SPACE_XMLNS;
-import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_INPUT;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_NAME;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
@@ -46,7 +44,7 @@ public class ProviderUpdater implements DataFetcher<Provider> {
   private CodespaceRepository codespaceRepository;
 
   @Override
-  @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
+  @PreAuthorize("@userContextService.isAdmin()")
   public Provider get(DataFetchingEnvironment env) {
     ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
     String code = input.get(FIELD_CODE);

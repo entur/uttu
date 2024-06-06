@@ -15,15 +15,15 @@
 
 package no.entur.uttu.graphql.fetchers;
 
-import static no.entur.uttu.graphql.GraphQLNames.*;
-import static org.rutebanken.helper.organisation.AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_INPUT;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_XMLNS;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_XMLNS_URL;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.repository.CodespaceRepository;
-import no.entur.uttu.util.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
@@ -37,7 +37,7 @@ public class CodespaceUpdater implements DataFetcher<Codespace> {
   private CodespaceRepository repository;
 
   @Override
-  @PreAuthorize("hasRole('" + ROLE_ROUTE_DATA_ADMIN + "')")
+  @PreAuthorize("@userContextService.isAdmin()")
   public Codespace get(DataFetchingEnvironment env) {
     ArgumentWrapper input = new ArgumentWrapper(env.getArgument(FIELD_INPUT));
     String codespaceXmlns = input.get(FIELD_XMLNS);
