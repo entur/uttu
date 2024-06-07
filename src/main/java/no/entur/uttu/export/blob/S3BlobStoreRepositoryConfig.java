@@ -17,6 +17,7 @@
 package no.entur.uttu.export.blob;
 
 import java.net.URI;
+import java.time.Duration;
 import org.rutebanken.helper.storage.repository.BlobStoreRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -26,9 +27,10 @@ import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.AwsCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.DefaultCredentialsProvider;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
+import software.amazon.awssdk.core.client.config.ClientOverrideConfiguration;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3AsyncClient;
-import software.amazon.awssdk.services.s3.S3CrtAsyncClientBuilder;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.S3ClientBuilder;
 
 @Configuration
 @Profile("s3-blobstore")
@@ -43,11 +45,9 @@ public class S3BlobStoreRepositoryConfig {
   @Bean
   BlobStoreRepository blobStoreRepository(
     @Value("${blobstore.s3.bucket}") String containerName,
-    S3AsyncClient s3AsyncClient
+    S3Client s3Client
   ) {
-    S3BlobStoreRepository s3BlobStoreRepository = new S3BlobStoreRepository(
-      s3AsyncClient
-    );
+    S3BlobStoreRepository s3BlobStoreRepository = new S3BlobStoreRepository(s3Client);
     s3BlobStoreRepository.setContainerName(containerName);
     return s3BlobStoreRepository;
   }
@@ -70,11 +70,19 @@ public class S3BlobStoreRepositoryConfig {
   }
 
   @Bean
-  public S3AsyncClient s3AsyncClient(AwsCredentialsProvider credentialsProvider) {
-    S3CrtAsyncClientBuilder b = S3AsyncClient
-      .crtBuilder()
+  public S3Client s3Client(AwsCredentialsProvider credentialsProvider) {
+    S3ClientBuilder b = S3Client
+      .builder()
+      .region(Region.of(region))
       .credentialsProvider(credentialsProvider)
-      .region(Region.of(region));
+      .overrideConfiguration(
+        ClientOverrideConfiguration
+          .builder()
+          .apiCallAttemptTimeout(Duration.ofSeconds(15))
+          .apiCallTimeout(Duration.ofSeconds(15))
+          .retryPolicy(retryPolicy -> retryPolicy.numRetries(5))
+          .build()
+      );
     if (endpointOverride != null) {
       b = b.endpointOverride(URI.create(endpointOverride));
     }
