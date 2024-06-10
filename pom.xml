@@ -324,6 +324,13 @@
             <artifactId>s3</artifactId>
         </dependency>
 
+        <!-- Java native HTTP client extensions -->
+        <dependency>
+            <groupId>com.github.mizosoft.methanol</groupId>
+            <artifactId>methanol</artifactId>
+            <version>1.7.0</version>
+        </dependency>
+
         <!-- Test-->
 
         <dependency>
