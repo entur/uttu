@@ -59,7 +59,7 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
     try {
       body = RequestBody.fromBytes(inputStream.readAllBytes());
     } catch (IOException e) {
-      throw new BlobStoreException("Faiuled to read all bytes from given inputstream", e);
+      throw new BlobStoreException("Failed to read all bytes from given InputStream", e);
     }
 
     s3Client.putObject(
