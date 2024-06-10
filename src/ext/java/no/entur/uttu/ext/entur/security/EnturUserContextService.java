@@ -11,7 +11,7 @@ import org.rutebanken.helper.organisation.user.UserInfoExtractor;
 public class EnturUserContextService implements UserContextService {
 
   private final ProviderRepository providerRepository;
-  private final AuthorizationService<String> userContextService;
+  private final AuthorizationService<String> authorizationService;
   private final UserInfoExtractor userInfoExtractor;
 
   public EnturUserContextService(
@@ -21,7 +21,7 @@ public class EnturUserContextService implements UserContextService {
   ) {
     this.providerRepository = providerRepository;
     this.userInfoExtractor = userInfoExtractor;
-    userContextService =
+    authorizationService =
       new DefaultAuthorizationService<>(
         this::getProviderCodespaceByProviderCode,
         roleAssignmentExtractor
@@ -35,12 +35,12 @@ public class EnturUserContextService implements UserContextService {
 
   @Override
   public boolean isAdmin() {
-    return userContextService.isRouteDataAdmin();
+    return authorizationService.isRouteDataAdmin();
   }
 
   @Override
   public boolean hasAccessToProvider(String providerCode) {
-    return userContextService.canEditRouteData(providerCode);
+    return authorizationService.canEditRouteData(providerCode);
   }
 
   private String getProviderCodespaceByProviderCode(String providerCode) {
