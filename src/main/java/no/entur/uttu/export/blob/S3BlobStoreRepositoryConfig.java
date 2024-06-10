@@ -71,7 +71,7 @@ public class S3BlobStoreRepositoryConfig {
 
   @Bean
   public S3Client s3Client(AwsCredentialsProvider credentialsProvider) {
-    S3ClientBuilder b = S3Client
+    S3ClientBuilder builder = S3Client
       .builder()
       .region(Region.of(region))
       .credentialsProvider(credentialsProvider)
@@ -84,8 +84,8 @@ public class S3BlobStoreRepositoryConfig {
           .build()
       );
     if (endpointOverride != null) {
-      b = b.endpointOverride(URI.create(endpointOverride));
+      builder = builder.endpointOverride(URI.create(endpointOverride));
     }
-    return b.build();
+    return builder.build();
   }
 }
