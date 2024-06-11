@@ -2,7 +2,6 @@ package no.entur.uttu.export.blob;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.concurrent.ExecutionException;
 import no.entur.uttu.UttuIntegrationTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -19,10 +18,10 @@ import org.testcontainers.containers.localstack.LocalStackContainer.Service;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3AsyncClient;
-import software.amazon.awssdk.services.s3.model.CreateBucketRequest;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.HeadObjectResponse;
 import software.amazon.awssdk.services.s3.model.NoSuchBucketException;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 @Testcontainers
 @ActiveProfiles({ "s3-blobstore" })
@@ -33,7 +32,7 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
   private static LocalStackContainer localStack;
 
   @Autowired
-  private S3AsyncClient s3AsyncClient;
+  private S3Client s3Client;
 
   @Autowired
   private S3BlobStoreRepository blobStore;
@@ -50,19 +49,12 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
     registry.add("blobstore.s3.bucket", () -> TEST_BUCKET);
   }
 
-  private void createBucket(String bucketName)
-    throws ExecutionException, InterruptedException {
-    s3AsyncClient
-      .headBucket(request -> request.bucket(bucketName))
-      .exceptionally(throwable -> {
-        if (throwable.getCause() instanceof NoSuchBucketException) {
-          s3AsyncClient
-            .createBucket(CreateBucketRequest.builder().bucket(bucketName).build())
-            .join();
-        }
-        return null;
-      })
-      .get();
+  private void createBucket(String bucketName) {
+    try {
+      s3Client.headBucket(request -> request.bucket(bucketName));
+    } catch (NoSuchBucketException e) {
+      s3Client.createBucket(request -> request.bucket(bucketName));
+    }
   }
 
   @BeforeClass
@@ -114,9 +106,9 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
       contentType
     );
     assertBlobExists(TEST_BUCKET, "json", true);
-    HeadObjectResponse response = s3AsyncClient
-      .headObject(request -> request.bucket(TEST_BUCKET).key("json"))
-      .join();
+    HeadObjectResponse response = s3Client.headObject(request ->
+      request.bucket(TEST_BUCKET).key("json")
+    );
     Assert.assertEquals(contentType, response.contentType());
   }
 
@@ -180,12 +172,11 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
     return new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8));
   }
 
-  private void assertBlobExists(String bucket, String key, boolean exists)
-    throws ExecutionException, InterruptedException {
-    HeadObjectResponse response = s3AsyncClient
-      .headObject(request -> request.bucket(bucket).key(key))
-      .exceptionally(throwable -> null)
-      .get();
+  private void assertBlobExists(String bucket, String key, boolean exists) {
+    HeadObjectResponse response = null;
+    try {
+      response = s3Client.headObject(request -> request.bucket(bucket).key(key));
+    } catch (NoSuchKeyException ignored) {}
     if (!exists && response != null) {
       Assert.fail(bucket + " / " + key + " exists");
     }

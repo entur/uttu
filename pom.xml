@@ -308,15 +308,10 @@
         Including HTTP client implementations directly allows for configuring and customization of the clients.
         See https://docs.aws.amazon.com/sdk-for-java/latest/developer-guide/http-configuration-apache.html
         -->
-        <!-- asynchronous HTTP client for all service clients -->
+        <!-- synchronous HTTP client for all service clients -->
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
-            <artifactId>netty-nio-client</artifactId>
-        </dependency>
-        <!-- CRT client is a specialization of the async client which allows for increased performance -->
-        <dependency>
-            <groupId>software.amazon.awssdk</groupId>
-            <artifactId>aws-crt-client</artifactId>
+            <artifactId>apache-client</artifactId>
         </dependency>
         <!-- AWS Simple Storage Service service client -->
         <dependency>

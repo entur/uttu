@@ -1,23 +1,22 @@
 package no.entur.uttu.export.blob;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import org.rutebanken.helper.storage.BlobAlreadyExistsException;
+import org.rutebanken.helper.storage.BlobStoreException;
 import org.rutebanken.helper.storage.repository.BlobStoreRepository;
-import software.amazon.awssdk.core.async.AsyncRequestBody;
-import software.amazon.awssdk.core.async.AsyncResponseTransformer;
-import software.amazon.awssdk.core.async.BlockingInputStreamAsyncRequestBody;
-import software.amazon.awssdk.services.s3.S3AsyncClient;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 import software.amazon.awssdk.services.s3.model.S3Object;
-import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Publisher;
+import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
 
 /**
  * <a href="https://aws.amazon.com/s3/">AWS S3</a> backed implementation of {@link BlobStoreRepository}.
@@ -33,22 +32,20 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
    */
   private static final long UNKNOWN_LATEST_VERSION = 0;
 
-  private final S3AsyncClient s3AsyncClient;
+  private final S3Client s3Client;
 
   private String containerName;
 
-  public S3BlobStoreRepository(S3AsyncClient s3AsyncClient) {
-    this.s3AsyncClient = Objects.requireNonNull(s3AsyncClient);
+  public S3BlobStoreRepository(S3Client s3Client) {
+    this.s3Client = Objects.requireNonNull(s3Client);
   }
 
   @Override
   public InputStream getBlob(String objectName) {
-    return s3AsyncClient
-      .getObject(
-        GetObjectRequest.builder().bucket(containerName).key(objectName).build(),
-        AsyncResponseTransformer.toBlockingInputStream()
-      )
-      .join();
+    return s3Client.getObject(
+      GetObjectRequest.builder().bucket(containerName).key(objectName).build(),
+      ResponseTransformer.toInputStream()
+    );
   }
 
   @Override
@@ -58,11 +55,14 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
 
   @Override
   public long uploadBlob(String objectName, InputStream inputStream, String contentType) {
-    BlockingInputStreamAsyncRequestBody body = AsyncRequestBody.forBlockingInputStream(
-      null
-    ); // 'null' indicates a stream will be provided later.
+    RequestBody body = null;
+    try {
+      body = RequestBody.fromBytes(inputStream.readAllBytes());
+    } catch (IOException e) {
+      throw new BlobStoreException("Failed to read all bytes from given InputStream", e);
+    }
 
-    CompletableFuture<PutObjectResponse> responseFuture = s3AsyncClient.putObject(
+    s3Client.putObject(
       r -> {
         r.bucket(containerName).key(objectName);
         if (contentType != null) {
@@ -71,11 +71,6 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
       },
       body
     );
-
-    // Provide the stream of data to be uploaded.
-    long v = body.writeInputStream(inputStream);
-
-    PutObjectResponse r = responseFuture.join(); // Wait for the response.
     return UNKNOWN_LATEST_VERSION;
   }
 
@@ -91,13 +86,14 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
   }
 
   private boolean objectExists(String containerName, String objectName) {
-    return s3AsyncClient
-      .headObject(headObjectRequest ->
+    try {
+      s3Client.headObject(headObjectRequest ->
         headObjectRequest.bucket(containerName).key(objectName)
-      )
-      .exceptionally(throwable -> null)
-      .thenApply(Objects::nonNull)
-      .join();
+      );
+      return true;
+    } catch (NoSuchKeyException e) {
+      return false;
+    }
   }
 
   @Override
@@ -107,15 +103,13 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
     String targetContainerName,
     String targetObjectName
   ) {
-    s3AsyncClient
-      .copyObject(copyObjectRequest ->
-        copyObjectRequest
-          .sourceBucket(sourceContainerName)
-          .sourceKey(sourceObjectName)
-          .destinationBucket(targetContainerName)
-          .destinationKey(targetObjectName)
-      )
-      .join();
+    s3Client.copyObject(copyObjectRequest ->
+      copyObjectRequest
+        .sourceBucket(sourceContainerName)
+        .sourceKey(sourceObjectName)
+        .destinationBucket(targetContainerName)
+        .destinationKey(targetObjectName)
+    );
   }
 
   @Override
@@ -164,7 +158,7 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
 
   @Override
   public boolean delete(String objectName) {
-    s3AsyncClient.deleteObject(r -> r.bucket(containerName).key(objectName)).join();
+    s3Client.deleteObject(r -> r.bucket(containerName).key(objectName));
 
     return !objectExists(containerName, objectName);
   }
@@ -179,11 +173,10 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
           .stream()
           .map(s3Object -> ObjectIdentifier.builder().key(s3Object.key()).build())
           .toList();
-        return s3AsyncClient
+        return s3Client
           .deleteObjects(deleteObjectsRequest ->
             deleteObjectsRequest.delete(delete -> delete.objects(objectIdentifiers))
           )
-          .join()
           .errors()
           .isEmpty();
       }
@@ -200,20 +193,12 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
     String prefix,
     Function<List<S3Object>, U> mapper
   ) {
-    ListObjectsV2Publisher publisher = s3AsyncClient.listObjectsV2Paginator(req ->
+    ListObjectsV2Iterable iterable = s3Client.listObjectsV2Paginator(req ->
       req.bucket(containerName).prefix(prefix)
     );
 
     List<U> pageResults = new ArrayList<>();
-    CompletableFuture<Void> future = publisher.subscribe(res ->
-      pageResults.add(mapper.apply(res.contents()))
-    );
-    try {
-      future.get();
-    } catch (InterruptedException | ExecutionException ignored) {
-      // ignored on purpose
-    }
-
+    iterable.forEach(a -> pageResults.add(mapper.apply(a.contents())));
     return pageResults;
   }
 
