@@ -18,12 +18,15 @@ package no.entur.uttu.ext.entur.stopplace;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
+import org.rutebanken.netex.model.EntityInVersionStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -111,10 +114,24 @@ public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
     String quayRef
   ) {
     try {
-      return Optional.of(stopPlaceByQuayRefCache.get(quayRef));
+      return Optional
+        .of(stopPlaceByQuayRefCache.get(quayRef))
+        .filter(this::currentValidityFilter);
     } catch (ExecutionException e) {
       logger.warn("Failed to get stop place by quay ref ${}", quayRef);
       return Optional.empty();
     }
+  }
+
+  public boolean currentValidityFilter(EntityInVersionStructure entity) {
+    return entity
+      .getValidBetween()
+      .stream()
+      .filter(validBetween -> validBetween.getToDate() != null)
+      .noneMatch(validBetween ->
+        Instant
+          .now()
+          .isAfter(validBetween.getToDate().atZone(ZoneId.systemDefault()).toInstant())
+      );
   }
 }
