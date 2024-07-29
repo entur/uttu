@@ -15,6 +15,7 @@
 
 package no.entur.uttu.stopplace.spi;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -27,4 +28,10 @@ public interface StopPlaceRegistry {
    * @return The stop place that the quay belongs to
    */
   Optional<org.rutebanken.netex.model.StopPlace> getStopPlaceByQuayRef(String quayRef);
+
+  /**
+   * Serve all stop places and quays, used e.g. in stop places route pattern editing map
+   * @return A list of all stop places
+   */
+  List<org.rutebanken.netex.model.StopPlace> getAllStopPlaces();
 }
