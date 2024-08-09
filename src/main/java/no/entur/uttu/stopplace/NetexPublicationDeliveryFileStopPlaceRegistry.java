@@ -84,4 +84,9 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
     return Optional.ofNullable(stopPlaceByQuayRefIndex.get(quayRef));
   }
+
+  @Override
+  public List<StopPlace> getAllStopPlaces() {
+    return stopPlaceByQuayRefIndex.values().stream().toList();
+  }
 }
