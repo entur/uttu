@@ -9,6 +9,8 @@ import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
+import no.entur.uttu.stopplace.filter.StopPlaceFilter;
+import no.entur.uttu.stopplace.filter.TransportModeStopPlaceFilter;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Quay;
@@ -86,7 +88,35 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   }
 
   @Override
-  public List<StopPlace> getAllStopPlaces() {
-    return stopPlaceByQuayRefIndex.values().stream().toList();
+  public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
+    List<StopPlace> allStopPlaces = stopPlaceByQuayRefIndex
+      .values()
+      .stream()
+      .distinct()
+      .toList();
+    if (filters.isEmpty()) {
+      return allStopPlaces;
+    }
+
+    return allStopPlaces
+      .stream()
+      .filter(s -> isStopPlaceToBeIncluded(s, filters))
+      .toList();
+  }
+
+  private boolean isStopPlaceToBeIncluded(
+    StopPlace stopPlace,
+    List<StopPlaceFilter> filters
+  ) {
+    for (StopPlaceFilter f : filters) {
+      if (f instanceof TransportModeStopPlaceFilter transportModeStopPlaceFilter) {
+        boolean isOfTransportMode =
+          stopPlace.getTransportMode() == transportModeStopPlaceFilter.transportMode();
+        if (!isOfTransportMode) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 }

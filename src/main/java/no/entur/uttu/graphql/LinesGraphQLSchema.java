@@ -84,6 +84,7 @@ import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
 import org.locationtech.jts.geom.Geometry;
+import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -235,6 +236,11 @@ public class LinesGraphQLSchema {
     "DirectionTypeEnumeration",
     DirectionTypeEnumeration.values(),
     (DirectionTypeEnumeration::value)
+  );
+  private GraphQLEnumType transportModeEnum = createEnum(
+    "TransportModeEnumeration",
+    AllVehicleModesOfTransportEnumeration.values(),
+    (AllVehicleModesOfTransportEnumeration::value)
   );
 
   private GraphQLObjectType lineObjectType;
@@ -899,7 +905,7 @@ public class LinesGraphQLSchema {
         .name("StopPlace")
         .field(newFieldDefinition().name(FIELD_ID).type(GraphQLID))
         .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
-        .field(newFieldDefinition().name("transportMode").type(GraphQLString))
+        .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(GraphQLString))
         .field(newFieldDefinition().name("stopPlaceType").type(GraphQLString))
         .field(newFieldDefinition().name("quays").type(new GraphQLList(quayObjectType)))
         .build();
@@ -1011,7 +1017,17 @@ public class LinesGraphQLSchema {
         newFieldDefinition()
           .type(new GraphQLList(stopPlaceObjectType))
           .name("stopPlaces")
-          .description("List all stop places with quays included")
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_TRANSPORT_MODE)
+              .type(transportModeEnum)
+              .description("Transport mode, e.g. train, bus etc.")
+              .build()
+          )
+          .description(
+            "List all stop places of a certain transport mode, with quays included"
+          )
           .dataFetcher(stopPlacesFetcher)
       )
       .field(
