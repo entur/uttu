@@ -7,6 +7,9 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
+
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
@@ -21,6 +24,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
+
+import static no.entur.uttu.error.codes.ErrorCodeEnumeration.INVALID_STOP_PLACE_FILTER;
 
 @Component
 @ConditionalOnMissingBean(
@@ -115,6 +120,8 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
         if (!isOfTransportMode) {
           return false;
         }
+      } else {
+        throw new CodedIllegalArgumentException("Unsupported kind of filter encountered ", CodedError.fromErrorCode(INVALID_STOP_PLACE_FILTER));
       }
     }
     return true;

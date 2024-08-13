@@ -8,6 +8,5 @@ public record StopPlace(
   String id,
   MultilingualString name,
   String transportMode,
-  String stopPlaceType,
   List<Quay> quays
 ) {}
