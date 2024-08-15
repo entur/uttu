@@ -72,5 +72,5 @@ public enum ErrorCodeEnumeration implements ErrorCode {
   /**
    * If supplied stop place filter isn't something we support
    */
-  INVALID_STOP_PLACE_FILTER;
+  INVALID_STOP_PLACE_FILTER,
 }

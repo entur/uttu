@@ -906,7 +906,7 @@ public class LinesGraphQLSchema {
         .field(newFieldDefinition().name(FIELD_ID).type(GraphQLID))
         .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
         .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(GraphQLString))
-        .field(newFieldDefinition().name("stopPlaceType").type(GraphQLString))
+        .field(newFieldDefinition().name("centroid").type(centroidObjectType))
         .field(newFieldDefinition().name("quays").type(new GraphQLList(quayObjectType)))
         .build();
 
