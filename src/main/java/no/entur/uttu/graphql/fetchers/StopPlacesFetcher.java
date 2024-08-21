@@ -46,7 +46,7 @@ public class StopPlacesFetcher implements DataFetcher<List<StopPlace>> {
     return new StopPlace(
       stopPlace.getId(),
       stopPlace.getName(),
-      stopPlace.getTransportMode().value(),
+      stopPlace.getTransportMode(),
       stopPlace.getCentroid(),
       quays
     );
