@@ -1,5 +1,7 @@
 package no.entur.uttu.stopplace;
 
+import static no.entur.uttu.error.codes.ErrorCodeEnumeration.INVALID_STOP_PLACE_FILTER;
+
 import java.io.File;
 import java.util.List;
 import java.util.Map;
@@ -7,8 +9,12 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
+import no.entur.uttu.error.codederror.CodedError;
+import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
+import no.entur.uttu.stopplace.filter.StopPlaceFilter;
+import no.entur.uttu.stopplace.filter.TransportModeStopPlaceFilter;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Quay;
@@ -83,5 +89,43 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   @Override
   public Optional<StopPlace> getStopPlaceByQuayRef(String quayRef) {
     return Optional.ofNullable(stopPlaceByQuayRefIndex.get(quayRef));
+  }
+
+  @Override
+  public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
+    List<StopPlace> allStopPlaces = stopPlaceByQuayRefIndex
+      .values()
+      .stream()
+      .distinct()
+      .toList();
+    if (filters.isEmpty()) {
+      return allStopPlaces;
+    }
+
+    return allStopPlaces
+      .stream()
+      .filter(s -> isStopPlaceToBeIncluded(s, filters))
+      .toList();
+  }
+
+  private boolean isStopPlaceToBeIncluded(
+    StopPlace stopPlace,
+    List<StopPlaceFilter> filters
+  ) {
+    for (StopPlaceFilter f : filters) {
+      if (f instanceof TransportModeStopPlaceFilter transportModeStopPlaceFilter) {
+        boolean isOfTransportMode =
+          stopPlace.getTransportMode() == transportModeStopPlaceFilter.transportMode();
+        if (!isOfTransportMode) {
+          return false;
+        }
+      } else {
+        throw new CodedIllegalArgumentException(
+          "Unsupported kind of filter encountered ",
+          CodedError.fromErrorCode(INVALID_STOP_PLACE_FILTER)
+        );
+      }
+    }
+    return true;
   }
 }

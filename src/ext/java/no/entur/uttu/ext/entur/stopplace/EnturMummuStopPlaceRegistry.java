@@ -21,12 +21,15 @@ import com.google.common.cache.LoadingCache;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
+import no.entur.uttu.stopplace.filter.StopPlaceFilter;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.EntityInVersionStructure;
+import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -133,5 +136,10 @@ public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
           .now()
           .isAfter(validBetween.getToDate().atZone(ZoneId.systemDefault()).toInstant())
       );
+  }
+
+  @Override
+  public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
+    return List.of();
   }
 }

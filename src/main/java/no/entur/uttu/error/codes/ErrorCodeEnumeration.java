@@ -68,4 +68,9 @@ public enum ErrorCodeEnumeration implements ErrorCode {
    * Flexible areas must have polygons with valid geometry
    */
   INVALID_POLYGON,
+
+  /**
+   * If supplied stop place filter isn't something we support
+   */
+  INVALID_STOP_PLACE_FILTER,
 }

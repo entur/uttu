@@ -49,6 +49,7 @@ import no.entur.uttu.config.Context;
 import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.graphql.fetchers.DayTypeServiceJourneyCountFetcher;
 import no.entur.uttu.graphql.fetchers.ExportedPublicLinesFetcher;
+import no.entur.uttu.graphql.model.StopPlace;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.DurationScalar;
@@ -83,6 +84,7 @@ import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
 import org.locationtech.jts.geom.Geometry;
+import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -153,6 +155,9 @@ public class LinesGraphQLSchema {
 
   @Autowired
   private DataFetcher<TimetabledPassingTime.StopPlace> quayRefSearchFetcher;
+
+  @Autowired
+  private DataFetcher<List<StopPlace>> stopPlacesFetcher;
 
   private <T extends Enum> GraphQLEnumType createEnum(
     String name,
@@ -231,6 +236,11 @@ public class LinesGraphQLSchema {
     "DirectionTypeEnumeration",
     DirectionTypeEnumeration.values(),
     (DirectionTypeEnumeration::value)
+  );
+  private GraphQLEnumType transportModeEnum = createEnum(
+    "TransportModeEnumeration",
+    AllVehicleModesOfTransportEnumeration.values(),
+    (AllVehicleModesOfTransportEnumeration::value)
   );
 
   private GraphQLObjectType lineObjectType;
@@ -865,10 +875,15 @@ public class LinesGraphQLSchema {
         )
         .build();
 
-    GraphQLObjectType quayObjectType = newObject()
-      .name("Quay")
-      .field(newFieldDefinition().name(FIELD_ID).type(GraphQLString))
-      .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(GraphQLString))
+    GraphQLObjectType locationObjectType = newObject()
+      .name("Location")
+      .field(newFieldDefinition().name("longitude").type(GraphQLString))
+      .field(newFieldDefinition().name("latitude").type(GraphQLString))
+      .build();
+
+    GraphQLObjectType centroidObjectType = newObject()
+      .name("Centroid")
+      .field(newFieldDefinition().name("location").type(locationObjectType))
       .build();
 
     GraphQLObjectType multilingualStringObjectType = newObject()
@@ -877,11 +892,21 @@ public class LinesGraphQLSchema {
       .field(newFieldDefinition().name("value").type(GraphQLString))
       .build();
 
+    GraphQLObjectType quayObjectType = newObject()
+      .name("Quay")
+      .field(newFieldDefinition().name(FIELD_ID).type(GraphQLString))
+      .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(GraphQLString))
+      .field(newFieldDefinition().name("name").type(multilingualStringObjectType))
+      .field(newFieldDefinition().name("centroid").type(centroidObjectType))
+      .build();
+
     stopPlaceObjectType =
       newObject()
         .name("StopPlace")
         .field(newFieldDefinition().name(FIELD_ID).type(GraphQLID))
         .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
+        .field(newFieldDefinition().name(FIELD_TRANSPORT_MODE).type(transportModeEnum))
+        .field(newFieldDefinition().name("centroid").type(centroidObjectType))
         .field(newFieldDefinition().name("quays").type(new GraphQLList(quayObjectType)))
         .build();
 
@@ -987,6 +1012,23 @@ public class LinesGraphQLSchema {
           .dataFetcher(env ->
             flexibleStopPlaceRepository.getOne(env.getArgument(FIELD_ID))
           )
+      )
+      .field(
+        newFieldDefinition()
+          .type(new GraphQLList(stopPlaceObjectType))
+          .name("stopPlaces")
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_TRANSPORT_MODE)
+              .type(transportModeEnum)
+              .description("Transport mode, e.g. train, bus etc.")
+              .build()
+          )
+          .description(
+            "List all stop places of a certain transport mode, with quays included"
+          )
+          .dataFetcher(stopPlacesFetcher)
       )
       .field(
         newFieldDefinition()
