@@ -13,6 +13,7 @@ import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
+import no.entur.uttu.stopplace.filter.SearchTextStopPlaceFilter;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
 import no.entur.uttu.stopplace.filter.TransportModeStopPlaceFilter;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
@@ -117,6 +118,23 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
         boolean isOfTransportMode =
           stopPlace.getTransportMode() == transportModeStopPlaceFilter.transportMode();
         if (!isOfTransportMode) {
+          return false;
+        }
+      } else if (f instanceof SearchTextStopPlaceFilter searchTextStopPlaceFilter) {
+        String searchText = searchTextStopPlaceFilter.searchText().toLowerCase();
+        List<Quay> quays = stopPlace
+          .getQuays()
+          .getQuayRefOrQuay()
+          .stream()
+          .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
+          .toList();
+        boolean includesSearchText =
+          stopPlace.getId().toLowerCase().contains(searchText) ||
+          stopPlace.getName().getValue().toLowerCase().contains(searchText) ||
+          quays
+            .stream()
+            .anyMatch(quay -> quay.getId().toLowerCase().contains(searchText));
+        if (!includesSearchText) {
           return false;
         }
       } else {

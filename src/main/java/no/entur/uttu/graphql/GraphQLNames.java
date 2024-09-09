@@ -157,4 +157,6 @@ public class GraphQLNames {
   // Key-values
   public static final String FIELD_KEY = "key";
   public static final String FIELD_VALUES = "values";
+
+  public static final String FIELD_SEARCH_TEXT = "searchText";
 }
