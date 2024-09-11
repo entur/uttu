@@ -169,6 +169,9 @@ public class FintrafficUserContextService implements UserContextService {
     return Optional.empty();
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean isAdmin() {
     return login(MICROSOFT_GRAPH_SCOPE)
@@ -193,6 +196,8 @@ public class FintrafficUserContextService implements UserContextService {
   /**
    * Hand-rolled implementation of acquiring app role assignments from MS Graph to avoid unnecessarily high amount of
    * dependencies.
+   * <p>
+   * Works by using service identity for calling MS Graph and requesting current user's role assignments.
    *
    * @param serviceToken Token authorized to access {@link #MICROSOFT_GRAPH_SCOPE}
    * @return Jackson {@link JsonNode} representing successful response from MS Graph or {@link Optional#empty()} if call failed.
@@ -230,10 +235,13 @@ public class FintrafficUserContextService implements UserContextService {
       });
   }
 
+  /**
+   * {@inheritDoc}
+   */
   @Override
   public boolean hasAccessToProvider(String providerCode) {
     return login(scope)
-      .flatMap(this::me)
+      .flatMap(token -> companyMembers(token, userOid()))
       .map(me -> {
         Set<String> things = me
           .data()
@@ -246,6 +254,23 @@ public class FintrafficUserContextService implements UserContextService {
       .orElse(false);
   }
 
+  /**
+   * @return <code>oid</code> of the current user. May return <code>null</code> if no active user token is within the
+   * scope of call.
+   */
+  private String userOid() {
+    return getToken().map(jwt -> jwt.getClaimAsString("oid")).orElse(null);
+  }
+
+  /**
+   * Logs in the application to Entra for requested scope using the client credentials flow.
+   * <p>
+   * Not to be confused with logging as end user or working on behalf of end user.
+   *
+   * @param tokenScope Entra scope to login to.
+   * @return Login attempt's result state, if any.
+   * @see #userOid()
+   */
   private Optional<EntraTokenResponse> login(String tokenScope) {
     AtomicReference<EntraTokenResponse> tokenContainer =
       authenticationTokens.computeIfAbsent(tokenScope, t -> new AtomicReference<>(null));
@@ -286,9 +311,12 @@ public class FintrafficUserContextService implements UserContextService {
     return Optional.ofNullable(tokenContainer.get());
   }
 
-  private Optional<VacoApiResponse<Me>> me(EntraTokenResponse token) {
+  private Optional<VacoApiResponse<Me>> companyMembers(
+    EntraTokenResponse token,
+    String oid
+  ) {
     MutableRequest request = MutableRequest
-      .GET(vacoApi + "/me")
+      .GET(vacoApi + "/v1/companies/members/" + oid)
       .header("Authorization", "Bearer " + token.getAccessToken())
       .header("Content-Type", "application/json");
     try {
