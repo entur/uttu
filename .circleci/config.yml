@@ -13,6 +13,13 @@ aliases:
       echo 'export CIRCLE_SHA1="$CIRCLE_SHA1"' >> $BASH_ENV
       echo 'export CIRCLE_PROJECT_REPONAME="$CIRCLE_PROJECT_REPONAME"' >> $BASH_ENV
        .circleci/trigger_build_v2.sh "entur/uttu-deployment-config.git" "master" "$(git log -1 --pretty=%B)"
+  - &tag-git-version
+    name: Tag git commit with build version and push to github
+    command: |
+      git config --global user.email "circleci@entur.no"
+      git config --global user.name "circleci"
+      git tag v0.0.1-$CIRCLE_BUILD_NUM
+      git push origin v0.0.1-$CIRCLE_BUILD_NUM
   - &sonar-scan
     name: Sonar scan
     command: |
@@ -99,6 +106,7 @@ jobs:
           key: dep-cache-v2-{{ checksum "pom.xml" }}
       # Cannot use -o because of snapshot dependencies.
       - run: mvn deploy -s .circleci/settings.xml -P prettierSkip -DskipTests
+      - run: *tag-git-version
       - run: *post_build
 workflows:
   release:
