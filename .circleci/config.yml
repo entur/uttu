@@ -16,10 +16,11 @@ aliases:
   - &tag-git-version
     name: Tag git commit with build version and push to github
     command: |
+      VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
       git config --global user.email "circleci@entur.no"
       git config --global user.name "circleci"
-      git tag v0.0.1-$CIRCLE_BUILD_NUM
-      git push origin v0.0.1-$CIRCLE_BUILD_NUM
+      git tag v$VERSION-$CIRCLE_BUILD_NUM
+      git push origin v$VERSION-$CIRCLE_BUILD_NUM
   - &sonar-scan
     name: Sonar scan
     command: |
