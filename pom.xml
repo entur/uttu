@@ -46,7 +46,7 @@
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
 
         <postgis-jdbc.version>2023.1.0</postgis-jdbc.version>
-        <geotools.version>31.3</geotools.version>
+        <geotools.version>32.0</geotools.version>
         <wololo.version>0.18.1</wololo.version>
 
         <commons-io.version>2.16.1</commons-io.version>
