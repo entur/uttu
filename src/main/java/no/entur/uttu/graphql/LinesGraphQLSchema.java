@@ -1025,6 +1025,14 @@ public class LinesGraphQLSchema {
               .description("Transport mode, e.g. train, bus etc.")
               .build()
           )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_SEARCH_TEXT)
+              .type(GraphQLString)
+              .description("Search e.g. by stop place id/name or quay id")
+              .build()
+          )
           .description(
             "List all stop places of a certain transport mode, with quays included"
           )
