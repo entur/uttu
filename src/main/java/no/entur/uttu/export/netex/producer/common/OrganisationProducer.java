@@ -25,10 +25,10 @@ import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.AuthorityRef;
-import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.OperatorRefStructure;
+import org.rutebanken.netex.model.Organisation;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
 import org.springframework.stereotype.Component;
 
@@ -85,7 +85,7 @@ public class OrganisationProducer {
   }
 
   private Authority mapAuthority(String authorityRef, NetexExportContext context) {
-    Optional<GeneralOrganisation> orgRegAuthority = organisationRegistry.getOrganisation(
+    Optional<Organisation> orgRegAuthority = organisationRegistry.getOrganisation(
       authorityRef
     );
     if (orgRegAuthority.isEmpty()) {
@@ -97,7 +97,7 @@ public class OrganisationProducer {
       return new Authority();
     }
 
-    GeneralOrganisation organisation = orgRegAuthority.get();
+    Organisation organisation = orgRegAuthority.get();
 
     if (
       organisation.getContactDetails() == null ||
@@ -119,7 +119,7 @@ public class OrganisationProducer {
   }
 
   private Operator mapOperator(String operatorRef, NetexExportContext context) {
-    Optional<GeneralOrganisation> orgRegOperator = organisationRegistry.getOrganisation(
+    Optional<Organisation> orgRegOperator = organisationRegistry.getOrganisation(
       operatorRef
     );
 
@@ -132,7 +132,7 @@ public class OrganisationProducer {
       return new Operator();
     }
 
-    GeneralOrganisation organisation = orgRegOperator.get();
+    Organisation organisation = orgRegOperator.get();
 
     return populateNetexOrganisation(new Operator(), organisation)
       .withId(getOperatorNetexId(organisation))
@@ -141,7 +141,7 @@ public class OrganisationProducer {
 
   private <N extends Organisation_VersionStructure> N populateNetexOrganisation(
     N netexOrg,
-    GeneralOrganisation orgRegOrg
+    Organisation orgRegOrg
   ) {
     netexOrg
       .withVersion(orgRegOrg.getVersion())
@@ -152,15 +152,15 @@ public class OrganisationProducer {
     return netexOrg;
   }
 
-  private String getOperatorNetexId(GeneralOrganisation organisation) {
+  private String getOperatorNetexId(Organisation organisation) {
     return getNetexId(organisation, "Operator");
   }
 
-  private String getAuthorityNetexId(GeneralOrganisation organisation) {
+  private String getAuthorityNetexId(Organisation organisation) {
     return getNetexId(organisation, "Authority");
   }
 
-  protected static String getNetexId(GeneralOrganisation organisation, String type) {
+  protected static String getNetexId(Organisation organisation, String type) {
     return Optional
       .ofNullable(organisation.getKeyList())
       .flatMap(kl ->

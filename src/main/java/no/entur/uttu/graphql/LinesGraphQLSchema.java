@@ -86,6 +86,7 @@ import no.entur.uttu.repository.NetworkRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.GeneralOrganisation;
+import org.rutebanken.netex.model.Organisation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -151,7 +152,7 @@ public class LinesGraphQLSchema {
   private DayTypeRepository dayTypeRepository;
 
   @Autowired
-  private DataFetcher<List<GeneralOrganisation>> organisationsFetcher;
+  private DataFetcher<List<Organisation>> organisationsFetcher;
 
   @Autowired
   private DataFetcher<TimetabledPassingTime.StopPlace> quayRefSearchFetcher;

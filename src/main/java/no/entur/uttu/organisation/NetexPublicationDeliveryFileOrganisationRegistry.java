@@ -11,7 +11,7 @@ import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
-import org.rutebanken.netex.model.GeneralOrganisation;
+import org.rutebanken.netex.model.Organisation;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
     PublicationDeliveryStructure.class
   );
 
-  private List<GeneralOrganisation> organisations = List.of();
+  private List<Organisation> organisations = List.of();
 
   @Value("${uttu.organisations.netex-file-uri}")
   String netexFileUri;
@@ -57,24 +57,25 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
                 .getOrganisations()
                 .getOrganisation_()
                 .stream()
-                .map(org -> (GeneralOrganisation) org.getValue())
+                .map(org -> (Organisation) org.getValue())
                 .toList();
           }
         });
     } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
       logger.warn(
-        "Unable to unmarshal organisations xml, organisation registry will be an empty list"
+        "Unable to unmarshal organisations xml, organisation registry will be an empty list",
+        e
       );
     }
   }
 
   @Override
-  public List<GeneralOrganisation> getOrganisations() {
+  public List<Organisation> getOrganisations() {
     return organisations;
   }
 
   @Override
-  public Optional<GeneralOrganisation> getOrganisation(String id) {
+  public Optional<Organisation> getOrganisation(String id) {
     return organisations.stream().filter(org -> org.getId().equals(id)).findFirst();
   }
 

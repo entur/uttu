@@ -35,7 +35,6 @@ import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
 import org.rutebanken.netex.model.ContactStructure;
-import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
@@ -120,11 +119,13 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
   }
 
   @Override
-  public Optional<GeneralOrganisation> getOrganisation(String organisationId) {
+  public Optional<org.rutebanken.netex.model.Organisation> getOrganisation(
+    String organisationId
+  ) {
     try {
       Organisation organisation = organisationCache.get(organisationId);
-      GeneralOrganisation generalOrganisation = mapToGeneralOrganisation(organisation);
-      return Optional.of(generalOrganisation);
+      var mappedOrganisation = mapToNetexOrganisation(organisation);
+      return Optional.of(mappedOrganisation);
     } catch (HttpClientErrorException | ExecutionException ex) {
       logger.warn(
         "Exception while trying to fetch organisation: " +
@@ -138,12 +139,12 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
   }
 
   @Override
-  public List<GeneralOrganisation> getOrganisations() {
+  public List<org.rutebanken.netex.model.Organisation> getOrganisations() {
     try {
       List<Organisation> organisations = organisationsCache.get("");
       return organisations
         .stream()
-        .map(this::mapToGeneralOrganisation)
+        .map(this::mapToNetexOrganisation)
         .collect(Collectors.toList());
     } catch (HttpClientErrorException | ExecutionException ex) {
       logger.warn("Exception while trying to fetch all organisations");
@@ -214,21 +215,24 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
       .block(Duration.ofMillis(HTTP_TIMEOUT));
   }
 
-  private GeneralOrganisation mapToGeneralOrganisation(Organisation organisation) {
-    GeneralOrganisation mapped = new GeneralOrganisation()
-      .withId(organisation.id)
-      .withVersion(organisation.version)
-      .withName(new MultilingualString().withValue(organisation.name))
-      .withLegalName(new MultilingualString().withValue(organisation.legalName))
-      .withCompanyNumber(organisation.getCompanyNumber())
-      .withContactDetails(
-        organisation.contact != null
-          ? new ContactStructure()
-            .withEmail(organisation.contact.email)
-            .withPhone(organisation.contact.phone)
-            .withUrl(organisation.contact.url)
-          : null
-      );
+  private org.rutebanken.netex.model.Organisation mapToNetexOrganisation(
+    Organisation organisation
+  ) {
+    org.rutebanken.netex.model.Organisation mapped =
+      new org.rutebanken.netex.model.Organisation()
+        .withId(organisation.id)
+        .withVersion(organisation.version)
+        .withName(new MultilingualString().withValue(organisation.name))
+        .withLegalName(new MultilingualString().withValue(organisation.legalName))
+        .withCompanyNumber(organisation.getCompanyNumber())
+        .withContactDetails(
+          organisation.contact != null
+            ? new ContactStructure()
+              .withEmail(organisation.contact.email)
+              .withPhone(organisation.contact.phone)
+              .withUrl(organisation.contact.url)
+            : null
+        );
 
     List<String> legacyIdList = new ArrayList<>();
 
