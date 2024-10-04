@@ -170,7 +170,10 @@ public class OrganisationProducer {
   }
 
   protected String getNetexId(Organisation organisation, String type) {
-    if (organisationsOverrides.containsKey(organisation.getId()) && organisationsOverrides.get(organisation.getId()).containsKey(type)) {
+    if (
+      organisationsOverrides.containsKey(organisation.getId()) &&
+      organisationsOverrides.get(organisation.getId()).containsKey(type)
+    ) {
       return organisationsOverrides.get(organisation.getId()).get(type);
     }
 
@@ -189,14 +192,14 @@ public class OrganisationProducer {
           )
       );
 
-      if (fromKeyValue.isPresent()) {
-        return fromKeyValue.get();
-      }
+    if (fromKeyValue.isPresent()) {
+      return fromKeyValue.get();
+    }
 
-      if (convertOrgId) {
-        return organisation.getId().replace("Organisation", type);
-      }
+    if (convertOrgId) {
+      return organisation.getId().replace("Organisation", type);
+    }
 
-      return organisation.getId();
+    return organisation.getId();
   }
 }
