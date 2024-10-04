@@ -5,15 +5,16 @@ import org.junit.jupiter.api.Assertions;
 import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
+import org.rutebanken.netex.model.Organisation;
 
 public class OrganisationProducerTest {
 
   @Test
-  public void testGetNetexId() {
+  public void testExtractLegacyId() {
     Assertions.assertEquals(
       "TST:Operator:2",
-      OrganisationProducer.getNetexId(
-        new GeneralOrganisation()
+      OrganisationProducer.extractLegacyId(
+        new Organisation()
           .withId("notThis")
           .withKeyList(
             new KeyListStructure()
@@ -29,8 +30,8 @@ public class OrganisationProducerTest {
 
     Assertions.assertEquals(
       "TST:Authority:1",
-      OrganisationProducer.getNetexId(
-        new GeneralOrganisation()
+      OrganisationProducer.extractLegacyId(
+        new Organisation()
           .withId("notThis")
           .withKeyList(
             new KeyListStructure()
@@ -44,10 +45,9 @@ public class OrganisationProducerTest {
       )
     );
 
-    Assertions.assertEquals(
-      "TST:Operator:2",
-      OrganisationProducer.getNetexId(
-        new GeneralOrganisation()
+    Assertions.assertNull(
+      OrganisationProducer.extractLegacyId(
+        new Organisation()
           .withId("TST:Operator:2")
           .withKeyList(
             new KeyListStructure()
@@ -59,10 +59,9 @@ public class OrganisationProducerTest {
       )
     );
 
-    Assertions.assertEquals(
-      "TST:Operator:2",
-      OrganisationProducer.getNetexId(
-        new GeneralOrganisation().withId("TST:Operator:2"),
+    Assertions.assertNull(
+      OrganisationProducer.extractLegacyId(
+        new Organisation().withId("TST:Operator:2"),
         "Operator"
       )
     );
