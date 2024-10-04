@@ -36,7 +36,7 @@ class FlexibleLineGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLInt
 
     @Test
     void createFlexibleLineWithInvalidOperator() {
-        createFlexibleLine(testFlexibleLineWithInvalidOperatorName, 'NOG:GeneralOrganisation:2')
+        createFlexibleLine(testFlexibleLineWithInvalidOperatorName, 'NOG:Organisation:2')
             .body("errors[0].extensions.code", equalTo("ORGANISATION_NOT_IN_ORGANISATION_REGISTRY"))
     }
 
