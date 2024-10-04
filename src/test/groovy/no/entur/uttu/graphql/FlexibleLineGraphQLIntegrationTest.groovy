@@ -43,7 +43,7 @@ class FlexibleLineGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLInt
     @Test
     void createFlexibleLineWithExistingName() {
         String name = "foobar"
-        String operatorRef = "NOG:GeneralOrganisation:1"
+        String operatorRef = "NOG:Organisation:1"
         String networkId = getNetworkId(createNetwork(name))
         String flexAreaStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithFlexibleArea(name + "FlexArea"))
         String hailAndRideStopPlaceId = getFlexibleStopPlaceId(createFlexibleStopPlaceWithHailAndRideArea(name + "HailAndRide"))
