@@ -39,6 +39,6 @@ class NetworkGraphQLIntegrationTest extends AbstractFlexibleLinesGraphQLIntegrat
     void assertNetworkResponse(ValidatableResponse rsp, String path) {
         rsp.body("data. "+path+".id", startsWith("TST:Network"))
                 .body("data. "+path+".name", equalTo(testNetworkName))
-                .body("data. "+path+".authorityRef", equalTo("NOG:GeneralOrganisation:1"))
+                .body("data. "+path+".authorityRef", equalTo("NOG:Organisation:1"))
     }
 }
