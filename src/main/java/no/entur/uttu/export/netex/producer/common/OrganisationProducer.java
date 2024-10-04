@@ -38,8 +38,10 @@ import org.springframework.stereotype.Component;
 @Component
 public class OrganisationProducer {
 
-  @Value("#{${no.entur.uttu.organisations.overrides}}")
-  private Map<String, Map<String, String>> organisationsOverrides = new HashMap<>();
+  @Value(
+    "#{${no.entur.uttu.organisations.overrides:{T(java.util.Collections).emptyMap()}}}"
+  )
+  private Map<String, Map<String, String>> organisationsOverrides;
 
   @Value("${no.entur.uttu.organisations.convert-org-id:false}")
   private boolean convertOrgId;
