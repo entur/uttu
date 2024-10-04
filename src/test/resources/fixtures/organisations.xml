@@ -5,7 +5,7 @@
     <dataObjects>
         <ResourceFrame id="NOG:ResourceFrame:1" version="1">
             <organisations>
-                <Organisation created="2023-06-30T12:00:00" id="NOG:GeneralOrganisation:1" version="1">
+                <Organisation created="2023-06-30T12:00:00" id="NOG:Organisation:1" version="1">
                     <validityConditions>
                         <AvailabilityCondition id="NOG:AvailabilityCondition:1" version="1">
                             <FromDate>2023-06-20T00:00:00</FromDate>

@@ -16,7 +16,9 @@
 package no.entur.uttu.export.netex.producer.common;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import no.entur.uttu.export.netex.NetexExportContext;
@@ -30,10 +32,17 @@ import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.Organisation;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrganisationProducer {
+
+  @Value("#{${no.entur.uttu.organisations.overrides}}")
+  private Map<String, Map<String, String>> organisationsOverrides = new HashMap<>();
+
+  @Value("${no.entur.uttu.organisations.convert-org-id:false}")
+  private boolean convertOrgId;
 
   private final OrganisationRegistry organisationRegistry;
 
@@ -160,8 +169,12 @@ public class OrganisationProducer {
     return getNetexId(organisation, "Authority");
   }
 
-  protected static String getNetexId(Organisation organisation, String type) {
-    return Optional
+  protected String getNetexId(Organisation organisation, String type) {
+    if (organisationsOverrides.containsKey(organisation.getId()) && organisationsOverrides.get(organisation.getId()).containsKey(type)) {
+      return organisationsOverrides.get(organisation.getId()).get(type);
+    }
+
+    Optional<String> fromKeyValue = Optional
       .ofNullable(organisation.getKeyList())
       .flatMap(kl ->
         kl
@@ -174,7 +187,16 @@ public class OrganisationProducer {
           .flatMap(value ->
             Arrays.stream(value).filter(id -> id.contains(type)).findFirst()
           )
-      )
-      .orElse(organisation.getId());
+      );
+
+      if (fromKeyValue.isPresent()) {
+        return fromKeyValue.get();
+      }
+
+      if (convertOrgId) {
+        return organisation.getId().replace("Organisation", type);
+      }
+
+      return organisation.getId();
   }
 }
