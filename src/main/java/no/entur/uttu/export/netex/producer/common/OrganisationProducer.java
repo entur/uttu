@@ -16,7 +16,6 @@
 package no.entur.uttu.export.netex.producer.common;
 
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
