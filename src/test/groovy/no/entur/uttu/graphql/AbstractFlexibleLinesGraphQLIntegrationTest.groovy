@@ -199,7 +199,7 @@ abstract class AbstractFlexibleLinesGraphQLIntegrationTest extends AbstractGraph
     }
 
     ValidatableResponse createFlexibleLine(String name) {
-        return createFlexibleLine(name, 'NOG:Organisation:1')
+        return createFlexibleLine(name, 'NOG:Operator:1')
     }
 
 

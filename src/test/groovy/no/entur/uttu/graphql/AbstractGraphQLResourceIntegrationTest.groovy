@@ -62,7 +62,7 @@ abstract class AbstractGraphQLResourceIntegrationTest extends UttuIntegrationTes
         String variables = """{
             "network": {
                 "name": "$name",
-                "authorityRef": "NOG:Organisation:1"
+                "authorityRef": "NOG:Authority:1"
             }
         }"""
 
