@@ -3,21 +3,32 @@ package no.entur.uttu.organisation.spi;
 import java.util.List;
 import java.util.Optional;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
-import org.rutebanken.netex.model.Organisation;
+import org.rutebanken.netex.model.Authority;
+import org.rutebanken.netex.model.Operator;
 
 /**
  * Represents an organisation registry used to populate authorities and operators references
  */
 public interface OrganisationRegistry {
   /**
-   * Get a list of all organisations in the registry
+   * Get a list of all authorities in the registry
    */
-  List<Organisation> getOrganisations();
+  List<Authority> getAuthorities();
 
   /**
-   * Get an organisation with the given ID, which may not exist
+   * Get an authority with the given ID, which may not exist
    */
-  Optional<Organisation> getOrganisation(String id);
+  Optional<Authority> getAuthority(String id);
+
+  /**
+   * Get a list of all operators in the registry
+   */
+  List<Operator> getOperators();
+
+  /**
+   * Get an operator with the given ID, which may not exist
+   */
+  Optional<Operator> getOperator(String id);
 
   /**
    * Check if the organisation represented by the operator reference id is a valid operator
