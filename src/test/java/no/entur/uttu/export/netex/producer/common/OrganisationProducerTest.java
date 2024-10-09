@@ -25,7 +25,7 @@ public class OrganisationProducerTest {
               )
           ),
         "Operator"
-      )
+      ).get()
     );
 
     Assertions.assertEquals(
@@ -42,10 +42,10 @@ public class OrganisationProducerTest {
               )
           ),
         "Authority"
-      )
+      ).get()
     );
 
-    Assertions.assertNull(
+    Assertions.assertFalse(
       OrganisationProducer.extractLegacyId(
         new Operator()
           .withId("TST:Operator:2")
@@ -56,14 +56,14 @@ public class OrganisationProducerTest {
               )
           ),
         "Operator"
-      )
+      ).isPresent()
     );
 
-    Assertions.assertNull(
+    Assertions.assertFalse(
       OrganisationProducer.extractLegacyId(
         new Operator().withId("TST:Operator:2"),
         "Operator"
-      )
+      ).isPresent()
     );
   }
 }
