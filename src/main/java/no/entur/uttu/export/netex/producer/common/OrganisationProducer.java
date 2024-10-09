@@ -155,16 +155,12 @@ public class OrganisationProducer {
       return organisationsOverrides.get(organisation.getId()).get(type);
     }
 
-    String legacyId = extractLegacyId(organisation, type);
-    if (legacyId != null) return legacyId;
-
-    return organisation.getId();
+    return extractLegacyId(organisation, type).orElse(organisation.getId());
   }
 
-  protected static <T extends Organisation_VersionStructure> String extractLegacyId(
-    T organisation,
-    String type
-  ) {
+  protected static <
+    T extends Organisation_VersionStructure
+  > Optional<String> extractLegacyId(T organisation, String type) {
     return Optional
       .ofNullable(organisation.getKeyList())
       .flatMap(kl ->
@@ -178,7 +174,6 @@ public class OrganisationProducer {
           .flatMap(value ->
             Arrays.stream(value).filter(id -> id.contains(type)).findFirst()
           )
-      )
-      .orElse(null);
+      );
   }
 }
