@@ -29,16 +29,16 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
+import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.ContactStructure;
-import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.KeyListStructure;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.Operator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +70,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     .build(
       new CacheLoader<>() {
         @Override
-        public List<Organisation> load(String unused) throws Exception {
+        public List<Organisation> load(String unused) {
           return lookupOrganisations();
         }
       }
@@ -82,7 +82,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     .build(
       new CacheLoader<>() {
         @Override
-        public Organisation load(String id) throws Exception {
+        public Organisation load(String id) {
           return lookupOrganisation(id);
         }
       }
@@ -119,18 +119,38 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     this.maxRetryAttempts = maxRetryAttempts;
   }
 
+  protected static final Predicate<Throwable> is5xx = throwable ->
+    throwable instanceof WebClientResponseException &&
+    ((WebClientResponseException) throwable).getStatusCode().is5xxServerError();
+
   @Override
-  public Optional<GeneralOrganisation> getOrganisation(String organisationId) {
+  public List<Authority> getAuthorities() {
     try {
-      Organisation organisation = organisationCache.get(organisationId);
-      GeneralOrganisation generalOrganisation = mapToGeneralOrganisation(organisation);
-      return Optional.of(generalOrganisation);
+      List<Organisation> organisations = organisationsCache.get("");
+      return organisations
+        .stream()
+        .filter(org -> org.getAuthorityNetexId() != null)
+        .map(this::mapToAuthority)
+        .toList();
+    } catch (HttpClientErrorException | ExecutionException ex) {
+      logger.warn("Exception while trying to fetch all organisations");
+      return Collections.emptyList();
+    }
+  }
+
+  @Override
+  public Optional<Authority> getAuthority(String id) {
+    try {
+      Organisation organisation = organisationCache.get(id);
+      if (organisation.getAuthorityNetexId() != null) {
+        var mappedOrganisation = mapToAuthority(organisation);
+        return Optional.of(mappedOrganisation);
+      } else {
+        return Optional.empty();
+      }
     } catch (HttpClientErrorException | ExecutionException ex) {
       logger.warn(
-        "Exception while trying to fetch organisation: " +
-        organisationId +
-        " : " +
-        ex.getMessage(),
+        "Exception while trying to fetch organisation: " + id + " : " + ex.getMessage(),
         ex
       );
       return Optional.empty();
@@ -138,22 +158,38 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
   }
 
   @Override
-  public List<GeneralOrganisation> getOrganisations() {
+  public List<Operator> getOperators() {
     try {
       List<Organisation> organisations = organisationsCache.get("");
       return organisations
         .stream()
-        .map(this::mapToGeneralOrganisation)
-        .collect(Collectors.toList());
+        .filter(org -> org.getOperatorNetexId() != null)
+        .map(this::mapToOperator)
+        .toList();
     } catch (HttpClientErrorException | ExecutionException ex) {
       logger.warn("Exception while trying to fetch all organisations");
       return Collections.emptyList();
     }
   }
 
-  protected static final Predicate<Throwable> is5xx = throwable ->
-    throwable instanceof WebClientResponseException &&
-    ((WebClientResponseException) throwable).getStatusCode().is5xxServerError();
+  @Override
+  public Optional<Operator> getOperator(String id) {
+    try {
+      Organisation organisation = organisationCache.get(id);
+      if (organisation.getOperatorNetexId() != null) {
+        var mappedOrganisation = mapToOperator(organisation);
+        return Optional.of(mappedOrganisation);
+      } else {
+        return Optional.empty();
+      }
+    } catch (HttpClientErrorException | ExecutionException ex) {
+      logger.warn(
+        "Exception while trying to fetch organisation: " + id + " : " + ex.getMessage(),
+        ex
+      );
+      return Optional.empty();
+    }
+  }
 
   /**
    * Throw exception if ref is not a valid operator
@@ -214,8 +250,20 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
       .block(Duration.ofMillis(HTTP_TIMEOUT));
   }
 
-  private GeneralOrganisation mapToGeneralOrganisation(Organisation organisation) {
-    GeneralOrganisation mapped = new GeneralOrganisation()
+  private Authority mapToAuthority(Organisation organisation) {
+    Authority authority = new Authority();
+    return mapCommon(authority, organisation);
+  }
+
+  private Operator mapToOperator(Organisation organisation) {
+    Operator operator = new Operator();
+    return mapCommon(operator, organisation);
+  }
+
+  private <
+    T extends org.rutebanken.netex.model.Organisation_VersionStructure
+  > T mapCommon(T mapped, Organisation organisation) {
+    mapped
       .withId(organisation.id)
       .withVersion(organisation.version)
       .withName(new MultilingualString().withValue(organisation.name))

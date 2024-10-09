@@ -17,23 +17,28 @@ package no.entur.uttu.export.netex.producer.common;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.AuthorityRef;
-import org.rutebanken.netex.model.GeneralOrganisation;
 import org.rutebanken.netex.model.KeyValueStructure;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.OperatorRefStructure;
 import org.rutebanken.netex.model.Organisation_VersionStructure;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
 public class OrganisationProducer {
+
+  @Value(
+    "#{${no.entur.uttu.organisations.overrides:{T(java.util.Collections).emptyMap()}}}"
+  )
+  private Map<String, Map<String, String>> organisationsOverrides;
 
   private final OrganisationRegistry organisationRegistry;
 
@@ -47,14 +52,11 @@ public class OrganisationProducer {
       .map(Network::getAuthorityRef)
       .distinct()
       .map(ref -> mapAuthority(ref, context))
-      .collect(Collectors.toList());
+      .toList();
   }
 
   public List<Operator> produceOperators(NetexExportContext context) {
-    return context.operatorRefs
-      .stream()
-      .map(ref -> mapOperator(ref, context))
-      .collect(Collectors.toList());
+    return context.operatorRefs.stream().map(ref -> mapOperator(ref, context)).toList();
   }
 
   public AuthorityRef produceAuthorityRef(
@@ -85,9 +87,7 @@ public class OrganisationProducer {
   }
 
   private Authority mapAuthority(String authorityRef, NetexExportContext context) {
-    Optional<GeneralOrganisation> orgRegAuthority = organisationRegistry.getOrganisation(
-      authorityRef
-    );
+    Optional<Authority> orgRegAuthority = organisationRegistry.getAuthority(authorityRef);
     if (orgRegAuthority.isEmpty()) {
       context.addExportMessage(
         SeverityEnumeration.ERROR,
@@ -97,7 +97,7 @@ public class OrganisationProducer {
       return new Authority();
     }
 
-    GeneralOrganisation organisation = orgRegAuthority.get();
+    Authority organisation = orgRegAuthority.get();
 
     if (
       organisation.getContactDetails() == null ||
@@ -110,8 +110,7 @@ public class OrganisationProducer {
       );
     }
 
-    return populateNetexOrganisation(new Authority(), organisation)
-      .withId(getAuthorityNetexId(organisation));
+    return organisation.withId(getAuthorityNetexId(organisation));
   }
 
   private boolean validateContactUrl(String url) {
@@ -119,9 +118,7 @@ public class OrganisationProducer {
   }
 
   private Operator mapOperator(String operatorRef, NetexExportContext context) {
-    Optional<GeneralOrganisation> orgRegOperator = organisationRegistry.getOrganisation(
-      operatorRef
-    );
+    Optional<Operator> orgRegOperator = organisationRegistry.getOperator(operatorRef);
 
     if (orgRegOperator.isEmpty()) {
       context.addExportMessage(
@@ -132,35 +129,38 @@ public class OrganisationProducer {
       return new Operator();
     }
 
-    GeneralOrganisation organisation = orgRegOperator.get();
+    Operator organisation = orgRegOperator.get();
 
-    return populateNetexOrganisation(new Operator(), organisation)
+    return organisation
       .withId(getOperatorNetexId(organisation))
       .withCustomerServiceContactDetails(organisation.getContactDetails());
   }
 
-  private <N extends Organisation_VersionStructure> N populateNetexOrganisation(
-    N netexOrg,
-    GeneralOrganisation orgRegOrg
-  ) {
-    netexOrg
-      .withVersion(orgRegOrg.getVersion())
-      .withName(orgRegOrg.getName())
-      .withCompanyNumber(orgRegOrg.getCompanyNumber())
-      .withContactDetails(orgRegOrg.getContactDetails())
-      .withLegalName(orgRegOrg.getLegalName());
-    return netexOrg;
-  }
-
-  private String getOperatorNetexId(GeneralOrganisation organisation) {
+  private String getOperatorNetexId(Operator organisation) {
     return getNetexId(organisation, "Operator");
   }
 
-  private String getAuthorityNetexId(GeneralOrganisation organisation) {
+  private String getAuthorityNetexId(Authority organisation) {
     return getNetexId(organisation, "Authority");
   }
 
-  protected static String getNetexId(GeneralOrganisation organisation, String type) {
+  private <T extends Organisation_VersionStructure> String getNetexId(
+    T organisation,
+    String type
+  ) {
+    if (
+      organisationsOverrides.containsKey(organisation.getId()) &&
+      organisationsOverrides.get(organisation.getId()).containsKey(type)
+    ) {
+      return organisationsOverrides.get(organisation.getId()).get(type);
+    }
+
+    return extractLegacyId(organisation, type).orElse(organisation.getId());
+  }
+
+  protected static <
+    T extends Organisation_VersionStructure
+  > Optional<String> extractLegacyId(T organisation, String type) {
     return Optional
       .ofNullable(organisation.getKeyList())
       .flatMap(kl ->
@@ -174,7 +174,6 @@ public class OrganisationProducer {
           .flatMap(value ->
             Arrays.stream(value).filter(id -> id.contains(type)).findFirst()
           )
-      )
-      .orElse(organisation.getId());
+      );
   }
 }

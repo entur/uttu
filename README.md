@@ -42,6 +42,31 @@ or provide your own implementation of the [`OrganisationRegistry`](src/main/java
 Refer to [`src/test/resources/fixtures/organisations.xml`](src/test/resources/fixtures/organisations.xml) for an example 
 of a NeTEx file with organisations.
 
+### Override exported authority or operator id
+
+It is possible to override the exported authority or operator id for a given organisation like this:
+
+```properties
+no.entur.uttu.organisations.overrides={\
+    'SomeInternalId': {\
+        'Operator': 'KOL:Operator:BAR',\
+        'Authority': 'KOL:Authority:BAR'\
+    }\
+}
+```
+
+This is useful if the organisation registry uses internal IDs, but you need to map them to "NeTEx" IDs.
+
+You can also map an existing NeTEx ID to something else:
+
+```properties
+no.entur.uttu.organisations.overrides={\
+    'FOO:Operator:BAR': {\
+        'Operator': 'FOO:Operator:BAZ'\
+    }\
+}
+```
+
 ## Stop place registry
 
 Uttu needs a stop place registry in order to allow lookup of stop places from quay refs, used when creating
