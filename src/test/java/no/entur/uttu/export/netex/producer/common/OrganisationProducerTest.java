@@ -13,57 +13,62 @@ public class OrganisationProducerTest {
   public void testExtractLegacyId() {
     Assertions.assertEquals(
       "TST:Operator:2",
-      OrganisationProducer.extractLegacyId(
-        new Operator()
-          .withId("notThis")
-          .withKeyList(
-            new KeyListStructure()
-              .withKeyValue(
-                new KeyValueStructure()
-                  .withKey("LegacyId")
-                  .withValue("TST:Authority:1,TST:Operator:2")
-              )
-          ),
-        "Operator"
-      ).get()
+      OrganisationProducer
+        .extractLegacyId(
+          new Operator()
+            .withId("notThis")
+            .withKeyList(
+              new KeyListStructure()
+                .withKeyValue(
+                  new KeyValueStructure()
+                    .withKey("LegacyId")
+                    .withValue("TST:Authority:1,TST:Operator:2")
+                )
+            ),
+          "Operator"
+        )
+        .get()
     );
 
     Assertions.assertEquals(
       "TST:Authority:1",
-      OrganisationProducer.extractLegacyId(
-        new Authority()
-          .withId("notThis")
-          .withKeyList(
-            new KeyListStructure()
-              .withKeyValue(
-                new KeyValueStructure()
-                  .withKey("LegacyId")
-                  .withValue("TST:Authority:1,TST:Operator:2")
-              )
-          ),
-        "Authority"
-      ).get()
+      OrganisationProducer
+        .extractLegacyId(
+          new Authority()
+            .withId("notThis")
+            .withKeyList(
+              new KeyListStructure()
+                .withKeyValue(
+                  new KeyValueStructure()
+                    .withKey("LegacyId")
+                    .withValue("TST:Authority:1,TST:Operator:2")
+                )
+            ),
+          "Authority"
+        )
+        .get()
     );
 
     Assertions.assertFalse(
-      OrganisationProducer.extractLegacyId(
-        new Operator()
-          .withId("TST:Operator:2")
-          .withKeyList(
-            new KeyListStructure()
-              .withKeyValue(
-                new KeyValueStructure().withKey("LegacyId").withValue("TST:Authority:1")
-              )
-          ),
-        "Operator"
-      ).isPresent()
+      OrganisationProducer
+        .extractLegacyId(
+          new Operator()
+            .withId("TST:Operator:2")
+            .withKeyList(
+              new KeyListStructure()
+                .withKeyValue(
+                  new KeyValueStructure().withKey("LegacyId").withValue("TST:Authority:1")
+                )
+            ),
+          "Operator"
+        )
+        .isPresent()
     );
 
     Assertions.assertFalse(
-      OrganisationProducer.extractLegacyId(
-        new Operator().withId("TST:Operator:2"),
-        "Operator"
-      ).isPresent()
+      OrganisationProducer
+        .extractLegacyId(new Operator().withId("TST:Operator:2"), "Operator")
+        .isPresent()
     );
   }
 }
