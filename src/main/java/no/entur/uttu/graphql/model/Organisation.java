@@ -6,6 +6,5 @@ import org.rutebanken.netex.model.OrganisationTypeEnumeration;
 public record Organisation(
   String id,
   MultilingualString name,
-  MultilingualString legalName,
   OrganisationTypeEnumeration type
 ) {}

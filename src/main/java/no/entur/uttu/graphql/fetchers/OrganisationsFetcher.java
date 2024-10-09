@@ -27,7 +27,6 @@ public class OrganisationsFetcher implements DataFetcher<List<Organisation>> {
           new Organisation(
             authority.getId(),
             authority.getName(),
-            authority.getLegalName(),
             OrganisationTypeEnumeration.AUTHORITY
           )
         )
@@ -40,7 +39,6 @@ public class OrganisationsFetcher implements DataFetcher<List<Organisation>> {
           new Organisation(
             operator.getId(),
             operator.getName(),
-            operator.getLegalName(),
             OrganisationTypeEnumeration.OPERATOR
           )
         )

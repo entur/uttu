@@ -911,7 +911,6 @@ public class LinesGraphQLSchema {
         .field(newFieldDefinition().name(FIELD_ID).type(GraphQLID))
         .field(versionField)
         .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
-        .field(newFieldDefinition().name("legalName").type(multilingualStringObjectType))
         .field(newFieldDefinition().name("type").type(organisationTypeEnum))
         .build();
   }
