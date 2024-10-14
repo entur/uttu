@@ -1,13 +1,8 @@
 package no.entur.uttu.export.blob;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.function.Function;
 import org.rutebanken.helper.storage.BlobAlreadyExistsException;
 import org.rutebanken.helper.storage.BlobStoreException;
+import org.rutebanken.helper.storage.model.BlobDescriptor;
 import org.rutebanken.helper.storage.repository.BlobStoreRepository;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.core.sync.ResponseTransformer;
@@ -17,6 +12,14 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 import software.amazon.awssdk.services.s3.model.ObjectIdentifier;
 import software.amazon.awssdk.services.s3.model.S3Object;
 import software.amazon.awssdk.services.s3.paginators.ListObjectsV2Iterable;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
 
 /**
  * <a href="https://aws.amazon.com/s3/">AWS S3</a> backed implementation of {@link BlobStoreRepository}.
@@ -49,29 +52,42 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
   }
 
   @Override
-  public long uploadBlob(String objectName, InputStream inputStream) {
-    return uploadBlob(objectName, inputStream, null);
-  }
-
-  @Override
-  public long uploadBlob(String objectName, InputStream inputStream, String contentType) {
+  public long uploadBlob(BlobDescriptor blobDescriptor) {
     RequestBody body = null;
     try {
-      body = RequestBody.fromBytes(inputStream.readAllBytes());
+      body = RequestBody.fromBytes(blobDescriptor.inputStream().readAllBytes());
     } catch (IOException e) {
       throw new BlobStoreException("Failed to read all bytes from given InputStream", e);
     }
 
     s3Client.putObject(
       r -> {
-        r.bucket(containerName).key(objectName);
-        if (contentType != null) {
-          r.contentType(contentType);
-        }
+        r.bucket(containerName).key(blobDescriptor.name());
+        blobDescriptor.contentType().ifPresent(r::contentType);
+        blobDescriptor.metadata().ifPresent(r::metadata);
       },
       body
     );
     return UNKNOWN_LATEST_VERSION;
+  }
+
+  @Override
+  public long uploadBlob(String objectName, InputStream inputStream) {
+    return uploadBlob(
+      new BlobDescriptor(objectName, inputStream, Optional.empty(), Optional.empty())
+    );
+  }
+
+  @Override
+  public long uploadBlob(String objectName, InputStream inputStream, String contentType) {
+    return uploadBlob(
+      new BlobDescriptor(
+        objectName,
+        inputStream,
+        Optional.of(contentType),
+        Optional.empty()
+      )
+    );
   }
 
   @Override
@@ -81,7 +97,9 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
         "Blob '" + objectName + "' already exists in bucket '" + containerName + "'"
       );
     } else {
-      return uploadBlob(objectName, inputStream);
+      return uploadBlob(
+        new BlobDescriptor(objectName, inputStream, Optional.empty(), Optional.empty())
+      );
     }
   }
 
