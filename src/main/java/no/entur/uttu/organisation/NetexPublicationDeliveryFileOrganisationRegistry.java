@@ -1,6 +1,8 @@
 package no.entur.uttu.organisation;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
@@ -11,7 +13,8 @@ import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import no.entur.uttu.util.Preconditions;
-import org.rutebanken.netex.model.GeneralOrganisation;
+import org.rutebanken.netex.model.Authority;
+import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
 import org.slf4j.Logger;
@@ -36,7 +39,13 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
     PublicationDeliveryStructure.class
   );
 
-  private List<GeneralOrganisation> organisations = List.of();
+  private final List<Authority> authorities = Collections.synchronizedList(
+    new ArrayList<>()
+  );
+
+  private final List<Operator> operators = Collections.synchronizedList(
+    new ArrayList<>()
+  );
 
   @Value("${uttu.organisations.netex-file-uri}")
   String netexFileUri;
@@ -52,30 +61,51 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
         .forEach(frame -> {
           var frameValue = frame.getValue();
           if (frameValue instanceof ResourceFrame resourceFrame) {
-            organisations =
-              resourceFrame
-                .getOrganisations()
-                .getOrganisation_()
-                .stream()
-                .map(org -> (GeneralOrganisation) org.getValue())
-                .toList();
+            resourceFrame
+              .getOrganisations()
+              .getOrganisation_()
+              .forEach(org -> {
+                if (org.getDeclaredType().isAssignableFrom(Authority.class)) {
+                  authorities.add((Authority) org.getValue());
+                } else if (org.getDeclaredType().isAssignableFrom(Operator.class)) {
+                  operators.add((Operator) org.getValue());
+                } else {
+                  throw new RuntimeException(
+                    "Unsupported organisation type: " + org.getDeclaredType()
+                  );
+                }
+              });
           }
         });
     } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
       logger.warn(
-        "Unable to unmarshal organisations xml, organisation registry will be an empty list"
+        "Unable to unmarshal organisations xml, organisation registry will be an empty list",
+        e
       );
     }
   }
 
   @Override
-  public List<GeneralOrganisation> getOrganisations() {
-    return organisations;
+  public List<Authority> getAuthorities() {
+    return Collections.unmodifiableList(authorities);
   }
 
   @Override
-  public Optional<GeneralOrganisation> getOrganisation(String id) {
-    return organisations.stream().filter(org -> org.getId().equals(id)).findFirst();
+  public Optional<Authority> getAuthority(String id) {
+    return authorities
+      .stream()
+      .filter(authority -> authority.getId().equals(id))
+      .findFirst();
+  }
+
+  @Override
+  public List<Operator> getOperators() {
+    return Collections.unmodifiableList(operators);
+  }
+
+  @Override
+  public Optional<Operator> getOperator(String id) {
+    return operators.stream().filter(operator -> operator.getId().equals(id)).findFirst();
   }
 
   /**
@@ -84,7 +114,7 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
   @Override
   public void validateOperatorRef(String operatorRef) {
     Preconditions.checkArgument(
-      organisations.stream().anyMatch(org -> org.getId().equals(operatorRef)),
+      operators.stream().anyMatch(org -> org.getId().equals(operatorRef)),
       CodedError.fromErrorCode(
         ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY
       ),
@@ -99,7 +129,7 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
   @Override
   public void validateAuthorityRef(String authorityRef) {
     Preconditions.checkArgument(
-      organisations.stream().anyMatch(org -> org.getId().equals(authorityRef)),
+      authorities.stream().anyMatch(org -> org.getId().equals(authorityRef)),
       CodedError.fromErrorCode(
         ErrorCodeEnumeration.ORGANISATION_NOT_IN_ORGANISATION_REGISTRY
       ),

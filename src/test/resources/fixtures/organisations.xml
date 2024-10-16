@@ -5,7 +5,7 @@
     <dataObjects>
         <ResourceFrame id="NOG:ResourceFrame:1" version="1">
             <organisations>
-                <GeneralOrganisation created="2023-06-30T12:00:00" id="NOG:GeneralOrganisation:1" version="1">
+                <Authority created="2023-06-30T12:00:00" id="NOG:Authority:1" version="1">
                     <validityConditions>
                         <AvailabilityCondition id="NOG:AvailabilityCondition:1" version="1">
                             <FromDate>2023-06-20T00:00:00</FromDate>
@@ -21,7 +21,24 @@
                         <Phone>+15551234545</Phone>
                         <Url>https://www.fake.com/</Url>
                     </ContactDetails>
-                </GeneralOrganisation>
+                </Authority>
+                <Operator created="2023-06-30T12:00:00" id="NOG:Operator:1" version="1">
+                    <validityConditions>
+                        <AvailabilityCondition id="NOG:AvailabilityCondition:2" version="1">
+                            <FromDate>2023-06-20T00:00:00</FromDate>
+                        </AvailabilityCondition>
+                    </validityConditions>
+                    <PrivateCode>1</PrivateCode>
+                    <CompanyNumber>123456789</CompanyNumber>
+                    <Name lang="en">Fake Organisation</Name>
+                    <LegalName>Fake Organisation LLC</LegalName>
+                    <TradingName lang="en">This is really fake</TradingName>
+                    <ContactDetails>
+                        <Email/>
+                        <Phone>+15551234545</Phone>
+                        <Url>https://www.fake.com/</Url>
+                    </ContactDetails>
+                </Operator>
             </organisations>
         </ResourceFrame>
     </dataObjects>

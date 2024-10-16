@@ -49,6 +49,7 @@ import no.entur.uttu.config.Context;
 import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.graphql.fetchers.DayTypeServiceJourneyCountFetcher;
 import no.entur.uttu.graphql.fetchers.ExportedPublicLinesFetcher;
+import no.entur.uttu.graphql.model.Organisation;
 import no.entur.uttu.graphql.model.StopPlace;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
@@ -85,7 +86,8 @@ import no.entur.uttu.repository.FlexibleStopPlaceRepository;
 import no.entur.uttu.repository.NetworkRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.GeneralOrganisation;
+import org.rutebanken.netex.model.OrganisationTypeEnumeration;
+import org.rutebanken.netex.model.Organisation_VersionStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -151,7 +153,7 @@ public class LinesGraphQLSchema {
   private DayTypeRepository dayTypeRepository;
 
   @Autowired
-  private DataFetcher<List<GeneralOrganisation>> organisationsFetcher;
+  private DataFetcher<List<Organisation>> organisationsFetcher;
 
   @Autowired
   private DataFetcher<TimetabledPassingTime.StopPlace> quayRefSearchFetcher;
@@ -241,6 +243,12 @@ public class LinesGraphQLSchema {
     "TransportModeEnumeration",
     AllVehicleModesOfTransportEnumeration.values(),
     (AllVehicleModesOfTransportEnumeration::value)
+  );
+
+  private GraphQLEnumType organisationTypeEnum = createEnum(
+    "OrganisationType",
+    OrganisationTypeEnumeration.values(),
+    (OrganisationTypeEnumeration::value)
   );
 
   private GraphQLObjectType lineObjectType;
@@ -356,19 +364,6 @@ public class LinesGraphQLSchema {
       .name("KeyValues")
       .field(newFieldDefinition().name(FIELD_KEY).type(GraphQLString))
       .field(newFieldDefinition().name(FIELD_VALUES).type(new GraphQLList(GraphQLString)))
-      .build();
-
-    GraphQLObjectType keyValueObjectType = newObject()
-      .name("KeyValue")
-      .field(newFieldDefinition().name(FIELD_KEY).type(GraphQLString))
-      .field(newFieldDefinition().name("value").type(GraphQLString))
-      .build();
-
-    GraphQLObjectType keyListObjectType = newObject()
-      .name("KeyList")
-      .field(
-        newFieldDefinition().name("keyValue").type(new GraphQLList(keyValueObjectType))
-      )
       .build();
 
     GraphQLObjectType identifiedEntityObjectType = newObject()
@@ -916,9 +911,7 @@ public class LinesGraphQLSchema {
         .field(newFieldDefinition().name(FIELD_ID).type(GraphQLID))
         .field(versionField)
         .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
-        .field(newFieldDefinition().name("legalName").type(multilingualStringObjectType))
-        .field(newFieldDefinition().name("contactDetails").type(contactObjectType))
-        .field(newFieldDefinition().name("keyList").type(keyListObjectType))
+        .field(newFieldDefinition().name("type").type(organisationTypeEnum))
         .build();
   }
 

@@ -111,7 +111,7 @@ abstract class AbstractFixedLinesGraphQLIntegrationTest extends AbstractGraphQLR
                 "transportMode": "bus",
                 "transportSubmode": "localBus",
                 "networkRef": "$networkId",
-                "operatorRef": "NOG:GeneralOrganisation:1",
+                "operatorRef": "NOG:Operator:1",
                 "notices": [{"text": "Dette er en fiktiv linje."}],
                 "journeyPatterns": [
                   {
