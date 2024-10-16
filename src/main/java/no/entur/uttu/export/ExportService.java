@@ -18,6 +18,8 @@ package no.entur.uttu.export;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.export.messaging.spi.MessagingService;
@@ -29,6 +31,7 @@ import no.entur.uttu.model.job.ExportMessage;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.util.ExportUtil;
 import org.apache.commons.io.IOUtils;
+import org.rutebanken.helper.storage.model.BlobDescriptor;
 import org.rutebanken.helper.storage.repository.BlobStoreRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +40,11 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ExportService {
+
+  /**
+   * Object metadata key prefix to categorize where the possibly attached metadata originates from.
+   */
+  public static final String EXPORT_METADATA_PREFIX = "no.entur.uttu.export.";
 
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -82,13 +90,20 @@ public class ExportService {
       byte[] bytes = IOUtils.toByteArray(dataSetStream);
       ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 
+      Map<String, String> metadata = Map.of(
+        EXPORT_METADATA_PREFIX + "name",
+        export.getName()
+      );
+
       if (!export.isDryRun() && !exportHasErrors(export)) {
         String exportedDataSetFilename = ExportUtil.createExportedDataSetFilename(
           export.getProvider(),
           exportedFilenameSuffix
         );
         String blobName = exportFolder + exportedDataSetFilename;
-        blobStoreRepository.uploadBlob(blobName, bis);
+        blobStoreRepository.uploadBlob(
+          new BlobDescriptor(blobName, bis, Optional.empty(), Optional.of(metadata))
+        );
         bis.reset();
         // notify Marduk that a new export is available
         messagingService.notifyExport(
@@ -101,7 +116,14 @@ public class ExportService {
           .forEach(export::addExportedLineStatistics);
       }
       export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
-      blobStoreRepository.uploadBlob(export.getFileName(), bis);
+      blobStoreRepository.uploadBlob(
+        new BlobDescriptor(
+          export.getFileName(),
+          bis,
+          Optional.empty(),
+          Optional.of(metadata)
+        )
+      );
     } catch (CodedIllegalArgumentException iae) {
       ExportMessage msg = new ExportMessage(SeverityEnumeration.ERROR, iae.getCode());
       export.addMessage(msg);

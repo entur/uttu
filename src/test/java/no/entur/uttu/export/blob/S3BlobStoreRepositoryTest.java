@@ -2,6 +2,8 @@ package no.entur.uttu.export.blob;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Map;
+import java.util.Optional;
 import no.entur.uttu.UttuIntegrationTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -9,6 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.rutebanken.helper.storage.BlobAlreadyExistsException;
+import org.rutebanken.helper.storage.model.BlobDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -154,7 +157,7 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
   }
 
   @Test
-  public void canCopyAllBlobsWithSharedPrefix() throws Exception {
+  public void canCopyAllBlobsWithSharedPrefix() {
     String targetBucket = "one-more-bucket";
     createBucket(targetBucket);
     blobStore.uploadBlob("things/a", asStream("a"));
@@ -168,11 +171,34 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
     assertBlobExists(targetBucket, "stuff/d", false);
   }
 
+  @Test
+  public void attachesGivenMetadataToUploadWhenPresent() {
+    Map<String, String> metadata = Map.of("metadata.test", "testing");
+    blobStore.uploadBlob(
+      new BlobDescriptor(
+        "things/a",
+        asStream("a"),
+        Optional.empty(),
+        Optional.of(metadata)
+      )
+    );
+    assertBlobExists(TEST_BUCKET, "things/a", true, metadata);
+  }
+
   private static @NotNull ByteArrayInputStream asStream(String source) {
     return new ByteArrayInputStream(source.getBytes(StandardCharsets.UTF_8));
   }
 
   private void assertBlobExists(String bucket, String key, boolean exists) {
+    assertBlobExists(bucket, key, exists, null);
+  }
+
+  private void assertBlobExists(
+    String bucket,
+    String key,
+    boolean exists,
+    Map<String, String> expectedMetadata
+  ) {
     HeadObjectResponse response = null;
     try {
       response = s3Client.headObject(request -> request.bucket(bucket).key(key));
@@ -182,6 +208,9 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
     }
     if (exists && response == null) {
       Assert.fail(bucket + " / " + key + " does not exist");
+    }
+    if (expectedMetadata != null) {
+      Assert.assertEquals(response.metadata(), expectedMetadata);
     }
   }
 }
