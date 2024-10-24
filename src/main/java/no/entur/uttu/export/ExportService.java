@@ -54,6 +54,9 @@ public class ExportService {
 
   private final MessagingService messagingService;
 
+  @Value("${export.validateAgainstSchema:true}")
+  private boolean validateAgainstSchema;
+
   @Value("${export.working.folder:tmp}")
   private String workingFolder;
 
@@ -79,7 +82,6 @@ public class ExportService {
     logger.info("Starting {}", export);
 
     try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
-      boolean validateAgainstSchema = true;
       List<Line> exportedLines = exporter.exportDataSet(
         export,
         dataSetProducer,
