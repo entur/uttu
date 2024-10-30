@@ -63,7 +63,7 @@
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.29.2</awssdk.version>
+        <awssdk.version>2.29.3</awssdk.version>
     </properties>
 
     <distributionManagement>
