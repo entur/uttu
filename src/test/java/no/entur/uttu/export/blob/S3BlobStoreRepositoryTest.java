@@ -2,8 +2,12 @@ package no.entur.uttu.export.blob;
 
 import java.io.ByteArrayInputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import no.entur.uttu.UttuIntegrationTest;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Assert;
@@ -31,6 +35,10 @@ import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
 
   private static final String TEST_BUCKET = "test-blobstore-exports";
+
+  private static final Pattern MIME_PATTERN = Pattern.compile(
+    "^=\\?UTF-8\\?B\\?(.+?)\\?=$"
+  );
 
   private static LocalStackContainer localStack;
 
@@ -210,7 +218,29 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
       Assert.fail(bucket + " / " + key + " does not exist");
     }
     if (expectedMetadata != null) {
-      Assert.assertEquals(response.metadata(), expectedMetadata);
+      Assert.assertEquals(expectedMetadata, mimeDecodeValues(response.metadata()));
     }
+  }
+
+  private static Map<String, String> mimeDecodeValues(Map<String, String> metadata) {
+    Map<String, String> decodedMetadata = HashMap.newHashMap(metadata.size());
+
+    for (Map.Entry<String, String> entry : metadata.entrySet()) {
+      Matcher matcher = MIME_PATTERN.matcher(entry.getValue());
+      if (matcher.find()) {
+        String base64Encoded = matcher.group(1);
+        byte[] utf8Bytes = Base64.getDecoder().decode(base64Encoded);
+        decodedMetadata.put(
+          entry.getKey(),
+          new String(utf8Bytes, StandardCharsets.UTF_8)
+        );
+      } else {
+        throw new IllegalArgumentException(
+          "Metadata entry's value (" + entry + ") is not in the expected MIME format"
+        );
+      }
+    }
+
+    return decodedMetadata;
   }
 }
