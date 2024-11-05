@@ -2,8 +2,12 @@ package no.entur.uttu.export.blob;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Function;
@@ -63,11 +67,28 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
       r -> {
         r.bucket(containerName).key(blobDescriptor.name());
         blobDescriptor.contentType().ifPresent(r::contentType);
-        blobDescriptor.metadata().ifPresent(r::metadata);
+        blobDescriptor.metadata().map(this::mimeEncodeValues).ifPresent(r::metadata);
       },
       body
     );
     return UNKNOWN_LATEST_VERSION;
+  }
+
+  /**
+   * AWS S3 metadata is passed through HTTP headers which requires the values to be in MIME compatible US-ASCII
+   * formatting.
+   *
+   * @param metadata Original metadata.
+   * @return Updated metadata with encoded values.
+   */
+  private Map<String, String> mimeEncodeValues(Map<String, String> metadata) {
+    Map<String, String> encodedMetadata = HashMap.newHashMap(metadata.size());
+    for (Map.Entry<String, String> entry : metadata.entrySet()) {
+      byte[] utf8Bytes = entry.getValue().getBytes(StandardCharsets.UTF_8);
+      String base64Encoded = Base64.getEncoder().encodeToString(utf8Bytes);
+      encodedMetadata.put(entry.getKey(), "=?UTF-8?B?" + base64Encoded + "?=");
+    }
+    return encodedMetadata;
   }
 
   @Override
