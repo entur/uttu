@@ -136,10 +136,10 @@ public class FintrafficUserContextService implements UserContextService {
   private static Methanol initializeHttpClient() {
     return Methanol
       .newBuilder()
-      .connectTimeout(Duration.ofSeconds(5))
-      .requestTimeout(Duration.ofSeconds(5))
-      .headersTimeout(Duration.ofSeconds(5))
-      .readTimeout(Duration.ofSeconds(5))
+      .connectTimeout(Duration.ofSeconds(30))
+      .requestTimeout(Duration.ofSeconds(30))
+      .headersTimeout(Duration.ofSeconds(30))
+      .readTimeout(Duration.ofSeconds(30))
       .followRedirects(HttpClient.Redirect.NORMAL)
       .userAgent("Entur Uttu/" + LocalDate.now().format(DateTimeFormatter.ISO_DATE))
       .build();
