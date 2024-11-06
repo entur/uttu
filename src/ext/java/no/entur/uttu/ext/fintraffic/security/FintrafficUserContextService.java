@@ -7,6 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.mizosoft.methanol.FormBodyPublisher;
 import com.github.mizosoft.methanol.Methanol;
 import com.github.mizosoft.methanol.MutableRequest;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import java.io.IOException;
 import java.net.http.HttpClient;
 import java.net.http.HttpResponse;
@@ -19,6 +22,8 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 import no.entur.uttu.ext.fintraffic.security.model.EntraTokenResponse;
@@ -109,6 +114,65 @@ public class FintrafficUserContextService implements UserContextService {
    */
   private final ObjectMapper objectMapper;
 
+  private final LoadingCache<VacoApiCallContext, JsonNode> msGraphAppRoleAssignmentsCache =
+    CacheBuilder
+      .newBuilder()
+      .expireAfterAccess(20, TimeUnit.MINUTES)
+      .build(
+        new CacheLoader<>() {
+          @Override
+          public JsonNode load(VacoApiCallContext vacoApiCallContext) throws Exception {
+            MutableRequest request = MutableRequest
+              .GET(
+                MICROSOFT_GRAPH_API_ROOT +
+                "/users/" +
+                vacoApiCallContext.oid +
+                "/appRoleAssignments"
+              )
+              .header(
+                "Authorization",
+                "Bearer " + vacoApiCallContext.token.getAccessToken()
+              )
+              .header("Content-Type", "application/json");
+
+            HttpResponse<String> response = httpClient.send(
+              request,
+              BodyHandlers.ofString()
+            );
+            return objectMapper.readTree(response.body());
+          }
+        }
+      );
+
+  private final LoadingCache<VacoApiCallContext, VacoApiResponse<Me>> companyMembersCache =
+    CacheBuilder
+      .newBuilder()
+      .expireAfterAccess(20, TimeUnit.MINUTES)
+      .build(
+        new CacheLoader<>() {
+          @Override
+          public VacoApiResponse<Me> load(VacoApiCallContext vacoApiCallContext)
+            throws Exception {
+            MutableRequest request = MutableRequest
+              .GET(vacoApi + "/v1/companies/members/" + vacoApiCallContext.oid)
+              .header(
+                "Authorization",
+                "Bearer " + vacoApiCallContext.token.getAccessToken()
+              )
+              .header("Content-Type", "application/json");
+
+            HttpResponse<String> response = httpClient.send(
+              request,
+              BodyHandlers.ofString()
+            );
+            return objectMapper.readValue(
+              response.body(),
+              new TypeReference<VacoApiResponse<Me>>() {}
+            );
+          }
+        }
+      );
+
   public FintrafficUserContextService(
     String tenantId,
     String clientId,
@@ -136,25 +200,13 @@ public class FintrafficUserContextService implements UserContextService {
   private static Methanol initializeHttpClient() {
     return Methanol
       .newBuilder()
-      .connectTimeout(Duration.ofSeconds(5))
-      .requestTimeout(Duration.ofSeconds(5))
-      .headersTimeout(Duration.ofSeconds(5))
-      .readTimeout(Duration.ofSeconds(5))
+      .connectTimeout(Duration.ofSeconds(30))
+      .requestTimeout(Duration.ofSeconds(30))
+      .headersTimeout(Duration.ofSeconds(30))
+      .readTimeout(Duration.ofSeconds(30))
       .followRedirects(HttpClient.Redirect.NORMAL)
       .userAgent("Entur Uttu/" + LocalDate.now().format(DateTimeFormatter.ISO_DATE))
       .build();
-  }
-
-  /**
-   * {@inheritDoc}
-   *
-   * @return User's preferred name defined by the <code>preferred_username</code> claim provided by Entra.
-   */
-  @Override
-  public String getPreferredName() {
-    return getToken()
-      .map(t -> t.getClaimAsString("preferred_username"))
-      .orElse("unknown");
   }
 
   private static Optional<Jwt> getToken() {
@@ -171,10 +223,31 @@ public class FintrafficUserContextService implements UserContextService {
 
   /**
    * {@inheritDoc}
+   *
+   * @return User's preferred name defined by the <code>preferred_username</code> claim provided by Entra.
+   */
+  @Override
+  public String getPreferredName() {
+    return getToken()
+      .map(t -> t.getClaimAsString("preferred_username"))
+      .orElse("unknown");
+  }
+
+  /**
+   * @return <code>oid</code> of the current user. May return <code>null</code> if no active user token is within the
+   * scope of call.
+   */
+  private Optional<String> userOid() {
+    return getToken().map(jwt -> jwt.getClaimAsString("oid"));
+  }
+
+  /**
+   * {@inheritDoc}
    */
   @Override
   public boolean isAdmin() {
     return login(MICROSOFT_GRAPH_SCOPE)
+      .flatMap(this::withUserContext)
       .flatMap(this::msGraphAppRoleAssignments)
       .map(tree -> {
         JsonNode assignedAppRoles = tree.path("value");
@@ -203,36 +276,16 @@ public class FintrafficUserContextService implements UserContextService {
    * @return Jackson {@link JsonNode} representing successful response from MS Graph or {@link Optional#empty()} if call failed.
    * @see #login(String)
    */
-  private Optional<JsonNode> msGraphAppRoleAssignments(EntraTokenResponse serviceToken) {
-    return getToken()
-      .flatMap(jwt -> {
-        MutableRequest request = MutableRequest
-          .GET(
-            MICROSOFT_GRAPH_API_ROOT +
-            "/users/" +
-            jwt.getClaimAsString("oid") +
-            "/appRoleAssignments"
-          )
-          .header("Authorization", "Bearer " + serviceToken.getAccessToken())
-          .header("Content-Type", "application/json");
-        try {
-          HttpResponse<String> response = httpClient.send(
-            request,
-            BodyHandlers.ofString()
-          );
-          JsonNode tree = objectMapper.readTree(response.body());
-          return Optional.of(tree);
-        } catch (IOException e) {
-          logger.warn("I/O error during API request", e);
-        } catch (InterruptedException e) {
-          logger.warn(
-            "Underlying thread interrupted during HTTP client action, interrupting current thread",
-            e
-          );
-          Thread.currentThread().interrupt();
-        }
-        return Optional.empty();
-      });
+  private Optional<JsonNode> msGraphAppRoleAssignments(
+    VacoApiCallContext vacoApiCallContext
+  ) {
+    try {
+      return Optional.of(msGraphAppRoleAssignmentsCache.get(vacoApiCallContext));
+    } catch (ExecutionException e) {
+      logger.warn("Failed to execute msGraphAppRoleAssignments API call", e);
+      Thread.currentThread().interrupt();
+    }
+    return Optional.empty();
   }
 
   /**
@@ -241,25 +294,22 @@ public class FintrafficUserContextService implements UserContextService {
   @Override
   public boolean hasAccessToProvider(String providerCode) {
     return login(scope)
-      .flatMap(token -> companyMembers(token, userOid()))
+      .flatMap(this::withUserContext)
+      .flatMap(this::companyMembers)
       .map(me -> {
-        Set<String> things = me
+        Set<String> accessibleCodespaces = me
           .data()
           .companies()
           .stream()
           .flatMap(vc -> vc.codespaces().stream())
           .collect(Collectors.toSet());
-        return things.contains(providerCode);
+        return accessibleCodespaces.contains(providerCode);
       })
       .orElse(false);
   }
 
-  /**
-   * @return <code>oid</code> of the current user. May return <code>null</code> if no active user token is within the
-   * scope of call.
-   */
-  private String userOid() {
-    return getToken().map(jwt -> jwt.getClaimAsString("oid")).orElse(null);
+  private Optional<VacoApiCallContext> withUserContext(EntraTokenResponse token) {
+    return userOid().map(s -> new VacoApiCallContext(token, s));
   }
 
   /**
@@ -312,30 +362,21 @@ public class FintrafficUserContextService implements UserContextService {
   }
 
   private Optional<VacoApiResponse<Me>> companyMembers(
-    EntraTokenResponse token,
-    String oid
+    VacoApiCallContext vacoApiCallContext
   ) {
-    MutableRequest request = MutableRequest
-      .GET(vacoApi + "/v1/companies/members/" + oid)
-      .header("Authorization", "Bearer " + token.getAccessToken())
-      .header("Content-Type", "application/json");
     try {
-      HttpResponse<String> response = httpClient.send(request, BodyHandlers.ofString());
-      return Optional.of(
-        objectMapper.readValue(
-          response.body(),
-          new TypeReference<VacoApiResponse<Me>>() {}
-        )
-      );
-    } catch (IOException e) {
-      logger.warn("I/O error during API request", e);
-    } catch (InterruptedException e) {
-      logger.warn(
-        "Underlying thread interrupted during HTTP client action, interrupting current thread",
-        e
-      );
-      Thread.currentThread().interrupt();
+      return Optional.of(companyMembersCache.get(vacoApiCallContext));
+    } catch (ExecutionException e) {
+      logger.warn("Failed to execute companyMembers API call", e);
     }
     return Optional.empty();
   }
+
+  /**
+   * Private type for passing access related context parameters to API calls.
+   *
+   * @param token Entra-sourced token representing the uttu service itself
+   * @param oid Object ID of the current user, if any. Usually obtained through {@link #userOid()}
+   */
+  private record VacoApiCallContext(EntraTokenResponse token, String oid) {}
 }
