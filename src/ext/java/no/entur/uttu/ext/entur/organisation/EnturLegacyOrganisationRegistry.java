@@ -57,6 +57,9 @@ import reactor.util.retry.Retry;
 @Profile("entur-legacy-organisation-registry")
 public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
 
+  @Value("${no.entur.uttu.ext.entur.organisation.cache-ttl-minutes:60}")
+  private int cacheTtlMinutes;
+
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
   private static final int HTTP_TIMEOUT = 10000;
 
@@ -66,7 +69,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
 
   private final LoadingCache<String, List<Organisation>> organisationsCache = CacheBuilder
     .newBuilder()
-    .expireAfterWrite(6, TimeUnit.HOURS)
+    .expireAfterWrite(cacheTtlMinutes, TimeUnit.MINUTES)
     .build(
       new CacheLoader<>() {
         @Override
@@ -78,7 +81,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
 
   private final LoadingCache<String, Organisation> organisationCache = CacheBuilder
     .newBuilder()
-    .expireAfterWrite(6, TimeUnit.HOURS)
+    .expireAfterWrite(cacheTtlMinutes, TimeUnit.MINUTES)
     .build(
       new CacheLoader<>() {
         @Override
