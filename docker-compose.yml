@@ -39,6 +39,16 @@ services:
     networks:
       - uttu
 
+  osrm-server:
+    container_name: "${COMPOSE_PROJECT_NAME}_osrm"
+    profiles: ["routing"]
+    image: osrm-routing  # see README.md for information on how to obtain this image
+    platform: linux/amd64
+    ports:
+      - 5000:5000
+    networks:
+      - uttu
+
 volumes:
   postgres-data:
 

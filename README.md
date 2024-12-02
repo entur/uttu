@@ -136,7 +136,9 @@ docker compose down
 docker compose --profile aws down
 ```
 
-See [Docker Compose reference](https://docs.docker.com/compose/reference/) for more details.
+See [Docker Compose reference](https://docs.docker.com/compose/reference/) for official reference.
+
+See [Supported Docker Compose Profiles](#supported-docker-compose-profiles) for more information on provided profiles.
 
 ### Build
 
@@ -232,3 +234,59 @@ With metadata:
     ]
 }
 ``` 
+
+## Supported Docker Compose Profiles
+
+Uttu's [`docker-compose.yml`](./docker-compose.yml) comes with built-in profiles for various use cases. The profiles are
+mostly optional, default profile contains all mandatory configuration while the named profiles add features on top of 
+that. You can always active zero or more profiles at the same time, e.g.
+
+```shell
+docker compose --profile aws --profile routing up
+# or
+COMPOSE_PROFILES=aws,routing docker compose up
+```
+
+### Default profile (no activation key)
+
+Starts up PostGIS server with settings matchin the ones in [`application-local.properties`](./src/main/resources/application-local.properties).
+
+### `aws` profile
+
+Starts up [LocalStack](https://www.localstack.cloud/) meant for developing AWS specific features.
+
+See also [Disable AWS S3 Autoconfiguration](#disable-aws-s3-autoconfiguration), [NeTEx Export](#netex-export).
+
+### `routing` profile
+
+Provides pre-made configuration for running (presumably) [OSRM Server](https://project-osrm.org/) to be used for 
+navigation routing features. **However** the image used is not the default, but instead named `osrm-routing` to allow 
+the use of custom internal/external image with precalculated data. As this is very dependent on how the image is 
+created, we recommend that you use the provided `Dockerfile` below as base and adapt accordingly:
+
+```Dockerfile
+ARG IMAGE_TAG=v5.27.1
+FROM ghcr.io/project-osrm/osrm-backend:$IMAGE_TAG AS build
+
+RUN apt-get -y update \
+    && apt-get -y install curl \
+    && apt-get clean
+RUN mkdir /data \
+    && cd /data \
+    && curl -O 'https://download.geofabrik.de/europe/norway-latest.osm.pbf'
+RUN ls -lah /data
+RUN osrm-extract -p /opt/car.lua /data/norway-latest.osm.pbf
+RUN osrm-partition /data/norway-latest.osrm
+RUN osrm-customize /data/norway-latest.osrm
+
+FROM ghcr.io/project-osrm/osrm-backend:$IMAGE_TAG
+COPY --from=build /data /data
+ENTRYPOINT osrm-routed --algorithm mld /data/norway-latest.osrm
+```
+
+Save the above into `Dockerfile` and build the image with
+```shell
+docker build --platform linux/amd64 -t osrm-routing .
+```
+
+See also [Running locally](#running-locally).
