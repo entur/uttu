@@ -249,7 +249,7 @@ COMPOSE_PROFILES=aws,routing docker compose up
 
 ### Default profile (no activation key)
 
-Starts up PostGIS server with settings matchin the ones in [`application-local.properties`](./src/main/resources/application-local.properties).
+Starts up PostGIS server with settings matching the ones in [`application-local.properties`](./src/main/resources/application-local.properties).
 
 ### `aws` profile
 
