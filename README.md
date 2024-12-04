@@ -260,7 +260,7 @@ See also [Disable AWS S3 Autoconfiguration](#disable-aws-s3-autoconfiguration), 
 ### `routing` profile
 
 Provides pre-made configuration for running (presumably) [OSRM Server](https://project-osrm.org/) to be used for 
-navigation routing features. **However** the image used is not the default, but instead named `osrm-routing` to allow 
+navigation routing features. **However**, the image used is not the default, but instead named `osrm-routing` to allow 
 the use of custom internal/external image with precalculated data. As this is very dependent on how the image is 
 created, we recommend that you use the provided `Dockerfile` below as base and adapt accordingly:
 
