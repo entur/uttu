@@ -284,9 +284,8 @@ COPY --from=build /data /data
 ENTRYPOINT osrm-routed --algorithm mld /data/norway-latest.osrm
 ```
 
-Save the above into `Dockerfile` and build the image with
+Save the above into `Dockerfile-osrm-routing` and build the image with
 ```shell
-docker build --platform linux/amd64 -t osrm-routing .
-```
+docker build --platform linux/amd64 -f Dockerfile-osrm-routing -t osrm-routing .
 
 See also [Running locally](#running-locally).
