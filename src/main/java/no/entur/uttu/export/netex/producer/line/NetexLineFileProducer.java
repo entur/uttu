@@ -101,7 +101,7 @@ public class NetexLineFileProducer {
       .stream()
       .filter(context::isValid)
       .map(jp -> journeyPatternProducer.produce(jp, noticeAssignments, context))
-      .collect(Collectors.toList());
+      .toList();
     return objectFactory.createLineServiceFrame(
       context,
       netexLine,

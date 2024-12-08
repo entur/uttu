@@ -59,6 +59,8 @@ public class NetexExportContext {
 
   public Set<DestinationDisplay> destinationDisplays = new HashSet<>();
 
+  public Set<Ref> serviceLinkRefs = new HashSet();
+
   private Map<String, AtomicLong> idSequences = new HashMap<>();
 
   private Export export;

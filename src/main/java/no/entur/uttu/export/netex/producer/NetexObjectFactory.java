@@ -26,14 +26,8 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.BiConsumer;
-import java.util.function.BinaryOperator;
 import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -41,7 +35,6 @@ import javax.xml.namespace.QName;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
-import no.entur.uttu.ext.entur.organisation.Organisation;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.VehicleSubmodeEnumeration;
@@ -276,7 +269,8 @@ public class NetexObjectFactory {
     Collection<ScheduledStopPoint> scheduledStopPoints,
     Collection<? extends StopAssignment_VersionStructure> stopAssignmentElements,
     Collection<Notice> notices,
-    Collection<DestinationDisplay> destinationDisplays
+    Collection<DestinationDisplay> destinationDisplays,
+    List<ServiceLink> serviceLinks
   ) {
     RoutePointsInFrame_RelStructure routePointStruct = objectFactory
       .createRoutePointsInFrame_RelStructure()
@@ -324,6 +318,10 @@ public class NetexObjectFactory {
       }
     }
 
+    ServiceLinksInFrame_RelStructure serviceLinksInFrame_relStructure = objectFactory
+      .createServiceLinksInFrame_RelStructure()
+      .withServiceLink(serviceLinks);
+
     return createServiceFrame(context)
       .withRoutePoints(routePointStruct)
       .withScheduledStopPoints(scheduledStopPointsStruct)
@@ -331,7 +329,8 @@ public class NetexObjectFactory {
       .withNetwork(network)
       .withAdditionalNetworks(additionalNetworks)
       .withNotices(noticesInFrame_relStructure)
-      .withDestinationDisplays(destinationDisplaysInFrame_relStructure);
+      .withDestinationDisplays(destinationDisplaysInFrame_relStructure)
+      .withServiceLinks(serviceLinks.isEmpty() ? null : serviceLinksInFrame_relStructure);
   }
 
   public <N extends Line_VersionStructure> ServiceFrame createLineServiceFrame(
@@ -648,6 +647,14 @@ public class NetexObjectFactory {
       ScheduledStopPoint.class.getSimpleName()
     );
     return new Ref(newRef.id + "_UTTU", newRef.version);
+  }
+
+  public Ref createLinkSequenceProjectionServiceLinkRef(Ref serviceLinkRef) {
+    Ref newRef = NetexIdProducer.replaceEntityName(
+      serviceLinkRef,
+      LinkSequenceProjection.class.getSimpleName()
+    );
+    return new Ref(newRef.id, newRef.version);
   }
 
   public KeyListStructure mapKeyValues(Map<String, no.entur.uttu.model.Value> keyValues) {

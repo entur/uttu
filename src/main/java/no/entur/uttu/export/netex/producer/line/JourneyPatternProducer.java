@@ -17,7 +17,9 @@ package no.entur.uttu.export.netex.producer.line;
 
 import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
@@ -29,11 +31,14 @@ import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.model.job.SeverityEnumeration;
+import no.entur.uttu.osrm.OsrmService;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.DestinationDisplayRefStructure;
+import org.rutebanken.netex.model.LinkInLinkSequence_VersionedChildStructure;
+import org.rutebanken.netex.model.LinksInJourneyPattern_RelStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
 import org.rutebanken.netex.model.PointInLinkSequence_VersionedChildStructure;
 import org.rutebanken.netex.model.PointsInJourneyPattern_RelStructure;
@@ -42,6 +47,8 @@ import org.rutebanken.netex.model.PurchaseWhenEnumeration;
 import org.rutebanken.netex.model.RouteRefStructure;
 import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
+import org.rutebanken.netex.model.ServiceLinkInJourneyPattern_VersionedChildStructure;
+import org.rutebanken.netex.model.ServiceLinkRefStructure;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -50,15 +57,18 @@ public class JourneyPatternProducer {
   private final NetexObjectFactory objectFactory;
   private final ContactStructureProducer contactStructureProducer;
   private final StopPlaceRegistry stopPlaceRegistry;
+  private final OsrmService osrmService;
 
   public JourneyPatternProducer(
     NetexObjectFactory objectFactory,
     ContactStructureProducer contactStructureProducer,
-    StopPlaceRegistry stopPlaceRegistry
+    StopPlaceRegistry stopPlaceRegistry,
+    OsrmService osrmService
   ) {
     this.objectFactory = objectFactory;
     this.contactStructureProducer = contactStructureProducer;
     this.stopPlaceRegistry = stopPlaceRegistry;
+    this.osrmService = osrmService;
   }
 
   public org.rutebanken.netex.model.JourneyPattern produce(
@@ -88,11 +98,39 @@ public class JourneyPatternProducer {
     );
     context.notices.addAll(local.getNotices());
 
+    List<LinkInLinkSequence_VersionedChildStructure> linksInSequence;
+    if (osrmService != null && osrmService.isEnabled()) {
+      linksInSequence =
+        local
+          .getPointsInSequence()
+          .stream()
+          .map(spinjp ->
+            mapServiceLinkInJourneyPattern(
+              local.getRef(),
+              spinjp,
+              spinjp.getOrder() != local.getPointsInSequence().size()
+                ? local.getPointsInSequence().get(spinjp.getOrder())
+                : null,
+              context
+            )
+          )
+          .filter(Objects::nonNull)
+          .collect(Collectors.toList());
+    } else {
+      linksInSequence = new ArrayList<>();
+    }
+    LinksInJourneyPattern_RelStructure linksInJourneyPattern_relStructure =
+      new LinksInJourneyPattern_RelStructure()
+        .withServiceLinkInJourneyPatternOrTimingLinkInJourneyPattern(linksInSequence);
+
     return objectFactory
       .populate(new org.rutebanken.netex.model.JourneyPattern(), local)
       .withRouteRef(routeRef)
       .withName(objectFactory.createMultilingualString(local.getName()))
-      .withPointsInSequence(pointsInJourneyPattern_relStructure);
+      .withPointsInSequence(pointsInJourneyPattern_relStructure)
+      .withLinksInSequence(
+        linksInSequence.isEmpty() ? null : linksInJourneyPattern_relStructure
+      );
   }
 
   private org.rutebanken.netex.model.StopPointInJourneyPattern mapStopPointInJourneyPattern(
@@ -202,5 +240,37 @@ public class JourneyPatternProducer {
       .withBookingContact(
         contactStructureProducer.mapContactStructure(local.getBookingContact())
       );
+  }
+
+  private ServiceLinkInJourneyPattern_VersionedChildStructure mapServiceLinkInJourneyPattern(
+    Ref lineRef,
+    StopPointInJourneyPattern from,
+    StopPointInJourneyPattern to,
+    NetexExportContext context
+  ) {
+    if (to == null || from.getQuayRef() == null || to.getQuayRef() == null) {
+      return null;
+    }
+
+    String refId = NetexIdProducer.updateIdSuffix(
+      lineRef.id,
+      NetexIdProducer.getObjectIdSuffix(from.getQuayRef()) +
+      "_" +
+      NetexIdProducer.getObjectIdSuffix(to.getQuayRef())
+    );
+    Ref ref = new Ref(refId, "1");
+
+    ServiceLinkRefStructure serviceLinkRef = objectFactory.populateRefStructure(
+      new ServiceLinkRefStructure(),
+      ref,
+      false
+    );
+
+    context.serviceLinkRefs.add(new Ref(serviceLinkRef.getRef(), "1"));
+
+    return objectFactory
+      .populateId(new ServiceLinkInJourneyPattern_VersionedChildStructure(), ref)
+      .withOrder(BigInteger.valueOf(from.getOrder()))
+      .withServiceLinkRef(serviceLinkRef);
   }
 }
