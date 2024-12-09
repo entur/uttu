@@ -47,6 +47,7 @@ import org.rutebanken.netex.model.ScheduledStopPoint;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 import org.rutebanken.netex.model.ServiceCalendarFrame;
 import org.rutebanken.netex.model.ServiceFrame;
+import org.rutebanken.netex.model.ServiceLink;
 import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.netex.model.StopAssignment_VersionStructure;
 import org.springframework.beans.factory.annotation.Value;
@@ -60,6 +61,7 @@ public class NetexCommonFileProducer {
   private final FlexibleStopPlaceProducer flexibleStopPlaceProducer;
   private final ServiceCalendarFrameProducer serviceCalendarFrameProducer;
   private final NetworkProducer networkProducer;
+  private final ServiceLinkProducer serviceLinkProducer;
 
   @Value("${export.blob.commonFileFilenameSuffix:_flexible_shared_data}")
   private String commonFileFilenameSuffix;
@@ -69,13 +71,15 @@ public class NetexCommonFileProducer {
     OrganisationProducer organisationProducer,
     FlexibleStopPlaceProducer flexibleStopPlaceProducer,
     ServiceCalendarFrameProducer serviceCalendarFrameProducer,
-    NetworkProducer networkProducer
+    NetworkProducer networkProducer,
+    ServiceLinkProducer serviceLinkProducer
   ) {
     this.objectFactory = objectFactory;
     this.organisationProducer = organisationProducer;
     this.flexibleStopPlaceProducer = flexibleStopPlaceProducer;
     this.serviceCalendarFrameProducer = serviceCalendarFrameProducer;
     this.networkProducer = networkProducer;
+    this.serviceLinkProducer = serviceLinkProducer;
   }
 
   public NetexFile toCommonFile(NetexExportContext context) {
@@ -160,6 +164,8 @@ public class NetexCommonFileProducer {
       .map(this::mapDestinationDisplay)
       .collect(Collectors.toList());
 
+    List<ServiceLink> serviceLinks = serviceLinkProducer.produce(context);
+
     return objectFactory.createCommonServiceFrame(
       context,
       networks,
@@ -167,7 +173,8 @@ public class NetexCommonFileProducer {
       scheduledStopPoints,
       stopAssignments,
       notices,
-      destinationDisplays
+      destinationDisplays,
+      serviceLinks
     );
   }
 
