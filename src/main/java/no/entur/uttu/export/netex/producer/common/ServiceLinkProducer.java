@@ -10,8 +10,8 @@ import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Ref;
-import no.entur.uttu.osrm.OsrmService;
-import no.entur.uttu.osrm.RouteGeometry;
+import no.entur.uttu.routing.RouteGeometry;
+import no.entur.uttu.routing.RoutingService;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.LinkSequenceProjection;
 import org.rutebanken.netex.model.Projections_RelStructure;
@@ -26,16 +26,16 @@ public class ServiceLinkProducer {
 
   private final NetexObjectFactory objectFactory;
   private final StopPlaceRegistry stopPlaceRegistry;
-  private final OsrmService osrmService;
+  private final RoutingService routingService;
 
   public ServiceLinkProducer(
     NetexObjectFactory objectFactory,
     StopPlaceRegistry stopPlaceRegistry,
-    OsrmService osrmService
+    RoutingService routingService
   ) {
     this.objectFactory = objectFactory;
     this.stopPlaceRegistry = stopPlaceRegistry;
-    this.osrmService = osrmService;
+    this.routingService = routingService;
   }
 
   public List<ServiceLink> produce(NetexExportContext context) {
@@ -47,7 +47,7 @@ public class ServiceLinkProducer {
         String quayRefTo = extractQuayRefTo(serviceLinkRef, context);
         Quay quayTo = getQuay(quayRefTo);
 
-        RouteGeometry routeGeometry = osrmService.getRouteGeometry(
+        RouteGeometry routeGeometry = routingService.getRouteGeometry(
           quayFrom.getCentroid().getLocation().getLongitude(),
           quayFrom.getCentroid().getLocation().getLatitude(),
           quayTo.getCentroid().getLocation().getLongitude(),

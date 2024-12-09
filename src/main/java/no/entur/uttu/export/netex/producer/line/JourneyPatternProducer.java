@@ -31,7 +31,7 @@ import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.model.job.SeverityEnumeration;
-import no.entur.uttu.osrm.OsrmService;
+import no.entur.uttu.routing.RoutingService;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
@@ -57,18 +57,18 @@ public class JourneyPatternProducer {
   private final NetexObjectFactory objectFactory;
   private final ContactStructureProducer contactStructureProducer;
   private final StopPlaceRegistry stopPlaceRegistry;
-  private final OsrmService osrmService;
+  private final RoutingService routingService;
 
   public JourneyPatternProducer(
     NetexObjectFactory objectFactory,
     ContactStructureProducer contactStructureProducer,
     StopPlaceRegistry stopPlaceRegistry,
-    OsrmService osrmService
+    RoutingService routingService
   ) {
     this.objectFactory = objectFactory;
     this.contactStructureProducer = contactStructureProducer;
     this.stopPlaceRegistry = stopPlaceRegistry;
-    this.osrmService = osrmService;
+    this.routingService = routingService;
   }
 
   public org.rutebanken.netex.model.JourneyPattern produce(
@@ -99,7 +99,7 @@ public class JourneyPatternProducer {
     context.notices.addAll(local.getNotices());
 
     List<LinkInLinkSequence_VersionedChildStructure> linksInSequence;
-    if (osrmService != null && osrmService.isEnabled()) {
+    if (routingService != null && routingService.isEnabled()) {
       linksInSequence =
         local
           .getPointsInSequence()

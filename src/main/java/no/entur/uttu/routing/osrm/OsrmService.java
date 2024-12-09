@@ -1,4 +1,4 @@
-package no.entur.uttu.osrm;
+package no.entur.uttu.routing.osrm;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.DeserializationFeature;
@@ -15,25 +15,21 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import no.entur.uttu.routing.RouteGeometry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Profile;
-import org.springframework.stereotype.Component;
 
-@Component
-@Profile("routing")
-public class OsrmService {
+public class OsrmService implements no.entur.uttu.routing.RoutingService {
 
   private static final Logger logger = LoggerFactory.getLogger(OsrmService.class);
 
-  @Value("${uttu.routing.osrm-api}")
-  private String osrmApi;
+  private final String osrmApi;
 
   private final Methanol httpClient;
   private final ObjectMapper objectMapper;
 
-  public OsrmService() {
+  public OsrmService(String osrmApi) {
+    this.osrmApi = osrmApi;
     this.objectMapper = initializeObjectMapper();
     this.httpClient = initializeHttpClient();
   }

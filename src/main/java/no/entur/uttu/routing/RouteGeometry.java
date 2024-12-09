@@ -1,4 +1,4 @@
-package no.entur.uttu.osrm;
+package no.entur.uttu.routing;
 
 import java.math.BigDecimal;
 import java.util.List;
