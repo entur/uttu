@@ -30,6 +30,7 @@ import no.entur.uttu.model.HailAndRideArea;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
+import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.routing.RoutingService;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
@@ -99,7 +100,11 @@ public class JourneyPatternProducer {
     context.notices.addAll(local.getNotices());
 
     List<LinkInLinkSequence_VersionedChildStructure> linksInSequence;
-    if (routingService != null && routingService.isEnabled()) {
+    if (
+      routingService != null &&
+      routingService.isEnabled() &&
+      local.getLine().getTransportMode() == VehicleModeEnumeration.BUS
+    ) {
       linksInSequence =
         local
           .getPointsInSequence()
