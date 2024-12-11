@@ -6,7 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
-@Profile("routing")
+@Profile("osrm-routing-service")
 public class OsrmConfiguration {
 
   @Bean
