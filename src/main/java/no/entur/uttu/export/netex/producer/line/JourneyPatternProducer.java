@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import no.entur.uttu.export.model.ServiceLink;
+import no.entur.uttu.export.model.ServiceLinkExportContext;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
@@ -275,7 +275,7 @@ public class JourneyPatternProducer {
     );
 
     context.serviceLinks.add(
-      new ServiceLink(
+      new ServiceLinkExportContext(
         from.getQuayRef(),
         to.getQuayRef(),
         transportMode,
