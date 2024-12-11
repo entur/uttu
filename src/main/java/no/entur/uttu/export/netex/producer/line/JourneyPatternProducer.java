@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
+import no.entur.uttu.export.model.ServiceLink;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
@@ -116,7 +117,8 @@ public class JourneyPatternProducer {
               spinjp.getOrder() != local.getPointsInSequence().size()
                 ? local.getPointsInSequence().get(spinjp.getOrder())
                 : null,
-              context
+              context,
+              local.getLine().getTransportMode()
             )
           )
           .filter(Objects::nonNull)
@@ -251,7 +253,8 @@ public class JourneyPatternProducer {
     Ref lineRef,
     StopPointInJourneyPattern from,
     StopPointInJourneyPattern to,
-    NetexExportContext context
+    NetexExportContext context,
+    VehicleModeEnumeration transportMode
   ) {
     if (to == null || from.getQuayRef() == null || to.getQuayRef() == null) {
       return null;
@@ -271,7 +274,14 @@ public class JourneyPatternProducer {
       false
     );
 
-    context.serviceLinkRefs.add(new Ref(serviceLinkRef.getRef(), "1"));
+    context.serviceLinks.add(
+      new ServiceLink(
+        from.getQuayRef(),
+        to.getQuayRef(),
+        transportMode,
+        new Ref(serviceLinkRef.getRef(), "1")
+      )
+    );
 
     return objectFactory
       .populateId(new ServiceLinkInJourneyPattern_VersionedChildStructure(), ref)

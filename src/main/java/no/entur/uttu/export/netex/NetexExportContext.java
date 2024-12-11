@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 import no.entur.uttu.export.model.AvailabilityPeriod;
+import no.entur.uttu.export.model.ServiceLink;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DestinationDisplay;
 import no.entur.uttu.model.FlexibleStopPlace;
@@ -59,7 +60,7 @@ public class NetexExportContext {
 
   public Set<DestinationDisplay> destinationDisplays = new HashSet<>();
 
-  public Set<Ref> serviceLinkRefs = new HashSet();
+  public Set<ServiceLink> serviceLinks = new HashSet();
 
   private Map<String, AtomicLong> idSequences = new HashMap<>();
 

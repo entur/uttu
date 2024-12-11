@@ -39,13 +39,11 @@ public class ServiceLinkProducer {
   }
 
   public List<ServiceLink> produce(NetexExportContext context) {
-    return context.serviceLinkRefs
+    return context.serviceLinks
       .stream()
-      .map(serviceLinkRef -> {
-        String quayRefFrom = extractQuayRefFrom(serviceLinkRef, context);
-        Quay quayFrom = getQuay(quayRefFrom);
-        String quayRefTo = extractQuayRefTo(serviceLinkRef, context);
-        Quay quayTo = getQuay(quayRefTo);
+      .map(serviceLink -> {
+        Quay quayFrom = getQuay(serviceLink.quayRefFrom());
+        Quay quayTo = getQuay(serviceLink.quayRefTo());
 
         RouteGeometry routeGeometry = routingService.getRouteGeometry(
           quayFrom.getCentroid().getLocation().getLongitude(),
@@ -67,13 +65,15 @@ public class ServiceLinkProducer {
           .withValue(posListCoordinates);
 
         LineStringType lineString = new LineStringType()
-          .withId(getLineStringId(serviceLinkRef))
+          .withId(getLineStringId(serviceLink.serviceLinkRef()))
           .withPosList(posList);
 
         LinkSequenceProjection linkSequenceProjection = objectFactory
           .populateId(
             new LinkSequenceProjection(),
-            objectFactory.createLinkSequenceProjectionServiceLinkRef(serviceLinkRef)
+            objectFactory.createLinkSequenceProjectionServiceLinkRef(
+              serviceLink.serviceLinkRef()
+            )
           )
           .withLineString(lineString);
 
@@ -83,9 +83,15 @@ public class ServiceLinkProducer {
           );
 
         Ref scheduledStopPointRefFrom =
-          objectFactory.createScheduledStopPointRefFromQuayRef(quayRefFrom, context);
+          objectFactory.createScheduledStopPointRefFromQuayRef(
+            serviceLink.quayRefFrom(),
+            context
+          );
         Ref scheduledStopPointRefTo =
-          objectFactory.createScheduledStopPointRefFromQuayRef(quayRefTo, context);
+          objectFactory.createScheduledStopPointRefFromQuayRef(
+            serviceLink.quayRefTo(),
+            context
+          );
         ScheduledStopPointRefStructure scheduledStopPointFrom =
           objectFactory.populateRefStructure(
             new ScheduledStopPointRefStructure(),
@@ -100,7 +106,7 @@ public class ServiceLinkProducer {
           );
 
         return objectFactory
-          .populateId(new ServiceLink(), serviceLinkRef)
+          .populateId(new ServiceLink(), serviceLink.serviceLinkRef())
           .withDistance(routeGeometry.distance())
           .withFromPointRef(scheduledStopPointFrom)
           .withToPointRef(scheduledStopPointTo)
