@@ -74,7 +74,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
         longitudeTo +
         "," +
         latitudeTo +
-        "?alternatives=false&steps=true&overview=full&geometries=geojson"
+        "?alternatives=false&steps=false&overview=full&geometries=geojson"
       )
       .header("Content-Type", "application/json");
     try {
