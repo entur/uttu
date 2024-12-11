@@ -1,5 +1,6 @@
 package no.entur.uttu.routing.osrm;
 
+import no.entur.uttu.routing.RoutingService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +11,7 @@ import org.springframework.context.annotation.Profile;
 public class OsrmConfiguration {
 
   @Bean
-  OsrmService osrmService(@Value("${uttu.routing.osrm-api}") String osrmApi) {
+  RoutingService routingService(@Value("${uttu.routing.osrm-api}") String osrmApi) {
     return new OsrmService(osrmApi);
   }
 }

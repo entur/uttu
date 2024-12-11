@@ -136,24 +136,6 @@ public class ServiceLinkProducer {
       .get(0);
   }
 
-  String extractQuayRefFrom(Ref serviceLinkRef, NetexExportContext context) {
-    String suffix = NetexIdProducer.getObjectIdSuffix(serviceLinkRef.id).split("_")[0];
-    return getQuayRef(context, suffix);
-  }
-
-  String extractQuayRefTo(Ref serviceLinkRef, NetexExportContext context) {
-    String suffix = NetexIdProducer.getObjectIdSuffix(serviceLinkRef.id).split("_")[1];
-    return getQuayRef(context, suffix);
-  }
-
-  String getQuayRef(NetexExportContext context, String suffix) {
-    return context.quayRefs
-      .stream()
-      .filter(quay -> NetexIdProducer.getObjectIdSuffix(quay).equals(suffix))
-      .findFirst()
-      .get();
-  }
-
   String getLineStringId(Ref serviceLinkRef) {
     String serviceLinkSuffix = NetexIdProducer.getObjectIdSuffix(serviceLinkRef.id);
     return "LS_" + serviceLinkSuffix;

@@ -9,19 +9,21 @@ import org.rutebanken.netex.model.ServiceLinkInJourneyPattern_VersionedChildStru
 
 public class NetexObjectFactoryTest {
 
-    @Test
-    void populateIdReturnsValidIdForVersionedChildStructureElements() {
-        NetexObjectFactory factory = new NetexObjectFactory(
-                new DateUtils(),
-                new ExportTimeZone()
-        );
+  @Test
+  void populateIdReturnsValidIdForVersionedChildStructureElements() {
+    NetexObjectFactory factory = new NetexObjectFactory(
+      new DateUtils(),
+      new ExportTimeZone()
+    );
 
-        Assertions.assertEquals(
-                "ENT:ServiceLinkInJourneyPattern:1",
-                factory.populateId(
-                        new ServiceLinkInJourneyPattern_VersionedChildStructure(),
-                        new Ref("ENT:ServiceLink:1", "1")
-                ).getId()
-        );
-    }
+    Assertions.assertEquals(
+      "ENT:ServiceLinkInJourneyPattern:1",
+      factory
+        .populateId(
+          new ServiceLinkInJourneyPattern_VersionedChildStructure(),
+          new Ref("ENT:ServiceLink:1", "1")
+        )
+        .getId()
+    );
+  }
 }

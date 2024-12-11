@@ -126,7 +126,8 @@ public class NetexIdProducer {
       }
     } else if (entity instanceof VersionedChildStructure) {
       if (localPart.endsWith("VersionedChildStructure")) {
-        localPart = localPart.substring(0, localPart.lastIndexOf("_VersionedChildStructure"));
+        localPart =
+          localPart.substring(0, localPart.lastIndexOf("_VersionedChildStructure"));
       }
     }
     return localPart;
