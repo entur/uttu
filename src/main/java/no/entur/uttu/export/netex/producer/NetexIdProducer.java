@@ -25,6 +25,7 @@ import no.entur.uttu.model.Ref;
 import org.rutebanken.netex.model.EntityInVersionStructure;
 import org.rutebanken.netex.model.EntityStructure;
 import org.rutebanken.netex.model.VersionOfObjectRefStructure;
+import org.rutebanken.netex.model.VersionedChildStructure;
 
 public class NetexIdProducer {
 
@@ -42,7 +43,7 @@ public class NetexIdProducer {
   public static <N extends EntityInVersionStructure> String getId(N netex, Ref ref) {
     return getId(
       NetexIdProducer.getObjectIdPrefix(ref.id),
-      netex.getClass().getSimpleName(),
+      getEntityName(netex),
       NetexIdProducer.getObjectIdSuffix(ref.id)
     );
   }
@@ -122,6 +123,11 @@ public class NetexIdProducer {
       // Assuming all VersionOfObjectRefStructure subclasses is named as correct element + suffix ("RefStructure""))
       if (localPart.endsWith("Structure")) {
         localPart = localPart.substring(0, localPart.lastIndexOf("Structure"));
+      }
+    } else if (entity instanceof VersionedChildStructure) {
+      if (localPart.endsWith("VersionedChildStructure")) {
+        localPart =
+          localPart.substring(0, localPart.lastIndexOf("_VersionedChildStructure"));
       }
     }
     return localPart;
