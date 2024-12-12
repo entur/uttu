@@ -11,7 +11,9 @@ import org.springframework.context.annotation.Profile;
 public class OsrmConfiguration {
 
   @Bean
-  RoutingService routingService(@Value("${uttu.routing.osrm-api}") String osrmApi) {
-    return new OsrmService(osrmApi);
+  RoutingService routingService(
+    @Value("${uttu.routing.osrm-api}") String osrmApiEndpoint
+  ) {
+    return new OsrmService(osrmApiEndpoint);
   }
 }
