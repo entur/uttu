@@ -23,15 +23,16 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
 
   private static final Logger logger = LoggerFactory.getLogger(OsrmService.class);
 
-  private final String osrmApi;
+  private final String osrmApiEndpoint;
 
   private final Methanol httpClient;
   private final ObjectMapper objectMapper;
 
-  public OsrmService(String osrmApi) {
-    this.osrmApi = osrmApi;
+  public OsrmService(String osrmApiEndpoint) {
+    this.osrmApiEndpoint = osrmApiEndpoint;
     this.objectMapper = initializeObjectMapper();
     this.httpClient = initializeHttpClient();
+    logger.info("OsrmService got initialised, osrmApiEndpoint is: {}", osrmApiEndpoint);
   }
 
   private static ObjectMapper initializeObjectMapper() {
@@ -53,7 +54,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
   }
 
   public boolean isEnabled() {
-    return osrmApi != null && !osrmApi.isBlank();
+    return osrmApiEndpoint != null && !osrmApiEndpoint.isBlank();
   }
 
   public RouteGeometry getRouteGeometry(
@@ -65,7 +66,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
     List<List<BigDecimal>> routeCoordinates = new ArrayList<>();
     MutableRequest request = MutableRequest
       .GET(
-        osrmApi +
+        osrmApiEndpoint +
         "/route/v1/driving/" +
         longitudeFrom +
         "," +
