@@ -19,6 +19,7 @@ import static graphql.Scalars.GraphQLBoolean;
 import static graphql.Scalars.GraphQLID;
 import static graphql.Scalars.GraphQLInt;
 import static graphql.Scalars.GraphQLString;
+import static graphql.scalars.ExtendedScalars.GraphQLBigDecimal;
 import static graphql.scalars.ExtendedScalars.GraphQLLong;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
 import static graphql.schema.GraphQLInputObjectField.newInputObjectField;
@@ -50,6 +51,7 @@ import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.graphql.fetchers.DayTypeServiceJourneyCountFetcher;
 import no.entur.uttu.graphql.fetchers.ExportedPublicLinesFetcher;
 import no.entur.uttu.graphql.model.Organisation;
+import no.entur.uttu.graphql.model.ServiceLink;
 import no.entur.uttu.graphql.model.StopPlace;
 import no.entur.uttu.graphql.scalars.DateScalar;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
@@ -87,7 +89,6 @@ import no.entur.uttu.repository.NetworkRepository;
 import org.locationtech.jts.geom.Geometry;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.OrganisationTypeEnumeration;
-import org.rutebanken.netex.model.Organisation_VersionStructure;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -160,6 +161,9 @@ public class LinesGraphQLSchema {
 
   @Autowired
   private DataFetcher<List<StopPlace>> stopPlacesFetcher;
+
+  @Autowired
+  private DataFetcher<ServiceLink> routingFetcher;
 
   private <T extends Enum> GraphQLEnumType createEnum(
     String name,
@@ -263,6 +267,8 @@ public class LinesGraphQLSchema {
   private GraphQLObjectType stopPlaceObjectType;
 
   private GraphQLObjectType organisationObjectType;
+  private GraphQLObjectType routeGeometryObjectType;
+  private GraphQLObjectType serviceLinkObjectType;
 
   private GraphQLArgument idArgument;
   private GraphQLArgument idsArgument;
@@ -913,6 +919,26 @@ public class LinesGraphQLSchema {
         .field(newFieldDefinition().name(FIELD_NAME).type(multilingualStringObjectType))
         .field(newFieldDefinition().name("type").type(organisationTypeEnum))
         .build();
+
+    routeGeometryObjectType =
+      newObject()
+        .name("RouteGeometry")
+        .field(
+          newFieldDefinition()
+            .name("coordinates")
+            .type(new GraphQLList(new GraphQLList(GraphQLBigDecimal)))
+        )
+        .field(newFieldDefinition().name("distance").type(GraphQLBigDecimal))
+        .build();
+
+    serviceLinkObjectType =
+      newObject()
+        .name("ServiceLink")
+        .field(newFieldDefinition().name("routeGeometry").type(routeGeometryObjectType))
+        .field(newFieldDefinition().name("quayRefFrom").type(GraphQLString))
+        .field(newFieldDefinition().name("quayRefTo").type(GraphQLString))
+        .field(newFieldDefinition().name("serviceLinkRef").type(GraphQLString))
+        .build();
   }
 
   private GraphQLObjectType createQueryObject() {
@@ -1101,6 +1127,29 @@ public class LinesGraphQLSchema {
           .name("organisations")
           .description("List all organisations")
           .dataFetcher(organisationsFetcher)
+      )
+      .field(
+        newFieldDefinition()
+          .type(serviceLinkObjectType)
+          .name("serviceLink")
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name("quayRefFrom")
+              .type(GraphQLString)
+              .description("First stop point's id")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name("quayRefTo")
+              .type(GraphQLString)
+              .description("Second stop point's id")
+              .build()
+          )
+          .description("Fetch service link containing route geometry")
+          .dataFetcher(routingFetcher)
       )
       .build();
   }

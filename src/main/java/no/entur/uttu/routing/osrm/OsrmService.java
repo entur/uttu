@@ -57,14 +57,13 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
     return osrmApiEndpoint != null && !osrmApiEndpoint.isBlank();
   }
 
-  public RouteGeometry getRouteGeometry(
+  private MutableRequest getRoutingRequest(
     BigDecimal longitudeFrom,
     BigDecimal latitudeFrom,
     BigDecimal longitudeTo,
     BigDecimal latitudeTo
   ) {
-    List<List<BigDecimal>> routeCoordinates = new ArrayList<>();
-    MutableRequest request = MutableRequest
+    return MutableRequest
       .GET(
         osrmApiEndpoint +
         "/route/v1/driving/" +
@@ -78,6 +77,21 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
         "?alternatives=false&steps=false&overview=full&geometries=geojson"
       )
       .header("Content-Type", "application/json");
+  }
+
+  public RouteGeometry getRouteGeometry(
+    BigDecimal longitudeFrom,
+    BigDecimal latitudeFrom,
+    BigDecimal longitudeTo,
+    BigDecimal latitudeTo
+  ) {
+    List<List<BigDecimal>> routeCoordinates = new ArrayList<>();
+    MutableRequest request = getRoutingRequest(
+      longitudeFrom,
+      latitudeFrom,
+      longitudeTo,
+      latitudeTo
+    );
     try {
       HttpResponse<String> response = httpClient.send(
         request,
