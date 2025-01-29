@@ -1,5 +1,12 @@
 CREATE TABLE branding (
- id bigint NOT NULL,
+ pk bigint NOT NULL,
+ changed timestamp without time zone NOT NULL,
+ changed_by character varying(255) NOT NULL,
+ created timestamp without time zone NOT NULL,
+ created_by character varying(255) NOT NULL,
+ version bigint NOT NULL,
+ netex_id character varying(255) NOT NULL,
+ provider_pk bigint NOT NULL,
  name character varying(255),
  short_name character varying(255),
  description character varying(255),
@@ -10,7 +17,7 @@ CREATE TABLE branding (
 ALTER TABLE branding OWNER TO uttu;
 
 ALTER TABLE ONLY branding
-    ADD CONSTRAINT branding_pkey PRIMARY KEY (id);
+    ADD CONSTRAINT branding_pkey PRIMARY KEY (pk);
 
 CREATE SEQUENCE branding_seq
     START WITH 1
