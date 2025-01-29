@@ -5,70 +5,71 @@ import no.entur.uttu.util.Preconditions;
 
 @Entity
 public class Branding extends ProviderEntity {
-    private String name;
-    private String shortName;
-    private String description;
-    private String url;
-    private String imageUrl;
 
-    public String getName() {
-        return name;
-    }
+  private String name;
+  private String shortName;
+  private String description;
+  private String url;
+  private String imageUrl;
 
-    public void setName(String name) {
-        this.name = name;
-    }
+  public String getName() {
+    return name;
+  }
 
-    public String getShortName() {
-        return shortName;
-    }
+  public void setName(String name) {
+    this.name = name;
+  }
 
-    public void setShortName(String shortName) {
-        this.shortName = shortName;
-    }
+  public String getShortName() {
+    return shortName;
+  }
 
-    public String getDescription() {
-        return description;
-    }
+  public void setShortName(String shortName) {
+    this.shortName = shortName;
+  }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
+  public String getDescription() {
+    return description;
+  }
 
-    public String getUrl() {
-        return url;
-    }
+  public void setDescription(String description) {
+    this.description = description;
+  }
 
-    public void setUrl(String url) {
-        this.url = url;
-    }
+  public String getUrl() {
+    return url;
+  }
 
-    public String getImageUrl() {
-        return imageUrl;
-    }
+  public void setUrl(String url) {
+    this.url = url;
+  }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
-    }
+  public String getImageUrl() {
+    return imageUrl;
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        return super.equals(o);
-    }
+  public void setImageUrl(String imageUrl) {
+    this.imageUrl = imageUrl;
+  }
 
-    @Override
-    public int hashCode() {
-        return super.hashCode();
-    }
+  @Override
+  public boolean equals(Object o) {
+    return super.equals(o);
+  }
 
-    @Override
-    public void checkPersistable() {
-        super.checkPersistable();
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
 
-        Preconditions.checkArgument(
-                getName() != null && !getName().isEmpty(),
-                "%s branding must have a non-empty name",
-                this
-        );
-    }
+  @Override
+  public void checkPersistable() {
+    super.checkPersistable();
+
+    Preconditions.checkArgument(
+      getName() != null && !getName().isEmpty(),
+      "%s branding must have a non-empty name",
+      this
+    );
+  }
 }
