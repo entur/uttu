@@ -27,6 +27,7 @@ import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static no.entur.uttu.graphql.GraphQLNames.*;
 
+import graphql.GraphQL;
 import graphql.Scalars;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLArgument;
@@ -60,6 +61,7 @@ import no.entur.uttu.graphql.scalars.GeoJSONCoordinatesScalar;
 import no.entur.uttu.graphql.scalars.LocalTimeScalar;
 import no.entur.uttu.model.BookingAccessEnumeration;
 import no.entur.uttu.model.BookingMethodEnumeration;
+import no.entur.uttu.model.Branding;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.DirectionTypeEnumeration;
@@ -79,6 +81,7 @@ import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportStatusEnumeration;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.profile.Profile;
+import no.entur.uttu.repository.BrandingRepository;
 import no.entur.uttu.repository.DataSpaceCleaner;
 import no.entur.uttu.repository.DayTypeRepository;
 import no.entur.uttu.repository.ExportRepository;
@@ -164,6 +167,12 @@ public class LinesGraphQLSchema {
 
   @Autowired
   private DataFetcher<ServiceLink> routingFetcher;
+
+  @Autowired
+  private BrandingRepository brandingRepository;
+
+  @Autowired
+  private DataFetcher<Branding> brandingUpdater;
 
   private <T extends Enum> GraphQLEnumType createEnum(
     String name,
@@ -269,6 +278,7 @@ public class LinesGraphQLSchema {
   private GraphQLObjectType organisationObjectType;
   private GraphQLObjectType routeGeometryObjectType;
   private GraphQLObjectType serviceLinkObjectType;
+  private GraphQLObjectType brandingObjectType;
 
   private GraphQLArgument idArgument;
   private GraphQLArgument idsArgument;
@@ -939,6 +949,16 @@ public class LinesGraphQLSchema {
         .field(newFieldDefinition().name("quayRefTo").type(GraphQLString))
         .field(newFieldDefinition().name("serviceLinkRef").type(GraphQLString))
         .build();
+
+    brandingObjectType =
+      newObject(identifiedEntityObjectType)
+        .name("Branding")
+        .field(newFieldDefinition().name("name").type(new GraphQLNonNull(GraphQLString)))
+        .field(newFieldDefinition().name("shortName").type(GraphQLString))
+        .field(newFieldDefinition().name("description").type(GraphQLString))
+        .field(newFieldDefinition().name("url").type(GraphQLString))
+        .field(newFieldDefinition().name("imageUrl").type(GraphQLString))
+        .build();
   }
 
   private GraphQLObjectType createQueryObject() {
@@ -1071,6 +1091,21 @@ public class LinesGraphQLSchema {
           .description("Get network by id")
           .argument(idArgument)
           .dataFetcher(env -> networkRepository.getOne(env.getArgument(FIELD_ID)))
+      )
+      .field(
+        newFieldDefinition()
+          .type(new GraphQLList(brandingObjectType))
+          .name("brandings")
+          .description("List of brandings")
+          .dataFetcher(env -> brandingRepository.findAll())
+      )
+      .field(
+        newFieldDefinition()
+          .type(brandingObjectType)
+          .name("branding")
+          .description("Get branding by id")
+          .argument(idArgument)
+          .dataFetcher(env -> brandingRepository.getOne(env.getArgument(FIELD_ID)))
       )
       .field(
         newFieldDefinition()
@@ -1207,6 +1242,15 @@ public class LinesGraphQLSchema {
           .name(FIELD_AUTHORITY_REF)
           .type(new GraphQLNonNull(GraphQLString))
       )
+      .build();
+
+    GraphQLInputObjectType brandingInputType = newInputObject(identifiedEntityInputType)
+      .name("BrandingInput")
+      .field(newInputObjectField().name("name").type(new GraphQLNonNull(GraphQLString)))
+      .field(newInputObjectField().name("shortName").type(GraphQLString))
+      .field(newInputObjectField().name("description").type(GraphQLString))
+      .field(newInputObjectField().name("url").type(GraphQLString))
+      .field(newInputObjectField().name("imageUrl").type(GraphQLString))
       .build();
 
     GraphQLInputObjectType keyValuesInputType = newInputObject()
@@ -1566,6 +1610,24 @@ public class LinesGraphQLSchema {
           .description("Delete an existing network")
           .argument(idArgument)
           .dataFetcher(networkUpdater)
+      )
+      .field(
+        newFieldDefinition()
+          .type(new GraphQLNonNull(brandingObjectType))
+          .name("mutateBranding")
+          .description("Create new or update existing branding")
+          .argument(
+            GraphQLArgument.newArgument().name(FIELD_INPUT).type(brandingInputType)
+          )
+          .dataFetcher(brandingUpdater)
+      )
+      .field(
+        newFieldDefinition()
+          .type(new GraphQLNonNull(brandingObjectType))
+          .name("deleteBranding")
+          .description("Delete an existing branding")
+          .argument(idArgument)
+          .dataFetcher(brandingUpdater)
       )
       .field(
         newFieldDefinition()
