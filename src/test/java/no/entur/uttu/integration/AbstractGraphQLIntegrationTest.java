@@ -12,9 +12,9 @@ import org.springframework.test.web.reactive.server.WebTestClient;
 public abstract class AbstractGraphQLIntegrationTest extends UttuIntegrationTest {
 
   @Autowired
-  private UserContextServiceStub userContextServiceStub;
+  protected UserContextServiceStub userContextServiceStub;
 
-  HttpGraphQlTester graphQlTester;
+  protected HttpGraphQlTester graphQlTester;
 
   @Before
   public void setup() {
