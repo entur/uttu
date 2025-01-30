@@ -40,7 +40,7 @@
         <java.version>21</java.version>
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>
 
-        <entur.helpers.version>3.0</entur.helpers.version>
+        <entur.helpers.version>4.9</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
@@ -63,7 +63,7 @@
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.30.7</awssdk.version>
+        <awssdk.version>2.30.8</awssdk.version>
     </properties>
 
     <distributionManagement>
@@ -112,7 +112,7 @@
         </dependency>
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
-            <artifactId>gcp-storage</artifactId>
+            <artifactId>storage-gcp-gcs</artifactId>
             <version>${gcp-storage.version}</version>
             <exclusions>
                 <exclusion>
@@ -387,6 +387,12 @@
             <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
             <version>${rest-assured.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework.graphql</groupId>
+            <artifactId>spring-graphql-test</artifactId>
             <scope>test</scope>
         </dependency>
 
