@@ -1,6 +1,9 @@
 package no.entur.uttu.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
@@ -28,8 +31,10 @@ public class DayTypeGraphQLIntegrationTest extends AbstractGraphQLIntegrationTes
 
   @Test
   public void testUnableToDeleteDayTypeUsedByServiceJourney() {
-    var response = createDayType();
-    String dayTypeRef = response.path("mutateDayType.id").entity(String.class).get();
+    String dayTypeRef = createDayType()
+      .path("mutateDayType.id")
+      .entity(String.class)
+      .get();
     String networkId = createNetworkWithName()
       .path("mutateNetwork.id")
       .entity(String.class)
@@ -37,19 +42,23 @@ public class DayTypeGraphQLIntegrationTest extends AbstractGraphQLIntegrationTes
 
     createFixedLineWithDayTypeRef("TestSJ", networkId, dayTypeRef);
 
-    response =
-      graphQlTester.documentName("deleteDayType").variable("id", dayTypeRef).execute();
-
-    // TODO is there a better way to assert on errors?
-    response
+    graphQlTester
+      .documentName("deleteDayType")
+      .variable("id", dayTypeRef)
+      .execute()
       .errors()
-      .expect(error -> {
-        var extentions = error.getExtensions();
-        return extentions.get("code").equals("ENTITY_IS_REFERENCED");
-      });
-    /*executeGraphQL(deleteDayTypeMutation, "{ \"id\": \"" + dayTypeRef + "\" }", 200)
-                .body("errors[0].extensions.code", equalTo("ENTITY_IS_REFERENCED"))
-                .body("errors[0].extensions.metadata.numberOfReferences", equalTo(1))*/
+      .satisfy(errors ->
+        assertThat(errors)
+          .anyMatch(error ->
+            error.getExtensions().get("code").equals("ENTITY_IS_REFERENCED")
+          )
+          .anyMatch(error ->
+            ((Map<String, Object>) error.getExtensions().get("metadata")).get(
+                "numberOfReferences"
+              )
+              .equals(1)
+          )
+      );
   }
 
   private GraphQlTester.Response createDayType() {
