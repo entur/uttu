@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class InputGenerators {
 
-  static @NotNull Map<String, Object> generateDayTypeInput() {
+  public static @NotNull Map<String, Object> generateDayTypeInput() {
     return Map.of(
       "daysOfWeek",
       List.of("monday", "tuesday", "wednesday", "thursday", "friday"),
@@ -20,7 +20,7 @@ public class InputGenerators {
     );
   }
 
-  static @NotNull Map<String, Object> generateFixedLineInput(
+  public static @NotNull Map<String, Object> generateFixedLineInput(
     String name,
     String networkId,
     String dayTypeRef
@@ -70,7 +70,7 @@ public class InputGenerators {
     );
   }
 
-  static @NotNull Map<String, String> generateNetworkInput(
+  public static @NotNull Map<String, String> generateNetworkInput(
     String name,
     String authorityRef
   ) {
