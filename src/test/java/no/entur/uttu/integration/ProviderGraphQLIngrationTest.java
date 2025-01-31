@@ -28,18 +28,7 @@ public class ProviderGraphQLIngrationTest extends AbstractGraphQLIntegrationTest
 
   @Test
   public void testGetProviders() {
-    var response = graphQlTester
-      .document(
-        """
-   query GetProviders {
-     providers {
-       name
-       code
-     }
-   }
-"""
-      )
-      .execute();
+    var response = graphQlTester.documentName("providers").execute();
 
     response.path("providers").entityList(Object.class).hasSize(1);
     response.path("providers[0].code").entity(String.class).equals("tst");
@@ -50,18 +39,7 @@ public class ProviderGraphQLIngrationTest extends AbstractGraphQLIntegrationTest
     userContextServiceStub.setHasAccessToProvider("tst", false);
     userContextServiceStub.setHasAccessToProvider("foo", true);
 
-    var response = graphQlTester
-      .document(
-        """
-   query GetProviders {
-     providers {
-       name
-       code
-     }
-   }
-"""
-      )
-      .execute();
+    var response = graphQlTester.documentName("providers").execute();
 
     response.path("providers").entityList(Object.class).hasSize(1);
     response.path("providers[0].code").entity(String.class).equals("foo");
@@ -69,22 +47,7 @@ public class ProviderGraphQLIngrationTest extends AbstractGraphQLIntegrationTest
 
   @Test
   public void testGetUserContext() {
-    var response = graphQlTester
-      .document(
-        """
-   query GetUserContext {
-    userContext {
-        preferredName
-        isAdmin
-        providers {
-            name
-            code
-        }
-     }
-   }
-"""
-      )
-      .execute();
+    var response = graphQlTester.documentName("userContext").execute();
 
     response.path("userContext.preferredName").entity(String.class).equals("John Doe");
     response.path("userContext.isAdmin").entity(Boolean.class).equals(false);

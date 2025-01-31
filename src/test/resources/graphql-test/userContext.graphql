@@ -1,0 +1,10 @@
+query GetUserContext {
+    userContext {
+        preferredName
+        isAdmin
+        providers {
+            name
+            code
+        }
+    }
+}

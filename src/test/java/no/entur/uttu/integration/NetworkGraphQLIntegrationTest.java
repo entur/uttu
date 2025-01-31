@@ -12,35 +12,13 @@ public class NetworkGraphQLIntegrationTest extends AbstractGraphQLIntegrationTes
     input.put("name", "TestNetwork");
     input.put("authorityRef", "NOG:Authority:1");
     GraphQlTester.Response response = graphQlTester
-      .document(
-        """
-            mutation mutateNetwork($network: NetworkInput!) {
-                mutateNetwork(input: $network) {
-                    id
-                }
-            }
-            """
-      )
+      .documentName("mutateNetwork")
       .variable("network", input)
       .execute();
 
     String networkId = response.path("mutateNetwork.id").entity(String.class).get();
 
-    response =
-      graphQlTester
-        .document(
-          """
-                    query GetNetwork($id: ID!) {
-                        network(id: $id) {
-                            id
-                            name
-                            authorityRef
-                        }
-                    }
-                    """
-        )
-        .variable("id", networkId)
-        .execute();
+    response = graphQlTester.documentName("network").variable("id", networkId).execute();
 
     response
       .path("network.id")

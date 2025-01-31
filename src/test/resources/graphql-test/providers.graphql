@@ -1,0 +1,6 @@
+query GetProviders {
+    providers {
+        name
+        code
+    }
+}
