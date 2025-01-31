@@ -50,9 +50,7 @@ public class DayTypeGraphQLIntegrationTest extends AbstractGraphQLIntegrationTes
       .satisfy(errors ->
         assertThat(errors)
           .anyMatch(error ->
-            error.getExtensions().get("code").equals("ENTITY_IS_REFERENCED")
-          )
-          .anyMatch(error ->
+            error.getExtensions().get("code").equals("ENTITY_IS_REFERENCED") &&
             ((Map<String, Object>) error.getExtensions().get("metadata")).get(
                 "numberOfReferences"
               )
