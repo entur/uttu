@@ -1,12 +1,9 @@
 package no.entur.uttu.integration;
 
-import io.restassured.response.ValidatableResponse;
-import java.util.Map;
 import no.entur.uttu.UttuIntegrationTest;
 import no.entur.uttu.stubs.UserContextServiceStub;
 import org.junit.Before;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;

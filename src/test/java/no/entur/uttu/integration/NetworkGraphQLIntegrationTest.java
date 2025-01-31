@@ -1,6 +1,5 @@
 package no.entur.uttu.integration;
 
-import java.util.HashMap;
 import org.junit.Test;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
@@ -8,9 +7,8 @@ public class NetworkGraphQLIntegrationTest extends AbstractGraphQLIntegrationTes
 
   @Test
   public void testCreateNetwork() {
-    var input = new HashMap<>();
-    input.put("name", "TestNetwork");
-    input.put("authorityRef", "NOG:Authority:1");
+    var input = InputGenerators.generateNetworkInput("TestNetwork", "NOG:Authority:1");
+
     GraphQlTester.Response response = graphQlTester
       .documentName("mutateNetwork")
       .variable("network", input)

@@ -1,8 +1,6 @@
 package no.entur.uttu.integration;
 
 import java.util.List;
-import java.util.Map;
-import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.springframework.graphql.test.tester.GraphQlTester;
 
@@ -32,7 +30,7 @@ public class DayTypeGraphQLIntegrationTest extends AbstractGraphQLIntegrationTes
   public void testUnableToDeleteDayTypeUsedByServiceJourney() {
     var response = createDayType();
     String dayTypeRef = response.path("mutateDayType.id").entity(String.class).get();
-    String networkId = createNetworkWithName("TestNetworkForDayTypes")
+    String networkId = createNetworkWithName()
       .path("mutateNetwork.id")
       .entity(String.class)
       .get();
@@ -55,23 +53,9 @@ public class DayTypeGraphQLIntegrationTest extends AbstractGraphQLIntegrationTes
   }
 
   private GraphQlTester.Response createDayType() {
-    var input = generateDayTypeInput();
+    var input = InputGenerators.generateDayTypeInput();
 
     return graphQlTester.documentName("mutateDayType").variable("input", input).execute();
-  }
-
-  private static @NotNull Map<String, Object> generateDayTypeInput() {
-    return Map.of(
-      "daysOfWeek",
-      List.of("monday", "tuesday", "wednesday", "thursday", "friday"),
-      "dayTypeAssignments",
-      Map.of(
-        "operatingPeriod",
-        Map.of("fromDate", "2020-04-01", "toDate", "2020-05-01"),
-        "isAvailable",
-        true
-      )
-    );
   }
 
   private void createFixedLineWithDayTypeRef(
@@ -79,65 +63,18 @@ public class DayTypeGraphQLIntegrationTest extends AbstractGraphQLIntegrationTes
     String networkId,
     String dayTypeRef
   ) {
-    var input = generateFixedLineInput(name, networkId, dayTypeRef);
+    var input = InputGenerators.generateFixedLineInput(name, networkId, dayTypeRef);
 
     graphQlTester.documentName("mutateFixedLine").variable("input", input).execute();
   }
 
-  private static @NotNull Map<String, Object> generateFixedLineInput(
-    String name,
-    String networkId,
-    String dayTypeRef
-  ) {
-    return Map.of(
-      "name",
-      name,
-      "publicCode",
-      "TestFixedLine",
-      "transportMode",
-      "bus",
-      "transportSubmode",
-      "localBus",
-      "networkRef",
-      networkId,
-      "operatorRef",
-      "NOG:Operator:1",
-      "journeyPatterns",
-      List.of(
-        Map.of(
-          "pointsInSequence",
-          List.of(
-            Map.of(
-              "quayRef",
-              "NSR:Quay:494",
-              "destinationDisplay",
-              Map.of("frontText", "Første stopp")
-            ),
-            Map.of("quayRef", "NSR:Quay:563")
-          ),
-          "serviceJourneys",
-          List.of(
-            Map.of(
-              "name",
-              "Hverdager3-" + System.currentTimeMillis(),
-              "dayTypesRefs",
-              List.of(dayTypeRef),
-              "passingTimes",
-              List.of(
-                Map.of("departureTime", "07:00:00"),
-                Map.of("arrivalTime", "07:15:00")
-              )
-            )
-          )
-        )
-      )
-    );
-  }
-
-  private GraphQlTester.Response createNetworkWithName(String name) {
+  private GraphQlTester.Response createNetworkWithName() {
     return graphQlTester
       .documentName("mutateNetwork")
-      .variable("network", Map.of("name", name, "authorityRef", "NOG:Authority:1"))
+      .variable(
+        "network",
+        InputGenerators.generateNetworkInput("TestNetworkForDayTypes", "NOG:Authority:1")
+      )
       .execute();
   }
 }
