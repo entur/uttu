@@ -1,0 +1,16 @@
+mutation MutateFixedLine($input: FixedLineInput!) {
+    mutateFixedLine(input: $input) {
+        id
+        name
+        journeyPatterns {
+            pointsInSequence {
+                quayRef
+            }
+            serviceJourneys {
+                passingTimes {
+                    departureTime
+                }
+            }
+        }
+    }
+}

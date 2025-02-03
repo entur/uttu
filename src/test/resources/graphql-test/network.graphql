@@ -1,0 +1,7 @@
+query GetNetwork($id: ID!) {
+    network(id: $id) {
+        id
+        name
+        authorityRef
+    }
+}

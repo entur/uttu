@@ -1,0 +1,5 @@
+mutation DeleteFlexibleLine($id: ID!) {
+  deleteFlexibleLine(id: $id) {
+    id
+  }
+}

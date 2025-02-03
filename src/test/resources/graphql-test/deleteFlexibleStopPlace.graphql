@@ -1,0 +1,5 @@
+mutation deleteFlexibleStopPlace($id: ID!) {
+    deleteFlexibleStopPlace(id: $id) {
+        id
+    }
+}

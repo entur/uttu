@@ -1,0 +1,7 @@
+mutation mutateNetwork($network: NetworkInput!) {
+    mutateNetwork(input: $network) {
+        id
+        name
+        authorityRef
+    }
+}

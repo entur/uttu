@@ -1,0 +1,13 @@
+query GetStopPlaceByQuayRef($id: ID!){
+    stopPlaceByQuayRef(id:$id) {
+        id,
+        name {
+            lang
+            value
+        },
+        quays {
+            id
+            publicCode
+        }
+    }
+}

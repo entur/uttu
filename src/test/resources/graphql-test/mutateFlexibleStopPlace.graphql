@@ -1,0 +1,30 @@
+mutation MutateFlexibleStopPlace($flexibleStopPlace: FlexibleStopPlaceInput!) {
+  mutateFlexibleStopPlace(input: $flexibleStopPlace) {
+    id
+    name
+    keyValues {
+      key
+      values
+    }
+    flexibleArea {
+      polygon {
+        type
+        coordinates
+      }
+    }
+    flexibleAreas {
+      keyValues {
+        key
+        values
+      }
+      polygon {
+        type
+        coordinates
+      }
+    }
+    hailAndRideArea {
+      startQuayRef
+      endQuayRef 
+    }
+  }
+}

@@ -1,0 +1,6 @@
+query GetDayTypesByIds($ids: [ID!]!) {
+    dayTypesByIds(ids: $ids) {
+        id
+        numberOfServiceJourneys
+    }
+}

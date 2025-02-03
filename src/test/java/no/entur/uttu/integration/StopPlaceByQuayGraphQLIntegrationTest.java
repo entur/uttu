@@ -8,11 +8,7 @@ public class StopPlaceByQuayGraphQLIntegrationTest
   @Test
   public void testGetStopPlaceByQuayRef() {
     var response = graphQlTester
-      .document(
-        """
-                 query GetStopPlaceByQuayRef($id: ID!){ stopPlaceByQuayRef(id:$id) { id, name { lang value }, quays { id publicCode }}}
-                 """
-      )
+      .documentName("stopPlaceByQuayRef")
       .variable("id", "NSR:Quay:494")
       .execute();
 
