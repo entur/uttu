@@ -1,0 +1,5 @@
+mutation MutateDayType($input: DayTypeInput!) {
+    mutateDayType(input: $input) {
+        id
+    }
+}
