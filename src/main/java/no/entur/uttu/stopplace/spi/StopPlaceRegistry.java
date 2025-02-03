@@ -37,4 +37,8 @@ public interface StopPlaceRegistry {
    * @return A list of all stop places satisfying the incoming filters
    */
   List<org.rutebanken.netex.model.StopPlace> getStopPlaces(List<StopPlaceFilter> filters);
+
+  List<no.entur.uttu.graphql.model.StopPlace> getStopPlaces2(List<StopPlaceFilter> filters);
+
+  List<no.entur.uttu.graphql.model.StopPlace> getStopPlaces3(List<StopPlaceFilter> filters);
 }
