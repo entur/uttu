@@ -1,0 +1,12 @@
+mutation Export($export: ExportInput!) {
+  export(input: $export) {
+    id
+    name
+    exportStatus
+    downloadUrl
+    messages {
+      message
+      severity
+    }
+  }
+}

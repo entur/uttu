@@ -1,0 +1,30 @@
+query FlexibleStopPlace($id: ID!) {
+  flexibleStopPlace(id: $id) {
+    id
+    name
+    keyValues {
+      key
+      values
+    }
+    flexibleArea {
+      polygon {
+        type
+        coordinates
+      }
+    }
+    flexibleAreas {
+      keyValues {
+        key
+        values
+      }
+      polygon {
+        type
+        coordinates
+      }
+    }
+    hailAndRideArea {
+      startQuayRef
+      endQuayRef
+    }
+  }
+}
