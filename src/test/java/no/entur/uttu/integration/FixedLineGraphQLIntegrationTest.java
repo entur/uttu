@@ -46,7 +46,17 @@ public class FixedLineGraphQLIntegrationTest extends AbstractGraphQLIntegrationT
       .entity(String.class)
       .get();
 
-    var input = InputGenerators.generateFixedLineInput(name, networkId, dayTypeRef);
+    String brandingId = createBrandingWithName(name)
+      .path("mutateBranding.id")
+      .entity(String.class)
+      .get();
+
+    var input = InputGenerators.generateFixedLineInput(
+      name,
+      networkId,
+      dayTypeRef,
+      brandingId
+    );
     return graphQlTester
       .documentName("mutateFixedLine")
       .variable("input", input)
@@ -62,6 +72,13 @@ public class FixedLineGraphQLIntegrationTest extends AbstractGraphQLIntegrationT
     return graphQlTester
       .documentName("mutateNetwork")
       .variable("network", InputGenerators.generateNetworkInput(name, "NOG:Authority:1"))
+      .execute();
+  }
+
+  private GraphQlTester.Response createBrandingWithName(String name) {
+    return graphQlTester
+      .documentName("mutateBranding")
+      .variable("branding", InputGenerators.generateBrandingInput(name))
       .execute();
   }
 }

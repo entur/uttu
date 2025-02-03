@@ -36,6 +36,15 @@ public class InputGenerators {
     String networkId,
     String dayTypeRef
   ) {
+    return generateFixedLineInput(name, networkId, dayTypeRef, null);
+  }
+
+  public static @NotNull Map<String, Object> generateFixedLineInput(
+    String name,
+    String networkId,
+    String dayTypeRef,
+    String brandingId
+  ) {
     return Map.of(
       "name",
       name,
@@ -47,6 +56,8 @@ public class InputGenerators {
       "localBus",
       "networkRef",
       networkId,
+      "brandingRef",
+      brandingId,
       "operatorRef",
       "NOG:Operator:1",
       "journeyPatterns",

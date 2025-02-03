@@ -28,3 +28,9 @@ CREATE SEQUENCE branding_seq
 
 ALTER TABLE branding_seq
     OWNER TO uttu;
+
+ALTER TABLE ONLY line ADD COLUMN
+    branding_pk bigint;
+
+ALTER TABLE ONLY line
+    ADD CONSTRAINT line_branding_fk FOREIGN KEY (branding_pk) REFERENCES branding(pk);

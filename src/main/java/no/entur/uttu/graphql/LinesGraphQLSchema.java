@@ -1538,6 +1538,7 @@ public class LinesGraphQLSchema {
           .name(FIELD_NETWORK_REF)
           .type(new GraphQLNonNull(GraphQLString))
       )
+      .field(newInputObjectField().name("brandingRef").type(GraphQLString))
       .field(newInputObjectField().name(FIELD_OPERATOR_REF).type(GraphQLString))
       .field(
         newInputObjectField()
