@@ -36,7 +36,49 @@ public class InputGenerators {
     String networkId,
     String dayTypeRef
   ) {
-    return generateFixedLineInput(name, networkId, dayTypeRef, null);
+    return Map.of(
+      "name",
+      name,
+      "publicCode",
+      "TestFixedLine",
+      "transportMode",
+      "bus",
+      "transportSubmode",
+      "localBus",
+      "networkRef",
+      networkId,
+      "operatorRef",
+      "NOG:Operator:1",
+      "journeyPatterns",
+      List.of(
+        Map.of(
+          "pointsInSequence",
+          List.of(
+            Map.of(
+              "quayRef",
+              "NSR:Quay:494",
+              "destinationDisplay",
+              Map.of("frontText", "Første stopp")
+            ),
+            Map.of("quayRef", "NSR:Quay:563")
+          ),
+          "serviceJourneys",
+          List.of(
+            Map.of(
+              "name",
+              "Hverdager3-" + System.currentTimeMillis(),
+              "dayTypesRefs",
+              List.of(dayTypeRef),
+              "passingTimes",
+              List.of(
+                Map.of("departureTime", "07:00:00"),
+                Map.of("arrivalTime", "07:15:00")
+              )
+            )
+          )
+        )
+      )
+    );
   }
 
   public static @NotNull Map<String, Object> generateFixedLineInput(
