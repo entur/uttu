@@ -6,7 +6,7 @@ import org.springframework.graphql.test.tester.GraphQlTester;
 public class BrandingGraphQLIntegrationTest extends AbstractGraphQLIntegrationTest {
 
   @Test
-  public void testCreateDeleteBranding() {
+  public void testCreateUpdateDeleteBranding() {
     var input = InputGenerators.generateBrandingInput("TestBrand");
 
     GraphQlTester.Response response = graphQlTester
@@ -29,13 +29,24 @@ public class BrandingGraphQLIntegrationTest extends AbstractGraphQLIntegrationTe
       .entity(String.class)
       .matches(name -> name.equals("TestBrand"));
 
+    input = InputGenerators.generateBrandingInputForEdit(brandingId, "AnotherTestBrand");
 
-    response =
-            graphQlTester.documentName("deleteBranding").variable("id", brandingId).execute();
+    graphQlTester.documentName("mutateBranding").variable("branding", input).execute();
 
-    response
-            .path("deleteBranding.id")
-            .entity(String.class)
-            .matches(id -> id.equals(brandingId));
+    graphQlTester
+      .documentName("branding")
+      .variable("id", brandingId)
+      .execute()
+      .path("branding.name")
+      .entity(String.class)
+      .matches(name -> name.equals("AnotherTestBrand"));
+
+    graphQlTester
+      .documentName("deleteBranding")
+      .variable("id", brandingId)
+      .execute()
+      .path("deleteBranding.id")
+      .entity(String.class)
+      .matches(id -> id.equals(brandingId));
   }
 }

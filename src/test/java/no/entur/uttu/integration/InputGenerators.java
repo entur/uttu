@@ -81,7 +81,14 @@ public class InputGenerators {
     );
   }
 
-  public static @NotNull Map<String, String> generateBrandingInput(String name) {
+  public static @NotNull Map<String, Object> generateBrandingInputForEdit(
+    String id,
+    String name
+  ) {
+    return Map.of("id", id, "name", name);
+  }
+
+  public static @NotNull Map<String, Object> generateBrandingInput(String name) {
     return Map.of("name", name);
   }
 
