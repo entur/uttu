@@ -81,6 +81,10 @@ public class InputGenerators {
     );
   }
 
+  public static @NotNull Map<String, String> generateBrandingInput(String name) {
+    return Map.of("name", name);
+  }
+
   public static @NotNull Map<String, String> generateNetworkInput(
     String name,
     String authorityRef
