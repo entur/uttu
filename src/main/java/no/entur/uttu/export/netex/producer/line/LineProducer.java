@@ -100,9 +100,7 @@ public class LineProducer {
 
     if (local.getBranding() != null) {
       netex.setBrandingRef(
-        new BrandingRefStructure()
-          .withRef(local.getBranding().getNetexId())
-          .withVersion(local.getBranding().getVersion().toString())
+        new BrandingRefStructure().withRef(local.getBranding().getNetexId())
       );
       context.brandings.add(local.getBranding());
     }

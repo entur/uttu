@@ -102,6 +102,9 @@ import org.springframework.util.StringUtils;
 @Component
 public class LinesGraphQLSchema {
 
+  public static final String FIELD_BRANDING_REF = "brandingRef";
+  public static final String FIELD_BRANDING = "branding";
+
   @Autowired
   private DateTimeScalar dateTimeScalar;
 
@@ -700,6 +703,16 @@ public class LinesGraphQLSchema {
       )
       .build();
 
+    brandingObjectType =
+      newObject(identifiedEntityObjectType)
+        .name("Branding")
+        .field(newFieldDefinition().name("name").type(new GraphQLNonNull(GraphQLString)))
+        .field(newFieldDefinition().name("shortName").type(GraphQLString))
+        .field(newFieldDefinition().name("description").type(GraphQLString))
+        .field(newFieldDefinition().name("url").type(GraphQLString))
+        .field(newFieldDefinition().name("imageUrl").type(GraphQLString))
+        .build();
+
     lineObjectType =
       newObject(groupOfEntitiesObjectType)
         .name("Line")
@@ -723,6 +736,7 @@ public class LinesGraphQLSchema {
             .name(FIELD_NETWORK)
             .type(new GraphQLNonNull(networkObjectType))
         )
+        .field(newFieldDefinition().name(FIELD_BRANDING).type(brandingObjectType))
         .field(newFieldDefinition().name(FIELD_OPERATOR_REF).type(GraphQLString))
         .field(
           newFieldDefinition()
@@ -949,16 +963,6 @@ public class LinesGraphQLSchema {
         .field(newFieldDefinition().name("quayRefTo").type(GraphQLString))
         .field(newFieldDefinition().name("serviceLinkRef").type(GraphQLString))
         .build();
-
-    brandingObjectType =
-      newObject(identifiedEntityObjectType)
-        .name("Branding")
-        .field(newFieldDefinition().name("name").type(new GraphQLNonNull(GraphQLString)))
-        .field(newFieldDefinition().name("shortName").type(GraphQLString))
-        .field(newFieldDefinition().name("description").type(GraphQLString))
-        .field(newFieldDefinition().name("url").type(GraphQLString))
-        .field(newFieldDefinition().name("imageUrl").type(GraphQLString))
-        .build();
   }
 
   private GraphQLObjectType createQueryObject() {
@@ -1102,7 +1106,7 @@ public class LinesGraphQLSchema {
       .field(
         newFieldDefinition()
           .type(brandingObjectType)
-          .name("branding")
+          .name(FIELD_BRANDING)
           .description("Get branding by id")
           .argument(idArgument)
           .dataFetcher(env -> brandingRepository.getOne(env.getArgument(FIELD_ID)))
@@ -1538,7 +1542,7 @@ public class LinesGraphQLSchema {
           .name(FIELD_NETWORK_REF)
           .type(new GraphQLNonNull(GraphQLString))
       )
-      .field(newInputObjectField().name("brandingRef").type(GraphQLString))
+      .field(newInputObjectField().name(FIELD_BRANDING_REF).type(GraphQLString))
       .field(newInputObjectField().name(FIELD_OPERATOR_REF).type(GraphQLString))
       .field(
         newInputObjectField()

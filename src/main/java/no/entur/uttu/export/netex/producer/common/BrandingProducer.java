@@ -16,10 +16,18 @@ public class BrandingProducer {
       .map(branding ->
         new Branding()
           .withId(branding.getNetexId())
-          .withVersion(branding.getVersion().toString())
+          .withVersion("1")
           .withName(new MultilingualString().withValue(branding.getName()))
-          .withShortName(new MultilingualString().withValue(branding.getShortName()))
-          .withDescription(new MultilingualString().withValue(branding.getDescription()))
+          .withShortName(
+            branding.getShortName() != null
+              ? new MultilingualString().withValue(branding.getShortName())
+              : null
+          )
+          .withDescription(
+            branding.getDescription() != null
+              ? new MultilingualString().withValue(branding.getDescription())
+              : null
+          )
           .withUrl(branding.getUrl())
           .withImage(branding.getImageUrl())
       )
