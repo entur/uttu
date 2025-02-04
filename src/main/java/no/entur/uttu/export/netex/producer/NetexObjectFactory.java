@@ -210,7 +210,8 @@ public class NetexObjectFactory {
   public ResourceFrame createResourceFrame(
     NetexExportContext context,
     Collection<Authority> authorities,
-    Collection<Operator> operators
+    Collection<Operator> operators,
+    Collection<Branding> brandings
   ) {
     String resourceFrameId = NetexIdProducer.generateId(ResourceFrame.class, context);
     OrganisationsInFrame_RelStructure organisationsStruct = objectFactory
@@ -229,11 +230,28 @@ public class NetexObjectFactory {
           .collect(Collectors.toList())
       );
 
-    return objectFactory
+    var resourceFrame = objectFactory
       .createResourceFrame()
       .withOrganisations(organisationsStruct)
       .withVersion(VERSION_ONE)
       .withId(resourceFrameId);
+
+    if (!brandings.isEmpty()) {
+      TypesOfValueInFrame_RelStructure typesOfValueStruct = objectFactory
+        .createTypesOfValueInFrame_RelStructure()
+        .withValueSetOrTypeOfValue(
+          brandings
+            .stream()
+            .map(Branding_VersionStructure.class::cast)
+            .distinct()
+            .map(this::wrapAsJAXBElement)
+            .collect(Collectors.toList())
+        );
+
+      resourceFrame = resourceFrame.withTypesOfValue(typesOfValueStruct);
+    }
+
+    return resourceFrame;
   }
 
   private static Collector<Organisation_VersionStructure, ?, Map<String, Organisation_VersionStructure>> toDistinctOrganisation() {

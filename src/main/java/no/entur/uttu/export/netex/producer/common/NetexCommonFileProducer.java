@@ -27,6 +27,7 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.util.ExportUtil;
 import org.rutebanken.netex.model.Authority;
+import org.rutebanken.netex.model.Branding;
 import org.rutebanken.netex.model.CompositeFrame;
 import org.rutebanken.netex.model.DestinationDisplay;
 import org.rutebanken.netex.model.FlexibleStopAssignment;
@@ -62,6 +63,7 @@ public class NetexCommonFileProducer {
   private final ServiceCalendarFrameProducer serviceCalendarFrameProducer;
   private final NetworkProducer networkProducer;
   private final ServiceLinkProducer serviceLinkProducer;
+  private final BrandingProducer brandingProducer;
 
   @Value("${export.blob.commonFileFilenameSuffix:_flexible_shared_data}")
   private String commonFileFilenameSuffix;
@@ -72,7 +74,8 @@ public class NetexCommonFileProducer {
     FlexibleStopPlaceProducer flexibleStopPlaceProducer,
     ServiceCalendarFrameProducer serviceCalendarFrameProducer,
     NetworkProducer networkProducer,
-    ServiceLinkProducer serviceLinkProducer
+    ServiceLinkProducer serviceLinkProducer,
+    BrandingProducer brandingProducer
   ) {
     this.objectFactory = objectFactory;
     this.organisationProducer = organisationProducer;
@@ -80,6 +83,7 @@ public class NetexCommonFileProducer {
     this.serviceCalendarFrameProducer = serviceCalendarFrameProducer;
     this.networkProducer = networkProducer;
     this.serviceLinkProducer = serviceLinkProducer;
+    this.brandingProducer = brandingProducer;
   }
 
   public NetexFile toCommonFile(NetexExportContext context) {
@@ -112,7 +116,13 @@ public class NetexCommonFileProducer {
   private ResourceFrame createResourceFrame(NetexExportContext context) {
     List<Operator> netexOperators = organisationProducer.produceOperators(context);
     List<Authority> netexAuthorities = organisationProducer.produceAuthorities(context);
-    return objectFactory.createResourceFrame(context, netexAuthorities, netexOperators);
+    List<Branding> brandings = brandingProducer.produce(context);
+    return objectFactory.createResourceFrame(
+      context,
+      netexAuthorities,
+      netexOperators,
+      brandings
+    );
   }
 
   private SiteFrame createSiteFrame(NetexExportContext context) {

@@ -81,6 +81,70 @@ public class InputGenerators {
     );
   }
 
+  public static @NotNull Map<String, Object> generateFixedLineInput(
+    String name,
+    String networkId,
+    String dayTypeRef,
+    String brandingId
+  ) {
+    return Map.of(
+      "name",
+      name,
+      "publicCode",
+      "TestFixedLine",
+      "transportMode",
+      "bus",
+      "transportSubmode",
+      "localBus",
+      "networkRef",
+      networkId,
+      "brandingRef",
+      brandingId,
+      "operatorRef",
+      "NOG:Operator:1",
+      "journeyPatterns",
+      List.of(
+        Map.of(
+          "pointsInSequence",
+          List.of(
+            Map.of(
+              "quayRef",
+              "NSR:Quay:494",
+              "destinationDisplay",
+              Map.of("frontText", "Første stopp")
+            ),
+            Map.of("quayRef", "NSR:Quay:563")
+          ),
+          "serviceJourneys",
+          List.of(
+            Map.of(
+              "name",
+              "Hverdager3-" + System.currentTimeMillis(),
+              "dayTypesRefs",
+              List.of(dayTypeRef),
+              "passingTimes",
+              List.of(
+                Map.of("departureTime", "07:00:00"),
+                Map.of("arrivalTime", "07:15:00")
+              )
+            )
+          )
+        )
+      )
+    );
+  }
+
+  public static @NotNull Map<String, Object> generateBrandingInputForEdit(
+    String id,
+    String name
+  ) {
+    return Map.of("id", id, "name", name);
+  }
+
+  public static @NotNull Map<String, Object> generateBrandingInput(String name) {
+    return Map.of("name", name);
+  }
+
   public static @NotNull Map<String, String> generateNetworkInput(
     String name,
     String authorityRef

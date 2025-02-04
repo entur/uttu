@@ -1,0 +1,5 @@
+mutation DeleteBranding($id: ID!) {
+    deleteBranding(id: $id) {
+        id
+    }
+}
