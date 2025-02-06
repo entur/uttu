@@ -1052,6 +1052,38 @@ public class LinesGraphQLSchema {
               .description("Search e.g. by stop place id/name or quay id")
               .build()
           )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_NORTH_EAST_LAT)
+              .type(GraphQLBigDecimal)
+              .description("Bounding box's north east latitude")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_NORTH_EAST_LNG)
+              .type(GraphQLBigDecimal)
+              .description("Bounding box's north east longitude")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_SOUTH_WEST_LAT)
+              .type(GraphQLBigDecimal)
+              .description("Bounding box's south west latitude")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_SOUTH_WEST_LNG)
+              .type(GraphQLBigDecimal)
+              .description("Bounding box's south west longitude")
+              .build()
+          )
           .description(
             "List all stop places of a certain transport mode, with quays included"
           )

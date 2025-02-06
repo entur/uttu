@@ -1,13 +1,19 @@
 package no.entur.uttu.graphql.fetchers;
 
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_NORTH_EAST_LAT;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_NORTH_EAST_LNG;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_SEARCH_TEXT;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_SOUTH_WEST_LAT;
+import static no.entur.uttu.graphql.GraphQLNames.FIELD_SOUTH_WEST_LNG;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_TRANSPORT_MODE;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import no.entur.uttu.graphql.model.StopPlace;
+import no.entur.uttu.stopplace.filter.BoundingBoxFilter;
 import no.entur.uttu.stopplace.filter.SearchTextStopPlaceFilter;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
 import no.entur.uttu.stopplace.filter.TransportModeStopPlaceFilter;
@@ -34,6 +40,22 @@ public class StopPlacesFetcher implements DataFetcher<List<StopPlace>> {
     String searchText = environment.getArgument(FIELD_SEARCH_TEXT);
     if (searchText != null) {
       filters.add(new SearchTextStopPlaceFilter(searchText));
+    }
+
+    BigDecimal northEastLat = environment.getArgument(FIELD_NORTH_EAST_LAT);
+    BigDecimal northEastLng = environment.getArgument(FIELD_NORTH_EAST_LNG);
+    BigDecimal southWestLat = environment.getArgument(FIELD_SOUTH_WEST_LAT);
+    BigDecimal southWestLng = environment.getArgument(FIELD_SOUTH_WEST_LNG);
+
+    if (
+      northEastLat != null &&
+      northEastLng != null &&
+      southWestLat != null &&
+      southWestLng != null
+    ) {
+      filters.add(
+        new BoundingBoxFilter(northEastLat, northEastLng, southWestLat, southWestLng)
+      );
     }
 
     return stopPlaceRegistry

@@ -3,6 +3,7 @@ package no.entur.uttu.stopplace;
 import static no.entur.uttu.error.codes.ErrorCodeEnumeration.INVALID_STOP_PLACE_FILTER;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -13,6 +14,7 @@ import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
+import no.entur.uttu.stopplace.filter.BoundingBoxFilter;
 import no.entur.uttu.stopplace.filter.SearchTextStopPlaceFilter;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
 import no.entur.uttu.stopplace.filter.TransportModeStopPlaceFilter;
@@ -113,27 +115,34 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     StopPlace stopPlace,
     List<StopPlaceFilter> filters
   ) {
+    List<Quay> quays = stopPlace
+      .getQuays()
+      .getQuayRefOrQuay()
+      .stream()
+      .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
+      .toList();
     for (StopPlaceFilter f : filters) {
-      if (f instanceof TransportModeStopPlaceFilter transportModeStopPlaceFilter) {
+      if (f instanceof BoundingBoxFilter boundingBoxFilter) {
+        boolean isInsideBoundingBox = isStopPlaceWithinBoundingBox(
+          boundingBoxFilter,
+          stopPlace,
+          quays
+        );
+        if (!isInsideBoundingBox) {
+          return false;
+        }
+      } else if (f instanceof TransportModeStopPlaceFilter transportModeStopPlaceFilter) {
         boolean isOfTransportMode =
           stopPlace.getTransportMode() == transportModeStopPlaceFilter.transportMode();
         if (!isOfTransportMode) {
           return false;
         }
       } else if (f instanceof SearchTextStopPlaceFilter searchTextStopPlaceFilter) {
-        String searchText = searchTextStopPlaceFilter.searchText().toLowerCase();
-        List<Quay> quays = stopPlace
-          .getQuays()
-          .getQuayRefOrQuay()
-          .stream()
-          .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
-          .toList();
-        boolean includesSearchText =
-          stopPlace.getId().toLowerCase().contains(searchText) ||
-          stopPlace.getName().getValue().toLowerCase().contains(searchText) ||
+        boolean includesSearchText = includesSearchText(
+          searchTextStopPlaceFilter,
+          stopPlace,
           quays
-            .stream()
-            .anyMatch(quay -> quay.getId().toLowerCase().contains(searchText));
+        );
         if (!includesSearchText) {
           return false;
         }
@@ -145,5 +154,50 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
       }
     }
     return true;
+  }
+
+  private boolean includesSearchText(
+    SearchTextStopPlaceFilter searchTextStopPlaceFilter,
+    StopPlace stopPlace,
+    List<Quay> quays
+  ) {
+    String searchText = searchTextStopPlaceFilter.searchText().toLowerCase();
+    return (
+      stopPlace.getId().toLowerCase().contains(searchText) ||
+      stopPlace.getName().getValue().toLowerCase().contains(searchText) ||
+      quays.stream().anyMatch(quay -> quay.getId().toLowerCase().contains(searchText))
+    );
+  }
+
+  private boolean isStopPlaceWithinBoundingBox(
+    BoundingBoxFilter boundingBoxFilter,
+    StopPlace stopPlace,
+    List<Quay> quays
+  ) {
+    BigDecimal lat = Optional
+      .ofNullable(stopPlace.getCentroid())
+      .map(centroid -> centroid.getLocation().getLatitude())
+      .orElse(null);
+    BigDecimal lng = Optional
+      .ofNullable(stopPlace.getCentroid())
+      .map(centroid -> centroid.getLocation().getLongitude())
+      .orElse(null);
+
+    if (lat == null || lng == null) {
+      Quay firstQuay = quays.get(0);
+      lat = firstQuay.getCentroid().getLocation().getLatitude();
+      lng = firstQuay.getCentroid().getLocation().getLongitude();
+    }
+    if (lat == null || lng == null) {
+      // oh well, we tried
+      return false;
+    }
+
+    return (
+      lat.compareTo(boundingBoxFilter.northEastLat()) < 0 &&
+      lng.compareTo(boundingBoxFilter.northEastLng()) < 0 &&
+      lat.compareTo(boundingBoxFilter.southWestLat()) > 0 &&
+      lng.compareTo(boundingBoxFilter.southWestLng()) > 0
+    );
   }
 }
