@@ -2,14 +2,11 @@ package no.entur.uttu.graphql.fetchers;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import java.util.List;
-import java.util.Optional;
 import no.entur.uttu.graphql.model.ServiceLink;
 import no.entur.uttu.routing.RouteGeometry;
 import no.entur.uttu.routing.RoutingService;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.Quay;
-import org.rutebanken.netex.model.StopPlace;
 import org.springframework.stereotype.Service;
 
 @Service("routingFetcher")
@@ -52,27 +49,7 @@ public class RoutingFetcher implements DataFetcher<ServiceLink> {
     );
   }
 
-  Quay getQuay(String quayRef) {
-    if (quayRef == null) {
-      return null;
-    }
-    Optional<StopPlace> stopPlaceOptional = stopPlaceRegistry.getStopPlaceByQuayRef(
-      quayRef
-    );
-    if (stopPlaceOptional.isEmpty()) {
-      return null;
-    }
-    StopPlace stopPlaceFrom = stopPlaceOptional.get();
-    List<Quay> stopPlaceFromQuays = stopPlaceFrom
-      .getQuays()
-      .getQuayRefOrQuay()
-      .stream()
-      .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
-      .toList();
-    return stopPlaceFromQuays
-      .stream()
-      .filter(quay -> quay.getId().equals(quayRef))
-      .toList()
-      .get(0);
+  private Quay getQuay(String quayRef) {
+    return stopPlaceRegistry.getQuayById(quayRef).orElse(null);
   }
 }
