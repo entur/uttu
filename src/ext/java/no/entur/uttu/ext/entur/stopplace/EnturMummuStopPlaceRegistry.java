@@ -142,4 +142,14 @@ public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
   public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
     return List.of();
   }
+
+  @Override
+  public List<no.entur.uttu.graphql.model.StopPlace> getStopPlaces2(List<StopPlaceFilter> filters) {
+    return List.of();
+  }
+
+  @Override
+  public List<no.entur.uttu.graphql.model.StopPlace> getStopPlaces3(List<StopPlaceFilter> filters) {
+    return List.of();
+  }
 }
