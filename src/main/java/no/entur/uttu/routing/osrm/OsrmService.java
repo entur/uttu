@@ -14,8 +14,13 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.routing.RouteGeometry;
+import no.entur.uttu.routing.RoutingProfile;
+import no.entur.uttu.routing.RoutingServiceRequestParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,16 +28,19 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
 
   private static final Logger logger = LoggerFactory.getLogger(OsrmService.class);
 
-  private final String osrmApiEndpoint;
+  private final Map<RoutingProfile, String> osrmApiEndpointMap;
 
   private final Methanol httpClient;
   private final ObjectMapper objectMapper;
 
-  public OsrmService(String osrmApiEndpoint) {
-    this.osrmApiEndpoint = osrmApiEndpoint;
+  public OsrmService(Map<RoutingProfile, String> osrmApiEndpointMap) {
+    this.osrmApiEndpointMap = osrmApiEndpointMap;
     this.objectMapper = initializeObjectMapper();
     this.httpClient = initializeHttpClient();
-    logger.info("OsrmService got initialised, osrmApiEndpoint is: {}", osrmApiEndpoint);
+    logger.info(
+      "OsrmService got initialised, osrmApiEndpointMap is: {}",
+      osrmApiEndpointMap
+    );
   }
 
   private static ObjectMapper initializeObjectMapper() {
@@ -53,45 +61,39 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
       .build();
   }
 
-  public boolean isEnabled() {
-    return osrmApiEndpoint != null && !osrmApiEndpoint.isBlank();
+  @Override
+  public boolean isEnabled(RoutingProfile profile) {
+    return osrmApiEndpointMap != null && !osrmApiEndpointMap.containsKey(profile);
   }
 
-  private MutableRequest getRoutingRequest(
-    BigDecimal longitudeFrom,
-    BigDecimal latitudeFrom,
-    BigDecimal longitudeTo,
-    BigDecimal latitudeTo
-  ) {
+  @Override
+  public RouteGeometry getRouteGeometry(RoutingServiceRequestParams requestParams) {
+    var routingRequest = getRoutingRequest(requestParams);
+    return getRouteGeometry(requestParams, routingRequest);
+  }
+
+  private MutableRequest getRoutingRequest(RoutingServiceRequestParams requestParams) {
     return MutableRequest
       .GET(
-        osrmApiEndpoint +
+        osrmApiEndpointMap.get(requestParams.routingProfile()) +
         "/route/v1/driving/" +
-        longitudeFrom +
+        requestParams.longitudeFrom() +
         "," +
-        latitudeFrom +
+        requestParams.latitudeFrom() +
         ";" +
-        longitudeTo +
+        requestParams.longitudeTo() +
         "," +
-        latitudeTo +
+        requestParams.latitudeTo() +
         "?alternatives=false&steps=false&overview=full&geometries=geojson"
       )
       .header("Content-Type", "application/json");
   }
 
-  public RouteGeometry getRouteGeometry(
-    BigDecimal longitudeFrom,
-    BigDecimal latitudeFrom,
-    BigDecimal longitudeTo,
-    BigDecimal latitudeTo
+  private RouteGeometry getRouteGeometry(
+    RoutingServiceRequestParams requestParams,
+    MutableRequest request
   ) {
     List<List<BigDecimal>> routeCoordinates = new ArrayList<>();
-    MutableRequest request = getRoutingRequest(
-      longitudeFrom,
-      latitudeFrom,
-      longitudeTo,
-      latitudeTo
-    );
     try {
       HttpResponse<String> response = httpClient.send(
         request,
@@ -103,10 +105,10 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
         logger.warn(
           "OSRM route {} error for [{},{}] - [{},{}] : {}",
           responseJsonNode.get("code").asText(),
-          longitudeFrom,
-          latitudeFrom,
-          longitudeTo,
-          latitudeTo,
+          requestParams.longitudeFrom(),
+          requestParams.latitudeFrom(),
+          requestParams.longitudeTo(),
+          requestParams.latitudeTo(),
           responseJsonNode.get("message").asText()
         );
         return new RouteGeometry(routeCoordinates, BigDecimal.ZERO);
@@ -126,19 +128,19 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
     } catch (IOException e) {
       logger.warn(
         "I/O error during OSRM API request for [{},{}] - [{},{}]",
-        longitudeFrom,
-        latitudeFrom,
-        longitudeTo,
-        latitudeTo,
+        requestParams.longitudeFrom(),
+        requestParams.latitudeFrom(),
+        requestParams.longitudeTo(),
+        requestParams.latitudeTo(),
         e
       );
     } catch (InterruptedException e) {
       logger.warn(
         "InterruptedException error during OSRM API request from [{},{}] to [{},{}]",
-        longitudeFrom,
-        latitudeFrom,
-        longitudeTo,
-        latitudeTo,
+        requestParams.longitudeFrom(),
+        requestParams.latitudeFrom(),
+        requestParams.longitudeTo(),
+        requestParams.latitudeTo(),
         e
       );
       Thread.currentThread().interrupt();

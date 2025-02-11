@@ -25,16 +25,13 @@ public class DefaultRoutingService implements RoutingService {
     logger.info("DefaultRoutingService got initialised");
   }
 
-  public RouteGeometry getRouteGeometry(
-    BigDecimal longitudeFrom,
-    BigDecimal latitudeFrom,
-    BigDecimal longitudeTo,
-    BigDecimal latitudeTo
-  ) {
-    return new RouteGeometry(new ArrayList<>(), BigDecimal.ZERO);
+  @Override
+  public boolean isEnabled(RoutingProfile routingProfile) {
+    return false;
   }
 
-  public boolean isEnabled() {
-    return false;
+  @Override
+  public RouteGeometry getRouteGeometry(RoutingServiceRequestParams request) {
+    return null;
   }
 }

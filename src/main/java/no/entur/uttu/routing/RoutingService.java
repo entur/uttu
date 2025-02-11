@@ -1,16 +1,20 @@
 package no.entur.uttu.routing;
 
-import java.math.BigDecimal;
-
 /**
  * For getting the road geometry - resulting in service links and links in sequence in a journey pattern
  */
 public interface RoutingService {
-  RouteGeometry getRouteGeometry(
-    BigDecimal longitudeFrom,
-    BigDecimal latitudeFrom,
-    BigDecimal longitudeTo,
-    BigDecimal latitudeTo
-  );
-  boolean isEnabled();
+  /**
+   * Check if the routing service is enabled for a given {@link RoutingProfile}
+   * @param routingProfile
+   * @return
+   */
+  boolean isEnabled(RoutingProfile routingProfile);
+
+  /**
+   * Request route geometry
+   * @param request The parameters of the request
+   * @return An instance of {@link RouteGeometry}
+   */
+  RouteGeometry getRouteGeometry(RoutingServiceRequestParams request);
 }
