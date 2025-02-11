@@ -37,4 +37,11 @@ public interface StopPlaceRegistry {
    * @return A list of all stop places satisfying the incoming filters
    */
   List<org.rutebanken.netex.model.StopPlace> getStopPlaces(List<StopPlaceFilter> filters);
+
+  /**
+   * Lookup a quay entity from its id
+   * @param id The id of the quay
+   * @return The quay entity
+   */
+  Optional<org.rutebanken.netex.model.Quay> getQuayById(String id);
 }

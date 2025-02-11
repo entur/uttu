@@ -45,6 +45,8 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   private final Map<String, StopPlace> stopPlaceByQuayRefIndex =
     new ConcurrentHashMap<>();
 
+  private final Map<String, Quay> quayByQuayRefIndex = new ConcurrentHashMap<>();
+
   @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
 
@@ -75,6 +77,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
                     .forEach(quayRefOrQuay -> {
                       Quay quay = (Quay) quayRefOrQuay.getValue();
                       stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+                      quayByQuayRefIndex.put(quay.getId(), quay);
                     })
                 )
             );
@@ -107,6 +110,11 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
       .stream()
       .filter(s -> isStopPlaceToBeIncluded(s, filters))
       .toList();
+  }
+
+  @Override
+  public Optional<Quay> getQuayById(String id) {
+    return Optional.ofNullable(quayByQuayRefIndex.get(id));
   }
 
   private boolean isStopPlaceToBeIncluded(
