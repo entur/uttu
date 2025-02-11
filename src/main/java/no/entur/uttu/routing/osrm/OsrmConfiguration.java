@@ -23,11 +23,19 @@ public class OsrmConfiguration {
     if (osrmApiEndpoint != null) {
       return createStandaloneBusRoutingService(osrmApiEndpoint);
     } else {
-      return createRoutingService(osrmApiBusEndpoint, osrmApiRailEndpoint, osrmApiWaterEndpoint);
+      return createRoutingService(
+        osrmApiBusEndpoint,
+        osrmApiRailEndpoint,
+        osrmApiWaterEndpoint
+      );
     }
   }
 
-  private RoutingService createRoutingService(String osrmApiBusEndpoint, String osrmApiRailEndpoint, String osrmApiWaterEndpoint) {
+  private RoutingService createRoutingService(
+    String osrmApiBusEndpoint,
+    String osrmApiRailEndpoint,
+    String osrmApiWaterEndpoint
+  ) {
     var endpointMap = new HashMap<RoutingProfile, String>();
 
     if (osrmApiBusEndpoint != null) {
