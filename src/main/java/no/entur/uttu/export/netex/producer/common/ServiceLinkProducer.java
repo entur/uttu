@@ -3,7 +3,6 @@ package no.entur.uttu.export.netex.producer.common;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import net.opengis.gml._3.DirectPositionListType;
 import net.opengis.gml._3.LineStringType;
 import no.entur.uttu.export.netex.NetexExportContext;
@@ -21,7 +20,6 @@ import org.rutebanken.netex.model.Projections_RelStructure;
 import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.ScheduledStopPointRefStructure;
 import org.rutebanken.netex.model.ServiceLink;
-import org.rutebanken.netex.model.StopPlace;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -61,8 +59,8 @@ public class ServiceLinkProducer {
         routeGeometry
           .coordinates()
           .forEach(location -> {
-            posListCoordinates.add(location.get(0).doubleValue());
             posListCoordinates.add(location.get(1).doubleValue());
+            posListCoordinates.add(location.get(0).doubleValue());
           });
 
         DirectPositionListType posList = new DirectPositionListType()
@@ -131,29 +129,12 @@ public class ServiceLinkProducer {
       case AIR, CABLEWAY, FUNICULAR, TROLLEY_BUS, LIFT, OTHER -> null;
     };
   }
-
-  Quay getQuay(String quayRef) {
-    Optional<StopPlace> stopPlaceOptional = stopPlaceRegistry.getStopPlaceByQuayRef(
-      quayRef
-    );
-    if (stopPlaceOptional.isEmpty()) {
-      return null;
-    }
-    StopPlace stopPlaceFrom = stopPlaceOptional.get();
-    List<Quay> stopPlaceFromQuays = stopPlaceFrom
-      .getQuays()
-      .getQuayRefOrQuay()
-      .stream()
-      .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
-      .toList();
-    return stopPlaceFromQuays
-      .stream()
-      .filter(quay -> quay.getId().equals(quayRef))
-      .toList()
-      .get(0);
+  
+  private Quay getQuay(String quayRef) {
+    return stopPlaceRegistry.getQuayById(quayRef).orElse(null);
   }
 
-  String getLineStringId(Ref serviceLinkRef) {
+  private String getLineStringId(Ref serviceLinkRef) {
     String serviceLinkSuffix = NetexIdProducer.getObjectIdSuffix(serviceLinkRef.id);
     return "LS_" + serviceLinkSuffix;
   }
