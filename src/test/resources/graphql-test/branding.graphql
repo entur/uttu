@@ -1,0 +1,6 @@
+query GetBranding($id: ID!) {
+    branding(id: $id) {
+        id
+        name
+    }
+}

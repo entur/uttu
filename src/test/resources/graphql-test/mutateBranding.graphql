@@ -1,0 +1,6 @@
+mutation mutateBranding($branding: BrandingInput!) {
+    mutateBranding(input: $branding) {
+        id
+        name
+    }
+}

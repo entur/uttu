@@ -66,6 +66,9 @@ public abstract class Line extends GroupOfEntities_VersionStructure {
   @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
   private final List<JourneyPattern> journeyPatterns = new ArrayList<>();
 
+  @ManyToOne
+  private Branding branding;
+
   public String getPublicCode() {
     return publicCode;
   }
@@ -124,6 +127,14 @@ public abstract class Line extends GroupOfEntities_VersionStructure {
 
   public void setTransportSubmode(VehicleSubmodeEnumeration transportSubmode) {
     this.transportSubmode = transportSubmode;
+  }
+
+  public Branding getBranding() {
+    return branding;
+  }
+
+  public void setBranding(Branding branding) {
+    this.branding = branding;
   }
 
   @Override

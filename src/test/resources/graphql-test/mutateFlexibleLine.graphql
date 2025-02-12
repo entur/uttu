@@ -1,0 +1,13 @@
+mutation MutateFlexibleLine($input: FlexibleLineInput!) {
+  mutateFlexibleLine(input: $input) {
+    id
+    name
+    journeyPatterns {
+      serviceJourneys {
+        passingTimes {
+          departureTime
+        }
+      }
+    }
+  }
+}

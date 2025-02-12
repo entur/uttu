@@ -27,6 +27,7 @@ import no.entur.uttu.model.Line;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
+import org.rutebanken.netex.model.BrandingRefStructure;
 import org.rutebanken.netex.model.FlexibleLineTypeEnumeration;
 import org.rutebanken.netex.model.Line_VersionStructure;
 import org.rutebanken.netex.model.NoticeAssignment;
@@ -96,6 +97,13 @@ public class LineProducer {
     );
     context.networks.add(local.getNetwork());
     context.notices.addAll(local.getNotices());
+
+    if (local.getBranding() != null) {
+      netex.setBrandingRef(
+        new BrandingRefStructure().withRef(local.getBranding().getNetexId())
+      );
+      context.brandings.add(local.getBranding());
+    }
   }
 
   protected void mapBookingArrangements(

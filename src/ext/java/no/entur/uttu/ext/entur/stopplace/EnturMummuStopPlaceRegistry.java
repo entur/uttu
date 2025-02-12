@@ -128,6 +128,21 @@ public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
     }
   }
 
+  @Override
+  public Optional<Quay> getQuayById(String id) {
+    return getStopPlaceByQuayRef(id)
+      .flatMap(stopPlace ->
+        stopPlace
+          .getQuays()
+          .getQuayRefOrQuay()
+          .stream()
+          .map(JAXBElement::getValue)
+          .map(Quay.class::cast)
+          .filter(quay -> id.equals(quay.getId()))
+          .findFirst()
+      );
+  }
+
   public boolean currentValidityFilter(EntityInVersionStructure entity) {
     return entity
       .getValidBetween()
@@ -143,20 +158,5 @@ public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
   @Override
   public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
     return List.of();
-  }
-
-  @Override
-  public Optional<Quay> getQuayById(String id) {
-    return getStopPlaceByQuayRef(id)
-      .flatMap(stopPlace ->
-        stopPlace
-          .getQuays()
-          .getQuayRefOrQuay()
-          .stream()
-          .map(JAXBElement::getValue)
-          .map(Quay.class::cast)
-          .filter(quay -> id.equals(quay.getId()))
-          .findFirst()
-      );
   }
 }

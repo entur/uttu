@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>3.3</version>
+        <version>3.4</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -40,18 +40,16 @@
         <java.version>21</java.version>
         <entur.google.pubsub.emulator.download.skip>true</entur.google.pubsub.emulator.download.skip>
 
-        <entur.helpers.version>3.0</entur.helpers.version>
+        <entur.helpers.version>4.9</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
 
         <postgis-jdbc.version>2024.1.0</postgis-jdbc.version>
-        <geotools.version>32.1</geotools.version>
+        <geotools.version>32.2</geotools.version>
         <wololo.version>0.18.1</wololo.version>
 
         <commons-io.version>2.18.0</commons-io.version>
-        <groovy-all.version>4.0.24</groovy-all.version>
-        <rest-assured.version>5.5.0</rest-assured.version>
         <graphql.version>22.3</graphql.version>
         <graphql-extended-scalars.version>22.0</graphql-extended-scalars.version>
         <netex-java-model.version>2.0.15</netex-java-model.version>
@@ -63,7 +61,7 @@
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.30.4</awssdk.version>
+        <awssdk.version>2.30.18</awssdk.version>
     </properties>
 
     <distributionManagement>
@@ -112,7 +110,7 @@
         </dependency>
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
-            <artifactId>gcp-storage</artifactId>
+            <artifactId>storage-gcp-gcs</artifactId>
             <version>${gcp-storage.version}</version>
             <exclusions>
                 <exclusion>
@@ -323,7 +321,7 @@
         <dependency>
             <groupId>com.github.mizosoft.methanol</groupId>
             <artifactId>methanol</artifactId>
-            <version>1.8.0</version>
+            <version>1.8.1</version>
         </dependency>
 
         <!-- Test-->
@@ -377,49 +375,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${groovy-all.version}</version>
-            <type>pom</type>
+            <groupId>org.springframework.graphql</groupId>
+            <artifactId>spring-graphql-test</artifactId>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>io.rest-assured</groupId>
-            <artifactId>rest-assured</artifactId>
-            <version>${rest-assured.version}</version>
-            <scope>test</scope>
-        </dependency>
-
     </dependencies>
 
     <build>
         <plugins>
-            <plugin>
-                <artifactId>maven-antrun-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>test-compile</id>
-                        <phase>test-compile</phase>
-                        <configuration>
-                            <target>
-                                <mkdir dir="${basedir}/src/test/groovy"/>
-                                <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                                    <classpath refid="maven.test.classpath"/>
-                                </taskdef>
-                                <mkdir dir="${project.build.testOutputDirectory}"/>
-                                <groovyc destdir="${project.build.testOutputDirectory}"
-                                         srcdir="${basedir}/src/test/groovy/" listfiles="true">
-                                    <classpath refid="maven.test.classpath"/>
-                                </groovyc>
-                            </target>
-                        </configuration>
-                        <goals>
-                            <goal>run</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
