@@ -18,6 +18,7 @@ package no.entur.uttu.ext.entur.stopplace;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import jakarta.xml.bind.JAXBElement;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.util.Collections;
@@ -29,6 +30,7 @@ import javax.annotation.PostConstruct;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.EntityInVersionStructure;
+import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -141,5 +143,20 @@ public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
   @Override
   public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
     return List.of();
+  }
+
+  @Override
+  public Optional<Quay> getQuayById(String id) {
+    return getStopPlaceByQuayRef(id)
+      .flatMap(stopPlace ->
+        stopPlace
+          .getQuays()
+          .getQuayRefOrQuay()
+          .stream()
+          .map(JAXBElement::getValue)
+          .map(Quay.class::cast)
+          .filter(quay -> id.equals(quay.getId()))
+          .findFirst()
+      );
   }
 }

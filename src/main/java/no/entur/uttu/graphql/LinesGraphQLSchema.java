@@ -1084,6 +1084,14 @@ public class LinesGraphQLSchema {
               .description("Bounding box's south west longitude")
               .build()
           )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name("lineId")
+              .type(GraphQLID)
+              .description("Line id")
+              .build()
+          )
           .description(
             "List all stop places of a certain transport mode, with quays included"
           )

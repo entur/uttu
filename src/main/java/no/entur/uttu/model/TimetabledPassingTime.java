@@ -27,6 +27,8 @@ import java.time.LocalTime;
 import java.util.List;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.util.ValidationHelper;
+import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
+import org.rutebanken.netex.model.SimplePoint_VersionStructure;
 
 @Entity
 public class TimetabledPassingTime extends ProviderEntity {
@@ -373,6 +375,7 @@ public class TimetabledPassingTime extends ProviderEntity {
 
     private String id;
     private String publicCode;
+    private SimplePoint_VersionStructure centroid;
 
     public String getId() {
       return id;
@@ -389,6 +392,14 @@ public class TimetabledPassingTime extends ProviderEntity {
     public void setPublicCode(String publicCode) {
       this.publicCode = publicCode;
     }
+
+    public SimplePoint_VersionStructure getCentroid() {
+      return centroid;
+    }
+
+    public void setCentroid(SimplePoint_VersionStructure centroid) {
+      this.centroid = centroid;
+    }
   }
 
   @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -396,6 +407,8 @@ public class TimetabledPassingTime extends ProviderEntity {
 
     private String id;
     private MultilingualString name;
+    private AllVehicleModesOfTransportEnumeration transportMode;
+    private SimplePoint_VersionStructure centroid;
     private List<Quay> quays;
 
     public String getId() {
@@ -420,6 +433,22 @@ public class TimetabledPassingTime extends ProviderEntity {
 
     public void setQuays(List<Quay> quays) {
       this.quays = quays;
+    }
+
+    public AllVehicleModesOfTransportEnumeration getTransportMode() {
+      return transportMode;
+    }
+
+    public void setTransportMode(AllVehicleModesOfTransportEnumeration transportMode) {
+      this.transportMode = transportMode;
+    }
+
+    public SimplePoint_VersionStructure getCentroid() {
+      return centroid;
+    }
+
+    public void setCentroid(SimplePoint_VersionStructure centroid) {
+      this.centroid = centroid;
     }
   }
 }

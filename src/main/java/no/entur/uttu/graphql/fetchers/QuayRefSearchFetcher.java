@@ -4,7 +4,6 @@ import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
-import java.util.stream.Collectors;
 import no.entur.uttu.model.TimetabledPassingTime;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,8 @@ public class QuayRefSearchFetcher
     TimetabledPassingTime.StopPlace mapped = new TimetabledPassingTime.StopPlace();
     mapped.setId(stopPlace.getId());
     mapped.setName(mapMultilingualString(stopPlace.getName()));
+    mapped.setTransportMode(stopPlace.getTransportMode());
+    mapped.setCentroid(stopPlace.getCentroid());
     mapped.setQuays(
       stopPlace
         .getQuays()
@@ -58,6 +59,7 @@ public class QuayRefSearchFetcher
     TimetabledPassingTime.Quay mapped = new TimetabledPassingTime.Quay();
     mapped.setId(quay.getId());
     mapped.setPublicCode(quay.getPublicCode());
+    mapped.setCentroid(quay.getCentroid());
     return mapped;
   }
 }
