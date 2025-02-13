@@ -36,7 +36,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
 
   public OsrmService(List<OsrmProfile> profiles) {
     profiles.forEach(profile ->
-      profile.modes.forEach(mode -> endpointMap.put(mode, profile.endpoint))
+      profile.getModes().forEach(mode -> endpointMap.put(mode, profile.getEndpoint()))
     );
     logger.info("OsrmService initialised with profiles={}", profiles);
   }

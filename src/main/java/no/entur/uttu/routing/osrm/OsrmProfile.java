@@ -5,8 +5,13 @@ import no.entur.uttu.model.VehicleModeEnumeration;
 
 public class OsrmProfile {
 
-  List<VehicleModeEnumeration> modes;
-  String endpoint;
+  private List<VehicleModeEnumeration> modes;
+  private String endpoint;
+
+  public OsrmProfile(List<VehicleModeEnumeration> modes, String endpoint) {
+    this.modes = modes;
+    this.endpoint = endpoint;
+  }
 
   public List<VehicleModeEnumeration> getModes() {
     return modes;
