@@ -36,7 +36,6 @@ import org.springframework.context.annotation.Profile;
  */
 @Configuration
 @ConfigurationProperties(prefix = "uttu.routing.osrm-api")
-@ConfigurationPropertiesScan
 @Profile("osrm-routing-service")
 public class OsrmConfiguration {
 

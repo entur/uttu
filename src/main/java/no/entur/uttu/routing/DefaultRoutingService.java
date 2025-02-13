@@ -21,7 +21,7 @@ public class DefaultRoutingService implements RoutingService {
   );
 
   public DefaultRoutingService() {
-    logger.info("DefaultRoutingService got initialised");
+    logger.info("DefaultRoutingService initialised");
   }
 
   @Override

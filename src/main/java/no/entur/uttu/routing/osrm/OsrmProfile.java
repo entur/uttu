@@ -23,4 +23,9 @@ public class OsrmProfile {
   public void setEndpoint(String endpoint) {
     this.endpoint = endpoint;
   }
+
+  @Override
+  public String toString() {
+    return "OsrmProfile [modes=" + modes + ", endpoint=" + endpoint + "]";
+  }
 }
