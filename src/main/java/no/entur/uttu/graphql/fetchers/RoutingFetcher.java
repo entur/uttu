@@ -29,6 +29,7 @@ public class RoutingFetcher implements DataFetcher<ServiceLink> {
   public ServiceLink get(DataFetchingEnvironment environment) {
     String quayRefFrom = environment.getArgument("quayRefFrom");
     String quayRefTo = environment.getArgument("quayRefTo");
+    VehicleModeEnumeration mode = environment.getArgument("mode");
     Quay quayFrom = getQuay(quayRefFrom);
     Quay quayTo = getQuay(quayRefTo);
 
@@ -41,7 +42,7 @@ public class RoutingFetcher implements DataFetcher<ServiceLink> {
       quayFrom.getCentroid().getLocation().getLatitude(),
       quayTo.getCentroid().getLocation().getLongitude(),
       quayTo.getCentroid().getLocation().getLatitude(),
-      VehicleModeEnumeration.BUS // TODO: Get from query
+      mode != null ? mode : VehicleModeEnumeration.BUS
     );
 
     RouteGeometry routeGeometry = routingService.getRouteGeometry(params);
