@@ -9,9 +9,7 @@ import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Ref;
-import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.routing.RouteGeometry;
-import no.entur.uttu.routing.RoutingProfile;
 import no.entur.uttu.routing.RoutingService;
 import no.entur.uttu.routing.RoutingServiceRequestParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
@@ -51,7 +49,7 @@ public class ServiceLinkProducer {
           quayFrom.getCentroid().getLocation().getLatitude(),
           quayTo.getCentroid().getLocation().getLongitude(),
           quayTo.getCentroid().getLocation().getLatitude(),
-          mapVehicleModeToRoutingProfile(serviceLink.transportMode())
+          serviceLink.transportMode()
         );
 
         RouteGeometry routeGeometry = routingService.getRouteGeometry(params);
@@ -119,17 +117,6 @@ public class ServiceLinkProducer {
       .toList();
   }
 
-  private RoutingProfile mapVehicleModeToRoutingProfile(
-    VehicleModeEnumeration vehicleModeEnumeration
-  ) {
-    return switch (vehicleModeEnumeration) {
-      case BUS, TAXI, COACH -> RoutingProfile.BUS;
-      case FERRY, WATER -> RoutingProfile.WATER;
-      case METRO, TRAM, RAIL -> RoutingProfile.RAIL;
-      case AIR, CABLEWAY, FUNICULAR, TROLLEY_BUS, LIFT, OTHER -> null;
-    };
-  }
-  
   private Quay getQuay(String quayRef) {
     return stopPlaceRegistry.getQuayById(quayRef).orElse(null);
   }

@@ -14,12 +14,12 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.routing.RouteGeometry;
-import no.entur.uttu.routing.RoutingProfile;
 import no.entur.uttu.routing.RoutingServiceRequestParams;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,19 +28,18 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
 
   private static final Logger logger = LoggerFactory.getLogger(OsrmService.class);
 
-  private final Map<RoutingProfile, String> osrmApiEndpointMap;
+  private final Map<VehicleModeEnumeration, String> endpointMap = new EnumMap<>(
+    VehicleModeEnumeration.class
+  );
 
-  private final Methanol httpClient;
-  private final ObjectMapper objectMapper;
+  private final Methanol httpClient = initializeHttpClient();
+  private final ObjectMapper objectMapper = initializeObjectMapper();
 
-  public OsrmService(Map<RoutingProfile, String> osrmApiEndpointMap) {
-    this.osrmApiEndpointMap = osrmApiEndpointMap;
-    this.objectMapper = initializeObjectMapper();
-    this.httpClient = initializeHttpClient();
-    logger.info(
-      "OsrmService got initialised, osrmApiEndpointMap is: {}",
-      osrmApiEndpointMap
+  public OsrmService(List<OsrmProfile> profiles) {
+    profiles.forEach(profile ->
+      profile.modes.forEach(mode -> endpointMap.put(mode, profile.endpoint))
     );
+    logger.info("OsrmService initialised with profiles={}", profiles);
   }
 
   private static ObjectMapper initializeObjectMapper() {
@@ -62,8 +61,8 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
   }
 
   @Override
-  public boolean isEnabled(RoutingProfile profile) {
-    return osrmApiEndpointMap != null && !osrmApiEndpointMap.containsKey(profile);
+  public boolean isEnabled(VehicleModeEnumeration mode) {
+    return endpointMap.containsKey(mode);
   }
 
   @Override
@@ -75,7 +74,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
   private MutableRequest getRoutingRequest(RoutingServiceRequestParams requestParams) {
     return MutableRequest
       .GET(
-        osrmApiEndpointMap.get(requestParams.routingProfile()) +
+        endpointMap.get(requestParams.mode()) +
         "/route/v1/driving/" +
         requestParams.longitudeFrom() +
         "," +

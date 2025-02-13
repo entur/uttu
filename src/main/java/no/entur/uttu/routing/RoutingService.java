@@ -1,15 +1,17 @@
 package no.entur.uttu.routing;
 
+import no.entur.uttu.model.VehicleModeEnumeration;
+
 /**
  * For getting the road geometry - resulting in service links and links in sequence in a journey pattern
  */
 public interface RoutingService {
   /**
-   * Check if the routing service is enabled for a given {@link RoutingProfile}
-   * @param routingProfile
+   * Check if the routing service is enabled for a given {@link VehicleModeEnumeration}
+   * @param mode
    * @return
    */
-  boolean isEnabled(RoutingProfile routingProfile);
+  boolean isEnabled(VehicleModeEnumeration mode);
 
   /**
    * Request route geometry

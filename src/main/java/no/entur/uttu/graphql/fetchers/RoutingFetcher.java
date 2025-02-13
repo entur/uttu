@@ -3,8 +3,8 @@ package no.entur.uttu.graphql.fetchers;
 import graphql.schema.DataFetcher;
 import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.graphql.model.ServiceLink;
+import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.routing.RouteGeometry;
-import no.entur.uttu.routing.RoutingProfile;
 import no.entur.uttu.routing.RoutingService;
 import no.entur.uttu.routing.RoutingServiceRequestParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
@@ -41,7 +41,7 @@ public class RoutingFetcher implements DataFetcher<ServiceLink> {
       quayFrom.getCentroid().getLocation().getLatitude(),
       quayTo.getCentroid().getLocation().getLongitude(),
       quayTo.getCentroid().getLocation().getLatitude(),
-      RoutingProfile.BUS // TODO: Get from query
+      VehicleModeEnumeration.BUS // TODO: Get from query
     );
 
     RouteGeometry routeGeometry = routingService.getRouteGeometry(params);

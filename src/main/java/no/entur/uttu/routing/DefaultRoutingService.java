@@ -1,7 +1,6 @@
 package no.entur.uttu.routing;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
+import no.entur.uttu.model.VehicleModeEnumeration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -26,7 +25,7 @@ public class DefaultRoutingService implements RoutingService {
   }
 
   @Override
-  public boolean isEnabled(RoutingProfile routingProfile) {
+  public boolean isEnabled(VehicleModeEnumeration mode) {
     return false;
   }
 
