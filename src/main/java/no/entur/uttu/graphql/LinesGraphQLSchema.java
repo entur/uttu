@@ -1187,6 +1187,14 @@ public class LinesGraphQLSchema {
               .description("Second stop point's id")
               .build()
           )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name("mode")
+              .type(transportModeEnum)
+              .description("Transport mode")
+              .build()
+          )
           .description("Fetch service link containing route geometry")
           .dataFetcher(routingFetcher)
       )

@@ -11,6 +11,7 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.routing.RouteGeometry;
 import no.entur.uttu.routing.RoutingService;
+import no.entur.uttu.routing.RoutingServiceRequestParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.LinkSequenceProjection;
 import org.rutebanken.netex.model.Projections_RelStructure;
@@ -43,12 +44,15 @@ public class ServiceLinkProducer {
         Quay quayFrom = getQuay(serviceLink.quayRefFrom());
         Quay quayTo = getQuay(serviceLink.quayRefTo());
 
-        RouteGeometry routeGeometry = routingService.getRouteGeometry(
+        var params = new RoutingServiceRequestParams(
           quayFrom.getCentroid().getLocation().getLongitude(),
           quayFrom.getCentroid().getLocation().getLatitude(),
           quayTo.getCentroid().getLocation().getLongitude(),
-          quayTo.getCentroid().getLocation().getLatitude()
+          quayTo.getCentroid().getLocation().getLatitude(),
+          serviceLink.transportMode()
         );
+
+        RouteGeometry routeGeometry = routingService.getRouteGeometry(params);
         List<Double> posListCoordinates = new ArrayList<>();
         routeGeometry
           .coordinates()
