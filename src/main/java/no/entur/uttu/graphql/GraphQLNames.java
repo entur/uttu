@@ -158,5 +158,10 @@ public class GraphQLNames {
   public static final String FIELD_KEY = "key";
   public static final String FIELD_VALUES = "values";
 
+  // Stop places filtering parameters:
   public static final String FIELD_SEARCH_TEXT = "searchText";
+  public static final String FIELD_NORTH_EAST_LAT = "northEastLat";
+  public static final String FIELD_NORTH_EAST_LNG = "northEastLng";
+  public static final String FIELD_SOUTH_WEST_LAT = "southWestLat";
+  public static final String FIELD_SOUTH_WEST_LNG = "southWestLng";
 }

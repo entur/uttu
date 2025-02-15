@@ -3,6 +3,8 @@ package no.entur.uttu.stopplace;
 import static no.entur.uttu.error.codes.ErrorCodeEnumeration.INVALID_STOP_PLACE_FILTER;
 
 import java.io.File;
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -11,8 +13,15 @@ import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
+import no.entur.uttu.model.FlexibleLine;
+import no.entur.uttu.model.FlexibleLineTypeEnumeration;
+import no.entur.uttu.model.Line;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
+import no.entur.uttu.repository.FixedLineRepository;
+import no.entur.uttu.repository.FlexibleLineRepository;
+import no.entur.uttu.stopplace.filter.BoundingBoxFilter;
+import no.entur.uttu.stopplace.filter.LineFilter;
 import no.entur.uttu.stopplace.filter.SearchTextStopPlaceFilter;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
 import no.entur.uttu.stopplace.filter.TransportModeStopPlaceFilter;
@@ -23,6 +32,7 @@ import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
@@ -47,8 +57,16 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
   private final Map<String, Quay> quayByQuayRefIndex = new ConcurrentHashMap<>();
 
+  private final List<StopPlace> allStopPlacesIndex = new ArrayList<>();
+
   @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
+
+  @Autowired
+  private FlexibleLineRepository flexibleLineRepository;
+
+  @Autowired
+  private FixedLineRepository fixedLineRepository;
 
   @PostConstruct
   public void init() {
@@ -68,7 +86,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
               .map(stopPlace -> (StopPlace) stopPlace.getValue())
               .toList();
 
-            stopPlaces.forEach(stopPlace ->
+            stopPlaces.forEach(stopPlace -> {
               Optional
                 .ofNullable(stopPlace.getQuays())
                 .ifPresent(quays ->
@@ -79,8 +97,9 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
                       stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
                       quayByQuayRefIndex.put(quay.getId(), quay);
                     })
-                )
-            );
+                );
+              allStopPlacesIndex.add(stopPlace);
+            });
           }
         });
     } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
@@ -97,16 +116,15 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
   @Override
   public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
-    List<StopPlace> allStopPlaces = stopPlaceByQuayRefIndex
-      .values()
-      .stream()
-      .distinct()
-      .toList();
     if (filters.isEmpty()) {
-      return allStopPlaces;
+      return allStopPlacesIndex;
     }
 
-    return allStopPlaces
+    if (findLineFilter(filters).isPresent()) {
+      return getStopPlacesUsedInLine((LineFilter) findLineFilter(filters).get());
+    }
+
+    return allStopPlacesIndex
       .stream()
       .filter(s -> isStopPlaceToBeIncluded(s, filters))
       .toList();
@@ -121,27 +139,34 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     StopPlace stopPlace,
     List<StopPlaceFilter> filters
   ) {
+    List<Quay> quays = stopPlace
+      .getQuays()
+      .getQuayRefOrQuay()
+      .stream()
+      .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
+      .toList();
     for (StopPlaceFilter f : filters) {
-      if (f instanceof TransportModeStopPlaceFilter transportModeStopPlaceFilter) {
+      if (f instanceof BoundingBoxFilter boundingBoxFilter) {
+        boolean isInsideBoundingBox = isStopPlaceWithinBoundingBox(
+          boundingBoxFilter,
+          stopPlace,
+          quays
+        );
+        if (!isInsideBoundingBox) {
+          return false;
+        }
+      } else if (f instanceof TransportModeStopPlaceFilter transportModeStopPlaceFilter) {
         boolean isOfTransportMode =
           stopPlace.getTransportMode() == transportModeStopPlaceFilter.transportMode();
         if (!isOfTransportMode) {
           return false;
         }
       } else if (f instanceof SearchTextStopPlaceFilter searchTextStopPlaceFilter) {
-        String searchText = searchTextStopPlaceFilter.searchText().toLowerCase();
-        List<Quay> quays = stopPlace
-          .getQuays()
-          .getQuayRefOrQuay()
-          .stream()
-          .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
-          .toList();
-        boolean includesSearchText =
-          stopPlace.getId().toLowerCase().contains(searchText) ||
-          stopPlace.getName().getValue().toLowerCase().contains(searchText) ||
+        boolean includesSearchText = includesSearchText(
+          searchTextStopPlaceFilter,
+          stopPlace,
           quays
-            .stream()
-            .anyMatch(quay -> quay.getId().toLowerCase().contains(searchText));
+        );
         if (!includesSearchText) {
           return false;
         }
@@ -153,5 +178,87 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
       }
     }
     return true;
+  }
+
+  private boolean includesSearchText(
+    SearchTextStopPlaceFilter searchTextStopPlaceFilter,
+    StopPlace stopPlace,
+    List<Quay> quays
+  ) {
+    String searchText = searchTextStopPlaceFilter.searchText().toLowerCase();
+    return (
+      stopPlace.getId().toLowerCase().contains(searchText) ||
+      stopPlace.getName().getValue().toLowerCase().contains(searchText) ||
+      quays.stream().anyMatch(quay -> quay.getId().toLowerCase().contains(searchText))
+    );
+  }
+
+  private boolean isStopPlaceWithinBoundingBox(
+    BoundingBoxFilter boundingBoxFilter,
+    StopPlace stopPlace,
+    List<Quay> quays
+  ) {
+    BigDecimal lat = Optional
+      .ofNullable(stopPlace.getCentroid())
+      .map(centroid -> centroid.getLocation().getLatitude())
+      .orElse(null);
+    BigDecimal lng = Optional
+      .ofNullable(stopPlace.getCentroid())
+      .map(centroid -> centroid.getLocation().getLongitude())
+      .orElse(null);
+
+    if (lat == null || lng == null) {
+      Quay firstQuay = quays.get(0);
+      lat = firstQuay.getCentroid().getLocation().getLatitude();
+      lng = firstQuay.getCentroid().getLocation().getLongitude();
+    }
+    if (lat == null || lng == null) {
+      // oh well, we tried
+      return false;
+    }
+
+    return (
+      lat.compareTo(boundingBoxFilter.northEastLat()) < 0 &&
+      lng.compareTo(boundingBoxFilter.northEastLng()) < 0 &&
+      lat.compareTo(boundingBoxFilter.southWestLat()) > 0 &&
+      lng.compareTo(boundingBoxFilter.southWestLng()) > 0
+    );
+  }
+
+  private Optional<StopPlaceFilter> findLineFilter(List<StopPlaceFilter> filters) {
+    return filters.stream().filter(LineFilter.class::isInstance).findFirst();
+  }
+
+  private List<StopPlace> getStopPlacesUsedInLine(LineFilter lineFilter) {
+    String lineId = lineFilter.lineId();
+    Line line = fixedLineRepository.getOne(lineId);
+    if (line == null) {
+      FlexibleLine flexibleLine = flexibleLineRepository.getOne(lineId);
+      if (
+        flexibleLine == null ||
+        flexibleLine.getFlexibleLineType() != FlexibleLineTypeEnumeration.FIXED
+      ) {
+        return new ArrayList<>();
+      }
+      line = flexibleLine;
+    }
+
+    List<StopPlace> stopPlacesUsedInLine = new ArrayList<>();
+    line
+      .getJourneyPatterns()
+      .forEach(journeyPattern ->
+        journeyPattern
+          .getPointsInSequence()
+          .forEach(stopPointInJourneyPattern -> {
+            StopPlace stopPlace = stopPlaceByQuayRefIndex.get(
+              stopPointInJourneyPattern.getQuayRef()
+            );
+            if (stopPlace != null) {
+              stopPlacesUsedInLine.add(stopPlace);
+            }
+          })
+      );
+
+    return stopPlacesUsedInLine.stream().distinct().toList();
   }
 }
