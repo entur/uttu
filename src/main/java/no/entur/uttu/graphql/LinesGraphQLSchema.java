@@ -1111,13 +1111,13 @@ public class LinesGraphQLSchema {
           .argument(
             GraphQLArgument
               .newArgument()
-              .name("lineId")
-              .type(GraphQLID)
-              .description("Line id")
+              .name("quayIds")
+              .type(new GraphQLList(GraphQLID))
+              .description("Quay id-s")
               .build()
           )
           .description(
-            "List all stop places of a certain transport mode, with quays included"
+            "List all stop places by a certain filtering criteria, with quays included"
           )
           .dataFetcher(stopPlacesFetcher)
       )

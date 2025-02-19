@@ -13,15 +13,12 @@ import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
-import no.entur.uttu.model.FlexibleLine;
-import no.entur.uttu.model.FlexibleLineTypeEnumeration;
-import no.entur.uttu.model.Line;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.stopplace.filter.BoundingBoxFilter;
-import no.entur.uttu.stopplace.filter.LineFilter;
+import no.entur.uttu.stopplace.filter.QuayIdFilter;
 import no.entur.uttu.stopplace.filter.SearchTextStopPlaceFilter;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
 import no.entur.uttu.stopplace.filter.TransportModeStopPlaceFilter;
@@ -120,8 +117,8 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
       return allStopPlacesIndex;
     }
 
-    if (findLineFilter(filters).isPresent()) {
-      return getStopPlacesUsedInLine((LineFilter) findLineFilter(filters).get());
+    if (findQuayIdFilter(filters).isPresent()) {
+      return getStopPlacesByQuayIds((QuayIdFilter) findQuayIdFilter(filters).get());
     }
 
     return allStopPlacesIndex
@@ -225,40 +222,21 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     );
   }
 
-  private Optional<StopPlaceFilter> findLineFilter(List<StopPlaceFilter> filters) {
-    return filters.stream().filter(LineFilter.class::isInstance).findFirst();
+  private Optional<StopPlaceFilter> findQuayIdFilter(List<StopPlaceFilter> filters) {
+    return filters.stream().filter(QuayIdFilter.class::isInstance).findFirst();
   }
 
-  private List<StopPlace> getStopPlacesUsedInLine(LineFilter lineFilter) {
-    String lineId = lineFilter.lineId();
-    Line line = fixedLineRepository.getOne(lineId);
-    if (line == null) {
-      FlexibleLine flexibleLine = flexibleLineRepository.getOne(lineId);
-      if (
-        flexibleLine == null ||
-        flexibleLine.getFlexibleLineType() != FlexibleLineTypeEnumeration.FIXED
-      ) {
-        return new ArrayList<>();
+  private List<StopPlace> getStopPlacesByQuayIds(QuayIdFilter quayIdFilter) {
+    List<String> quayIds = quayIdFilter.quayIds();
+
+    List<StopPlace> stopPlacesbyQuayIds = new ArrayList<>();
+    quayIds.forEach(quayId -> {
+      StopPlace stopPlace = stopPlaceByQuayRefIndex.get(quayId);
+      if (stopPlace != null) {
+        stopPlacesbyQuayIds.add(stopPlace);
       }
-      line = flexibleLine;
-    }
+    });
 
-    List<StopPlace> stopPlacesUsedInLine = new ArrayList<>();
-    line
-      .getJourneyPatterns()
-      .forEach(journeyPattern ->
-        journeyPattern
-          .getPointsInSequence()
-          .forEach(stopPointInJourneyPattern -> {
-            StopPlace stopPlace = stopPlaceByQuayRefIndex.get(
-              stopPointInJourneyPattern.getQuayRef()
-            );
-            if (stopPlace != null) {
-              stopPlacesUsedInLine.add(stopPlace);
-            }
-          })
-      );
-
-    return stopPlacesUsedInLine.stream().distinct().toList();
+    return stopPlacesbyQuayIds.stream().distinct().toList();
   }
 }
