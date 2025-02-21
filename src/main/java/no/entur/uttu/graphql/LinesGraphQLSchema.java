@@ -27,7 +27,6 @@ import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static no.entur.uttu.graphql.GraphQLNames.*;
 
-import graphql.GraphQL;
 import graphql.Scalars;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLArgument;
@@ -1114,6 +1113,14 @@ public class LinesGraphQLSchema {
               .name("quayIds")
               .type(new GraphQLList(GraphQLID))
               .description("Quay id-s")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name("limit")
+              .type(GraphQLInt)
+              .description("Maximum number of stop places that can be returned")
               .build()
           )
           .description(

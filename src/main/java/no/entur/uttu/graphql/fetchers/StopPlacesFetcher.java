@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 import no.entur.uttu.graphql.model.StopPlace;
 import no.entur.uttu.stopplace.filter.BoundingBoxFilter;
+import no.entur.uttu.stopplace.filter.LimitFilter;
 import no.entur.uttu.stopplace.filter.QuayIdFilter;
 import no.entur.uttu.stopplace.filter.SearchTextStopPlaceFilter;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
@@ -62,6 +63,11 @@ public class StopPlacesFetcher implements DataFetcher<List<StopPlace>> {
     List<String> quayIds = environment.getArgument("quayIds");
     if (quayIds != null) {
       filters.add(new QuayIdFilter(quayIds));
+    }
+
+    Integer limit = environment.getArgument("limit");
+    if (limit != null) {
+      filters.add(new LimitFilter(limit));
     }
 
     return stopPlaceRegistry

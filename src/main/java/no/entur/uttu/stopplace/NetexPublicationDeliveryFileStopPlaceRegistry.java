@@ -5,6 +5,7 @@ import static no.entur.uttu.error.codes.ErrorCodeEnumeration.INVALID_STOP_PLACE_
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -15,9 +16,8 @@ import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
-import no.entur.uttu.repository.FixedLineRepository;
-import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.stopplace.filter.BoundingBoxFilter;
+import no.entur.uttu.stopplace.filter.LimitFilter;
 import no.entur.uttu.stopplace.filter.QuayIdFilter;
 import no.entur.uttu.stopplace.filter.SearchTextStopPlaceFilter;
 import no.entur.uttu.stopplace.filter.StopPlaceFilter;
@@ -29,7 +29,6 @@ import org.rutebanken.netex.model.SiteFrame;
 import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
@@ -58,12 +57,6 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
   @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
-
-  @Autowired
-  private FlexibleLineRepository flexibleLineRepository;
-
-  @Autowired
-  private FixedLineRepository fixedLineRepository;
 
   @PostConstruct
   public void init() {
@@ -117,14 +110,32 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
       return allStopPlacesIndex;
     }
 
-    if (findQuayIdFilter(filters).isPresent()) {
-      return getStopPlacesByQuayIds((QuayIdFilter) findQuayIdFilter(filters).get());
+    Optional<StopPlaceFilter> quayIdsFilterOpt = findFilterByClass(
+      filters,
+      QuayIdFilter.class
+    );
+    if (quayIdsFilterOpt.isPresent()) {
+      return getStopPlacesByQuayIds((QuayIdFilter) quayIdsFilterOpt.get());
     }
 
-    return allStopPlacesIndex
+    List<StopPlace> filteredStopPlaces = allStopPlacesIndex
       .stream()
       .filter(s -> isStopPlaceToBeIncluded(s, filters))
       .toList();
+
+    Optional<StopPlaceFilter> limitFilterOpt = findFilterByClass(
+      filters,
+      LimitFilter.class
+    );
+
+    return limitFilterOpt
+      .map(stopPlaceFilter ->
+        limitNumberOfStopPlaces(
+          ((LimitFilter) stopPlaceFilter).limit(),
+          filteredStopPlaces
+        )
+      )
+      .orElse(filteredStopPlaces);
   }
 
   @Override
@@ -167,6 +178,8 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
         if (!includesSearchText) {
           return false;
         }
+      } else if (f instanceof LimitFilter) {
+        // This filter gets in action further on when the whole filtering is completed
       } else {
         throw new CodedIllegalArgumentException(
           "Unsupported kind of filter encountered ",
@@ -222,8 +235,11 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     );
   }
 
-  private Optional<StopPlaceFilter> findQuayIdFilter(List<StopPlaceFilter> filters) {
-    return filters.stream().filter(QuayIdFilter.class::isInstance).findFirst();
+  private Optional<StopPlaceFilter> findFilterByClass(
+    List<StopPlaceFilter> filters,
+    Class filteringClass
+  ) {
+    return filters.stream().filter(filteringClass::isInstance).findFirst();
   }
 
   private List<StopPlace> getStopPlacesByQuayIds(QuayIdFilter quayIdFilter) {
@@ -238,5 +254,14 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     });
 
     return stopPlacesbyQuayIds.stream().distinct().toList();
+  }
+
+  private List<StopPlace> limitNumberOfStopPlaces(int limit, List<StopPlace> stopPlaces) {
+    if (stopPlaces.size() <= limit) {
+      return stopPlaces;
+    }
+    List<StopPlace> shuffledStopPlaces = new ArrayList<>(stopPlaces);
+    Collections.shuffle(shuffledStopPlaces);
+    return shuffledStopPlaces.subList(0, limit);
   }
 }
