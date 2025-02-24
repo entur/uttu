@@ -1191,8 +1191,8 @@ public class LinesGraphQLSchema {
             GraphQLArgument
               .newArgument()
               .name("mode")
-              .type(transportModeEnum)
-              .description("Transport mode")
+              .type(vehicleModeEnum)
+              .description("Vehicle mode")
               .build()
           )
           .description("Fetch service link containing route geometry")
