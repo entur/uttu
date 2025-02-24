@@ -109,4 +109,8 @@ public class NetexExportContext {
   ) {
     export.addMessage(new ExportMessage(severity, message, params));
   }
+
+  public boolean shouldGenerateServiceLinks() {
+    return export.isGenerateServiceLinks();
+  }
 }
