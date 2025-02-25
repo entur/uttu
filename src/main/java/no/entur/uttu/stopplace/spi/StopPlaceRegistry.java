@@ -33,7 +33,7 @@ public interface StopPlaceRegistry {
   /**
    * Serve all stop places and quays, used e.g. in stop places route pattern editing map.
    * Incoming filters must derive from StopPlaceFilter, but otherwise are simply a record with some custom fields.
-   * @param filters Various filters to limit the set of stop places, e.g. by transport mode
+   * @param filters Various filters to limit the set of stop places, e.g. by transport mode; normally, there is only one occurrence of a certain kind of filter in the filters list.
    * @return A list of all stop places satisfying the incoming filters
    */
   List<org.rutebanken.netex.model.StopPlace> getStopPlaces(List<StopPlaceFilter> filters);

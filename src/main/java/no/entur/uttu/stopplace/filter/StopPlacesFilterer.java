@@ -75,7 +75,7 @@ public class StopPlacesFilterer {
    */
   private Optional<StopPlaceFilter> findFilterByClass(
     List<StopPlaceFilter> filters,
-    Class filteringClass
+    Class<? extends StopPlaceFilter> filteringClass
   ) {
     return filters.stream().filter(filteringClass::isInstance).findFirst();
   }
@@ -97,32 +97,35 @@ public class StopPlacesFilterer {
       .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
       .toList();
     for (StopPlaceFilter f : filters) {
-      if (f instanceof BoundingBoxFilter boundingBoxFilter) {
-        boolean isInsideBoundingBox = isStopPlaceWithinBoundingBox(
-          boundingBoxFilter,
-          stopPlace,
-          quays
-        );
-        if (!isInsideBoundingBox) {
-          return false;
+      switch (f) {
+        case BoundingBoxFilter boundingBoxFilter -> {
+          boolean isInsideBoundingBox = isStopPlaceWithinBoundingBox(
+            boundingBoxFilter,
+            stopPlace,
+            quays
+          );
+          if (!isInsideBoundingBox) {
+            return false;
+          }
         }
-      } else if (f instanceof TransportModeStopPlaceFilter transportModeStopPlaceFilter) {
-        boolean isOfTransportMode =
-          stopPlace.getTransportMode() == transportModeStopPlaceFilter.transportMode();
-        if (!isOfTransportMode) {
-          return false;
+        case TransportModeStopPlaceFilter transportModeStopPlaceFilter -> {
+          boolean isOfTransportMode =
+            stopPlace.getTransportMode() == transportModeStopPlaceFilter.transportMode();
+          if (!isOfTransportMode) {
+            return false;
+          }
         }
-      } else if (f instanceof SearchTextStopPlaceFilter searchTextStopPlaceFilter) {
-        boolean includesSearchText = includesSearchText(
-          searchTextStopPlaceFilter,
-          stopPlace,
-          quays
-        );
-        if (!includesSearchText) {
-          return false;
+        case SearchTextStopPlaceFilter searchTextStopPlaceFilter -> {
+          boolean includesSearchText = includesSearchText(
+            searchTextStopPlaceFilter,
+            stopPlace,
+            quays
+          );
+          if (!includesSearchText) {
+            return false;
+          }
         }
-      } else {
-        throw new CodedIllegalArgumentException(
+        default -> throw new CodedIllegalArgumentException(
           "Unsupported kind of filter encountered " + f.toString(),
           CodedError.fromErrorCode(INVALID_STOP_PLACE_FILTER)
         );
