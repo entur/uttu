@@ -51,6 +51,7 @@ public class ExportMapper extends AbstractProviderEntityMapper<Export> {
   protected void populateEntityFromInput(Export entity, ArgumentWrapper input) {
     input.apply(FIELD_NAME, entity::setName);
     input.apply(FIELD_DRY_RUN, entity::setDryRun);
+    input.apply(FIELD_GENERATE_SERVICE_LINKS, entity::setGenerateServiceLinks);
     input.applyList(
       FIELD_EXPORT_LINE_ASSOCIATIONS,
       new ExportLineAssociationMapper(

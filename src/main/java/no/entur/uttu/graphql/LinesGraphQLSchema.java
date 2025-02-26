@@ -868,6 +868,9 @@ public class LinesGraphQLSchema {
         .field(newFieldDefinition().name(FIELD_EXPORT_STATUS).type(exportStatusEnum))
         .field(newFieldDefinition().name(FIELD_DRY_RUN).type(GraphQLBoolean))
         .field(
+          newFieldDefinition().name(FIELD_GENERATE_SERVICE_LINKS).type(GraphQLBoolean)
+        )
+        .field(
           newFieldDefinition()
             .name(FIELD_DOWNLOAD_URL)
             .type(GraphQLString)
@@ -1593,6 +1596,12 @@ public class LinesGraphQLSchema {
       .field(
         newInputObjectField()
           .name(FIELD_DRY_RUN)
+          .type(GraphQLBoolean)
+          .defaultValue(Boolean.FALSE)
+      )
+      .field(
+        newInputObjectField()
+          .name(FIELD_GENERATE_SERVICE_LINKS)
           .type(GraphQLBoolean)
           .defaultValue(Boolean.FALSE)
       )
