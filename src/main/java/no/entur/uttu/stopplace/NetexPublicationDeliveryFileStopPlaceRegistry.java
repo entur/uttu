@@ -10,8 +10,8 @@ import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
-import no.entur.uttu.stopplace.filter.StopPlaceFilter;
-import no.entur.uttu.stopplace.filter.StopPlacesFilterer;
+import no.entur.uttu.stopplace.filter.StopPlacesFilter;
+import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Quay;
@@ -48,7 +48,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
 
-  private StopPlacesFilterer stopPlacesFilterer;
+  private StopPlacesFilter stopPlacesFilter;
 
   @PostConstruct
   public void init() {
@@ -89,7 +89,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
         "Unable to unmarshal stop places xml, stop place registry will be an empty list"
       );
     }
-    stopPlacesFilterer = new StopPlacesFilterer();
+    stopPlacesFilter = new StopPlacesFilter();
   }
 
   @Override
@@ -98,10 +98,10 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   }
 
   @Override
-  public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
+  public List<StopPlace> getStopPlaces(List<StopPlaceFilterParams> filters) {
     return filters.isEmpty()
       ? allStopPlacesIndex
-      : stopPlacesFilterer.filter(allStopPlacesIndex, stopPlaceByQuayRefIndex, filters);
+      : stopPlacesFilter.filter(allStopPlacesIndex, stopPlaceByQuayRefIndex, filters);
   }
 
   @Override

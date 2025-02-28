@@ -10,10 +10,16 @@ import java.util.Map;
 import java.util.Optional;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
+import no.entur.uttu.stopplace.filter.params.BoundingBoxFilterParams;
+import no.entur.uttu.stopplace.filter.params.LimitStopPlacesQuantityFilterParams;
+import no.entur.uttu.stopplace.filter.params.QuayIdFilterParams;
+import no.entur.uttu.stopplace.filter.params.SearchTextStopPlaceFilterParams;
+import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
+import no.entur.uttu.stopplace.filter.params.TransportModeStopPlaceFilterParams;
 import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.StopPlace;
 
-public class StopPlacesFilterer {
+public class StopPlacesFilter {
 
   /**
    * Filter the set of all stop places by various criteria;
@@ -28,38 +34,38 @@ public class StopPlacesFilterer {
   public List<StopPlace> filter(
     List<StopPlace> allStopPlaces,
     Map<String, StopPlace> stopPlaceByQuayRefIndex,
-    List<StopPlaceFilter> filters
+    List<StopPlaceFilterParams> filters
   ) {
-    Optional<StopPlaceFilter> quayIdsFilterOpt = findFilterByClass(
+    Optional<StopPlaceFilterParams> quayIdsFilterOpt = findFilterByClass(
       filters,
-      QuayIdFilter.class
+      QuayIdFilterParams.class
     );
 
     if (quayIdsFilterOpt.isPresent()) {
       return getStopPlacesByQuayIds(
-        (QuayIdFilter) quayIdsFilterOpt.get(),
+        (QuayIdFilterParams) quayIdsFilterOpt.get(),
         stopPlaceByQuayRefIndex
       );
     }
 
-    List<StopPlaceFilter> filtersToIterateThrough = filters
+    List<StopPlaceFilterParams> filtersToIterateThrough = filters
       .stream()
-      .filter(StopPlaceFilter::isAppliedCompositely)
+      .filter(StopPlaceFilterParams::isFilterAppliedCompositely)
       .toList();
     List<StopPlace> filteredStopPlaces = allStopPlaces
       .stream()
-      .filter(s -> isStopPlaceToBeIncluded(s, filtersToIterateThrough))
+      .filter(s -> includeStopPlace(s, filtersToIterateThrough))
       .toList();
 
-    Optional<StopPlaceFilter> limitFilterOpt = findFilterByClass(
+    Optional<StopPlaceFilterParams> limitFilterOpt = findFilterByClass(
       filters,
-      LimitStopPlacesQuantityFilter.class
+      LimitStopPlacesQuantityFilterParams.class
     );
 
     return limitFilterOpt
       .map(stopPlaceFilter ->
         limitNumberOfStopPlaces(
-          ((LimitStopPlacesQuantityFilter) stopPlaceFilter).limit(),
+          ((LimitStopPlacesQuantityFilterParams) stopPlaceFilter).limit(),
           filteredStopPlaces
         )
       )
@@ -68,14 +74,14 @@ public class StopPlacesFilterer {
 
   /**
    * Find an instance of a certain kind of filter;
-   * Normally, there is only one occurrence of a certain kind of filter in the filters list
+   * There should be only one occurrence of a certain kind of filter in the filters list
    * @param filters
    * @param filteringClass
    * @return
    */
-  private Optional<StopPlaceFilter> findFilterByClass(
-    List<StopPlaceFilter> filters,
-    Class<? extends StopPlaceFilter> filteringClass
+  private Optional<StopPlaceFilterParams> findFilterByClass(
+    List<StopPlaceFilterParams> filters,
+    Class<? extends StopPlaceFilterParams> filteringClass
   ) {
     return filters.stream().filter(filteringClass::isInstance).findFirst();
   }
@@ -86,9 +92,9 @@ public class StopPlacesFilterer {
    * @param filters
    * @return
    */
-  private boolean isStopPlaceToBeIncluded(
+  private boolean includeStopPlace(
     StopPlace stopPlace,
-    List<StopPlaceFilter> filters
+    List<StopPlaceFilterParams> filters
   ) {
     List<Quay> quays = stopPlace
       .getQuays()
@@ -96,11 +102,11 @@ public class StopPlacesFilterer {
       .stream()
       .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
       .toList();
-    for (StopPlaceFilter f : filters) {
+    for (StopPlaceFilterParams f : filters) {
       switch (f) {
-        case BoundingBoxFilter boundingBoxFilter -> {
+        case BoundingBoxFilterParams boundingBoxFilterParams -> {
           boolean isInsideBoundingBox = isStopPlaceWithinBoundingBox(
-            boundingBoxFilter,
+            boundingBoxFilterParams,
             stopPlace,
             quays
           );
@@ -108,16 +114,16 @@ public class StopPlacesFilterer {
             return false;
           }
         }
-        case TransportModeStopPlaceFilter transportModeStopPlaceFilter -> {
+        case TransportModeStopPlaceFilterParams transportModeFilterParams -> {
           boolean isOfTransportMode =
-            stopPlace.getTransportMode() == transportModeStopPlaceFilter.transportMode();
+            stopPlace.getTransportMode() == transportModeFilterParams.transportMode();
           if (!isOfTransportMode) {
             return false;
           }
         }
-        case SearchTextStopPlaceFilter searchTextStopPlaceFilter -> {
-          boolean includesSearchText = includesSearchText(
-            searchTextStopPlaceFilter,
+        case SearchTextStopPlaceFilterParams searchTextStopPlaceFilterParams -> {
+          boolean includesSearchText = foundMatchForSearchText(
+            searchTextStopPlaceFilterParams,
             stopPlace,
             quays
           );
@@ -134,12 +140,12 @@ public class StopPlacesFilterer {
     return true;
   }
 
-  private boolean includesSearchText(
-    SearchTextStopPlaceFilter searchTextStopPlaceFilter,
+  private boolean foundMatchForSearchText(
+    SearchTextStopPlaceFilterParams searchTextStopPlaceFilterParams,
     StopPlace stopPlace,
     List<Quay> quays
   ) {
-    String searchText = searchTextStopPlaceFilter.searchText().toLowerCase();
+    String searchText = searchTextStopPlaceFilterParams.searchText().toLowerCase();
     return (
       stopPlace.getId().toLowerCase().contains(searchText) ||
       stopPlace.getName().getValue().toLowerCase().contains(searchText) ||
@@ -148,7 +154,7 @@ public class StopPlacesFilterer {
   }
 
   private boolean isStopPlaceWithinBoundingBox(
-    BoundingBoxFilter boundingBoxFilter,
+    BoundingBoxFilterParams boundingBoxFilterParams,
     StopPlace stopPlace,
     List<Quay> quays
   ) {
@@ -172,18 +178,18 @@ public class StopPlacesFilterer {
     }
 
     return (
-      lat.compareTo(boundingBoxFilter.northEastLat()) < 0 &&
-      lng.compareTo(boundingBoxFilter.northEastLng()) < 0 &&
-      lat.compareTo(boundingBoxFilter.southWestLat()) > 0 &&
-      lng.compareTo(boundingBoxFilter.southWestLng()) > 0
+      lat.compareTo(boundingBoxFilterParams.northEastLat()) < 0 &&
+      lng.compareTo(boundingBoxFilterParams.northEastLng()) < 0 &&
+      lat.compareTo(boundingBoxFilterParams.southWestLat()) > 0 &&
+      lng.compareTo(boundingBoxFilterParams.southWestLng()) > 0
     );
   }
 
   private List<StopPlace> getStopPlacesByQuayIds(
-    QuayIdFilter quayIdFilter,
+    QuayIdFilterParams quayIdFilterParams,
     Map<String, StopPlace> stopPlaceByQuayRefIndex
   ) {
-    List<String> quayIds = quayIdFilter.quayIds();
+    List<String> quayIds = quayIdFilterParams.quayIds();
 
     List<StopPlace> stopPlacesbyQuayIds = new ArrayList<>();
     quayIds.forEach(quayId -> {

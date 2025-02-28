@@ -10,6 +10,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
+import no.entur.uttu.stopplace.filter.params.BoundingBoxFilterParams;
+import no.entur.uttu.stopplace.filter.params.LimitStopPlacesQuantityFilterParams;
+import no.entur.uttu.stopplace.filter.params.QuayIdFilterParams;
+import no.entur.uttu.stopplace.filter.params.SearchTextStopPlaceFilterParams;
+import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
+import no.entur.uttu.stopplace.filter.params.TransportModeStopPlaceFilterParams;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,16 +27,18 @@ import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StopPlaceFiltererTest {
+public class StopPlaceFiltererTestParams {
 
-  private final Logger logger = LoggerFactory.getLogger(StopPlaceFiltererTest.class);
+  private final Logger logger = LoggerFactory.getLogger(
+    StopPlaceFiltererTestParams.class
+  );
   private final NetexUnmarshaller netexUnmarshaller = new NetexUnmarshaller(
     PublicationDeliveryStructure.class
   );
   private final List<StopPlace> allStopPlacesIndex = new ArrayList<>();
   private final Map<String, StopPlace> stopPlaceByQuayRefIndex =
     new ConcurrentHashMap<>();
-  private StopPlacesFilterer stopPlacesFilterer;
+  private StopPlacesFilter stopPlacesFilter;
 
   @Before
   public void init() {
@@ -73,14 +81,14 @@ public class StopPlaceFiltererTest {
         "Unable to unmarshal stop places xml, stop place registry will be an empty list"
       );
     }
-    stopPlacesFilterer = new StopPlacesFilterer();
+    stopPlacesFilter = new StopPlacesFilter();
     Assert.assertEquals(4, allStopPlacesIndex.size());
   }
 
   @Test
   public void testLimitStopsQuantityFilter() {
-    StopPlaceFilter limitFilter = new LimitStopPlacesQuantityFilter(1);
-    List<StopPlace> limitedStopPlaces = stopPlacesFilterer.filter(
+    StopPlaceFilterParams limitFilter = new LimitStopPlacesQuantityFilterParams(1);
+    List<StopPlace> limitedStopPlaces = stopPlacesFilter.filter(
       allStopPlacesIndex,
       stopPlaceByQuayRefIndex,
       List.of(limitFilter)
@@ -90,8 +98,8 @@ public class StopPlaceFiltererTest {
 
   @Test
   public void testSearchTextFilter() {
-    StopPlaceFilter stopNameFilter = new SearchTextStopPlaceFilter("Meri");
-    List<StopPlace> filteredStopPlaces = stopPlacesFilterer.filter(
+    StopPlaceFilterParams stopNameFilter = new SearchTextStopPlaceFilterParams("Meri");
+    List<StopPlace> filteredStopPlaces = stopPlacesFilter.filter(
       allStopPlacesIndex,
       stopPlaceByQuayRefIndex,
       List.of(stopNameFilter)
@@ -99,9 +107,9 @@ public class StopPlaceFiltererTest {
     Assert.assertEquals(2, filteredStopPlaces.size());
 
     String stopId = "FIN:StopPlace:HKI";
-    StopPlaceFilter stopIdFilter = new SearchTextStopPlaceFilter(stopId);
+    StopPlaceFilterParams stopIdFilter = new SearchTextStopPlaceFilterParams(stopId);
     filteredStopPlaces =
-      stopPlacesFilterer.filter(
+      stopPlacesFilter.filter(
         allStopPlacesIndex,
         stopPlaceByQuayRefIndex,
         List.of(stopIdFilter)
@@ -110,9 +118,9 @@ public class StopPlaceFiltererTest {
     Assert.assertEquals(stopId, filteredStopPlaces.get(0).getId());
 
     String quayId = "FIN:Quay:HKI_1";
-    StopPlaceFilter quayIdFilter = new SearchTextStopPlaceFilter(quayId);
+    StopPlaceFilterParams quayIdFilter = new SearchTextStopPlaceFilterParams(quayId);
     filteredStopPlaces =
-      stopPlacesFilterer.filter(
+      stopPlacesFilter.filter(
         allStopPlacesIndex,
         stopPlaceByQuayRefIndex,
         List.of(quayIdFilter)
@@ -132,21 +140,21 @@ public class StopPlaceFiltererTest {
 
   @Test
   public void testTransportModeFilter() {
-    StopPlaceFilter railFilter = new TransportModeStopPlaceFilter(
+    StopPlaceFilterParams railFilter = new TransportModeStopPlaceFilterParams(
       AllVehicleModesOfTransportEnumeration.RAIL
     );
-    List<StopPlace> filteredStopPlaces = stopPlacesFilterer.filter(
+    List<StopPlace> filteredStopPlaces = stopPlacesFilter.filter(
       allStopPlacesIndex,
       stopPlaceByQuayRefIndex,
       List.of(railFilter)
     );
     Assert.assertEquals(1, filteredStopPlaces.size());
 
-    StopPlaceFilter busFilter = new TransportModeStopPlaceFilter(
+    StopPlaceFilterParams busFilter = new TransportModeStopPlaceFilterParams(
       AllVehicleModesOfTransportEnumeration.BUS
     );
     filteredStopPlaces =
-      stopPlacesFilterer.filter(
+      stopPlacesFilter.filter(
         allStopPlacesIndex,
         stopPlaceByQuayRefIndex,
         List.of(busFilter)
@@ -156,13 +164,13 @@ public class StopPlaceFiltererTest {
 
   @Test
   public void testBoundingBoxFilter() {
-    StopPlaceFilter helsinkiAreaFilter = new BoundingBoxFilter(
+    StopPlaceFilterParams helsinkiAreaFilter = new BoundingBoxFilterParams(
       BigDecimal.valueOf(62),
       BigDecimal.valueOf(25.5),
       BigDecimal.valueOf(60),
       BigDecimal.valueOf(24)
     );
-    List<StopPlace> filteredStopPlaces = stopPlacesFilterer.filter(
+    List<StopPlace> filteredStopPlaces = stopPlacesFilter.filter(
       allStopPlacesIndex,
       stopPlaceByQuayRefIndex,
       List.of(helsinkiAreaFilter)
@@ -170,14 +178,14 @@ public class StopPlaceFiltererTest {
     Assert.assertEquals(1, filteredStopPlaces.size());
     Assert.assertEquals("Helsinki", filteredStopPlaces.get(0).getName().getValue());
 
-    StopPlaceFilter ouluAreaFilter = new BoundingBoxFilter(
+    StopPlaceFilterParams ouluAreaFilter = new BoundingBoxFilterParams(
       BigDecimal.valueOf(66),
       BigDecimal.valueOf(26),
       BigDecimal.valueOf(64),
       BigDecimal.valueOf(24)
     );
     filteredStopPlaces =
-      stopPlacesFilterer.filter(
+      stopPlacesFilter.filter(
         allStopPlacesIndex,
         stopPlaceByQuayRefIndex,
         List.of(ouluAreaFilter)
@@ -188,8 +196,8 @@ public class StopPlaceFiltererTest {
   @Test
   public void testQuaysIdFilter() {
     List<String> quayIdList = List.of("FSR:Quay:330127", "FSR:Quay:330128");
-    StopPlaceFilter quaysIdFilter = new QuayIdFilter(quayIdList);
-    List<StopPlace> filteredStopPlaces = stopPlacesFilterer.filter(
+    StopPlaceFilterParams quaysIdFilter = new QuayIdFilterParams(quayIdList);
+    List<StopPlace> filteredStopPlaces = stopPlacesFilter.filter(
       allStopPlacesIndex,
       stopPlaceByQuayRefIndex,
       List.of(quaysIdFilter)
@@ -203,12 +211,12 @@ public class StopPlaceFiltererTest {
   @Test
   public void testQuayIdFilterOverruling() {
     List<String> quayIdList = List.of("FSR:Quay:330127", "FSR:Quay:330128");
-    StopPlaceFilter quaysIdFilter = new QuayIdFilter(quayIdList);
-    StopPlaceFilter limitFilter = new LimitStopPlacesQuantityFilter(1);
-    StopPlaceFilter railFilter = new TransportModeStopPlaceFilter(
+    StopPlaceFilterParams quaysIdFilter = new QuayIdFilterParams(quayIdList);
+    StopPlaceFilterParams limitFilter = new LimitStopPlacesQuantityFilterParams(1);
+    StopPlaceFilterParams railFilter = new TransportModeStopPlaceFilterParams(
       AllVehicleModesOfTransportEnumeration.RAIL
     );
-    List<StopPlace> filteredStopPlaces = stopPlacesFilterer.filter(
+    List<StopPlace> filteredStopPlaces = stopPlacesFilter.filter(
       allStopPlacesIndex,
       stopPlaceByQuayRefIndex,
       List.of(railFilter, quaysIdFilter, limitFilter)
@@ -218,16 +226,16 @@ public class StopPlaceFiltererTest {
 
   @Test
   public void testMultipleFiltersComposition() {
-    StopPlaceFilter busFilter = new TransportModeStopPlaceFilter(
+    StopPlaceFilterParams busFilter = new TransportModeStopPlaceFilterParams(
       AllVehicleModesOfTransportEnumeration.BUS
     );
-    StopPlaceFilter meriToppilaAreaFilter = new BoundingBoxFilter(
+    StopPlaceFilterParams meriToppilaAreaFilter = new BoundingBoxFilterParams(
       BigDecimal.valueOf(66),
       BigDecimal.valueOf(26),
       BigDecimal.valueOf(65.044),
       BigDecimal.valueOf(24)
     );
-    List<StopPlace> filteredStopPlaces = stopPlacesFilterer.filter(
+    List<StopPlace> filteredStopPlaces = stopPlacesFilter.filter(
       allStopPlacesIndex,
       stopPlaceByQuayRefIndex,
       List.of(busFilter, meriToppilaAreaFilter)

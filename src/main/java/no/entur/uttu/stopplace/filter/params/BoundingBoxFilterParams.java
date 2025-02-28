@@ -1,4 +1,4 @@
-package no.entur.uttu.stopplace.filter;
+package no.entur.uttu.stopplace.filter.params;
 
 import java.math.BigDecimal;
 
@@ -9,10 +9,10 @@ import java.math.BigDecimal;
  * @param southWestLat
  * @param southWestLng
  */
-public record BoundingBoxFilter(
+public record BoundingBoxFilterParams(
   BigDecimal northEastLat,
   BigDecimal northEastLng,
   BigDecimal southWestLat,
   BigDecimal southWestLng
 )
-  implements StopPlaceFilter {}
+  implements StopPlaceFilterParams {}

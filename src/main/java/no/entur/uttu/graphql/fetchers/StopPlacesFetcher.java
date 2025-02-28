@@ -13,12 +13,12 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import no.entur.uttu.graphql.model.StopPlace;
-import no.entur.uttu.stopplace.filter.BoundingBoxFilter;
-import no.entur.uttu.stopplace.filter.LimitStopPlacesQuantityFilter;
-import no.entur.uttu.stopplace.filter.QuayIdFilter;
-import no.entur.uttu.stopplace.filter.SearchTextStopPlaceFilter;
-import no.entur.uttu.stopplace.filter.StopPlaceFilter;
-import no.entur.uttu.stopplace.filter.TransportModeStopPlaceFilter;
+import no.entur.uttu.stopplace.filter.params.BoundingBoxFilterParams;
+import no.entur.uttu.stopplace.filter.params.LimitStopPlacesQuantityFilterParams;
+import no.entur.uttu.stopplace.filter.params.QuayIdFilterParams;
+import no.entur.uttu.stopplace.filter.params.SearchTextStopPlaceFilterParams;
+import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
+import no.entur.uttu.stopplace.filter.params.TransportModeStopPlaceFilterParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
 import org.rutebanken.netex.model.Quay;
@@ -33,15 +33,15 @@ public class StopPlacesFetcher implements DataFetcher<List<StopPlace>> {
 
   @Override
   public List<StopPlace> get(DataFetchingEnvironment environment) throws Exception {
-    List<StopPlaceFilter> filters = new ArrayList<>();
+    List<StopPlaceFilterParams> filters = new ArrayList<>();
     AllVehicleModesOfTransportEnumeration transportMode = environment.getArgument(
       FIELD_TRANSPORT_MODE
     );
-    filters.add(new TransportModeStopPlaceFilter(transportMode));
+    filters.add(new TransportModeStopPlaceFilterParams(transportMode));
 
     String searchText = environment.getArgument(FIELD_SEARCH_TEXT);
     if (searchText != null) {
-      filters.add(new SearchTextStopPlaceFilter(searchText));
+      filters.add(new SearchTextStopPlaceFilterParams(searchText));
     }
 
     BigDecimal northEastLat = environment.getArgument(FIELD_NORTH_EAST_LAT);
@@ -55,18 +55,23 @@ public class StopPlacesFetcher implements DataFetcher<List<StopPlace>> {
       southWestLng != null
     ) {
       filters.add(
-        new BoundingBoxFilter(northEastLat, northEastLng, southWestLat, southWestLng)
+        new BoundingBoxFilterParams(
+          northEastLat,
+          northEastLng,
+          southWestLat,
+          southWestLng
+        )
       );
     }
 
     List<String> quayIds = environment.getArgument("quayIds");
     if (quayIds != null) {
-      filters.add(new QuayIdFilter(quayIds));
+      filters.add(new QuayIdFilterParams(quayIds));
     }
 
     Integer limit = environment.getArgument("limit");
     if (limit != null) {
-      filters.add(new LimitStopPlacesQuantityFilter(limit));
+      filters.add(new LimitStopPlacesQuantityFilterParams(limit));
     }
 
     return stopPlaceRegistry
