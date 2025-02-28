@@ -162,7 +162,7 @@ public class LinesGraphQLSchema {
   private DataFetcher<List<Organisation>> organisationsFetcher;
 
   @Autowired
-  private DataFetcher<TimetabledPassingTime.StopPlace> quayRefSearchFetcher;
+  private DataFetcher<StopPlace> quayRefSearchFetcher;
 
   @Autowired
   private DataFetcher<List<StopPlace>> stopPlacesFetcher;
