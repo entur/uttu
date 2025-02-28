@@ -27,10 +27,10 @@ import org.rutebanken.netex.model.StopPlace;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class StopPlaceFilterTestParams {
+public class StopPlaceFilterTest {
 
   private final Logger logger = LoggerFactory.getLogger(
-    StopPlaceFilterTestParams.class
+    StopPlaceFilterTest.class
   );
   private final NetexUnmarshaller netexUnmarshaller = new NetexUnmarshaller(
     PublicationDeliveryStructure.class

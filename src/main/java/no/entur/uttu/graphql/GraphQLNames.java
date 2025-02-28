@@ -133,6 +133,7 @@ public class GraphQLNames {
   public static final String FIELD_MESSAGE = "message";
   public static final String FIELD_SEVERITY = "severity";
   public static final String FIELD_DRY_RUN = "dryRun";
+  public static final String FIELD_GENERATE_SERVICE_LINKS = "generateServiceLinks";
   public static final String FIELD_DOWNLOAD_URL = "downloadUrl";
   public static final String FIELD_EXPORT_LINE_ASSOCIATIONS = "lineAssociations";
 

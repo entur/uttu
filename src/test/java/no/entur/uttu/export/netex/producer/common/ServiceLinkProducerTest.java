@@ -17,6 +17,7 @@ import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.routing.RouteGeometry;
 import no.entur.uttu.routing.RoutingService;
+import no.entur.uttu.routing.RoutingServiceRequestParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import no.entur.uttu.util.DateUtils;
 import org.junit.jupiter.api.Assertions;
@@ -93,14 +94,14 @@ class ServiceLinkProducerTest {
     when(mockStopPlaceRegistry.getQuayById("TST:Quay:2")).thenReturn(Optional.of(quayTo));
 
     // GeoJSON uses coordinate pairs in order longitude then latitude
-    when(
-      mockRoutingService.getRouteGeometry(
-        BigDecimal.valueOf(10.1),
-        BigDecimal.valueOf(60.2),
-        BigDecimal.valueOf(10.5),
-        BigDecimal.valueOf(60.6)
-      )
-    )
+    var params = new RoutingServiceRequestParams(
+      BigDecimal.valueOf(10.1),
+      BigDecimal.valueOf(60.2),
+      BigDecimal.valueOf(10.5),
+      BigDecimal.valueOf(60.6),
+      VehicleModeEnumeration.BUS
+    );
+    when(mockRoutingService.getRouteGeometry(params))
       .thenReturn(
         new RouteGeometry(
           List.of(

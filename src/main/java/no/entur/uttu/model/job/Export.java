@@ -57,6 +57,8 @@ public class Export extends ProviderEntity {
 
   private boolean dryRun;
 
+  private boolean generateServiceLinks;
+
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "export")
   private Collection<ExportLineAssociation> exportLineAssociations;
 
@@ -106,6 +108,14 @@ public class Export extends ProviderEntity {
 
   public void setDryRun(boolean dryRun) {
     this.dryRun = dryRun;
+  }
+
+  public boolean isGenerateServiceLinks() {
+    return generateServiceLinks;
+  }
+
+  public void setGenerateServiceLinks(boolean generateServiceLinks) {
+    this.generateServiceLinks = generateServiceLinks;
   }
 
   public List<ExportedLineStatistics> getExportedLineStatistics() {

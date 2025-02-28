@@ -15,7 +15,6 @@
 
 package no.entur.uttu.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -27,8 +26,6 @@ import java.time.LocalTime;
 import java.util.List;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.util.ValidationHelper;
-import org.rutebanken.netex.model.AllVehicleModesOfTransportEnumeration;
-import org.rutebanken.netex.model.SimplePoint_VersionStructure;
 
 @Entity
 public class TimetabledPassingTime extends ProviderEntity {

@@ -35,6 +35,12 @@ jobs:
           sudo timedatectl set-timezone "Europe/Oslo"
           mvn --batch-mode jacoco:prepare-agent test jacoco:report -Dprettier.nodePath=node -Dprettier.npmPath=npm
           mvn --batch-mode jib:dockerBuild -Dmaven.test.skip -P prettierSkip
+
+      - name: codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: ./target/site/jacoco/jacoco.xml
+
   image:
     # only build and push the image when it's a commit to master in Entur's repository
     if: github.repository_owner == 'entur' && github.event_name == 'push'

@@ -103,8 +103,8 @@ public class JourneyPatternProducer {
     List<LinkInLinkSequence_VersionedChildStructure> linksInSequence;
     if (
       routingService != null &&
-      routingService.isEnabled() &&
-      local.getLine().getTransportMode() == VehicleModeEnumeration.BUS
+      routingService.isEnabled(local.getLine().getTransportMode()) &&
+      context.shouldGenerateServiceLinks()
     ) {
       linksInSequence =
         local
