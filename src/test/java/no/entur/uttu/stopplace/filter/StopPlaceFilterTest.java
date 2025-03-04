@@ -80,7 +80,7 @@ public class StopPlaceFilterTest {
       );
     }
     stopPlacesFilter = new StopPlacesFilter();
-    Assert.assertEquals(4, allStopPlacesIndex.size());
+    Assert.assertEquals(6, allStopPlacesIndex.size());
   }
 
   @Test
@@ -157,7 +157,7 @@ public class StopPlaceFilterTest {
         stopPlaceByQuayRefIndex,
         List.of(busFilter)
       );
-    Assert.assertEquals(3, filteredStopPlaces.size());
+    Assert.assertEquals(5, filteredStopPlaces.size());
   }
 
   @Test
@@ -188,7 +188,7 @@ public class StopPlaceFilterTest {
         stopPlaceByQuayRefIndex,
         List.of(ouluAreaFilter)
       );
-    Assert.assertEquals(3, filteredStopPlaces.size());
+    Assert.assertEquals(4, filteredStopPlaces.size());
   }
 
   @Test
@@ -229,7 +229,7 @@ public class StopPlaceFilterTest {
     );
     StopPlaceFilterParams meriToppilaAreaFilter = new BoundingBoxFilterParams(
       BigDecimal.valueOf(66),
-      BigDecimal.valueOf(26),
+      BigDecimal.valueOf(25.44),
       BigDecimal.valueOf(65.044),
       BigDecimal.valueOf(24)
     );

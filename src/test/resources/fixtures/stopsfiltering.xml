@@ -98,6 +98,22 @@
                         </Quay>
                     </quays>
                 </StopPlace>
+          <StopPlace version="1" id="FSR:StopPlace:331327">
+              <Name>Linnanmaan ramppi E</Name>
+              <TransportMode>bus</TransportMode>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+          </StopPlace>
+          <StopPlace version="1" id="FSR:StopPlace:331329">
+              <Name>Linnanmaan ramppi P1</Name>
+              <TransportMode>bus</TransportMode>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+              <Centroid>
+                  <Location>
+                      <Longitude>25.45585</Longitude>
+                      <Latitude>65.05181</Latitude>
+                  </Location>
+              </Centroid>
+          </StopPlace>
       </stopPlaces>
     </SiteFrame>
   </dataObjects>

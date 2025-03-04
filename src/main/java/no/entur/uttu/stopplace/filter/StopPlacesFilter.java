@@ -96,12 +96,17 @@ public class StopPlacesFilter {
     StopPlace stopPlace,
     List<StopPlaceFilterParams> filters
   ) {
-    List<Quay> quays = stopPlace
-      .getQuays()
-      .getQuayRefOrQuay()
-      .stream()
-      .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
-      .toList();
+    List<Quay> quays = Optional
+      .ofNullable(stopPlace.getQuays())
+      .map(quaysRelStructure ->
+        quaysRelStructure
+          .getQuayRefOrQuay()
+          .stream()
+          .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
+          .toList()
+      )
+      .orElse(Collections.emptyList());
+
     for (StopPlaceFilterParams f : filters) {
       switch (f) {
         case BoundingBoxFilterParams boundingBoxFilterParams -> {
@@ -167,8 +172,8 @@ public class StopPlacesFilter {
       .map(centroid -> centroid.getLocation().getLongitude())
       .orElse(null);
 
-    if (lat == null || lng == null) {
-      Quay firstQuay = quays.get(0);
+    if (!quays.isEmpty() && (lat == null || lng == null)) {
+      Quay firstQuay = quays.getFirst();
       lat = firstQuay.getCentroid().getLocation().getLatitude();
       lng = firstQuay.getCentroid().getLocation().getLongitude();
     }
