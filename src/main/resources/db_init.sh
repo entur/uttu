@@ -16,7 +16,9 @@ for f in ./db/migration/V1__Base_version.sql \
            ./db/migration/V14__Use_time_no_timestamp_in_timetable.sql \
            ./db/migration/V15__Add_line_type.sql \
            ./db/migration/V16__Flexible_stop_place_flexible_areas_one_to_many.sql \
-           ./db/migration/V17__Flexible_area_key_valyes.sql
+           ./db/migration/V17__Flexible_area_key_valyes.sql \
+           ./db/migration/V18__Create_branding_table.sql \
+           ./db/migration/V19__Add_generate_service_links_to_export_table.sql
 do
   echo "Running migration for ${f}"
   PGPASSWORD=uttu psql -U uttu -h localhost -p 5432 -f $f
