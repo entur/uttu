@@ -15,7 +15,6 @@
 
 package no.entur.uttu.model;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -344,82 +343,5 @@ public class TimetabledPassingTime extends ProviderEntity {
       identity(),
       other.identity()
     );
-  }
-
-  public static class MultilingualString {
-
-    private String lang;
-    private String value;
-
-    public String getLang() {
-      return lang;
-    }
-
-    public void setLang(String lang) {
-      this.lang = lang;
-    }
-
-    public String getValue() {
-      return value;
-    }
-
-    public void setValue(String value) {
-      this.value = value;
-    }
-  }
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public static class Quay {
-
-    private String id;
-    private String publicCode;
-
-    public String getId() {
-      return id;
-    }
-
-    public void setId(String id) {
-      this.id = id;
-    }
-
-    public String getPublicCode() {
-      return publicCode;
-    }
-
-    public void setPublicCode(String publicCode) {
-      this.publicCode = publicCode;
-    }
-  }
-
-  @JsonInclude(JsonInclude.Include.NON_NULL)
-  public static class StopPlace {
-
-    private String id;
-    private MultilingualString name;
-    private List<Quay> quays;
-
-    public String getId() {
-      return id;
-    }
-
-    public void setId(String id) {
-      this.id = id;
-    }
-
-    public MultilingualString getName() {
-      return name;
-    }
-
-    public void setName(MultilingualString name) {
-      this.name = name;
-    }
-
-    public List<Quay> getQuays() {
-      return quays;
-    }
-
-    public void setQuays(List<Quay> quays) {
-      this.quays = quays;
-    }
   }
 }

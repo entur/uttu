@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PublicationDelivery xmlns="http://www.netex.org.uk/netex" xmlns:gml="http://www.opengis.net/gml/3.2">
+  <PublicationTimestamp>2024-06-28T07:41:27.082Z</PublicationTimestamp>
+  <ParticipantRef>FSR</ParticipantRef>
+  <dataObjects>
+    <SiteFrame id="SiteFrame_1" version="1">
+      <FrameDefaults>
+        <DefaultLocale>
+          <DefaultLanguage>fi</DefaultLanguage>
+        </DefaultLocale>
+        <DefaultLocationSystem>WGS84</DefaultLocationSystem>
+      </FrameDefaults>
+      <stopPlaces>
+        <StopPlace id="FIN:StopPlace:HKI" version="1">
+              <Name>Helsinki</Name>
+              <AccessibilityAssessment version="1" id="FIN:AccessibilityAssessment:StopPlace_HKI">
+                  <MobilityImpairedAccess>unknown</MobilityImpairedAccess>
+                  <limitations>
+                      <AccessibilityLimitation>
+                          <WheelchairAccess>unknown</WheelchairAccess>
+                          <StepFreeAccess>unknown</StepFreeAccess>
+                      </AccessibilityLimitation>
+                  </limitations>
+              </AccessibilityAssessment>
+              <TransportMode>rail</TransportMode>
+              <StopPlaceType>railStation</StopPlaceType>
+            <Centroid>
+                <Location>
+                    <Longitude>24.942024218687497</Longitude>
+                    <Latitude>60.174586613761946</Latitude>
+                </Location>
+            </Centroid>
+              <quays>
+            <Quay id="FIN:Quay:HKI_1" version="1">
+              <Name>Helsinki</Name>
+              <Centroid>
+                <Location>
+                  <Longitude>24.942024218687497</Longitude>
+                  <Latitude>60.174586613761946</Latitude>
+                </Location>
+              </Centroid>
+            </Quay>
+            <Quay id="FIN:Quay:HKI_2" version="1">
+              <Name>Helsinki</Name>
+              <Centroid>
+                <Location>
+                  <Longitude>24.941840480853273</Longitude>
+                  <Latitude>60.174512604402494</Latitude>
+                </Location>
+              </Centroid>
+            </Quay>
+          </quays>
+          </StopPlace>
+          <StopPlace version="1" id="FSR:StopPlace:380420">
+                    <Name>Oulu, linja-autoasema</Name>
+                    <TransportMode>bus</TransportMode>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <quays>
+                        <Quay version="1" id="FSR:Quay:380420">
+                            <Centroid>
+<Location>
+    <Longitude>25.483184</Longitude>
+    <Latitude>65.008854</Latitude>
+</Location>
+                            </Centroid>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace version="1" id="FSR:StopPlace:330128">
+                    <Name>Meri-Toppila P</Name>
+                    <TransportMode>bus</TransportMode>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <quays>
+                        <Quay version="1" id="FSR:Quay:330128">
+                            <Centroid>
+<Location>
+    <Longitude>25.438486</Longitude>
+    <Latitude>65.045743</Latitude>
+</Location>
+                            </Centroid>
+                            <PublicCode>1866</PublicCode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace version="1" id="FSR:StopPlace:330127">
+                    <Name>Meri-Toppila E</Name>
+                    <TransportMode>bus</TransportMode>
+                    <StopPlaceType>onstreetBus</StopPlaceType>
+                    <quays>
+                        <Quay version="1" id="FSR:Quay:330127">
+                            <Centroid>
+<Location>
+    <Longitude>25.438464</Longitude>
+    <Latitude>65.044657</Latitude>
+</Location>
+                            </Centroid>
+                            <PublicCode>1865</PublicCode>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+          <StopPlace version="1" id="FSR:StopPlace:331327">
+              <Name>Linnanmaan ramppi E</Name>
+              <TransportMode>bus</TransportMode>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+          </StopPlace>
+          <StopPlace version="1" id="FSR:StopPlace:331329">
+              <Name>Linnanmaan ramppi P1</Name>
+              <TransportMode>bus</TransportMode>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+              <Centroid>
+                  <Location>
+                      <Longitude>25.45585</Longitude>
+                      <Latitude>65.05181</Latitude>
+                  </Location>
+              </Centroid>
+          </StopPlace>
+      </stopPlaces>
+    </SiteFrame>
+  </dataObjects>
+</PublicationDelivery>

@@ -27,7 +27,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
-import no.entur.uttu.stopplace.filter.StopPlaceFilter;
+import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.EntityInVersionStructure;
 import org.rutebanken.netex.model.Quay;
@@ -156,7 +156,7 @@ public class EnturMummuStopPlaceRegistry implements StopPlaceRegistry {
   }
 
   @Override
-  public List<StopPlace> getStopPlaces(List<StopPlaceFilter> filters) {
+  public List<StopPlace> getStopPlaces(List<StopPlaceFilterParams> filters) {
     return List.of();
   }
 }
