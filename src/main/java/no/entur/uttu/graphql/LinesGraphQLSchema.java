@@ -73,7 +73,6 @@ import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
-import no.entur.uttu.model.TimetabledPassingTime;
 import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.model.VehicleSubmodeEnumeration;
 import no.entur.uttu.model.job.Export;

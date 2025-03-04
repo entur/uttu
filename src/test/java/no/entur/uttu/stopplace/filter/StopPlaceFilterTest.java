@@ -29,9 +29,7 @@ import org.slf4j.LoggerFactory;
 
 public class StopPlaceFilterTest {
 
-  private final Logger logger = LoggerFactory.getLogger(
-    StopPlaceFilterTest.class
-  );
+  private final Logger logger = LoggerFactory.getLogger(StopPlaceFilterTest.class);
   private final NetexUnmarshaller netexUnmarshaller = new NetexUnmarshaller(
     PublicationDeliveryStructure.class
   );
