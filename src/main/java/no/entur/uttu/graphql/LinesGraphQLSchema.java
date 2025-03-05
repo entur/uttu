@@ -27,7 +27,6 @@ import static graphql.schema.GraphQLInputObjectType.newInputObject;
 import static graphql.schema.GraphQLObjectType.newObject;
 import static no.entur.uttu.graphql.GraphQLNames.*;
 
-import graphql.GraphQL;
 import graphql.Scalars;
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLArgument;
@@ -74,7 +73,6 @@ import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.PurchaseMomentEnumeration;
 import no.entur.uttu.model.PurchaseWhenEnumeration;
-import no.entur.uttu.model.TimetabledPassingTime;
 import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.model.VehicleSubmodeEnumeration;
 import no.entur.uttu.model.job.Export;
@@ -163,7 +161,7 @@ public class LinesGraphQLSchema {
   private DataFetcher<List<Organisation>> organisationsFetcher;
 
   @Autowired
-  private DataFetcher<TimetabledPassingTime.StopPlace> quayRefSearchFetcher;
+  private DataFetcher<StopPlace> quayRefSearchFetcher;
 
   @Autowired
   private DataFetcher<List<StopPlace>> stopPlacesFetcher;
@@ -1079,8 +1077,56 @@ public class LinesGraphQLSchema {
               .description("Search e.g. by stop place id/name or quay id")
               .build()
           )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_NORTH_EAST_LAT)
+              .type(GraphQLBigDecimal)
+              .description("Bounding box's north east latitude")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_NORTH_EAST_LNG)
+              .type(GraphQLBigDecimal)
+              .description("Bounding box's north east longitude")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_SOUTH_WEST_LAT)
+              .type(GraphQLBigDecimal)
+              .description("Bounding box's south west latitude")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name(FIELD_SOUTH_WEST_LNG)
+              .type(GraphQLBigDecimal)
+              .description("Bounding box's south west longitude")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name("quayIds")
+              .type(new GraphQLList(GraphQLID))
+              .description("Quay id-s")
+              .build()
+          )
+          .argument(
+            GraphQLArgument
+              .newArgument()
+              .name("limit")
+              .type(GraphQLInt)
+              .description("Maximum number of stop places that can be returned")
+              .build()
+          )
           .description(
-            "List all stop places of a certain transport mode, with quays included"
+            "List all stop places by a certain filtering criteria, with quays included"
           )
           .dataFetcher(stopPlacesFetcher)
       )

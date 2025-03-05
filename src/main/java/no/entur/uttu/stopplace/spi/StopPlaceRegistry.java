@@ -17,7 +17,7 @@ package no.entur.uttu.stopplace.spi;
 
 import java.util.List;
 import java.util.Optional;
-import no.entur.uttu.stopplace.filter.StopPlaceFilter;
+import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
 
 /**
  * Represents a stop place registry used to lookup stop places from quay refs
@@ -33,10 +33,12 @@ public interface StopPlaceRegistry {
   /**
    * Serve all stop places and quays, used e.g. in stop places route pattern editing map.
    * Incoming filters must derive from StopPlaceFilter, but otherwise are simply a record with some custom fields.
-   * @param filters Various filters to limit the set of stop places, e.g. by transport mode
+   * @param filters Various filters to limit the set of stop places, e.g. by transport mode; there should be only one occurrence of a certain kind of filter in the filters list.
    * @return A list of all stop places satisfying the incoming filters
    */
-  List<org.rutebanken.netex.model.StopPlace> getStopPlaces(List<StopPlaceFilter> filters);
+  List<org.rutebanken.netex.model.StopPlace> getStopPlaces(
+    List<StopPlaceFilterParams> filters
+  );
 
   /**
    * Lookup a quay entity from its id
