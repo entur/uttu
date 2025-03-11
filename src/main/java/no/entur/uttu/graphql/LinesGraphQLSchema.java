@@ -1579,11 +1579,7 @@ public class LinesGraphQLSchema {
 
     GraphQLInputObjectType lineInputType = newInputObject(groupOfEntitiesInputType)
       .name("LineInput")
-      .field(
-        newInputObjectField()
-          .name(FIELD_PUBLIC_CODE)
-          .type(new GraphQLNonNull(GraphQLString))
-      )
+      .field(newInputObjectField().name(FIELD_PUBLIC_CODE).type(GraphQLString))
       .field(
         newInputObjectField()
           .name(FIELD_TRANSPORT_MODE)
