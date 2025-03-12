@@ -57,9 +57,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
                 } else if (org.getDeclaredType().isAssignableFrom(Operator.class)) {
                   operators.add((Operator) org.getValue());
                 } else {
-                  throw new RuntimeException(
-                    "Unsupported organisation type: " + org.getDeclaredType()
-                  );
+                  throw new UnsupportedOrganisationTypeException(org.getDeclaredType());
                 }
               });
           }
