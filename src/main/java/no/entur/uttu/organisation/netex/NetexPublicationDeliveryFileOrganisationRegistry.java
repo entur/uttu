@@ -12,8 +12,13 @@ import org.springframework.stereotype.Component;
 public class NetexPublicationDeliveryFileOrganisationRegistry
   extends NetexPublicationDeliveryOrganisationRegistry {
 
-  @Value("${uttu.organisations.netex-file-uri}")
-  String netexFileUri;
+  private final String netexFileUri;
+
+  public NetexPublicationDeliveryFileOrganisationRegistry(
+          @Value("${uttu.organisations.netex-file-uri}") String netexFileUri
+  ) {
+   this.netexFileUri = netexFileUri;
+  }
 
   @Override
   protected Source getPublicationDeliverySource() {
