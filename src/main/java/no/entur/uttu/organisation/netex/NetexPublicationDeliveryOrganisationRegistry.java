@@ -1,14 +1,11 @@
 package no.entur.uttu.organisation.netex;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
 import javax.xml.transform.Source;
-import javax.xml.transform.stream.StreamSource;
-
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.netex.NetexUnmarshaller;
@@ -25,19 +22,18 @@ import org.slf4j.LoggerFactory;
 public abstract class NetexPublicationDeliveryOrganisationRegistry
   implements OrganisationRegistry {
 
-  protected final Logger logger = LoggerFactory.getLogger(
+  private final Logger logger = LoggerFactory.getLogger(
     NetexPublicationDeliveryOrganisationRegistry.class
   );
-
-  protected final NetexUnmarshaller netexUnmarshaller = new NetexUnmarshaller(
+  private final NetexUnmarshaller netexUnmarshaller = new NetexUnmarshaller(
     PublicationDeliveryStructure.class
   );
 
-  protected final List<Authority> authorities = Collections.synchronizedList(
+  private final List<Authority> authorities = Collections.synchronizedList(
     new ArrayList<>()
   );
 
-  protected final List<Operator> operators = Collections.synchronizedList(
+  private final List<Operator> operators = Collections.synchronizedList(
     new ArrayList<>()
   );
 
@@ -45,38 +41,38 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
   public void init() {
     try {
       PublicationDeliveryStructure publicationDeliveryStructure =
-              netexUnmarshaller.unmarshalFromSource(getPublicationDeliverySource());
+        netexUnmarshaller.unmarshalFromSource(getPublicationDeliverySource());
       publicationDeliveryStructure
-              .getDataObjects()
-              .getCompositeFrameOrCommonFrame()
-              .forEach(frame -> {
-                var frameValue = frame.getValue();
-                if (frameValue instanceof ResourceFrame resourceFrame) {
-                  resourceFrame
-                          .getOrganisations()
-                          .getOrganisation_()
-                          .forEach(org -> {
-                            if (org.getDeclaredType().isAssignableFrom(Authority.class)) {
-                              authorities.add((Authority) org.getValue());
-                            } else if (org.getDeclaredType().isAssignableFrom(Operator.class)) {
-                              operators.add((Operator) org.getValue());
-                            } else {
-                              throw new RuntimeException(
-                                      "Unsupported organisation type: " + org.getDeclaredType()
-                              );
-                            }
-                          });
+        .getDataObjects()
+        .getCompositeFrameOrCommonFrame()
+        .forEach(frame -> {
+          var frameValue = frame.getValue();
+          if (frameValue instanceof ResourceFrame resourceFrame) {
+            resourceFrame
+              .getOrganisations()
+              .getOrganisation_()
+              .forEach(org -> {
+                if (org.getDeclaredType().isAssignableFrom(Authority.class)) {
+                  authorities.add((Authority) org.getValue());
+                } else if (org.getDeclaredType().isAssignableFrom(Operator.class)) {
+                  operators.add((Operator) org.getValue());
+                } else {
+                  throw new RuntimeException(
+                    "Unsupported organisation type: " + org.getDeclaredType()
+                  );
                 }
               });
+          }
+        });
     } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
       logger.warn(
-              "Unable to unmarshal organisations xml, organisation registry will be an empty list",
-              e
+        "Unable to unmarshal organisations xml, organisation registry will be an empty list",
+        e
       );
     }
   }
 
-  public abstract Source getPublicationDeliverySource();
+  protected abstract Source getPublicationDeliverySource();
 
   @Override
   public List<Authority> getAuthorities() {
