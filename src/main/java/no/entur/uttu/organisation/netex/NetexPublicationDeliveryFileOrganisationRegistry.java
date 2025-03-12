@@ -16,7 +16,7 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
   String netexFileUri;
 
   @Override
-  public Source getPublicationDeliverySource() {
+  protected Source getPublicationDeliverySource() {
     return new StreamSource(new File(netexFileUri));
   }
 }

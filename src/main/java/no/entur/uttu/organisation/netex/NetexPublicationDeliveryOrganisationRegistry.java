@@ -64,6 +64,7 @@ public abstract class NetexPublicationDeliveryOrganisationRegistry
               });
           }
         });
+      logger.info("Organisations loaded from organisations xml");
     } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
       logger.warn(
         "Unable to unmarshal organisations xml, organisation registry will be an empty list",

@@ -1,19 +1,44 @@
 package no.entur.uttu.organisation.netex;
 
+import jakarta.validation.constraints.NotNull;
+import java.io.ByteArrayInputStream;
+import java.time.Duration;
 import javax.xml.transform.Source;
+import javax.xml.transform.stream.StreamSource;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @Component
 @ConditionalOnProperty(name = "uttu.organisations.netex-http-uri")
 public class NetexPublicationDeliveryHttpOrganisationRegistry
   extends NetexPublicationDeliveryOrganisationRegistry {
 
-  @Override
-  public Source getPublicationDeliverySource() {
-    // TODO: here is where we will call out to an http endpoint
-    // to get our netex data and return it as a source
+  private final String netexHttpUri;
+  private final WebClient orgRegisterClient;
 
-    return null;
+  public NetexPublicationDeliveryHttpOrganisationRegistry(
+    @Value("${uttu.organisations.netex-http-uri}") String netexHttpUri,
+    WebClient orgRegisterClient
+  ) {
+    this.netexHttpUri = netexHttpUri;
+    this.orgRegisterClient = orgRegisterClient;
+  }
+
+  @Override
+  protected Source getPublicationDeliverySource() {
+    byte[] response = orgRegisterClient
+      .get()
+      .uri(netexHttpUri)
+      .retrieve()
+      .bodyToMono(byte[].class)
+      .block(Duration.ofSeconds(30));
+
+    if (response == null) {
+      return null;
+    }
+
+    return new StreamSource(new ByteArrayInputStream(response));
   }
 }
