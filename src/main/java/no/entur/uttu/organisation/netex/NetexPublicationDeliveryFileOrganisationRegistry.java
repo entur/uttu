@@ -15,9 +15,9 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
   private final String netexFileUri;
 
   public NetexPublicationDeliveryFileOrganisationRegistry(
-          @Value("${uttu.organisations.netex-file-uri}") String netexFileUri
+    @Value("${uttu.organisations.netex-file-uri}") String netexFileUri
   ) {
-   this.netexFileUri = netexFileUri;
+    this.netexFileUri = netexFileUri;
   }
 
   @Override
