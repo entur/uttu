@@ -1,13 +1,11 @@
-package no.entur.uttu.organisation;
+package no.entur.uttu.organisation.netex;
 
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
-import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import org.rutebanken.netex.model.Authority;
 import org.rutebanken.netex.model.Operator;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 

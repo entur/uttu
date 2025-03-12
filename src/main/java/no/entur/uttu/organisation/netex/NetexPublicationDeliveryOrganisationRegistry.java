@@ -1,4 +1,4 @@
-package no.entur.uttu.organisation;
+package no.entur.uttu.organisation.netex;
 
 import java.util.ArrayList;
 import java.util.Collections;
