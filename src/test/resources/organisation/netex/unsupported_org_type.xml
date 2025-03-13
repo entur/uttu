@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PublicationDelivery version="1.08:NO-NeTEx-fares:1.0" xmlns="http://www.netex.org.uk/netex">
+    <PublicationTimestamp>2024-01-22T11:40:00</PublicationTimestamp>
+    <ParticipantRef>NOG</ParticipantRef>
+    <dataObjects>
+        <ResourceFrame id="NOG:ResourceFrame:1" version="1">
+            <organisations>
+                <GeneralOrganisation created="2023-06-30T12:00:00" id="NOG:Foobar:1" version="1">
+                    <Fake data="useless" />
+                </GeneralOrganisation>
+            </organisations>
+        </ResourceFrame>
+    </dataObjects>
+</PublicationDelivery>

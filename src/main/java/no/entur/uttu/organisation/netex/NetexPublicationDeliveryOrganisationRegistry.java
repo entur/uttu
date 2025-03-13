@@ -1,12 +1,11 @@
-package no.entur.uttu.organisation;
+package no.entur.uttu.organisation.netex;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import javax.annotation.PostConstruct;
-import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.Source;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.netex.NetexUnmarshaller;
@@ -19,22 +18,13 @@ import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.ResourceFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.stereotype.Component;
 
-@Component
-@ConditionalOnMissingBean(
-  value = OrganisationRegistry.class,
-  ignored = NetexPublicationDeliveryFileOrganisationRegistry.class
-)
-public class NetexPublicationDeliveryFileOrganisationRegistry
+public abstract class NetexPublicationDeliveryOrganisationRegistry
   implements OrganisationRegistry {
 
   private final Logger logger = LoggerFactory.getLogger(
-    NetexPublicationDeliveryFileOrganisationRegistry.class
+    NetexPublicationDeliveryOrganisationRegistry.class
   );
-
   private final NetexUnmarshaller netexUnmarshaller = new NetexUnmarshaller(
     PublicationDeliveryStructure.class
   );
@@ -47,14 +37,11 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
     new ArrayList<>()
   );
 
-  @Value("${uttu.organisations.netex-file-uri}")
-  String netexFileUri;
-
   @PostConstruct
   public void init() {
     try {
       PublicationDeliveryStructure publicationDeliveryStructure =
-        netexUnmarshaller.unmarshalFromSource(new StreamSource(new File(netexFileUri)));
+        netexUnmarshaller.unmarshalFromSource(getPublicationDeliverySource());
       publicationDeliveryStructure
         .getDataObjects()
         .getCompositeFrameOrCommonFrame()
@@ -70,13 +57,12 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
                 } else if (org.getDeclaredType().isAssignableFrom(Operator.class)) {
                   operators.add((Operator) org.getValue());
                 } else {
-                  throw new RuntimeException(
-                    "Unsupported organisation type: " + org.getDeclaredType()
-                  );
+                  throw new UnsupportedOrganisationTypeException(org.getDeclaredType());
                 }
               });
           }
         });
+      logger.info("Organisations loaded from organisations xml");
     } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
       logger.warn(
         "Unable to unmarshal organisations xml, organisation registry will be an empty list",
@@ -84,6 +70,8 @@ public class NetexPublicationDeliveryFileOrganisationRegistry
       );
     }
   }
+
+  protected abstract Source getPublicationDeliverySource();
 
   @Override
   public List<Authority> getAuthorities() {
