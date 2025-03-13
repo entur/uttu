@@ -14,7 +14,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 )
 public class OAuthClientConfiguration {
 
-  @Bean
+  @Bean("orgRegisterClient")
   WebClient webClient(
     WebClient.Builder webClientBuilder,
     OAuth2ClientProperties properties,

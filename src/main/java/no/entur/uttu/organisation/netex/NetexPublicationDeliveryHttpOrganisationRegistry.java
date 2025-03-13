@@ -1,6 +1,5 @@
 package no.entur.uttu.organisation.netex;
 
-import jakarta.validation.constraints.NotNull;
 import java.io.ByteArrayInputStream;
 import java.time.Duration;
 import javax.xml.transform.Source;

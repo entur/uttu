@@ -37,10 +37,21 @@ provide a NeTEx file of organisations with
 uttu.organisations.netex-file-uri=<path-to-file>
 ```
 
-or provide your own implementation of the [`OrganisationRegistry`](src/main/java/no/entur/uttu/organisation/spi/OrganisationRegistry.java) interface.
+Alternatively, organisations data can be fetched over HTTP in NeTEx xml format:
 
-Refer to [`src/test/resources/fixtures/organisations.xml`](src/test/resources/fixtures/organisations.xml) for an example 
+```properties
+uttu.organisations.netex-http-uri=<path-to-http-endpoint>
+```
+
+Note that the HTTP strategy requires an organisations api WebClient bean called
+`orgRegisterClient`. A basic default is provided, but if you need anything more
+than that, you should provide your own bean.
+
+Refer to [`src/test/resources/fixtures/organisations.xml`](src/test/resources/fixtures/organisations.xml) for an example
 of a NeTEx file with organisations.
+
+You can also provide your own implementation of the [`OrganisationRegistry`](src/main/java/no/entur/uttu/organisation/spi/OrganisationRegistry.java)
+interface.
 
 ### Override exported authority or operator id
 
