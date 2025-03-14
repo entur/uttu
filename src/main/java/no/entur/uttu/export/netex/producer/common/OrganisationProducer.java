@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.model.Network;
+import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
 import org.rutebanken.netex.model.Authority;
@@ -39,6 +40,11 @@ public class OrganisationProducer {
     "#{${no.entur.uttu.organisations.overrides:{T(java.util.Collections).emptyMap()}}}"
   )
   private Map<String, Map<String, String>> organisationsOverrides;
+
+  @Value(
+          "#{${no.entur.uttu.organisations.overrides.provider:{T(java.util.Collections).emptyMap()}}}"
+  )
+  private Map<String, Map<String, String>> organisationsOverridesProvider;
 
   private final OrganisationRegistry organisationRegistry;
 
@@ -110,7 +116,7 @@ public class OrganisationProducer {
       );
     }
 
-    return organisation.withId(getAuthorityNetexId(organisation));
+    return organisation.withId(getAuthorityNetexId(organisation, context.provider));
   }
 
   private boolean validateContactUrl(String url) {
@@ -132,27 +138,35 @@ public class OrganisationProducer {
     Operator organisation = orgRegOperator.get();
 
     return organisation
-      .withId(getOperatorNetexId(organisation))
+      .withId(getOperatorNetexId(organisation, context.provider))
       .withCustomerServiceContactDetails(organisation.getContactDetails());
   }
 
-  private String getOperatorNetexId(Operator organisation) {
-    return getNetexId(organisation, "Operator");
+  private String getOperatorNetexId(Operator organisation, Provider provider) {
+    return getNetexId(organisation, "Operator", provider);
   }
 
-  private String getAuthorityNetexId(Authority organisation) {
-    return getNetexId(organisation, "Authority");
+  private String getAuthorityNetexId(Authority organisation, Provider provider) {
+    return getNetexId(organisation, "Authority", provider);
   }
 
   private <T extends Organisation_VersionStructure> String getNetexId(
     T organisation,
-    String type
+    String type,
+    Provider provider
   ) {
     if (
       organisationsOverrides.containsKey(organisation.getId()) &&
       organisationsOverrides.get(organisation.getId()).containsKey(type)
     ) {
       return organisationsOverrides.get(organisation.getId()).get(type);
+    }
+
+    if (
+      organisationsOverridesProvider.containsKey(provider.getCode()) &&
+      organisationsOverridesProvider.get(provider.getCode()).containsKey(organisation.getId())
+    ) {
+      return organisationsOverridesProvider.get(provider.getCode()).get(organisation.getId());
     }
 
     return extractLegacyId(organisation, type).orElse(organisation.getId());
