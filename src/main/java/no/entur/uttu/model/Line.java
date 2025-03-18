@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import no.entur.uttu.util.Preconditions;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -42,6 +45,7 @@ import no.entur.uttu.util.Preconditions;
     @UniqueConstraint(name = LINE_UNIQUE_NAME, columnNames = { "provider_pk", "name" }),
   }
 )
+@BatchSize(size = 100)
 public abstract class Line extends GroupOfEntities_VersionStructure {
 
   private String publicCode;
@@ -56,17 +60,23 @@ public abstract class Line extends GroupOfEntities_VersionStructure {
 
   @NotNull
   @ManyToOne
+  @Fetch(FetchMode.JOIN)
   private Network network;
 
   private String operatorRef;
 
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @BatchSize(size = 100)
+  @Fetch(FetchMode.SUBSELECT)
   private List<Notice> notices;
 
   @OneToMany(mappedBy = "line", cascade = CascadeType.ALL, orphanRemoval = true)
+  @BatchSize(size = 100)
+  @Fetch(FetchMode.SUBSELECT)
   private final List<JourneyPattern> journeyPatterns = new ArrayList<>();
 
   @ManyToOne
+  @Fetch(FetchMode.JOIN)
   private Branding branding;
 
   public String getPublicCode() {
