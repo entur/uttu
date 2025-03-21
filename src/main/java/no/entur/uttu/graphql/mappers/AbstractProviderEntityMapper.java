@@ -18,6 +18,7 @@ package no.entur.uttu.graphql.mappers;
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -57,10 +58,17 @@ public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
       .filter(Objects::nonNull)
       .toList();
 
-    Map<String, T> existingEntities = entityRepository
-      .findByIds(netexIds)
-      .stream()
-      .collect(Collectors.toMap(T::getId, Function.identity()));
+    Map<String, T> existingEntities;
+
+    if (netexIds.isEmpty()) {
+      existingEntities = Collections.emptyMap();
+    } else {
+      existingEntities =
+        entityRepository
+          .findByIds(netexIds)
+          .stream()
+          .collect(Collectors.toMap(T::getId, Function.identity()));
+    }
 
     List<T> result = new ArrayList<>();
 
