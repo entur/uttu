@@ -17,6 +17,7 @@ package no.entur.uttu.graphql.mappers;
 
 import static no.entur.uttu.graphql.GraphQLNames.*;
 
+import java.util.List;
 import java.util.Map;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.GroupOfEntities_VersionStructure;
@@ -41,6 +42,18 @@ public abstract class AbstractGroupOfEntitiesMapper<
       super.map(input),
       new ArgumentWrapper((Map) input)
     );
+  }
+
+  @Override
+  public List<T> mapList(List<Object> inputObjs) {
+    List<T> entities = super.mapList(inputObjs);
+    for (int i = 0; i < inputObjs.size() && i < entities.size(); i++) {
+      populateGroupOfEntitiesFieldsFromInput(
+        entities.get(i),
+        new ArgumentWrapper((Map) inputObjs.get(i))
+      );
+    }
+    return entities;
   }
 
   protected T populateGroupOfEntitiesFieldsFromInput(T entity, ArgumentWrapper input) {

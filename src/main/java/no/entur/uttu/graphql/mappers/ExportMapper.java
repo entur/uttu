@@ -58,7 +58,7 @@ public class ExportMapper extends AbstractProviderEntityMapper<Export> {
         entity,
         fixedLineRepository,
         flexibleLineRepository
-      )::map,
+      )::mapList,
       entity::setExportLineAssociations
     );
   }

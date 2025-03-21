@@ -59,6 +59,6 @@ public class TimetabledPassingTimeMapper
       entity::setEarliestDepartureDayOffset
     );
     input.apply(FIELD_EARLIEST_DEPARTURE_TIME, entity::setEarliestDepartureTime);
-    input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
+    input.applyList(FIELD_NOTICES, noticeMapper::mapList, entity::setNotices);
   }
 }
