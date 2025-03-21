@@ -99,14 +99,14 @@ public class ArgumentWrapper {
     if (map.containsKey(name)) {
       Object val = get(name);
       if (val == null) {
-        func.accept(Collections.emptyList());
+        func.accept(new ArrayList<>());
         return;
       }
 
       if (val instanceof Collection) {
         List<T> collection = (List<T>) val;
         if (collection.isEmpty()) {
-          func.accept(Collections.emptyList());
+          func.accept(new ArrayList<>());
           return;
         }
         func.accept(mapper.apply(collection));
