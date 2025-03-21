@@ -2,6 +2,8 @@ package no.entur.uttu.graphql.mappers;
 
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_LINE_REF;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.job.Export;
@@ -25,7 +27,11 @@ public class ExportLineAssociationMapper {
     this.flexibleLineRepository = flexibleLineRepository;
   }
 
-  public ExportLineAssociation map(Map<String, Object> inputMap) {
+  public List<ExportLineAssociation> mapList(List<Map<String, Object>> inputObjs) {
+    return inputObjs.stream().map(this::map).toList();
+  }
+
+  private ExportLineAssociation map(Map<String, Object> inputMap) {
     ArgumentWrapper input = new ArgumentWrapper(inputMap);
     ExportLineAssociation exportLineAssociation = new ExportLineAssociation();
     exportLineAssociation.setExport(export);

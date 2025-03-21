@@ -78,14 +78,16 @@ public class ServiceJourneyMapper extends AbstractGroupOfEntitiesMapper<ServiceJ
     );
     input.applyList(
       FIELD_PASSING_TIMES,
-      timetabledPassingTimeMapper::map,
+      timetabledPassingTimeMapper::mapList,
       entity::setPassingTimes
     );
-    input.applyList(
+
+    input.applyReferenceList(
       FIELD_DAY_TYPES_REFS,
-      dayTypeRepository::getOne,
+      dayTypeRepository,
       entity::updateDayTypes
     );
-    input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
+
+    input.applyList(FIELD_NOTICES, noticeMapper::mapList, entity::setNotices);
   }
 }

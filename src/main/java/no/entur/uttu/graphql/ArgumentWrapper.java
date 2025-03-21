@@ -18,9 +18,11 @@ package no.entur.uttu.graphql;
 import jakarta.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -85,23 +87,78 @@ public class ArgumentWrapper {
     }
   }
 
+  /**
+   * Applies an argument list to a mapper. Assuming that the mapper handles the list efficiently
+   * this is better than applying one argument at a time
+   */
   public <T, V> void applyList(
     String name,
-    Function<T, V> mapper,
+    Function<List<T>, List<V>> mapper,
     Consumer<List<V>> func
   ) {
     if (map.containsKey(name)) {
       Object val = get(name);
       if (val == null) {
-        val = new ArrayList<T>();
+        func.accept(Collections.emptyList());
+        return;
       }
 
       if (val instanceof Collection) {
-        func.accept(
-          ((Collection<T>) val).stream()
-            .map(t -> mapper.apply(t))
-            .collect(Collectors.toList())
+        List<T> collection = (List<T>) val;
+        if (collection.isEmpty()) {
+          func.accept(Collections.emptyList());
+          return;
+        }
+        func.accept(mapper.apply(collection));
+      } else {
+        throw new RuntimeException(
+          "Wrong datatype, expected Collection, got: " + val.getClass()
         );
+      }
+    }
+  }
+
+  /**
+   * Extract a list of entity references from input, look them up in batch from repository,
+   * and apply to consumer function. Ignore if reference field is not set in input.
+   * This is more efficient than making individual getOne calls for each reference.
+   */
+  public <T extends ProviderEntity> void applyReferenceList(
+    String name,
+    ProviderEntityRepository<T> repository,
+    Consumer<List<T>> func
+  ) {
+    if (map.containsKey(name)) {
+      Object val = get(name);
+      if (val == null) {
+        func.accept(Collections.emptyList());
+        return;
+      }
+
+      if (val instanceof Collection) {
+        Collection<String> references = (Collection<String>) val;
+        if (references.isEmpty()) {
+          func.accept(Collections.emptyList());
+          return;
+        }
+
+        // Fetch all entities in a single batch query
+        List<T> entities = repository.findByIds(new ArrayList<>(references));
+        if (entities.size() != references.size()) {
+          // Some references were not found
+          Set<String> foundIds = entities
+            .stream()
+            .map(ProviderEntity::getNetexId)
+            .collect(Collectors.toSet());
+
+          for (String ref : references) {
+            if (!foundIds.contains(ref)) {
+              throw new EntityNotFoundException("Referred entity not found: " + ref);
+            }
+          }
+        }
+
+        func.accept(entities);
       } else {
         throw new RuntimeException(
           "Wrong datatype, expected Collection, got: " + val.getClass()
