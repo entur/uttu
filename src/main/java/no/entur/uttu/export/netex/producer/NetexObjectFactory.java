@@ -132,7 +132,6 @@ public class NetexObjectFactory {
         dateUtils.toExportLocalDateTime(exportContext.publicationTimestamp)
       )
       .withParticipantRef(participantRef)
-      .withDescription(createMultilingualString("Flexible lines"))
       .withDataObjects(dataObjects);
     return objectFactory.createPublicationDelivery(publicationDeliveryStructure);
   }
