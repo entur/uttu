@@ -34,6 +34,9 @@ import java.util.List;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(
@@ -44,25 +47,33 @@ import no.entur.uttu.util.Preconditions;
     ),
   }
 )
+@BatchSize(size = 100)
 public class JourneyPattern extends GroupOfEntities_VersionStructure {
 
   @ManyToOne
   @NotNull
+  @Fetch(FetchMode.JOIN)
   private Line line;
 
   @OneToMany(mappedBy = "journeyPattern", cascade = CascadeType.ALL, orphanRemoval = true)
   @NotNull
+  @BatchSize(size = 100)
+  @Fetch(FetchMode.SUBSELECT)
   private final List<ServiceJourney> serviceJourneys = new ArrayList<>();
 
   @OneToMany(mappedBy = "journeyPattern", cascade = CascadeType.ALL, orphanRemoval = true)
   @NotNull
   @OrderBy("order")
+  @BatchSize(size = 100)
+  @Fetch(FetchMode.SUBSELECT)
   private final List<StopPointInJourneyPattern> pointsInSequence = new ArrayList<>();
 
   @Enumerated(EnumType.STRING)
   private DirectionTypeEnumeration directionType;
 
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @BatchSize(size = 100)
+  @Fetch(FetchMode.SUBSELECT)
   private List<Notice> notices;
 
   public @NotNull Line getLine() {

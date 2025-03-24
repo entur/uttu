@@ -21,8 +21,10 @@ import jakarta.validation.constraints.Size;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
+@BatchSize(size = 100)
 public class Notice extends ProviderEntity {
 
   @NotNull

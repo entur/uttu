@@ -26,6 +26,9 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import no.entur.uttu.util.Preconditions;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.springframework.util.CollectionUtils;
 
 @Entity
@@ -33,9 +36,12 @@ public class DayType extends ProviderEntity {
 
   @ElementCollection
   @Enumerated(EnumType.STRING)
+  @BatchSize(size = 50)
   private List<DayOfWeek> daysOfWeek = new ArrayList<>();
 
   @OneToMany(cascade = CascadeType.ALL)
+  @BatchSize(size = 50)
+  @Fetch(FetchMode.SUBSELECT)
   private List<DayTypeAssignment> dayTypeAssignments = new ArrayList<>();
 
   private String name;

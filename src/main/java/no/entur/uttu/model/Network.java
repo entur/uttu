@@ -22,6 +22,7 @@ import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
 import jakarta.validation.constraints.NotNull;
 import no.entur.uttu.util.Preconditions;
+import org.hibernate.annotations.BatchSize;
 
 @Entity
 @Table(
@@ -32,6 +33,7 @@ import no.entur.uttu.util.Preconditions;
     ),
   }
 )
+@BatchSize(size = 100)
 public class Network extends GroupOfEntities_VersionStructure {
 
   /**

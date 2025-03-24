@@ -26,12 +26,17 @@ import java.time.LocalTime;
 import java.util.List;
 import no.entur.uttu.util.Preconditions;
 import no.entur.uttu.util.ValidationHelper;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
+@BatchSize(size = 100)
 public class TimetabledPassingTime extends ProviderEntity {
 
   @NotNull
   @ManyToOne
+  @Fetch(FetchMode.JOIN)
   private ServiceJourney serviceJourney;
 
   // Order is reserved word in db
@@ -40,6 +45,8 @@ public class TimetabledPassingTime extends ProviderEntity {
   private int order;
 
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @BatchSize(size = 50)
+  @Fetch(FetchMode.SUBSELECT)
   private List<Notice> notices;
 
   private LocalTime departureTime;
