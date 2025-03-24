@@ -1,0 +1,38 @@
+query lineById($id: ID!) {
+  line(id: $id) {
+    id
+    name
+    publicCode
+    transportMode
+    transportSubmode
+    operatorRef
+    network {
+      id
+    }
+    branding {
+      id
+    }
+    journeyPatterns {
+      id
+      pointsInSequence {
+        id
+        quayRef
+        destinationDisplay {
+          frontText
+        }
+      }
+      serviceJourneys {
+        id
+        name
+        dayTypes {
+          id
+        }
+        passingTimes {
+          id
+          departureTime
+          arrivalTime
+        }
+      }
+    }
+  }
+}
