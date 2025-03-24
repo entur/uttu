@@ -15,20 +15,19 @@
 
 package no.entur.uttu.ext.entur.organisation;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import javax.annotation.PostConstruct;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.organisation.spi.OrganisationRegistry;
@@ -47,7 +46,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import reactor.netty.http.client.HttpClient;
@@ -57,39 +55,13 @@ import reactor.util.retry.Retry;
 @Profile("entur-legacy-organisation-registry")
 public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
 
-  @Value("${no.entur.uttu.ext.entur.organisation.cache-ttl-minutes:60}")
-  private int cacheTtlMinutes;
-
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
   private static final int HTTP_TIMEOUT = 10000;
 
   private String organisationRegistryUrl;
   private WebClient orgRegisterClient;
   private final int maxRetryAttempts;
 
-  private final LoadingCache<String, List<Organisation>> organisationsCache = CacheBuilder
-    .newBuilder()
-    .expireAfterWrite(cacheTtlMinutes, TimeUnit.MINUTES)
-    .build(
-      new CacheLoader<>() {
-        @Override
-        public List<Organisation> load(String unused) {
-          return lookupOrganisations();
-        }
-      }
-    );
-
-  private final LoadingCache<String, Organisation> organisationCache = CacheBuilder
-    .newBuilder()
-    .expireAfterWrite(cacheTtlMinutes, TimeUnit.MINUTES)
-    .build(
-      new CacheLoader<>() {
-        @Override
-        public Organisation load(String id) {
-          return lookupOrganisation(id);
-        }
-      }
-    );
+  private final Map<String, Organisation> organisationCache = new HashMap<>();
 
   public EnturLegacyOrganisationRegistry(
     @Value(
@@ -122,74 +94,55 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
     this.maxRetryAttempts = maxRetryAttempts;
   }
 
+  @PostConstruct
+  public void init() {
+    organisationCache.putAll(
+      lookupOrganisations().stream().collect(Collectors.toMap(v -> v.id, v -> v))
+    );
+  }
+
   protected static final Predicate<Throwable> is5xx = throwable ->
     throwable instanceof WebClientResponseException &&
     ((WebClientResponseException) throwable).getStatusCode().is5xxServerError();
 
   @Override
   public List<Authority> getAuthorities() {
-    try {
-      List<Organisation> organisations = organisationsCache.get("");
-      return organisations
-        .stream()
-        .filter(org -> org.getAuthorityNetexId() != null)
-        .map(this::mapToAuthority)
-        .toList();
-    } catch (HttpClientErrorException | ExecutionException ex) {
-      logger.warn("Exception while trying to fetch all organisations");
-      return Collections.emptyList();
-    }
+    return organisationCache
+      .values()
+      .stream()
+      .filter(org -> org.getAuthorityNetexId() != null)
+      .map(this::mapToAuthority)
+      .toList();
   }
 
   @Override
   public Optional<Authority> getAuthority(String id) {
-    try {
-      Organisation organisation = organisationCache.get(id);
-      if (organisation.getAuthorityNetexId() != null) {
-        var mappedOrganisation = mapToAuthority(organisation);
-        return Optional.of(mappedOrganisation);
-      } else {
-        return Optional.empty();
-      }
-    } catch (HttpClientErrorException | ExecutionException ex) {
-      logger.warn(
-        "Exception while trying to fetch organisation: " + id + " : " + ex.getMessage(),
-        ex
-      );
+    Organisation organisation = organisationCache.get(id);
+    if (organisation.getAuthorityNetexId() != null) {
+      var mappedOrganisation = mapToAuthority(organisation);
+      return Optional.of(mappedOrganisation);
+    } else {
       return Optional.empty();
     }
   }
 
   @Override
   public List<Operator> getOperators() {
-    try {
-      List<Organisation> organisations = organisationsCache.get("");
-      return organisations
-        .stream()
-        .filter(org -> org.getOperatorNetexId() != null)
-        .map(this::mapToOperator)
-        .toList();
-    } catch (HttpClientErrorException | ExecutionException ex) {
-      logger.warn("Exception while trying to fetch all organisations");
-      return Collections.emptyList();
-    }
+    return organisationCache
+      .values()
+      .stream()
+      .filter(org -> org.getOperatorNetexId() != null)
+      .map(this::mapToOperator)
+      .toList();
   }
 
   @Override
   public Optional<Operator> getOperator(String id) {
-    try {
-      Organisation organisation = organisationCache.get(id);
-      if (organisation.getOperatorNetexId() != null) {
-        var mappedOrganisation = mapToOperator(organisation);
-        return Optional.of(mappedOrganisation);
-      } else {
-        return Optional.empty();
-      }
-    } catch (HttpClientErrorException | ExecutionException ex) {
-      logger.warn(
-        "Exception while trying to fetch organisation: " + id + " : " + ex.getMessage(),
-        ex
-      );
+    Organisation organisation = organisationCache.get(id);
+    if (organisation.getOperatorNetexId() != null) {
+      var mappedOrganisation = mapToOperator(organisation);
+      return Optional.of(mappedOrganisation);
+    } else {
       return Optional.empty();
     }
   }
@@ -199,7 +152,8 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
    */
   @Override
   public void validateOperatorRef(String operatorRef) {
-    Organisation organisation = lookupOrganisation(operatorRef);
+    Organisation organisation = organisationCache.get(operatorRef);
+
     Preconditions.checkArgument(
       organisation != null,
       "Organisation with ref %s not found in organisation registry",
@@ -218,7 +172,7 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
    */
   @Override
   public void validateAuthorityRef(String authorityRef) {
-    Organisation organisation = lookupOrganisation(authorityRef);
+    Organisation organisation = organisationCache.get(authorityRef);
     Preconditions.checkArgument(
       organisation != null,
       "Organisation with ref %s not found in organisation registry",
@@ -229,17 +183,6 @@ public class EnturLegacyOrganisationRegistry implements OrganisationRegistry {
       "Organisation with ref %s is not a valid authority",
       authorityRef
     );
-  }
-
-  protected Organisation lookupOrganisation(String id) {
-    return orgRegisterClient
-      .get()
-      .uri(organisationRegistryUrl + "/" + id)
-      .header("Et-Client-Name", "entur-nplan")
-      .retrieve()
-      .bodyToMono(Organisation.class)
-      .retryWhen(Retry.backoff(maxRetryAttempts, Duration.ofSeconds(1)).filter(is5xx))
-      .block(Duration.ofMillis(HTTP_TIMEOUT));
   }
 
   protected List<Organisation> lookupOrganisations() {
