@@ -9,14 +9,14 @@ query lineById($id: ID!) {
     network {
       id
     }
-    branding {
-      id
-    }
     journeyPatterns {
       id
+      name
       pointsInSequence {
         id
         quayRef
+        forBoarding
+        forAlighting
         destinationDisplay {
           frontText
         }
@@ -24,15 +24,30 @@ query lineById($id: ID!) {
       serviceJourneys {
         id
         name
+        operatorRef
         dayTypes {
           id
         }
         passingTimes {
           id
-          departureTime
           arrivalTime
+          arrivalDayOffset
+          departureTime
+          departureDayOffset
+        }
+        notices {
+          id
+          text
         }
       }
+      notices {
+        id
+        text
+      }
+    }
+    notices {
+      id
+      text
     }
   }
 }

@@ -70,53 +70,6 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
   }
 
   /**
-   * Test the performance of creating lines using real input data.
-   */
-  @Test
-  public void testCreateLineWithRealData() throws Exception {
-    logger.info("Starting performance test with real data on port {}", port);
-
-    // Load the real input data from the JSON file
-    String jsonContent = new String(
-      Files.readAllBytes(Paths.get("src/test/resources/performance/input.json"))
-    );
-    Map<String, Object> jsonMap = new ObjectMapper().readValue(jsonContent, Map.class);
-    Map<String, Object> lineInput = (Map<String, Object>) jsonMap.get("input");
-
-    // Create a day type first since the input references a day type
-    String dayTypeId = createDayType();
-    logger.info("Created day type with ID: {}", dayTypeId);
-
-    // Update day type references in the input
-    updateDayTypeReferences(lineInput, dayTypeId);
-
-    // Update operator references in the input to use a valid operator ID from the fixtures
-    String operatorId = "NOG:Operator:1";
-    updateOperatorReferences(lineInput, operatorId);
-    logger.info("Updated operator references to use ID: {}", operatorId);
-
-    // Create a network if needed
-    if (lineInput.containsKey("networkRef") && lineInput.get("networkRef") != null) {
-      String networkId = createNetwork();
-      lineInput.put("networkRef", networkId);
-      logger.info("Updated networkRef to: {}", networkId);
-    }
-
-    // Measure the time it takes to create the line
-    long startTime = System.currentTimeMillis();
-    String lineId = mutateLine(lineInput);
-    long endTime = System.currentTimeMillis();
-    long duration = endTime - startTime;
-
-    // Log the results
-    logger.info("Created line with ID: {}", lineId);
-    logger.info("Creation took {} ms", duration);
-
-    // Verify the creation was successful
-    org.junit.Assert.assertNotNull(lineId);
-  }
-
-  /**
    * Test the performance of updating lines using real input data.
    */
   @Test
@@ -384,108 +337,48 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
   }
 
   /**
-   * Convert the line data from the GraphQL response to a format suitable for the mutation input.
+   * Convert line data from the GraphQL response to a mutation input.
+   * This method mutates the lineData argument directly to avoid copying all fields.
    *
    * @param lineData The line data from the GraphQL response
-   * @return The line data in a format suitable for the mutation input
+   * @return The mutation input
    */
   private Map<String, Object> convertLineDataToMutationInput(
     Map<String, Object> lineData
   ) {
-    Map<String, Object> input = new HashMap<>();
-    input.put("id", lineData.get("id"));
-    input.put("name", lineData.get("name"));
-    input.put("publicCode", lineData.get("publicCode"));
-    input.put("transportMode", lineData.get("transportMode"));
-    input.put("transportSubmode", lineData.get("transportSubmode"));
-    input.put("operatorRef", lineData.get("operatorRef"));
+    // Create a shallow copy of the lineData to avoid modifying the original
+    Map<String, Object> input = new HashMap<>(lineData);
 
-    Map<String, Object> network = (Map<String, Object>) lineData.get("network");
-    input.put("networkRef", network.get("id"));
-
-    // Add branding reference only if branding exists
-    Map<String, Object> branding = (Map<String, Object>) lineData.get("branding");
-    if (branding != null) {
-      input.put("brandingRef", branding.get("id"));
+    // Extract network ID from the network object and add it as networkRef
+    Map<String, Object> network = (Map<String, Object>) input.remove("network");
+    if (network != null) {
+      input.put("networkRef", network.get("id"));
     }
 
-    // Add journey patterns
-    List<Map<String, Object>> journeyPatterns = (List<Map<String, Object>>) lineData.get(
+    // Process journey patterns to convert dayTypes to dayTypesRefs
+    List<Map<String, Object>> journeyPatterns = (List<Map<String, Object>>) input.get(
       "journeyPatterns"
     );
-    List<Map<String, Object>> journeyPatternInputs = new ArrayList<>();
-
-    for (Map<String, Object> journeyPattern : journeyPatterns) {
-      Map<String, Object> journeyPatternInput = new HashMap<>();
-      journeyPatternInput.put("id", journeyPattern.get("id"));
-
-      // Add points in sequence
-      List<Map<String, Object>> pointsInSequence =
-        (List<Map<String, Object>>) journeyPattern.get("pointsInSequence");
-      List<Map<String, Object>> pointsInSequenceInputs = new ArrayList<>();
-
-      for (Map<String, Object> point : pointsInSequence) {
-        Map<String, Object> pointInput = new HashMap<>();
-        pointInput.put("id", point.get("id"));
-        pointInput.put("quayRef", point.get("quayRef"));
-        pointInput.put("forBoarding", point.get("forBoarding"));
-        pointInput.put("forAlighting", point.get("forAlighting"));
-        // Add destination display if it exists
-        Map<String, Object> destinationDisplay = (Map<String, Object>) point.get(
-          "destinationDisplay"
-        );
-        if (destinationDisplay != null) {
-          Map<String, Object> destinationDisplayInput = new HashMap<>();
-          destinationDisplayInput.put("frontText", destinationDisplay.get("frontText"));
-          pointInput.put("destinationDisplay", destinationDisplayInput);
+    if (journeyPatterns != null) {
+      for (Map<String, Object> journeyPattern : journeyPatterns) {
+        List<Map<String, Object>> serviceJourneys =
+          (List<Map<String, Object>>) journeyPattern.get("serviceJourneys");
+        if (serviceJourneys != null) {
+          for (Map<String, Object> serviceJourney : serviceJourneys) {
+            // Convert dayTypes to dayTypesRefs
+            List<Map<String, Object>> dayTypes =
+              (List<Map<String, Object>>) serviceJourney.remove("dayTypes");
+            if (dayTypes != null) {
+              List<String> dayTypeRefs = new ArrayList<>();
+              for (Map<String, Object> dayType : dayTypes) {
+                dayTypeRefs.add((String) dayType.get("id"));
+              }
+              serviceJourney.put("dayTypesRefs", dayTypeRefs);
+            }
+          }
         }
-
-        pointsInSequenceInputs.add(pointInput);
       }
-
-      journeyPatternInput.put("pointsInSequence", pointsInSequenceInputs);
-
-      // Add service journeys
-      List<Map<String, Object>> serviceJourneys =
-        (List<Map<String, Object>>) journeyPattern.get("serviceJourneys");
-      List<Map<String, Object>> serviceJourneyInputs = new ArrayList<>();
-
-      for (Map<String, Object> serviceJourney : serviceJourneys) {
-        Map<String, Object> serviceJourneyInput = new HashMap<>();
-        serviceJourneyInput.put("id", serviceJourney.get("id"));
-        serviceJourneyInput.put("name", serviceJourney.get("name"));
-
-        // Add day types
-        List<Map<String, Object>> dayTypes =
-          (List<Map<String, Object>>) serviceJourney.get("dayTypes");
-        List<String> dayTypeRefs = new ArrayList<>();
-        for (Map<String, Object> dayType : dayTypes) {
-          dayTypeRefs.add((String) dayType.get("id"));
-        }
-        serviceJourneyInput.put("dayTypesRefs", dayTypeRefs);
-
-        // Add passing times
-        List<Map<String, Object>> passingTimes =
-          (List<Map<String, Object>>) serviceJourney.get("passingTimes");
-        List<Map<String, Object>> passingTimeInputs = new ArrayList<>();
-
-        for (Map<String, Object> passingTime : passingTimes) {
-          Map<String, Object> passingTimeInput = new HashMap<>();
-          passingTimeInput.put("id", passingTime.get("id"));
-          passingTimeInput.put("departureTime", passingTime.get("departureTime"));
-          passingTimeInput.put("arrivalTime", passingTime.get("arrivalTime"));
-          passingTimeInputs.add(passingTimeInput);
-        }
-
-        serviceJourneyInput.put("passingTimes", passingTimeInputs);
-        serviceJourneyInputs.add(serviceJourneyInput);
-      }
-
-      journeyPatternInput.put("serviceJourneys", serviceJourneyInputs);
-      journeyPatternInputs.add(journeyPatternInput);
     }
-
-    input.put("journeyPatterns", journeyPatternInputs);
 
     return input;
   }

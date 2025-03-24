@@ -774,6 +774,54 @@
                         </Quay>
                     </quays>
                 </StopPlace>
+                <StopPlace xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:ns3="http://www.siri.org.uk/siri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" created="2023-01-01T00:00:00" changed="2023-01-01T00:00:00" modification="new" version="1" id="NSR:StopPlace:10001" xsi:schemaLocation="">
+                    <Name lang="nor">Nykirkekaien</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>5.3182</Longitude>
+                            <Latitude>60.3972</Latitude>
+                        </Location>
+                    </Centroid>
+                    <TransportMode>water</TransportMode>
+                    <StopPlaceType>harbourPort</StopPlaceType>
+                    <quays>
+                        <Quay changed="2023-01-01T00:00:00" modification="new" version="1" id="NSR:Quay:105069">
+                            <Name lang="nor">Nykirkekaien</Name>
+                            <Centroid>
+                                <Location>
+                                    <Longitude>5.3182</Longitude>
+                                    <Latitude>60.3972</Latitude>
+                                </Location>
+                            </Centroid>
+                            <PublicCode>A</PublicCode>
+                            <CompassBearing>180.0</CompassBearing>
+                        </Quay>
+                    </quays>
+                </StopPlace>
+                <StopPlace xmlns="http://www.netex.org.uk/netex" xmlns:ns2="http://www.opengis.net/gml/3.2" xmlns:ns3="http://www.siri.org.uk/siri" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" created="2023-01-01T00:00:00" changed="2023-01-01T00:00:00" modification="new" version="1" id="NSR:StopPlace:10002" xsi:schemaLocation="">
+                    <Name lang="nor">Bradbenken</Name>
+                    <Centroid>
+                        <Location>
+                            <Longitude>5.3229</Longitude>
+                            <Latitude>60.3975</Latitude>
+                        </Location>
+                    </Centroid>
+                    <TransportMode>water</TransportMode>
+                    <StopPlaceType>harbourPort</StopPlaceType>
+                    <quays>
+                        <Quay changed="2023-01-01T00:00:00" modification="new" version="1" id="NSR:Quay:105070">
+                            <Name lang="nor">Bradbenken</Name>
+                            <Centroid>
+                                <Location>
+                                    <Longitude>5.3229</Longitude>
+                                    <Latitude>60.3975</Latitude>
+                                </Location>
+                            </Centroid>
+                            <PublicCode>A</PublicCode>
+                            <CompassBearing>180.0</CompassBearing>
+                        </Quay>
+                    </quays>
+                </StopPlace>
             </stopPlaces>
         </SiteFrame>
     </dataObjects>
