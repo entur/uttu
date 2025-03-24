@@ -1,7 +1,8 @@
 package no.entur.uttu.performance;
 
-import java.time.Duration;
-import java.time.Instant;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -9,7 +10,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import no.entur.uttu.integration.AbstractGraphQLIntegrationTest;
 import no.entur.uttu.stubs.UserContextServiceStub;
 import org.junit.Before;
@@ -18,11 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.builder.SpringApplicationBuilder;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.FilterType;
 import org.springframework.graphql.test.tester.GraphQlTester;
 import org.springframework.graphql.test.tester.HttpGraphQlTester;
 import org.springframework.test.context.ActiveProfiles;
@@ -75,98 +70,103 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
   }
 
   /**
-   * Main performance test method.
-   * This will create prerequisite entities, perform warm-up iterations,
-   * and then measure the performance of the mutateLine operation.
+   * Test the performance of creating lines using real input data.
    */
   @Test
-  public void testCreateLinePerformance() {
-    logger.info("Starting performance test on port {}", port);
+  public void testCreateLineWithRealData() throws Exception {
+    logger.info("Starting performance test with real data on port {}", port);
 
-    // Create prerequisite entities
-    String networkId = createNetwork();
-    String dayTypeId = createDayType();
-    String brandingId = createBranding();
-
-    logger.info(
-      "Created prerequisite entities: Network {}, DayType {}, Branding {}",
-      networkId,
-      dayTypeId,
-      brandingId
+    // Load the real input data from the JSON file
+    String jsonContent = new String(
+      Files.readAllBytes(Paths.get("src/test/resources/performance/input.json"))
     );
+    Map<String, Object> jsonMap = new ObjectMapper().readValue(jsonContent, Map.class);
+    Map<String, Object> lineInput = (Map<String, Object>) jsonMap.get("input");
 
-    // Warm-up phase
-    logger.info("Starting warm-up phase ({} iterations)...", WARMUP_ITERATIONS);
-    for (int i = 0; i < WARMUP_ITERATIONS; i++) {
-      String lineName = "WarmupLine_" + i;
-      Map<String, Object> lineInput = generateLineInput(
-        lineName,
-        networkId,
-        dayTypeId,
-        brandingId
-      );
-      mutateLine(lineInput);
-    }
-
-    // Performance test phase
-    logger.info("Starting CREATE performance test ({} iterations)...", TEST_ITERATIONS);
-    List<Long> executionTimes = new ArrayList<>();
-
-    for (int i = 0; i < TEST_ITERATIONS; i++) {
-      String lineName = "TestLine_" + i;
-      Map<String, Object> lineInput = generateLineInput(
-        lineName,
-        networkId,
-        dayTypeId,
-        brandingId
-      );
-
-      Instant start = Instant.now();
-      String lineId = mutateLine(lineInput);
-      Instant end = Instant.now();
-
-      long executionTimeMs = Duration.between(start, end).toMillis();
-      executionTimes.add(executionTimeMs);
-
-      logger.info(
-        "Iteration {}: Created line {} in {} ms",
-        i + 1,
-        lineId,
-        executionTimeMs
-      );
-    }
-
-    // Calculate statistics
-    calculateAndPrintStatistics(executionTimes, "CREATE");
-  }
-
-  /**
-   * Test the performance of updating lines.
-   */
-  @Test
-  public void testUpdateLinePerformance() throws InterruptedException {
-    // Create prerequisite entities
-    String networkId = createNetwork();
-    String brandingId = createBranding();
+    // Create a day type first since the input references a day type
     String dayTypeId = createDayType();
     logger.info("Created day type with ID: {}", dayTypeId);
 
-    // Create a line first
-    String lineId = createLineForUpdate(networkId, brandingId, dayTypeId);
+    // Update day type references in the input
+    updateDayTypeReferences(lineInput, dayTypeId);
+
+    // Update operator references in the input to use a valid operator ID from the fixtures
+    String operatorId = "NOG:Operator:1";
+    updateOperatorReferences(lineInput, operatorId);
+    logger.info("Updated operator references to use ID: {}", operatorId);
+
+    // Create a network if needed
+    if (lineInput.containsKey("networkRef") && lineInput.get("networkRef") != null) {
+      String networkId = createNetwork();
+      lineInput.put("networkRef", networkId);
+      logger.info("Updated networkRef to: {}", networkId);
+    }
+
+    // Measure the time it takes to create the line
+    long startTime = System.currentTimeMillis();
+    String lineId = mutateLine(lineInput);
+    long endTime = System.currentTimeMillis();
+    long duration = endTime - startTime;
+
+    // Log the results
+    logger.info("Created line with ID: {}", lineId);
+    logger.info("Creation took {} ms", duration);
+
+    // Verify the creation was successful
+    org.junit.Assert.assertNotNull(lineId);
+  }
+
+  /**
+   * Test the performance of updating lines using real input data.
+   */
+  @Test
+  public void testUpdateLineWithRealData() throws Exception {
+    logger.info("Starting update performance test with real data on port {}", port);
+
+    // Load the real input data from the JSON file
+    String jsonContent = new String(
+      Files.readAllBytes(Paths.get("src/test/resources/performance/input.json"))
+    );
+    Map<String, Object> jsonMap = new ObjectMapper().readValue(jsonContent, Map.class);
+    Map<String, Object> lineInput = (Map<String, Object>) jsonMap.get("input");
+
+    // Create a day type first since the input references a day type
+    String dayTypeId = createDayType();
+    logger.info("Created day type with ID: {}", dayTypeId);
+
+    // Update day type references in the input
+    updateDayTypeReferences(lineInput, dayTypeId);
+
+    // Update operator references in the input to use a valid operator ID from the fixtures
+    String operatorId = "NOG:Operator:1";
+    updateOperatorReferences(lineInput, operatorId);
+    logger.info("Updated operator references to use ID: {}", operatorId);
+
+    // Create a network if needed
+    if (lineInput.containsKey("networkRef") && lineInput.get("networkRef") != null) {
+      String networkId = createNetwork();
+      lineInput.put("networkRef", networkId);
+      logger.info("Updated networkRef to: {}", networkId);
+    }
+
+    // Create the line first
+    String lineId = mutateLine(lineInput);
     logger.info("Created line with ID: {}", lineId);
 
     // Fetch the line data
-    Map<String, Object> lineData = fetchLine(lineId);
-    logger.info("Fetched line data: {}", lineData);
+    Map<String, Object> fetchedLineData = fetchLine(lineId);
+    logger.info("Fetched line data for update");
 
-    // Convert the line data to mutation input
-    Map<String, Object> input = convertLineDataToMutationInput(lineData);
+    // Modify the line data slightly for the update
+    Map<String, Object> updateInput = convertLineDataToMutationInput(fetchedLineData);
+    updateInput.put("name", updateInput.get("name") + " (Updated)");
 
-    Thread.sleep(5000);
+    // Log the update input
+    logger.info("Update input: {}", updateInput);
 
     // Measure the time it takes to update the line
     long startTime = System.currentTimeMillis();
-    String updatedLineId = mutateLine(input);
+    String updatedLineId = mutateLine(updateInput);
     long endTime = System.currentTimeMillis();
     long duration = endTime - startTime;
 
@@ -177,6 +177,54 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
     // Verify the update was successful
     org.junit.Assert.assertNotNull(updatedLineId);
     org.junit.Assert.assertEquals(lineId, updatedLineId);
+  }
+
+  /**
+   * Update all day type references in the input to use the given day type ID.
+   *
+   * @param input The input data
+   * @param dayTypeId The day type ID to use
+   */
+  private void updateDayTypeReferences(Map<String, Object> input, String dayTypeId) {
+    if (input.containsKey("journeyPatterns")) {
+      List<Map<String, Object>> journeyPatterns = (List<Map<String, Object>>) input.get(
+        "journeyPatterns"
+      );
+      for (Map<String, Object> jp : journeyPatterns) {
+        if (jp.containsKey("serviceJourneys")) {
+          List<Map<String, Object>> serviceJourneys = (List<Map<String, Object>>) jp.get(
+            "serviceJourneys"
+          );
+          for (Map<String, Object> sj : serviceJourneys) {
+            // Replace the day type references with our created day type
+            sj.put("dayTypesRefs", List.of(dayTypeId));
+          }
+        }
+      }
+    }
+  }
+
+  private void updateOperatorReferences(Map<String, Object> input, String operatorId) {
+    if (input.containsKey("operatorRef")) {
+      input.put("operatorRef", operatorId);
+    }
+    if (input.containsKey("journeyPatterns")) {
+      List<Map<String, Object>> journeyPatterns = (List<Map<String, Object>>) input.get(
+        "journeyPatterns"
+      );
+      for (Map<String, Object> jp : journeyPatterns) {
+        if (jp.containsKey("serviceJourneys")) {
+          List<Map<String, Object>> serviceJourneys = (List<Map<String, Object>>) jp.get(
+            "serviceJourneys"
+          );
+          for (Map<String, Object> sj : serviceJourneys) {
+            if (sj.containsKey("operatorRef")) {
+              sj.put("operatorRef", operatorId);
+            }
+          }
+        }
+      }
+    }
   }
 
   /**
@@ -234,17 +282,6 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
     );
   }
 
-  /**
-   * Load a GraphQL document from the resources directory.
-   *
-   * @param filename The name of the GraphQL document file
-   * @return The GraphQL document as a string
-   */
-  private String loadGraphQlDocument(String filename) {
-    // We don't need this method anymore since we're using graphQlTester.documentName
-    return null;
-  }
-
   private String createNetwork() {
     String networkName = "PerformanceTestNetwork_" + System.currentTimeMillis();
     return graphQlTester
@@ -295,94 +332,6 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
       .get();
   }
 
-  private String createBranding() {
-    return graphQlTester
-      .documentName("mutateBranding")
-      .variable("branding", Map.of("name", "PerformanceTestBranding"))
-      .execute()
-      .path("mutateBranding.id")
-      .entity(String.class)
-      .get();
-  }
-
-  private Map<String, Object> generateDayTypeInput() {
-    return Map.of(
-      "daysOfWeek",
-      List.of("monday", "tuesday", "wednesday", "thursday", "friday"),
-      "dayTypeAssignments",
-      Map.of(
-        "operatingPeriod",
-        Map.of(
-          "fromDate",
-          generateDateString(LocalDate.now()),
-          "toDate",
-          generateDateString(LocalDate.now().plusYears(1))
-        ),
-        "isAvailable",
-        true
-      )
-    );
-  }
-
-  private Map<String, Object> generateLineInput(
-    String name,
-    String networkId,
-    String dayTypeRef,
-    String brandingId
-  ) {
-    Map<String, Object> lineInput = new HashMap<>();
-    lineInput.put("name", name);
-    lineInput.put("publicCode", "PerfTest");
-    lineInput.put("transportMode", "bus");
-    lineInput.put("transportSubmode", "localBus");
-    lineInput.put("networkRef", networkId);
-    lineInput.put("brandingRef", brandingId);
-    lineInput.put("operatorRef", "NOG:Operator:1");
-
-    // Add journey patterns with points and service journeys
-    List<Map<String, Object>> journeyPatterns = new ArrayList<>();
-    Map<String, Object> journeyPattern = new HashMap<>();
-
-    // Points in sequence
-    List<Map<String, Object>> pointsInSequence = new ArrayList<>();
-    Map<String, Object> point1 = new HashMap<>();
-    point1.put("quayRef", "NSR:Quay:494");
-    point1.put("destinationDisplay", Map.of("frontText", "First stop"));
-    pointsInSequence.add(point1);
-
-    Map<String, Object> point2 = new HashMap<>();
-    point2.put("quayRef", "NSR:Quay:563");
-    pointsInSequence.add(point2);
-
-    journeyPattern.put("pointsInSequence", pointsInSequence);
-
-    // Service journeys
-    List<Map<String, Object>> serviceJourneys = new ArrayList<>();
-    Map<String, Object> serviceJourney = new HashMap<>();
-    serviceJourney.put("name", name + "_Journey");
-    if (dayTypeRef != null) {
-      serviceJourney.put("dayTypesRefs", List.of(dayTypeRef));
-    }
-
-    // Passing times
-    List<Map<String, Object>> passingTimes = new ArrayList<>();
-    passingTimes.add(Map.of("departureTime", "07:00:00"));
-    passingTimes.add(Map.of("arrivalTime", "07:15:00"));
-    serviceJourney.put("passingTimes", passingTimes);
-
-    serviceJourneys.add(serviceJourney);
-    journeyPattern.put("serviceJourneys", serviceJourneys);
-
-    journeyPatterns.add(journeyPattern);
-    lineInput.put("journeyPatterns", journeyPatterns);
-
-    return lineInput;
-  }
-
-  private String generateDateString(LocalDate date) {
-    return DateTimeFormatter.ISO_LOCAL_DATE.format(date);
-  }
-
   /**
    * Execute the mutateLine mutation with the given input.
    *
@@ -399,6 +348,11 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
       );
       for (Map<String, Object> jp : journeyPatterns) {
         if (jp.containsKey("serviceJourneys")) {
+          for (Map<String, Object> sp : (List<Map<String, Object>>) jp.get(
+            "pointsInSequence"
+          )) {
+            logger.info("Stop point in jp {}", sp.get("id"));
+          }
           List<Map<String, Object>> serviceJourneys = (List<Map<String, Object>>) jp.get(
             "serviceJourneys"
           );
@@ -449,8 +403,11 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
     Map<String, Object> network = (Map<String, Object>) lineData.get("network");
     input.put("networkRef", network.get("id"));
 
+    // Add branding reference only if branding exists
     Map<String, Object> branding = (Map<String, Object>) lineData.get("branding");
-    input.put("brandingRef", branding.get("id"));
+    if (branding != null) {
+      input.put("brandingRef", branding.get("id"));
+    }
 
     // Add journey patterns
     List<Map<String, Object>> journeyPatterns = (List<Map<String, Object>>) lineData.get(
@@ -471,7 +428,8 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
         Map<String, Object> pointInput = new HashMap<>();
         pointInput.put("id", point.get("id"));
         pointInput.put("quayRef", point.get("quayRef"));
-
+        pointInput.put("forBoarding", point.get("forBoarding"));
+        pointInput.put("forAlighting", point.get("forAlighting"));
         // Add destination display if it exists
         Map<String, Object> destinationDisplay = (Map<String, Object>) point.get(
           "destinationDisplay"
@@ -530,77 +488,6 @@ public class MutateLinePerformanceTest extends AbstractGraphQLIntegrationTest {
     input.put("journeyPatterns", journeyPatternInputs);
 
     return input;
-  }
-
-  /**
-   * Create a line for update testing.
-   *
-   * @param networkId The ID of the network to use
-   * @param brandingId The ID of the branding to use
-   * @param dayTypeId The ID of the day type to use
-   * @return The ID of the created line
-   */
-  private String createLineForUpdate(
-    String networkId,
-    String brandingId,
-    String dayTypeId
-  ) {
-    Map<String, Object> input = new HashMap<>();
-    input.put("name", "UpdateTestLine");
-    input.put("publicCode", "PerfTest");
-    input.put("transportMode", "bus");
-    input.put("transportSubmode", "localBus");
-    input.put("operatorRef", "NOG:Operator:1");
-    input.put("networkRef", networkId);
-    input.put("brandingRef", brandingId);
-
-    // Create journey pattern
-    List<Map<String, Object>> journeyPatterns = new ArrayList<>();
-    Map<String, Object> journeyPattern = new HashMap<>();
-
-    // Create points in sequence
-    List<Map<String, Object>> pointsInSequence = new ArrayList<>();
-
-    Map<String, Object> point1 = new HashMap<>();
-    point1.put("quayRef", "NSR:Quay:494");
-    Map<String, Object> destinationDisplay = new HashMap<>();
-    destinationDisplay.put("frontText", "First stop");
-    point1.put("destinationDisplay", destinationDisplay);
-    pointsInSequence.add(point1);
-
-    Map<String, Object> point2 = new HashMap<>();
-    point2.put("quayRef", "NSR:Quay:563");
-    pointsInSequence.add(point2);
-
-    journeyPattern.put("pointsInSequence", pointsInSequence);
-
-    // Create service journey
-    List<Map<String, Object>> serviceJourneys = new ArrayList<>();
-    Map<String, Object> serviceJourney = new HashMap<>();
-    serviceJourney.put("name", "UpdateTestLine_Journey");
-    if (dayTypeId != null) {
-      serviceJourney.put("dayTypesRefs", List.of(dayTypeId));
-    }
-
-    // Create passing times
-    List<Map<String, Object>> passingTimes = new ArrayList<>();
-    Map<String, Object> passingTime1 = new HashMap<>();
-    passingTime1.put("departureTime", "07:00:00");
-    passingTimes.add(passingTime1);
-
-    Map<String, Object> passingTime2 = new HashMap<>();
-    passingTime2.put("arrivalTime", "07:15:00");
-    passingTimes.add(passingTime2);
-
-    serviceJourney.put("passingTimes", passingTimes);
-    serviceJourneys.add(serviceJourney);
-
-    journeyPattern.put("serviceJourneys", serviceJourneys);
-    journeyPatterns.add(journeyPattern);
-
-    input.put("journeyPatterns", journeyPatterns);
-
-    return mutateLine(input);
   }
 
   private Map<String, Object> fetchLine(String lineId) {
