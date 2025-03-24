@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import no.entur.uttu.config.Context;
@@ -64,8 +65,9 @@ public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
       existingEntities = Collections.emptyMap();
     } else {
       existingEntities =
-        entityRepository
-          .findByIds(netexIds)
+        Optional
+          .ofNullable(entityRepository.findByIds(netexIds))
+          .orElse(Collections.emptyList())
           .stream()
           .collect(Collectors.toMap(T::getId, Function.identity()));
     }
