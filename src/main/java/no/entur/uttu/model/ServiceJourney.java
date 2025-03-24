@@ -35,6 +35,9 @@ import java.util.Set;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import no.entur.uttu.util.Preconditions;
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 @Entity
 @Table(
@@ -45,6 +48,7 @@ import no.entur.uttu.util.Preconditions;
     ),
   }
 )
+@BatchSize(size = 100)
 public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
   private String publicCode;
@@ -52,22 +56,30 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
   private String operatorRef;
 
   @OneToOne(cascade = CascadeType.ALL)
+  @Fetch(FetchMode.JOIN)
   private BookingArrangement bookingArrangement;
 
   @NotNull
   @ManyToOne
+  @Fetch(FetchMode.JOIN)
   private JourneyPattern journeyPattern;
 
   @ManyToMany
   @NotNull
+  @BatchSize(size = 100)
+  @Fetch(FetchMode.SUBSELECT)
   private final Set<DayType> dayTypes = new HashSet<>();
 
   @OneToMany(mappedBy = "serviceJourney", cascade = CascadeType.ALL, orphanRemoval = true)
   @NotNull
   @OrderBy("order")
+  @BatchSize(size = 100)
+  @Fetch(FetchMode.SUBSELECT)
   private final List<TimetabledPassingTime> passingTimes = new ArrayList<>();
 
   @ManyToMany(cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+  @BatchSize(size = 100)
+  @Fetch(FetchMode.SUBSELECT)
   private List<Notice> notices;
 
   public JourneyPattern getJourneyPattern() {
