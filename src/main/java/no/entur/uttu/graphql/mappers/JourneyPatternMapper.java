@@ -51,12 +51,12 @@ public class JourneyPatternMapper extends AbstractGroupOfEntitiesMapper<JourneyP
     input.apply(FIELD_DIRECTION_TYPE, entity::setDirectionType);
     input.applyList(
       FIELD_POINTS_IN_SEQUENCE,
-      stopPointInJourneyPatternMapper::map,
+      stopPointInJourneyPatternMapper::mapList,
       entity::setPointsInSequence
     );
     input.applyList(
       FIELD_SERVICE_JOURNEYS,
-      serviceJourneyMapper::map,
+      serviceJourneyMapper::mapList,
       entity::setServiceJourneys
     );
   }

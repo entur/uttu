@@ -72,7 +72,7 @@ public class FlexibleStopPlaceMapper
     input.apply(FIELD_FLEXIBLE_AREA, this::mapFlexibleAreas, entity::setFlexibleAreas);
     input.applyList(
       FIELD_FLEXIBLE_AREAS,
-      this::mapFlexibleArea,
+      this::mapFlexibleAreaList,
       entity::setFlexibleAreas
     );
     input.apply(
@@ -85,6 +85,10 @@ public class FlexibleStopPlaceMapper
 
   protected List<FlexibleArea> mapFlexibleAreas(Map<String, Object> inputMap) {
     return List.of(mapFlexibleArea(inputMap));
+  }
+
+  protected List<FlexibleArea> mapFlexibleAreaList(List<Map<String, Object>> inputObjs) {
+    return inputObjs.stream().map(this::mapFlexibleArea).toList();
   }
 
   protected FlexibleArea mapFlexibleArea(Map<String, Object> inputMap) {

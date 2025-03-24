@@ -60,9 +60,9 @@ public abstract class LineMapper<T extends Line>
 
     input.applyList(
       FIELD_JOURNEY_PATTERNS,
-      journeyPatternMapper::map,
+      journeyPatternMapper::mapList,
       entity::setJourneyPatterns
     );
-    input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
+    input.applyList(FIELD_NOTICES, noticeMapper::mapList, entity::setNotices);
   }
 }
