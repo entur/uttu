@@ -1,11 +1,16 @@
 package no.entur.uttu.stopplace;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import javax.annotation.PostConstruct;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.netex.NetexUnmarshaller;
@@ -52,9 +57,25 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
   @PostConstruct
   public void init() {
+    InputStream netexFileInputStream = null;
+
+    try (ZipFile zipFile = new ZipFile(netexFileUri)) {
+      Enumeration<? extends ZipEntry> entries = zipFile.entries();
+      ZipEntry entry = entries.nextElement();
+      netexFileInputStream = zipFile.getInputStream(entry);
+    } catch (IOException e) {
+      // probably not a zip file
+    }
+
     try {
+      StreamSource source;
+      if (netexFileInputStream != null) {
+        source = new StreamSource(netexFileInputStream);
+      } else {
+        source = new StreamSource(new File(netexFileUri));
+      }
       PublicationDeliveryStructure publicationDeliveryStructure =
-        netexUnmarshaller.unmarshalFromSource(new StreamSource(new File(netexFileUri)));
+        netexUnmarshaller.unmarshalFromSource(source);
       publicationDeliveryStructure
         .getDataObjects()
         .getCompositeFrameOrCommonFrame()
