@@ -78,6 +78,19 @@ no.entur.uttu.organisations.overrides={\
 }
 ```
 
+Overrides can also be provided per provider/codespace. The following override only applies
+within the FOO codespace during export.
+
+```properties
+no.entur.uttu.organisations.overrides.provider={\
+    'FOO': {\
+        'OldId': 'FOO:Operator:BAZ'\
+    }\
+}
+```
+
+
+
 ## Stop place registry
 
 Uttu needs a stop place registry in order to allow lookup of stop places from quay refs, used when creating
