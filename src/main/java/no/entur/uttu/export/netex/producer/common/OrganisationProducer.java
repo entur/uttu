@@ -42,7 +42,7 @@ public class OrganisationProducer {
   private Map<String, Map<String, String>> organisationsOverrides;
 
   @Value(
-          "#{${no.entur.uttu.organisations.overrides.provider:{T(java.util.Collections).emptyMap()}}}"
+    "#{${no.entur.uttu.organisations.overrides.provider:{T(java.util.Collections).emptyMap()}}}"
   )
   private Map<String, Map<String, String>> organisationsOverridesProvider;
 
@@ -164,9 +164,13 @@ public class OrganisationProducer {
 
     if (
       organisationsOverridesProvider.containsKey(provider.getCode()) &&
-      organisationsOverridesProvider.get(provider.getCode()).containsKey(organisation.getId())
+      organisationsOverridesProvider
+        .get(provider.getCode())
+        .containsKey(organisation.getId())
     ) {
-      return organisationsOverridesProvider.get(provider.getCode()).get(organisation.getId());
+      return organisationsOverridesProvider
+        .get(provider.getCode())
+        .get(organisation.getId());
     }
 
     return extractLegacyId(organisation, type).orElse(organisation.getId());
