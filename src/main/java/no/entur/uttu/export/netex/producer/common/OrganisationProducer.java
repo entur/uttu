@@ -116,7 +116,12 @@ public class OrganisationProducer {
       );
     }
 
-    return organisation.withId(getAuthorityNetexId(organisation, context.provider));
+    return new Authority()
+      .withId(getAuthorityNetexId(organisation, context.provider))
+      .withVersion(organisation.getVersion())
+      .withName(organisation.getName())
+      .withLegalName(organisation.getLegalName())
+      .withContactDetails(organisation.getContactDetails());
   }
 
   private boolean validateContactUrl(String url) {
@@ -137,8 +142,12 @@ public class OrganisationProducer {
 
     Operator organisation = orgRegOperator.get();
 
-    return organisation
+    return new Operator()
       .withId(getOperatorNetexId(organisation, context.provider))
+      .withVersion(organisation.getVersion())
+      .withName(organisation.getName())
+      .withLegalName(organisation.getLegalName())
+      .withContactDetails(organisation.getContactDetails())
       .withCustomerServiceContactDetails(organisation.getContactDetails());
   }
 
