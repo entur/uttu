@@ -17,7 +17,14 @@ package no.entur.uttu.graphql.mappers;
 
 import static no.entur.uttu.graphql.GraphQLNames.FIELD_ID;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.Provider;
@@ -38,6 +45,56 @@ public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
   ) {
     this.providerRepository = providerRepository;
     this.entityRepository = entityRepository;
+  }
+
+  public List<T> mapList(List<Object> inputObjs) {
+    List<ArgumentWrapper> inputs = inputObjs
+      .stream()
+      .map(obj -> new ArgumentWrapper((Map) obj))
+      .toList();
+
+    List<String> netexIds = inputs
+      .stream()
+      .map(input -> (String) input.get(FIELD_ID))
+      .filter(Objects::nonNull)
+      .toList();
+
+    Map<String, T> existingEntities;
+
+    if (netexIds.isEmpty()) {
+      existingEntities = Collections.emptyMap();
+    } else {
+      existingEntities =
+        Optional
+          .ofNullable(entityRepository.findByIds(netexIds))
+          .orElse(Collections.emptyList())
+          .stream()
+          .collect(Collectors.toMap(T::getId, Function.identity()));
+    }
+
+    List<T> result = new ArrayList<>();
+
+    for (ArgumentWrapper input : inputs) {
+      String netexId = input.get(FIELD_ID);
+      T entity;
+
+      if (netexId == null) {
+        entity = createNewEntity(input);
+        entity.setProvider(getVerifiedProvider(Context.getVerifiedProviderCode()));
+      } else {
+        entity = existingEntities.get(netexId);
+        Preconditions.checkArgument(
+          entity != null,
+          "Attempting to update Entity with netexId=%s, but Entity does not exist.",
+          netexId
+        );
+      }
+
+      populateEntityFromInput(entity, input);
+      result.add(entity);
+    }
+
+    return result;
   }
 
   public T map(Object inputObj) {

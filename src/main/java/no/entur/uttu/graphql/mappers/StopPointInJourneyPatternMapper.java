@@ -86,7 +86,7 @@ public class StopPointInJourneyPatternMapper
     );
     input.apply(FIELD_FOR_BOARDING, entity::setForBoarding);
     input.apply(FIELD_FOR_ALIGHTING, entity::setForAlighting);
-    input.applyList(FIELD_NOTICES, noticeMapper::map, entity::setNotices);
+    input.applyList(FIELD_NOTICES, noticeMapper::mapList, entity::setNotices);
   }
 
   protected String getVerifiedQuayRef(String quayRef) {

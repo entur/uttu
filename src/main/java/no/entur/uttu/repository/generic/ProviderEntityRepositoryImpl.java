@@ -16,22 +16,19 @@
 package no.entur.uttu.repository.generic;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import java.util.ArrayList;
 import java.util.List;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.util.Preconditions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.hibernate.NonUniqueResultException;
 import org.springframework.data.jpa.repository.support.JpaEntityInformation;
 import org.springframework.data.jpa.repository.support.SimpleJpaRepository;
 
 public class ProviderEntityRepositoryImpl<T extends ProviderEntity>
   extends SimpleJpaRepository<T, Long>
   implements ProviderEntityRepository<T> {
-
-  private static final Logger logger = LoggerFactory.getLogger(
-    ProviderEntityRepositoryImpl.class
-  );
 
   private static final String PROVIDER_CODE_PARAMETER = "providerCode";
   private static final String NETEX_ID_PARAMETER = "netexId";
@@ -50,10 +47,8 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity>
     super(entityInformation, entityManager);
     this.entityManager = entityManager;
     this.entityInformation = entityInformation;
-    findAllQuery =
-      "from " +
-      entityInformation.getEntityName() +
-      " e where e.provider.code=:providerCode";
+    String entityName = entityInformation.getEntityName();
+    findAllQuery = "from " + entityName + " e where e.provider.code=:providerCode";
     findByIdsQuery = findAllQuery + " and netexId in :netexIds";
     findOneByNetexIdQuery = findAllQuery + " and netexId=:netexId";
   }
@@ -75,6 +70,9 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity>
 
   @Override
   public List<T> findByIds(List<String> netexIds) {
+    if (netexIds == null || netexIds.isEmpty()) {
+      return new ArrayList<>();
+    }
     return entityManager
       .createQuery(findByIdsQuery, entityInformation.getJavaType())
       .setParameter(PROVIDER_CODE_PARAMETER, Context.getVerifiedProviderCode())
@@ -93,15 +91,15 @@ public class ProviderEntityRepositoryImpl<T extends ProviderEntity>
 
   @Override
   public T getOne(String netexId) {
-    List<T> results = entityManager
-      .createQuery(findOneByNetexIdQuery, entityInformation.getJavaType())
-      .setParameter(PROVIDER_CODE_PARAMETER, Context.getVerifiedProviderCode())
-      .setParameter(NETEX_ID_PARAMETER, netexId)
-      .getResultList();
-    if (results.isEmpty()) {
+    try {
+      return entityManager
+        .createQuery(findOneByNetexIdQuery, entityInformation.getJavaType())
+        .setParameter(PROVIDER_CODE_PARAMETER, Context.getVerifiedProviderCode())
+        .setParameter(NETEX_ID_PARAMETER, netexId)
+        .getSingleResult();
+    } catch (NoResultException | NonUniqueResultException e) {
       return null;
     }
-    return results.get(0);
   }
 
   @Override

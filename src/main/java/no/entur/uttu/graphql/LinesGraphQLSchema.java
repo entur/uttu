@@ -714,11 +714,7 @@ public class LinesGraphQLSchema {
     lineObjectType =
       newObject(groupOfEntitiesObjectType)
         .name("Line")
-        .field(
-          newFieldDefinition()
-            .name(FIELD_PUBLIC_CODE)
-            .type(new GraphQLNonNull(GraphQLString))
-        )
+        .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(GraphQLString))
         .field(
           newFieldDefinition()
             .name(FIELD_TRANSPORT_MODE)

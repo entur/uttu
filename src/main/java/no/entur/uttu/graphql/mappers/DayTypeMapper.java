@@ -17,6 +17,7 @@ package no.entur.uttu.graphql.mappers;
 
 import static no.entur.uttu.graphql.GraphQLNames.*;
 
+import java.util.List;
 import java.util.Map;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.DayType;
@@ -45,14 +46,20 @@ public class DayTypeMapper extends AbstractProviderEntityMapper<DayType> {
   protected void populateEntityFromInput(DayType entity, ArgumentWrapper input) {
     input.applyList(
       FIELD_DAY_TYPE_ASSIGNMENTS,
-      this::mapDayTypeAssignment,
+      this::mapDayTypeAssignments,
       entity::setDayTypeAssignments
     );
     input.apply(FIELD_DAYS_OF_WEEK, entity::setDaysOfWeek);
     input.apply(FIELD_NAME, entity::setName);
   }
 
-  public DayTypeAssignment mapDayTypeAssignment(Map<String, Object> inputMap) {
+  private List<DayTypeAssignment> mapDayTypeAssignments(
+    List<Map<String, Object>> inputObjs
+  ) {
+    return inputObjs.stream().map(this::mapDayTypeAssignment).toList();
+  }
+
+  private DayTypeAssignment mapDayTypeAssignment(Map<String, Object> inputMap) {
     ArgumentWrapper input = new ArgumentWrapper(inputMap);
     DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
     input.apply(
@@ -65,7 +72,7 @@ public class DayTypeMapper extends AbstractProviderEntityMapper<DayType> {
     return dayTypeAssignment;
   }
 
-  public OperatingPeriod mapOperatingPeriod(Map<String, Object> inputMap) {
+  private OperatingPeriod mapOperatingPeriod(Map<String, Object> inputMap) {
     ArgumentWrapper input = new ArgumentWrapper(inputMap);
     OperatingPeriod operatingPeriod = new OperatingPeriod();
     input.apply(FIELD_FROM_DATE, operatingPeriod::setFromDate);
