@@ -53,64 +53,75 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
 
-  private StopPlacesFilter stopPlacesFilter;
+  private StopPlacesFilter stopPlacesFilter = new StopPlacesFilter();
 
   @PostConstruct
   public void init() {
-    InputStream netexFileInputStream = null;
-
     try (ZipFile zipFile = new ZipFile(netexFileUri)) {
       Enumeration<? extends ZipEntry> entries = zipFile.entries();
       ZipEntry entry = entries.nextElement();
-      netexFileInputStream = zipFile.getInputStream(entry);
-    } catch (IOException e) {
-      // probably not a zip file
-    }
-
-    try {
-      StreamSource source;
-      if (netexFileInputStream != null) {
-        source = new StreamSource(netexFileInputStream);
-      } else {
-        source = new StreamSource(new File(netexFileUri));
-      }
+      logger.info("Found a zip file with entry {}", entry.getName());
+      InputStream netexFileInputStream = zipFile.getInputStream(entry);
+      logger.info("Creating StreamSource from netexFileInputStream");
       PublicationDeliveryStructure publicationDeliveryStructure =
-        netexUnmarshaller.unmarshalFromSource(source);
-      publicationDeliveryStructure
-        .getDataObjects()
-        .getCompositeFrameOrCommonFrame()
-        .forEach(frame -> {
-          var frameValue = frame.getValue();
-          if (frameValue instanceof SiteFrame siteFrame) {
-            List<StopPlace> stopPlaces = siteFrame
-              .getStopPlaces()
-              .getStopPlace_()
-              .stream()
-              .map(stopPlace -> (StopPlace) stopPlace.getValue())
-              .toList();
+        netexUnmarshaller.unmarshalFromSource(new StreamSource(netexFileInputStream));
+      extractStopPlaceData(publicationDeliveryStructure);
+    } catch (IOException ioException) {
+      // probably not a zip file
+      logger.info("Not a zip file", ioException);
 
-            stopPlaces.forEach(stopPlace -> {
-              Optional
-                .ofNullable(stopPlace.getQuays())
-                .ifPresent(quays ->
-                  quays
-                    .getQuayRefOrQuay()
-                    .forEach(quayRefOrQuay -> {
-                      Quay quay = (Quay) quayRefOrQuay.getValue();
-                      stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
-                      quayByQuayRefIndex.put(quay.getId(), quay);
-                    })
-                );
-              allStopPlacesIndex.add(stopPlace);
-            });
-          }
-        });
-    } catch (NetexUnmarshallerUnmarshalFromSourceException e) {
+      try {
+        PublicationDeliveryStructure publicationDeliveryStructure =
+          netexUnmarshaller.unmarshalFromSource(new StreamSource(new File(netexFileUri)));
+        extractStopPlaceData(publicationDeliveryStructure);
+      } catch (
+        NetexUnmarshallerUnmarshalFromSourceException unmarshalFromSourceException
+      ) {
+        logger.warn(
+          "Unable to unmarshal stop places xml, stop place registry will be an empty list",
+          unmarshalFromSourceException
+        );
+      }
+    } catch (NetexUnmarshallerUnmarshalFromSourceException unmarshalFromSourceException) {
       logger.warn(
-        "Unable to unmarshal stop places xml, stop place registry will be an empty list"
+        "Unable to unmarshal stop places xml, stop place registry will be an empty list",
+        unmarshalFromSourceException
       );
     }
-    stopPlacesFilter = new StopPlacesFilter();
+  }
+
+  private void extractStopPlaceData(
+    PublicationDeliveryStructure publicationDeliveryStructure
+  ) {
+    publicationDeliveryStructure
+      .getDataObjects()
+      .getCompositeFrameOrCommonFrame()
+      .forEach(frame -> {
+        var frameValue = frame.getValue();
+        if (frameValue instanceof SiteFrame siteFrame) {
+          List<StopPlace> stopPlaces = siteFrame
+            .getStopPlaces()
+            .getStopPlace_()
+            .stream()
+            .map(stopPlace -> (StopPlace) stopPlace.getValue())
+            .toList();
+
+          stopPlaces.forEach(stopPlace -> {
+            Optional
+              .ofNullable(stopPlace.getQuays())
+              .ifPresent(quays ->
+                quays
+                  .getQuayRefOrQuay()
+                  .forEach(quayRefOrQuay -> {
+                    Quay quay = (Quay) quayRefOrQuay.getValue();
+                    stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+                    quayByQuayRefIndex.put(quay.getId(), quay);
+                  })
+              );
+            allStopPlacesIndex.add(stopPlace);
+          });
+        }
+      });
   }
 
   @Override
