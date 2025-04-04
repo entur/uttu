@@ -19,6 +19,7 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import no.entur.uttu.graphql.ArgumentWrapper;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DayTypeAssignment;
@@ -56,7 +57,10 @@ public class DayTypeMapper extends AbstractProviderEntityMapper<DayType> {
   private List<DayTypeAssignment> mapDayTypeAssignments(
     List<Map<String, Object>> inputObjs
   ) {
-    return inputObjs.stream().map(this::mapDayTypeAssignment).toList();
+    return inputObjs
+      .stream()
+      .map(this::mapDayTypeAssignment)
+      .collect(Collectors.toList());
   }
 
   private DayTypeAssignment mapDayTypeAssignment(Map<String, Object> inputMap) {
