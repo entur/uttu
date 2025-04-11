@@ -153,4 +153,70 @@ public class ExportedPublicLinesFetcherTest {
     assertEquals("123", exportedPublicLines.get(0).getPublicCode());
     assertEquals("123", exportedPublicLines.get(1).getPublicCode());
   }
+
+  @Test
+  public void fetchExportedPublicLineWhenPublicCodeIsNull() {
+    Provider provider = new Provider();
+    provider.setCode("nsb");
+    Export export = new Export();
+    export.setProvider(provider);
+
+    ExportedLineStatistics exportedLineStatistics = new ExportedLineStatistics();
+    exportedLineStatistics.setExport(export);
+    exportedLineStatistics.setOperatingPeriodFrom(LocalDate.of(2022, 1, 1));
+    exportedLineStatistics.setOperatingPeriodTo(LocalDate.of(2022, 3, 4));
+    exportedLineStatistics.setPublicCode(null);
+    exportedLineStatistics.setLineName("Line123");
+
+    List<ExportedPublicLine> exportedPublicLines =
+      ExportedPublicLinesFetcher.exportedLineStatisticsToExportedPublicLine(
+        List.of(exportedLineStatistics)
+      );
+
+    assertEquals(1, exportedPublicLines.size());
+    assertEquals(1, exportedPublicLines.get(0).getLines().size());
+    assertEquals("nsb", exportedPublicLines.get(0).getProviderCode());
+    assertEquals("Line123", exportedPublicLines.get(0).getPublicCode());
+  }
+
+  @Test
+  public void fetchExportedPublicLinesWithMixOfNullAndNonNullPublicCodes() {
+    Provider provider = new Provider();
+    provider.setCode("nsb");
+    Export export = new Export();
+    export.setProvider(provider);
+
+    ExportedLineStatistics exportedLineStatistics1 = new ExportedLineStatistics();
+    exportedLineStatistics1.setExport(export);
+    exportedLineStatistics1.setOperatingPeriodFrom(LocalDate.of(2022, 1, 1));
+    exportedLineStatistics1.setOperatingPeriodTo(LocalDate.of(2022, 3, 4));
+    exportedLineStatistics1.setPublicCode(null);
+    exportedLineStatistics1.setLineName("Line123");
+
+    ExportedLineStatistics exportedLineStatistics2 = new ExportedLineStatistics();
+    exportedLineStatistics2.setExport(export);
+    exportedLineStatistics2.setOperatingPeriodFrom(LocalDate.of(2022, 5, 1));
+    exportedLineStatistics2.setOperatingPeriodTo(LocalDate.of(2022, 8, 4));
+    exportedLineStatistics2.setPublicCode("456");
+    exportedLineStatistics2.setLineName("Line456");
+
+    List<ExportedPublicLine> exportedPublicLines =
+      ExportedPublicLinesFetcher.exportedLineStatisticsToExportedPublicLine(
+        List.of(exportedLineStatistics1, exportedLineStatistics2)
+      );
+
+    assertEquals(2, exportedPublicLines.size());
+
+    // Sort results to ensure consistent test assertions
+    exportedPublicLines.sort((a, b) -> a.getPublicCode().compareTo(b.getPublicCode()));
+
+    assertEquals(1, exportedPublicLines.get(0).getLines().size());
+    assertEquals(1, exportedPublicLines.get(1).getLines().size());
+
+    assertEquals("nsb", exportedPublicLines.get(0).getProviderCode());
+    assertEquals("nsb", exportedPublicLines.get(1).getProviderCode());
+
+    assertEquals("456", exportedPublicLines.get(0).getPublicCode());
+    assertEquals("Line123", exportedPublicLines.get(1).getPublicCode());
+  }
 }
