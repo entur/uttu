@@ -26,7 +26,12 @@ public class ExportedPublicLinesFetcher implements DataFetcher<List<ExportedPubl
       .collect(
         Collectors.groupingBy(
           lineStatistics -> lineStatistics.getExport().getProvider().getCode(),
-          Collectors.groupingBy(ExportedLineStatistics::getPublicCode)
+          Collectors.groupingBy(value -> {
+            if (value.getPublicCode() == null) {
+              return value.getLineName();
+            }
+            return value.getPublicCode();
+          })
         )
       )
       .entrySet()
