@@ -49,7 +49,7 @@
         <geotools.version>32.2</geotools.version>
         <wololo.version>0.18.1</wololo.version>
 
-        <commons-io.version>2.18.0</commons-io.version>
+        <commons-io.version>2.19.0</commons-io.version>
         <graphql.version>22.3</graphql.version>
         <graphql-extended-scalars.version>22.0</graphql-extended-scalars.version>
         <netex-java-model.version>2.0.15</netex-java-model.version>
