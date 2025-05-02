@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
-import no.entur.uttu.model.ExportedLineStatistics;
 import no.entur.uttu.model.ProviderEntity;
 
 @Entity
@@ -40,10 +39,6 @@ public class Export extends ProviderEntity {
 
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
   private List<ExportMessage> messages = new ArrayList<>();
-
-  @OneToMany(mappedBy = "export", cascade = CascadeType.ALL, orphanRemoval = true)
-  @NotNull
-  private final List<ExportedLineStatistics> exportedLineStatistics = new ArrayList<>();
 
   public String getName() {
     return name;
@@ -70,10 +65,6 @@ public class Export extends ProviderEntity {
     Collection<ExportLineAssociation> exportLineAssociations
   ) {
     this.exportLineAssociations = exportLineAssociations;
-  }
-
-  public ExportStatusEnumeration getExportStatus() {
-    return exportStatus;
   }
 
   public void markAsFinished() {
@@ -116,17 +107,6 @@ public class Export extends ProviderEntity {
 
   public void setGenerateServiceLinks(boolean generateServiceLinks) {
     this.generateServiceLinks = generateServiceLinks;
-  }
-
-  public List<ExportedLineStatistics> getExportedLineStatistics() {
-    return exportedLineStatistics;
-  }
-
-  public void addExportedLineStatistics(
-    ExportedLineStatistics exportedLineStatisticsToAdd
-  ) {
-    exportedLineStatisticsToAdd.setExport(this);
-    exportedLineStatistics.add(exportedLineStatisticsToAdd);
   }
 
   @Override

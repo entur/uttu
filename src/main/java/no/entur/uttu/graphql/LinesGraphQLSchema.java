@@ -38,7 +38,6 @@ import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
 import java.time.DayOfWeek;
-import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.util.Arrays;
 import java.util.Collection;
@@ -47,9 +46,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import no.entur.uttu.config.Context;
-import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.graphql.fetchers.DayTypeServiceJourneyCountFetcher;
-import no.entur.uttu.graphql.fetchers.ExportedPublicLinesFetcher;
 import no.entur.uttu.graphql.model.Organisation;
 import no.entur.uttu.graphql.model.ServiceLink;
 import no.entur.uttu.graphql.model.StopPlace;
@@ -64,7 +61,6 @@ import no.entur.uttu.model.Branding;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.DirectionTypeEnumeration;
-import no.entur.uttu.model.ExportedLineStatistics;
 import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.FlexibleArea;
 import no.entur.uttu.model.FlexibleLine;
@@ -138,9 +134,6 @@ public class LinesGraphQLSchema {
 
   @Autowired
   private ExportRepository exportRepository;
-
-  @Autowired
-  private ExportedLineStatisticsService exportedLineStatisticsService;
 
   @Autowired
   private FlexibleLineRepository flexibleLineRepository;
@@ -272,7 +265,6 @@ public class LinesGraphQLSchema {
   private GraphQLObjectType flexibleStopPlaceObjectType;
   private GraphQLObjectType networkObjectType;
   private GraphQLObjectType exportObjectType;
-  private GraphQLObjectType exportedLineStatisticsObjectType;
 
   private GraphQLObjectType stopPlaceObjectType;
 
@@ -283,7 +275,6 @@ public class LinesGraphQLSchema {
 
   private GraphQLArgument idArgument;
   private GraphQLArgument idsArgument;
-  private GraphQLArgument providerArgument;
   private GraphQLSchema graphQLSchema;
 
   @PostConstruct
@@ -340,14 +331,6 @@ public class LinesGraphQLSchema {
         .name(FIELD_IDS)
         .type(new GraphQLNonNull(new GraphQLList(new GraphQLNonNull(GraphQLID))))
         .description("Ids for entities")
-        .build();
-
-    providerArgument =
-      GraphQLArgument
-        .newArgument()
-        .name(FIELD_PROVIDER_CODE)
-        .type(GraphQLID)
-        .description("Provider code, f.eks 'rut' for Ruter.")
         .build();
 
     GraphQLObjectType geoJSONObjectType = newObject()
@@ -776,85 +759,6 @@ public class LinesGraphQLSchema {
       )
       .build();
 
-    GraphQLObjectType exportedDayTypeObjectType = newObject()
-      .name("ExportedDayType")
-      .field(newFieldDefinition().name(FIELD_DAY_TYPE_NETEX_ID).type(GraphQLString))
-      .field(
-        newFieldDefinition()
-          .name(FIELD_OPERATING_DATE_FROM)
-          .type(DateScalar.getGraphQLDateScalar())
-      )
-      .field(
-        newFieldDefinition()
-          .name(FIELD_OPERATING_DATE_TO)
-          .type(DateScalar.getGraphQLDateScalar())
-      )
-      .field(newFieldDefinition().name(FIELD_SERVICE_JOURNEY_NAME).type(GraphQLString))
-      .build();
-
-    GraphQLObjectType exportedLineObjectType = newObject()
-      .name("ExportedLine")
-      .field(newFieldDefinition().name(FIELD_LINE_NAME).type(GraphQLString))
-      .field(newFieldDefinition().name(FIELD_LINE_TYPE).type(GraphQLString))
-      .field(
-        newFieldDefinition()
-          .name(FIELD_OPERATING_DATE_FROM)
-          .type(DateScalar.getGraphQLDateScalar())
-      )
-      .field(
-        newFieldDefinition()
-          .name(FIELD_OPERATING_DATE_TO)
-          .type(DateScalar.getGraphQLDateScalar())
-      )
-      .field(
-        newFieldDefinition()
-          .name(FIELD_EXPORTED_DAY_TYPES_STATISTICS)
-          .type(new GraphQLList(exportedDayTypeObjectType))
-          .dataFetcher(env -> {
-            ExportedLineStatistics exportedLineStatistics = env.getSource();
-            return exportedLineStatistics.getExportedDayTypesStatistics();
-          })
-      )
-      .build();
-
-    GraphQLObjectType publicLineObjectType = newObject()
-      .name("PublicLine")
-      .field(
-        newFieldDefinition()
-          .name(FIELD_OPERATING_DATE_FROM)
-          .type(DateScalar.getGraphQLDateScalar())
-      )
-      .field(
-        newFieldDefinition()
-          .name(FIELD_OPERATING_DATE_TO)
-          .type(DateScalar.getGraphQLDateScalar())
-      )
-      .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(GraphQLString))
-      .field(newFieldDefinition().name(FIELD_PROVIDER_CODE).type(GraphQLString))
-      .field(
-        newFieldDefinition()
-          .name(FIELD_LINES)
-          .type(new GraphQLList(exportedLineObjectType))
-      )
-      .build();
-
-    exportedLineStatisticsObjectType =
-      newObject()
-        .name("ExportedLineStatistics")
-        .field(
-          newFieldDefinition()
-            .name(FIELD_START_DATE)
-            .type(DateScalar.getGraphQLDateScalar())
-            .dataFetcher(env -> LocalDate.now())
-        )
-        .field(
-          newFieldDefinition()
-            .name(FIELD_PUBLIC_LINES)
-            .type(new GraphQLList(publicLineObjectType))
-            .dataFetcher(new ExportedPublicLinesFetcher())
-        )
-        .build();
-
     exportObjectType =
       newObject(identifiedEntityObjectType)
         .name("Export")
@@ -1183,19 +1087,6 @@ public class LinesGraphQLSchema {
           .description("Get export by id")
           .argument(idArgument)
           .dataFetcher(env -> exportRepository.getOne(env.getArgument(FIELD_ID)))
-      )
-      .field(
-        newFieldDefinition()
-          .type(exportedLineStatisticsObjectType)
-          .name("lineStatistics")
-          .description("Get line statistics")
-          .argument(providerArgument)
-          .dataFetcher(env -> {
-            String providerCode = env.getArgument(FIELD_PROVIDER_CODE);
-            return providerCode != null
-              ? exportedLineStatisticsService.getLineStatisticsForProvider(providerCode)
-              : exportedLineStatisticsService.getLineStatisticsForAllProviders();
-          })
       )
       .field(
         newFieldDefinition()
