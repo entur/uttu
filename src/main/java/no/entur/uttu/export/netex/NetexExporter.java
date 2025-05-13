@@ -67,7 +67,7 @@ public class NetexExporter {
     new Thread(this::assertInit).start();
   }
 
-  public List<Line> exportDataSet(
+  public void exportDataSet(
     Export export,
     DataSetProducer dataSetProducer,
     boolean validateAgainstSchema
@@ -102,8 +102,6 @@ public class NetexExporter {
       dataSetProducer,
       validateAgainstSchema
     );
-
-    return linesToExport;
   }
 
   protected List<Line> findLinesToExport(
