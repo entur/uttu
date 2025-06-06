@@ -9,6 +9,7 @@ import org.entur.oauth2.RorAuthenticationConverter;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolverBuilder;
 import org.entur.oauth2.user.JwtUserInfoExtractor;
 import org.entur.ror.permission.RemoteBabaRoleAssignmentExtractor;
+import org.entur.ror.permission.RemoteBabaUserInfoExtractor;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
 import org.rutebanken.helper.organisation.user.UserInfoExtractor;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -79,9 +80,26 @@ public class EnturSecurityConfiguration {
       .build();
   }
 
+  @ConditionalOnProperty(
+    value = "entur.security.role.assignment.extractor",
+    havingValue = "jwt",
+    matchIfMissing = true
+  )
   @Bean
-  public UserInfoExtractor userInfoExtractor() {
+  public UserInfoExtractor jwtUserInfoExtractor() {
     return new JwtUserInfoExtractor();
+  }
+
+  @ConditionalOnProperty(
+    value = "entur.security.role.assignment.extractor",
+    havingValue = "baba"
+  )
+  @Bean
+  public UserInfoExtractor babaUserInfoExtractor(
+    @Qualifier("internalWebClient") WebClient webClient,
+    @Value("${entur.permission.rest.service.url}") String url
+  ) {
+    return new RemoteBabaUserInfoExtractor(webClient, url);
   }
 
   @Bean
