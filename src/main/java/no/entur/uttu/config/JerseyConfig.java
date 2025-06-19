@@ -45,7 +45,6 @@ public class JerseyConfig {
       register(LinesGraphQLResource.class);
       register(ProviderGraphQLResource.class);
       register(ExportFileDownloadResource.class);
-      register(ExportedLineStatisticsGraphQLResource.class);
     }
   }
 }

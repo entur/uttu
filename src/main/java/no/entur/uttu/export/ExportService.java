@@ -17,15 +17,12 @@ package no.entur.uttu.export;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
-import no.entur.uttu.export.linestatistics.ExportedLineStatisticsService;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.export.netex.DataSetProducer;
 import no.entur.uttu.export.netex.NetexExporter;
-import no.entur.uttu.model.Line;
 import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportMessage;
 import no.entur.uttu.model.job.SeverityEnumeration;
@@ -82,11 +79,7 @@ public class ExportService {
     logger.info("Starting {}", export);
 
     try (DataSetProducer dataSetProducer = new DataSetProducer(workingFolder)) {
-      List<Line> exportedLines = exporter.exportDataSet(
-        export,
-        dataSetProducer,
-        validateAgainstSchema
-      );
+      exporter.exportDataSet(export, dataSetProducer, validateAgainstSchema);
 
       InputStream dataSetStream = dataSetProducer.buildDataSet();
       byte[] bytes = IOUtils.toByteArray(dataSetStream);
@@ -112,10 +105,6 @@ public class ExportService {
           export.getProvider().getCode().toLowerCase(),
           exportedDataSetFilename
         );
-        exportedLines
-          .stream()
-          .map(ExportedLineStatisticsService::toExportedLineStatistics)
-          .forEach(export::addExportedLineStatistics);
       }
       export.setFileName(exportFolder + ExportUtil.createBackupDataSetFilename(export));
       blobStoreRepository.uploadBlob(
