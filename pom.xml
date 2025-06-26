@@ -39,7 +39,7 @@
     <properties>
         <java.version>21</java.version>
 
-        <entur.helpers.version>5.14</entur.helpers.version>
+        <entur.helpers.version>5.16.0</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
