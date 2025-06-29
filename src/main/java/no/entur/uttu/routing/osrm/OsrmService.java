@@ -93,7 +93,6 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
     RoutingServiceRequestParams requestParams,
     MutableRequest request
   ) {
-    List<List<BigDecimal>> routeCoordinates = new ArrayList<>();
     try {
       HttpResponse<String> response = httpClient.send(
         request,
