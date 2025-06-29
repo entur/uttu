@@ -124,8 +124,8 @@ class OsrmServiceTest {
 
     // Then
     assertNotNull(geometry);
-    assertTrue(geometry.coordinates().isEmpty());
-    assertEquals(BigDecimal.ZERO, geometry.distance());
+    assertEquals(2, geometry.coordinates().size());
+    assertTrue(geometry.distance().compareTo(BigDecimal.ZERO) > 0);
     verify(httpClient).send(any(MutableRequest.class), eq(BodyHandlers.ofString()));
   }
 
@@ -149,8 +149,8 @@ class OsrmServiceTest {
 
     // Then
     assertNotNull(geometry);
-    assertTrue(geometry.coordinates().isEmpty());
-    assertEquals(BigDecimal.ZERO, geometry.distance());
+    assertEquals(2, geometry.coordinates().size());
+    assertTrue(geometry.distance().compareTo(BigDecimal.ZERO) > 0);
   }
 
   @Test
@@ -173,8 +173,8 @@ class OsrmServiceTest {
 
     // Then
     assertNotNull(geometry);
-    assertTrue(geometry.coordinates().isEmpty());
-    assertEquals(BigDecimal.ZERO, geometry.distance());
+    assertEquals(2, geometry.coordinates().size());
+    assertTrue(geometry.distance().compareTo(BigDecimal.ZERO) > 0);
     assertTrue(
       Thread.currentThread().isInterrupted(),
       "Thread should be marked as interrupted"
