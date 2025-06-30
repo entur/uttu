@@ -20,9 +20,12 @@ import static org.mockito.Mockito.*;
 
 import java.io.File;
 import java.lang.reflect.Method;
+import java.math.BigDecimal;
 import java.util.List;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.netex.NetexUnmarshaller;
+import no.entur.uttu.stopplace.filter.params.BoundingBoxFilterParams;
+import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
 import org.junit.Before;
 import org.junit.Test;
 import org.locationtech.jts.geom.Coordinate;
@@ -328,6 +331,76 @@ public class NetexPublicationDeliveryFileStopPlaceRegistryTest {
     // If spatial index is working, this should return exactly one result
     List<StopPlace> result = registry.getStopPlacesWithinPolygon(polygon);
     assertEquals("Spatial index should return exactly one result", 1, result.size());
+  }
+
+  @Test
+  public void testOptimizedBoundingBoxFiltering_withHelsinkiArea_returnsHelsinkiStop() {
+    // Create a bounding box around Helsinki using the filter params
+    BoundingBoxFilterParams boundingBoxFilter = new BoundingBoxFilterParams(
+      BigDecimal.valueOf(60.177), // North-East Latitude
+      BigDecimal.valueOf(24.945), // North-East Longitude
+      BigDecimal.valueOf(60.172), // South-West Latitude
+      BigDecimal.valueOf(24.940) // South-West Longitude
+    );
+
+    List<StopPlaceFilterParams> filters = List.of(boundingBoxFilter);
+    List<StopPlace> result = registry.getStopPlaces(filters);
+
+    assertEquals("Should find Helsinki stop using optimized filtering", 1, result.size());
+    assertEquals("FIN:StopPlace:HKI", result.get(0).getId());
+    assertEquals("Helsinki", result.get(0).getName().getValue());
+  }
+
+  @Test
+  public void testOptimizedBoundingBoxFiltering_withOuluArea_returnsOuluStops() {
+    // Create a large bounding box around Oulu area
+    BoundingBoxFilterParams boundingBoxFilter = new BoundingBoxFilterParams(
+      BigDecimal.valueOf(65.060), // North-East Latitude
+      BigDecimal.valueOf(25.500), // North-East Longitude
+      BigDecimal.valueOf(65.000), // South-West Latitude
+      BigDecimal.valueOf(25.430) // South-West Longitude
+    );
+
+    List<StopPlaceFilterParams> filters = List.of(boundingBoxFilter);
+    List<StopPlace> result = registry.getStopPlaces(filters);
+
+    // Should find Linnanmaan ramppi P1 (the only Oulu stop with a valid centroid)
+    assertEquals("Should find 1 Oulu stop with valid centroid", 1, result.size());
+
+    boolean foundLinnanmaaP1 = result
+      .stream()
+      .anyMatch(stop -> "FSR:StopPlace:331329".equals(stop.getId()));
+    assertTrue("Should find Linnanmaan ramppi P1", foundLinnanmaaP1);
+  }
+
+  @Test
+  public void testOptimizedBoundingBoxFiltering_performance_isFaster() {
+    // Create a large bounding box that covers most stops
+    BoundingBoxFilterParams boundingBoxFilter = new BoundingBoxFilterParams(
+      BigDecimal.valueOf(70.0), // North-East Latitude
+      BigDecimal.valueOf(30.0), // North-East Longitude
+      BigDecimal.valueOf(55.0), // South-West Latitude
+      BigDecimal.valueOf(20.0) // South-West Longitude
+    );
+
+    List<StopPlaceFilterParams> filters = List.of(boundingBoxFilter);
+
+    // Measure optimized filtering performance
+    long startTime = System.nanoTime();
+    for (int i = 0; i < 100; i++) {
+      List<StopPlace> result = registry.getStopPlaces(filters);
+      assertEquals(2, result.size()); // Should find 2 stops with valid centroids
+    }
+    long optimizedTime = System.nanoTime() - startTime;
+
+    logger.info(
+      "Optimized bounding box filtering: 100 queries took {} ns ({} ms)",
+      optimizedTime,
+      optimizedTime / 1_000_000
+    );
+
+    // The optimized version should complete in reasonable time
+    assertTrue("Optimized filtering should complete quickly", optimizedTime < 50_000_000); // 50ms
   }
 
   // Helper method to set private fields using reflection

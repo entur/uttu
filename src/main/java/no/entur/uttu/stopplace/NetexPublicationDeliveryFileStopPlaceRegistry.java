@@ -3,6 +3,7 @@ package no.entur.uttu.stopplace;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -16,6 +17,7 @@ import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.netex.NetexUnmarshaller;
 import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import no.entur.uttu.stopplace.filter.StopPlacesFilter;
+import no.entur.uttu.stopplace.filter.params.BoundingBoxFilterParams;
 import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.locationtech.jts.geom.Coordinate;
@@ -141,9 +143,69 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
   @Override
   public List<StopPlace> getStopPlaces(List<StopPlaceFilterParams> filters) {
-    return filters.isEmpty()
-      ? allStopPlacesIndex
-      : stopPlacesFilter.filter(allStopPlacesIndex, stopPlaceByQuayRefIndex, filters);
+    if (filters.isEmpty()) {
+      return allStopPlacesIndex;
+    }
+
+    // Check if we can optimize with spatial pre-filtering
+    Optional<BoundingBoxFilterParams> boundingBoxFilter = filters
+      .stream()
+      .filter(BoundingBoxFilterParams.class::isInstance)
+      .map(BoundingBoxFilterParams.class::cast)
+      .findFirst();
+
+    if (boundingBoxFilter.isPresent()) {
+      return getStopPlacesOptimized(filters, boundingBoxFilter.get());
+    }
+
+    return stopPlacesFilter.filter(allStopPlacesIndex, stopPlaceByQuayRefIndex, filters);
+  }
+
+  /**
+   * Optimized stop place filtering that uses spatial index for bounding box pre-filtering
+   */
+  private List<StopPlace> getStopPlacesOptimized(
+    List<StopPlaceFilterParams> filters,
+    BoundingBoxFilterParams boundingBoxFilter
+  ) {
+    // Step 1: Use spatial index to pre-filter by bounding box
+    Polygon boundingBoxPolygon = createPolygonFromBoundingBox(boundingBoxFilter);
+    List<StopPlace> spatiallyFilteredStops = getStopPlacesWithinPolygon(
+      boundingBoxPolygon
+    );
+
+    logger.debug(
+      "Spatial pre-filtering reduced stop places from {} to {}",
+      allStopPlacesIndex.size(),
+      spatiallyFilteredStops.size()
+    );
+
+    // Step 2: Apply remaining filters to the spatially pre-filtered set
+    return stopPlacesFilter.filter(
+      spatiallyFilteredStops,
+      stopPlaceByQuayRefIndex,
+      filters
+    );
+  }
+
+  /**
+   * Convert BoundingBoxFilterParams to JTS Polygon for spatial querying
+   */
+  private Polygon createPolygonFromBoundingBox(BoundingBoxFilterParams boundingBox) {
+    double swLat = boundingBox.southWestLat().doubleValue();
+    double swLng = boundingBox.southWestLng().doubleValue();
+    double neLat = boundingBox.northEastLat().doubleValue();
+    double neLng = boundingBox.northEastLng().doubleValue();
+
+    Coordinate[] coords = {
+      new Coordinate(swLng, swLat), // SW
+      new Coordinate(neLng, swLat), // SE
+      new Coordinate(neLng, neLat), // NE
+      new Coordinate(swLng, neLat), // NW
+      new Coordinate(swLng, swLat), // Close the ring
+    };
+
+    return geometryFactory.createPolygon(coords);
   }
 
   @Override

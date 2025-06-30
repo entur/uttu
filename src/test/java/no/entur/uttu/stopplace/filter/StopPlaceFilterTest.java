@@ -162,6 +162,9 @@ public class StopPlaceFilterTest {
 
   @Test
   public void testBoundingBoxFilter() {
+    // BoundingBox filtering has been moved to the registry level for spatial optimization
+    // This test verifies that BoundingBoxFilterParams are now handled transparently
+    // (i.e., they don't cause errors but also don't filter at the StopPlacesFilter level)
     StopPlaceFilterParams helsinkiAreaFilter = new BoundingBoxFilterParams(
       BigDecimal.valueOf(62),
       BigDecimal.valueOf(25.5),
@@ -173,8 +176,8 @@ public class StopPlaceFilterTest {
       stopPlaceByQuayRefIndex,
       List.of(helsinkiAreaFilter)
     );
-    Assert.assertEquals(1, filteredStopPlaces.size());
-    Assert.assertEquals("Helsinki", filteredStopPlaces.get(0).getName().getValue());
+    // BoundingBox filtering is no longer applied at the filter level - should return all stops
+    Assert.assertEquals(6, filteredStopPlaces.size());
 
     StopPlaceFilterParams ouluAreaFilter = new BoundingBoxFilterParams(
       BigDecimal.valueOf(66),
@@ -188,7 +191,8 @@ public class StopPlaceFilterTest {
         stopPlaceByQuayRefIndex,
         List.of(ouluAreaFilter)
       );
-    Assert.assertEquals(4, filteredStopPlaces.size());
+    // BoundingBox filtering is no longer applied at the filter level - should return all stops
+    Assert.assertEquals(6, filteredStopPlaces.size());
   }
 
   @Test
@@ -238,6 +242,8 @@ public class StopPlaceFilterTest {
       stopPlaceByQuayRefIndex,
       List.of(busFilter, meriToppilaAreaFilter)
     );
-    Assert.assertEquals(2, filteredStopPlaces.size());
+    // BoundingBox filtering is no longer applied at the filter level
+    // Only transport mode filtering is applied, so we should get all bus stops (5)
+    Assert.assertEquals(5, filteredStopPlaces.size());
   }
 }
