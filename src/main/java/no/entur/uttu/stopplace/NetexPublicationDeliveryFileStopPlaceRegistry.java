@@ -168,6 +168,11 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     List<StopPlaceFilterParams> filters,
     BoundingBoxFilterParams boundingBoxFilter
   ) {
+    logger.debug(
+            "About to apply pre-filtering to {} stop places",
+            allStopPlacesIndex.size()
+    );
+
     // Step 1: Use spatial index to pre-filter by bounding box
     Polygon boundingBoxPolygon = createPolygonFromBoundingBox(boundingBoxFilter);
     List<StopPlace> spatiallyFilteredStops = getStopPlacesWithinPolygon(
