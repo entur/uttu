@@ -18,6 +18,11 @@ import no.entur.uttu.netex.NetexUnmarshallerUnmarshalFromSourceException;
 import no.entur.uttu.stopplace.filter.StopPlacesFilter;
 import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
+import org.locationtech.jts.geom.Point;
+import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.index.strtree.STRtree;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.SiteFrame;
@@ -50,6 +55,9 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
   private final List<StopPlace> allStopPlacesIndex = new ArrayList<>();
 
+  private final STRtree spatialIndex = new STRtree();
+  private final GeometryFactory geometryFactory = new GeometryFactory();
+
   @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
 
@@ -66,6 +74,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
       PublicationDeliveryStructure publicationDeliveryStructure =
         netexUnmarshaller.unmarshalFromSource(new StreamSource(netexFileInputStream));
       extractStopPlaceData(publicationDeliveryStructure);
+      buildSpatialIndex();
     } catch (IOException ioException) {
       // probably not a zip file
       logger.info("Not a zip file", ioException);
@@ -74,6 +83,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
         PublicationDeliveryStructure publicationDeliveryStructure =
           netexUnmarshaller.unmarshalFromSource(new StreamSource(new File(netexFileUri)));
         extractStopPlaceData(publicationDeliveryStructure);
+        buildSpatialIndex();
       } catch (
         NetexUnmarshallerUnmarshalFromSourceException unmarshalFromSourceException
       ) {
@@ -139,5 +149,53 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
   @Override
   public Optional<Quay> getQuayById(String id) {
     return Optional.ofNullable(quayByQuayRefIndex.get(id));
+  }
+
+  @Override
+  public List<StopPlace> getStopPlacesWithinPolygon(Polygon polygon) {
+    if (polygon == null) {
+      return new ArrayList<>();
+    }
+
+    // Step 1: Fast spatial query using bounding box
+    @SuppressWarnings("unchecked")
+    List<StopPlace> candidates = spatialIndex.query(polygon.getEnvelopeInternal());
+
+    // Step 2: Precise polygon containment check
+    return candidates
+      .stream()
+      .filter(stopPlace -> {
+        Point point = createPointFromStopPlace(stopPlace);
+        return point != null && polygon.contains(point);
+      })
+      .toList();
+  }
+
+  private void buildSpatialIndex() {
+    logger.info("Building spatial index with {} stop places", allStopPlacesIndex.size());
+
+    for (StopPlace stopPlace : allStopPlacesIndex) {
+      Point point = createPointFromStopPlace(stopPlace);
+      if (point != null) {
+        spatialIndex.insert(point.getEnvelopeInternal(), stopPlace);
+      }
+    }
+
+    spatialIndex.build();
+    logger.info("Spatial index built successfully");
+  }
+
+  private Point createPointFromStopPlace(StopPlace stopPlace) {
+    if (
+      stopPlace.getCentroid() == null || stopPlace.getCentroid().getLocation() == null
+    ) {
+      return null;
+    }
+
+    var centroid = stopPlace.getCentroid().getLocation();
+    double longitude = centroid.getLongitude().doubleValue();
+    double latitude = centroid.getLatitude().doubleValue();
+
+    return geometryFactory.createPoint(new Coordinate(longitude, latitude));
   }
 }
