@@ -1,0 +1,5 @@
+mutation mutateLine($input: LineInput!) {
+  mutateLine(input: $input) {
+    id
+  }
+}
