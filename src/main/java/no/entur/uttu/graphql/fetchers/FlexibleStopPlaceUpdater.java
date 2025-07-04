@@ -26,7 +26,6 @@ import no.entur.uttu.repository.StopPointInJourneyPatternRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import no.entur.uttu.service.FlexibleAreaValidationService;
 import no.entur.uttu.util.Preconditions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
