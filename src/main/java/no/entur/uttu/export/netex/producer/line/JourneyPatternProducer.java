@@ -31,9 +31,11 @@ import no.entur.uttu.model.HailAndRideArea;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.model.StopPointInJourneyPattern;
+import no.entur.uttu.model.ValidationResult;
 import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.model.job.SeverityEnumeration;
 import no.entur.uttu.routing.RoutingService;
+import no.entur.uttu.service.FlexibleAreaValidationService;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingArrangementsStructure;
@@ -60,17 +62,20 @@ public class JourneyPatternProducer {
   private final ContactStructureProducer contactStructureProducer;
   private final StopPlaceRegistry stopPlaceRegistry;
   private final RoutingService routingService;
+  private final FlexibleAreaValidationService flexibleAreaValidationService;
 
   public JourneyPatternProducer(
     NetexObjectFactory objectFactory,
     ContactStructureProducer contactStructureProducer,
     StopPlaceRegistry stopPlaceRegistry,
-    RoutingService routingService
+    RoutingService routingService,
+    FlexibleAreaValidationService flexibleAreaValidationService
   ) {
     this.objectFactory = objectFactory;
     this.contactStructureProducer = contactStructureProducer;
     this.stopPlaceRegistry = stopPlaceRegistry;
     this.routingService = routingService;
+    this.flexibleAreaValidationService = flexibleAreaValidationService;
   }
 
   public org.rutebanken.netex.model.JourneyPattern produce(
@@ -160,6 +165,23 @@ public class JourneyPatternProducer {
     Ref stopRef;
     FlexibleStopPlace flexibleStopPlace = local.getFlexibleStopPlace();
     if (flexibleStopPlace != null) {
+      // Validate flexible stop place before adding to export context
+      ValidationResult validationResult =
+        flexibleAreaValidationService.validateFlexibleStopPlace(flexibleStopPlace);
+      if (!validationResult.isValid()) {
+        context.addExportMessage(
+          SeverityEnumeration.ERROR,
+          "Flexible stop place validation failed: %s",
+          validationResult.getMessage()
+        );
+      } else if (validationResult.hasWarnings()) {
+        context.addExportMessage(
+          SeverityEnumeration.WARN,
+          "Flexible stop place validation warning: %s",
+          validationResult.getMessage()
+        );
+      }
+
       context.flexibleStopPlaces.add(flexibleStopPlace);
       stopRef = flexibleStopPlace.getRef();
 
