@@ -18,6 +18,7 @@ package no.entur.uttu.stopplace.spi;
 import java.util.List;
 import java.util.Optional;
 import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
+import org.locationtech.jts.geom.Polygon;
 
 /**
  * Represents a stop place registry used to lookup stop places from quay refs
@@ -46,4 +47,11 @@ public interface StopPlaceRegistry {
    * @return The quay entity
    */
   Optional<org.rutebanken.netex.model.Quay> getQuayById(String id);
+
+  /**
+   * Find stop places within a given polygon area
+   * @param polygon The polygon area to search within
+   * @return List of stop places whose centroids are within the polygon
+   */
+  List<org.rutebanken.netex.model.StopPlace> getStopPlacesWithinPolygon(Polygon polygon);
 }

@@ -2,7 +2,6 @@ package no.entur.uttu.stopplace.filter;
 
 import static no.entur.uttu.error.codes.ErrorCodeEnumeration.INVALID_STOP_PLACE_FILTER;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -110,14 +109,8 @@ public class StopPlacesFilter {
     for (StopPlaceFilterParams f : filters) {
       switch (f) {
         case BoundingBoxFilterParams boundingBoxFilterParams -> {
-          boolean isInsideBoundingBox = isStopPlaceWithinBoundingBox(
-            boundingBoxFilterParams,
-            stopPlace,
-            quays
-          );
-          if (!isInsideBoundingBox) {
-            return false;
-          }
+          // BoundingBox filtering is now handled by spatial pre-filtering in the registry
+          // Skip this filter as it's already been applied
         }
         case TransportModeStopPlaceFilterParams transportModeFilterParams -> {
           boolean isOfTransportMode =
@@ -155,38 +148,6 @@ public class StopPlacesFilter {
       stopPlace.getId().toLowerCase().contains(searchText) ||
       stopPlace.getName().getValue().toLowerCase().contains(searchText) ||
       quays.stream().anyMatch(quay -> quay.getId().toLowerCase().contains(searchText))
-    );
-  }
-
-  private boolean isStopPlaceWithinBoundingBox(
-    BoundingBoxFilterParams boundingBoxFilterParams,
-    StopPlace stopPlace,
-    List<Quay> quays
-  ) {
-    BigDecimal lat = Optional
-      .ofNullable(stopPlace.getCentroid())
-      .map(centroid -> centroid.getLocation().getLatitude())
-      .orElse(null);
-    BigDecimal lng = Optional
-      .ofNullable(stopPlace.getCentroid())
-      .map(centroid -> centroid.getLocation().getLongitude())
-      .orElse(null);
-
-    if (!quays.isEmpty() && (lat == null || lng == null)) {
-      Quay firstQuay = quays.getFirst();
-      lat = firstQuay.getCentroid().getLocation().getLatitude();
-      lng = firstQuay.getCentroid().getLocation().getLongitude();
-    }
-    if (lat == null || lng == null) {
-      // oh well, we tried
-      return false;
-    }
-
-    return (
-      lat.compareTo(boundingBoxFilterParams.northEastLat()) < 0 &&
-      lng.compareTo(boundingBoxFilterParams.northEastLng()) < 0 &&
-      lat.compareTo(boundingBoxFilterParams.southWestLat()) > 0 &&
-      lng.compareTo(boundingBoxFilterParams.southWestLng()) > 0
     );
   }
 
