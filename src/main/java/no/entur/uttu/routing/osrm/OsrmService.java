@@ -20,6 +20,8 @@ import java.util.Map;
 import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.routing.RouteGeometry;
 import no.entur.uttu.routing.RoutingServiceRequestParams;
+import org.geotools.referencing.GeodeticCalculator;
+import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -91,7 +93,6 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
     RoutingServiceRequestParams requestParams,
     MutableRequest request
   ) {
-    List<List<BigDecimal>> routeCoordinates = new ArrayList<>();
     try {
       HttpResponse<String> response = httpClient.send(
         request,
@@ -109,7 +110,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
           requestParams.latitudeTo(),
           responseJsonNode.get("message").asText()
         );
-        return new RouteGeometry(routeCoordinates, BigDecimal.ZERO);
+        return createStraightLineRouteGeometry(requestParams);
       }
       JsonNode coordinates = responseJsonNode
         .get("routes")
@@ -143,6 +144,36 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
       );
       Thread.currentThread().interrupt();
     }
-    return new RouteGeometry(routeCoordinates, BigDecimal.ZERO);
+    return createStraightLineRouteGeometry(requestParams);
+  }
+
+  private RouteGeometry createStraightLineRouteGeometry(
+    RoutingServiceRequestParams requestParams
+  ) {
+    List<List<BigDecimal>> coordinates = List.of(
+      List.of(requestParams.longitudeFrom(), requestParams.latitudeFrom()),
+      List.of(requestParams.longitudeTo(), requestParams.latitudeTo())
+    );
+
+    BigDecimal distance = calculateDistance(
+      requestParams.latitudeFrom(),
+      requestParams.longitudeFrom(),
+      requestParams.latitudeTo(),
+      requestParams.longitudeTo()
+    );
+
+    return new RouteGeometry(coordinates, distance);
+  }
+
+  private BigDecimal calculateDistance(
+    BigDecimal lat1,
+    BigDecimal lon1,
+    BigDecimal lat2,
+    BigDecimal lon2
+  ) {
+    GeodeticCalculator calculator = new GeodeticCalculator(DefaultGeographicCRS.WGS84);
+    calculator.setStartingGeographicPoint(lon1.doubleValue(), lat1.doubleValue());
+    calculator.setDestinationGeographicPoint(lon2.doubleValue(), lat2.doubleValue());
+    return BigDecimal.valueOf(calculator.getOrthodromicDistance());
   }
 }
