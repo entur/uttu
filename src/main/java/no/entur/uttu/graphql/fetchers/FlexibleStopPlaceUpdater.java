@@ -35,17 +35,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class FlexibleStopPlaceUpdater
   extends AbstractProviderEntityUpdater<FlexibleStopPlace> {
 
-  @Autowired
-  private StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository;
-
-  @Autowired
-  private FlexibleAreaValidationService flexibleAreaValidationService;
+  private final StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository;
+  private final FlexibleAreaValidationService flexibleAreaValidationService;
 
   public FlexibleStopPlaceUpdater(
     AbstractProviderEntityMapper<FlexibleStopPlace> mapper,
-    ProviderEntityRepository<FlexibleStopPlace> repository
+    ProviderEntityRepository<FlexibleStopPlace> repository,
+    StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository,
+    FlexibleAreaValidationService flexibleAreaValidationService
   ) {
     super(mapper, repository);
+    this.stopPointInJourneyPatternRepository = stopPointInJourneyPatternRepository;
+    this.flexibleAreaValidationService = flexibleAreaValidationService;
   }
 
   @Override

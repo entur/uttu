@@ -30,6 +30,7 @@ import no.entur.uttu.model.FlexibleStopPlace;
 import no.entur.uttu.model.ValidationResult;
 import no.entur.uttu.model.VehicleModeEnumeration;
 import no.entur.uttu.repository.FlexibleStopPlaceRepository;
+import no.entur.uttu.repository.StopPointInJourneyPatternRepository;
 import no.entur.uttu.service.FlexibleAreaValidationService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,9 @@ class FlexibleStopPlaceUpdaterTest {
   private FlexibleStopPlaceRepository repository;
 
   @Mock
+  private StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository;
+
+  @Mock
   private FlexibleAreaValidationService flexibleAreaValidationService;
 
   @Mock
@@ -59,7 +63,13 @@ class FlexibleStopPlaceUpdaterTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    updater = new FlexibleStopPlaceUpdater(mapper, repository);
+    updater =
+      new FlexibleStopPlaceUpdater(
+        mapper,
+        repository,
+        stopPointInJourneyPatternRepository,
+        flexibleAreaValidationService
+      );
 
     // Use reflection to set the private field
     Field field =
