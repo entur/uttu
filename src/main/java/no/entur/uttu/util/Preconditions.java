@@ -16,6 +16,7 @@
 package no.entur.uttu.util;
 
 import com.google.common.base.Strings;
+import java.util.function.Supplier;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -32,6 +33,20 @@ public final class Preconditions {
       throw new CodedIllegalArgumentException(
         Strings.lenientFormat(errorMessageTemplate, errorMessageArgs),
         codedError
+      );
+    }
+  }
+
+  public static void checkArgument(
+    boolean expression,
+    Supplier<CodedError> codedErrorSupplier,
+    @Nullable String errorMessageTemplate,
+    @Nullable Object... errorMessageArgs
+  ) {
+    if (!expression) {
+      throw new CodedIllegalArgumentException(
+        Strings.lenientFormat(errorMessageTemplate, errorMessageArgs),
+        codedErrorSupplier.get()
       );
     }
   }

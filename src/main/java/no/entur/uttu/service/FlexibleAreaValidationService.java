@@ -40,12 +40,22 @@ public class FlexibleAreaValidationService {
   }
 
   public ValidationResult validateFlexibleStopPlace(FlexibleStopPlace flexibleStopPlace) {
-    if (!requiresValidation(flexibleStopPlace.getKeyValues())) {
-      return ValidationResult.valid();
-    }
+    boolean stopPlaceRequiresValidation = requiresValidation(
+      flexibleStopPlace.getKeyValues()
+    );
 
     for (FlexibleArea flexibleArea : flexibleStopPlace.getFlexibleAreas()) {
-      ValidationResult areaResult = validateFlexibleArea(flexibleArea);
+      ValidationResult areaResult;
+
+      // If stop place requires validation OR area requires validation, validate the area
+      if (
+        stopPlaceRequiresValidation || requiresValidation(flexibleArea.getKeyValues())
+      ) {
+        areaResult = validateFlexibleAreaContent(flexibleArea);
+      } else {
+        areaResult = ValidationResult.valid();
+      }
+
       if (!areaResult.isValid()) {
         return ValidationResult.invalid(
           "FlexibleStopPlace " +
@@ -66,6 +76,10 @@ public class FlexibleAreaValidationService {
       return ValidationResult.valid();
     }
 
+    return validateFlexibleAreaContent(flexibleArea);
+  }
+
+  private ValidationResult validateFlexibleAreaContent(FlexibleArea flexibleArea) {
     Polygon polygon = flexibleArea.getPolygon();
     if (polygon == null) {
       return ValidationResult.invalid(

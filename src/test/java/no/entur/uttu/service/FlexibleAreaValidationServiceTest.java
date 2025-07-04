@@ -93,6 +93,12 @@ class FlexibleAreaValidationServiceTest {
     FlexibleArea flexibleArea = createFlexibleArea();
     flexibleStopPlace.setFlexibleAreas(List.of(flexibleArea));
 
+    // Since FlexibleStopPlace has the key-value, the area will be validated
+    // So we need to mock that the area contains stop places
+    StopPlace stopPlace = new StopPlace();
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
+      .thenReturn(List.of(stopPlace));
+
     ValidationResult result = validationService.validateFlexibleStopPlace(
       flexibleStopPlace
     );
@@ -284,6 +290,70 @@ class FlexibleAreaValidationServiceTest {
 
     assertFalse(result.isValid());
     assertTrue(result.getMessage().contains("contains invalid FlexibleArea"));
+    assertFalse(result.hasWarnings());
+  }
+
+  @Test
+  void shouldValidateAllAreasWhenStopPlaceHasKeyValueButAreasDoNot() {
+    // This tests the bug fix: when FlexibleStopPlace has the key-value but areas don't,
+    // all areas should still be validated
+    FlexibleStopPlace flexibleStopPlace = createFlexibleStopPlace();
+    Map<String, Value> stopPlaceKeyValues = new HashMap<>();
+    stopPlaceKeyValues.put(
+      "FlexibleStopAreaType",
+      new Value("UnrestrictedPublicTransportAreas")
+    );
+    flexibleStopPlace.replaceKeyValues(stopPlaceKeyValues);
+
+    FlexibleArea areaWithoutKeyValue = createFlexibleArea();
+    // Don't set any key-values on the area
+    areaWithoutKeyValue.replaceKeyValues(new HashMap<>());
+
+    flexibleStopPlace.setFlexibleAreas(List.of(areaWithoutKeyValue));
+
+    // Area has no stop places, so should fail validation
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
+      .thenReturn(Collections.emptyList());
+
+    ValidationResult result = validationService.validateFlexibleStopPlace(
+      flexibleStopPlace
+    );
+
+    assertFalse(result.isValid());
+    assertTrue(result.getMessage().contains("contains invalid FlexibleArea"));
+    assertTrue(result.getMessage().contains("contains no valid stop places"));
+    assertFalse(result.hasWarnings());
+  }
+
+  @Test
+  void shouldValidateAllAreasWhenStopPlaceHasKeyValueAndAreasHaveStopPlaces() {
+    // Positive case: when FlexibleStopPlace has the key-value but areas don't,
+    // areas with stop places should still pass validation
+    FlexibleStopPlace flexibleStopPlace = createFlexibleStopPlace();
+    Map<String, Value> stopPlaceKeyValues = new HashMap<>();
+    stopPlaceKeyValues.put(
+      "FlexibleStopAreaType",
+      new Value("UnrestrictedPublicTransportAreas")
+    );
+    flexibleStopPlace.replaceKeyValues(stopPlaceKeyValues);
+
+    FlexibleArea areaWithoutKeyValue = createFlexibleArea();
+    // Don't set any key-values on the area
+    areaWithoutKeyValue.replaceKeyValues(new HashMap<>());
+
+    flexibleStopPlace.setFlexibleAreas(List.of(areaWithoutKeyValue));
+
+    // Area has stop places, so should pass validation
+    StopPlace stopPlace = new StopPlace();
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
+      .thenReturn(List.of(stopPlace));
+
+    ValidationResult result = validationService.validateFlexibleStopPlace(
+      flexibleStopPlace
+    );
+
+    assertTrue(result.isValid());
+    assertNull(result.getMessage());
     assertFalse(result.hasWarnings());
   }
 
