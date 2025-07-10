@@ -73,4 +73,9 @@ public enum ErrorCodeEnumeration implements ErrorCode {
    * If supplied stop place filter isn't something we support
    */
   INVALID_STOP_PLACE_FILTER,
+
+  /**
+   * Flexible area validation failed - area marked as UnrestrictedPublicTransportAreas must contain valid stop places
+   */
+  FLEXIBLE_AREA_VALIDATION_FAILED,
 }
