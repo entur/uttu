@@ -62,11 +62,7 @@ public class LinesGraphQLResource {
     Map<String, Object> request
   ) {
     Context.setProvider(providerCode);
-    try {
-      return graphQLResourceHelper.executeStatement(linesGraphQL, request);
-    } finally {
-      Context.clear();
-    }
+    return graphQLResourceHelper.executeStatement(linesGraphQL, request);
   }
 
   @POST
@@ -78,15 +74,11 @@ public class LinesGraphQLResource {
     String query
   ) {
     Context.setProvider(providerCode);
-    try {
-      return graphQLResourceHelper.getGraphQLResponse(
-        linesGraphQL,
-        "query",
-        query,
-        new HashMap<>()
-      );
-    } finally {
-      Context.clear();
-    }
+    return graphQLResourceHelper.getGraphQLResponse(
+      linesGraphQL,
+      "query",
+      query,
+      new HashMap<>()
+    );
   }
 }
