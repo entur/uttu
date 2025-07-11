@@ -16,6 +16,8 @@
 
 package no.entur.uttu.ext.entur.export.messaging;
 
+import static org.junit.Assert.*;
+
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
@@ -23,15 +25,17 @@ import com.google.cloud.spring.pubsub.core.subscriber.PubSubSubscriberTemplate;
 import com.google.pubsub.v1.PubsubMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import no.entur.uttu.UttuIntegrationTest;
+import no.entur.uttu.config.Context;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.rutebanken.helper.organisation.user.UserInfoExtractor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -39,17 +43,19 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.testcontainers.containers.PubSubEmulatorContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
 @Testcontainers
-@ActiveProfiles({ "in-memory-blobstore", "entur-pubsub-messaging-service" })
+@ActiveProfiles({ "in-memory-blobstore", "test", "entur-pubsub-messaging-service" })
 public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
 
-  public static final String TEST_CODESPACE = "rut";
+  private static final String TEST_CODESPACE = "rut";
+  private static final String TEST_EXPORT_FILE_NAME = "netex.zip";
+  private static final String TEST_USERNAME = "TEST_USERNAME";
 
-  public static final String TEST_EXPORT_FILE_NAME = "netex.zip";
   private static PubSubEmulatorContainer pubsubEmulator;
 
   @Autowired
@@ -66,6 +72,9 @@ public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
 
   @Value("${export.notify.queue.name:FlexibleLinesExportQueue}")
   private String queueName;
+
+  @MockitoBean
+  private UserInfoExtractor userInfoExtractor;
 
   @DynamicPropertySource
   static void emulatorProperties(DynamicPropertyRegistry registry) {
@@ -97,6 +106,7 @@ public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
   @Before
   public void setup() {
     enturGooglePubSubAdmin.createSubscriptionIfMissing(queueName);
+    Context.setUserName(TEST_USERNAME);
   }
 
   @After
@@ -120,13 +130,20 @@ public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
     messagingService.notifyExport(TEST_CODESPACE, TEST_EXPORT_FILE_NAME);
 
     List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
-    Assert.assertEquals(1, messages.size());
-    PubsubMessage pubsubMessage = messages.get(0);
-    String codespace = pubsubMessage
-      .getAttributesMap()
-      .get(EnturPubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
-    Assert.assertEquals("rb_" + TEST_CODESPACE, codespace);
-    Assert.assertEquals(
+    assertEquals(1, messages.size());
+    PubsubMessage pubsubMessage = messages.getFirst();
+    Map<String, String> headers = pubsubMessage.getAttributesMap();
+
+    String codespace = headers.get(
+      EnturPubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL
+    );
+    assertEquals("rb_" + TEST_CODESPACE, codespace);
+
+    String userName = headers.get(EnturPubSubMessagingService.HEADER_USERNAME);
+    assertNotNull(userName);
+    assertTrue(userName.startsWith(TEST_USERNAME));
+
+    assertEquals(
       TEST_EXPORT_FILE_NAME,
       pubsubMessage.getData().toString(StandardCharsets.UTF_8)
     );

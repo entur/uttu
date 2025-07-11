@@ -80,18 +80,14 @@ public class EnturSecurityConfiguration {
       .build();
   }
 
-  @ConditionalOnProperty(
-    value = "entur.security.role.assignment.extractor",
-    havingValue = "jwt",
-    matchIfMissing = true
-  )
+  @ConditionalOnProperty(value = "uttu.security.user.info.extractor", havingValue = "jwt")
   @Bean
   public UserInfoExtractor jwtUserInfoExtractor() {
     return new JwtUserInfoExtractor();
   }
 
   @ConditionalOnProperty(
-    value = "entur.security.role.assignment.extractor",
+    value = "uttu.security.user.info.extractor",
     havingValue = "baba"
   )
   @Bean
