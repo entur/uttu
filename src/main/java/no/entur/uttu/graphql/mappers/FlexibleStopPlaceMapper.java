@@ -121,7 +121,7 @@ public class FlexibleStopPlaceMapper
     return keyValues;
   }
 
-  protected String getVerifiedQuayRef(String quayRef) {
+  private String getVerifiedQuayRef(String quayRef) {
     return stopPlaceRegistry.getStopPlaceByQuayRef(quayRef).isPresent() ? quayRef : null;
   }
 }
