@@ -1,5 +1,8 @@
 #!/bin/bash  -e
 
+SCRIPT_PATH="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd $SCRIPT_PATH
+
 for f in ./db/migration/V1__Base_version.sql \
            ./db/migration/V2__Add_Export_filename.sql \
            ./db/migration/V3__Remove_unique_order_constraints.sql \

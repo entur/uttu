@@ -180,7 +180,7 @@ docker compose up -d
 Run the [database initialization script](./src/main/resources/db_init.sh).
 
 ```shell
-(cd src/main/resources && ./db_init.sh)
+(src/main/resources/db_init.sh)
 ```
 
 ### Run
@@ -191,6 +191,24 @@ correct configuration (Spring Boot -> App), and add `local` to Active profiles. 
 **Command line**: `mvn spring-boot:run`
 
 Uttu web server will expose APIs on port 11701 by default.
+
+### Local quickstart
+
+```
+docker compose up -d
+src/main/resources/db_init.sh
+mvn spring-boot:run -Dspring-boot.run.profiles=local,local-disk-blobstore,local-no-authentication \
+    -Dspring-boot.run.jvmArguments='
+      -Duttu.organisations.netex-file-uri=src/test/resources/fixtures/organisations.xml
+      -Duttu.stopplace.netex-file-uri=src/test/resources/fixtures/stopplace.xml
+      -Dblobstore.gcs.container.name=foobar
+      -Duttu.security.user-context-service=full-access
+      -Dspring.cloud.aws.s3.enabled=false
+      -Dspring.cloud.gcp.pubsub.enabled=false
+      -Dspring.cloud.aws.secretsmanager.enabled=false'
+curl -X POST http://localhost:11701/services/flexible-lines/providers/graphql -H "Content-Type: application/json" \
+     -d '{"query": "{ __schema { types { name fields { name } } } }"}' | jq .
+```
 
 ### GraphQL endpoints
 
