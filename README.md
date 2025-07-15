@@ -226,7 +226,7 @@ Uttu exports (via provider specific GraphQL API) generated NeTEx file to a blobs
 Choose one from the available implementations with matching profile:
 
 - `in-memory-blobstore` - stores exports in memory, exports are lost on restarts, suitable for development and testing
-- `disk-blobstore` - stores exports on disk
+- `local-disk-blobstore` - stores exports on disk
 - `gcp-blobstore` - stores exports in Google Cloud Storage, requires additional configuration
 - `s3-blobstore` - stores exports in Amazon Web Services Simple Storage Service (AWS S3), requires additional 
   configuration
