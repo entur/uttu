@@ -4,6 +4,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 import no.entur.uttu.security.spi.UserContextService;
+import org.entur.oauth2.user.DefaultJwtUserInfoExtractor;
+import org.rutebanken.helper.organisation.user.UserInfoExtractor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -14,6 +16,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.server.resource.authentication.JwtIssuerAuthenticationManagerResolver;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.stereotype.Component;
@@ -34,7 +37,8 @@ public class UttuSecurityConfiguration {
   @Bean
   public SecurityFilterChain filterChain(
     HttpSecurity http,
-    AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver
+    AuthenticationManagerResolver<HttpServletRequest> authenticationManagerResolver,
+    UserInfoExtractor userInfoExtractor
   ) throws Exception {
     return http
       .authorizeHttpRequests(auth ->
@@ -52,6 +56,10 @@ public class UttuSecurityConfiguration {
       )
       .oauth2ResourceServer(configurer ->
         configurer.authenticationManagerResolver(authenticationManagerResolver)
+      )
+      .addFilterAfter(
+        new UserInfoFilter(userInfoExtractor),
+        BearerTokenAuthenticationFilter.class
       )
       .cors(cors -> cors.configurationSource(corsConfigurationSource()))
       .build();
@@ -76,6 +84,16 @@ public class UttuSecurityConfiguration {
   @Bean
   public UserContextService userContextService() {
     return new FullAccessUserContextService();
+  }
+
+  @ConditionalOnProperty(
+    value = "uttu.security.user.info.extractor",
+    havingValue = "default",
+    matchIfMissing = true
+  )
+  @Bean
+  public UserInfoExtractor defaultUserInfoExtractor() {
+    return new DefaultJwtUserInfoExtractor();
   }
 
   @ConditionalOnMissingBean
