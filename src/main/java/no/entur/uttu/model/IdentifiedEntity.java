@@ -107,7 +107,7 @@ public abstract class IdentifiedEntity {
   @PrePersist
   @PreUpdate
   protected void setMetaData() {
-    String user = Context.getUsername();
+    String user = Context.getVerifiedUsername();
     Instant now = Instant.now();
     this.setChanged(now);
     this.setChangedBy(user);

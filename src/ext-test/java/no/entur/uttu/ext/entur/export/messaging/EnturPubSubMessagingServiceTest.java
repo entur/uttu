@@ -16,6 +16,8 @@
 
 package no.entur.uttu.ext.entur.export.messaging;
 
+import static org.junit.Assert.*;
+
 import com.google.api.gax.core.CredentialsProvider;
 import com.google.api.gax.core.NoCredentialsProvider;
 import com.google.cloud.spring.pubsub.core.PubSubTemplate;
@@ -23,12 +25,13 @@ import com.google.cloud.spring.pubsub.core.subscriber.PubSubSubscriberTemplate;
 import com.google.pubsub.v1.PubsubMessage;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 import no.entur.uttu.UttuIntegrationTest;
+import no.entur.uttu.config.Context;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import org.entur.pubsub.base.EnturGooglePubSubAdmin;
 import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -47,9 +50,10 @@ import org.testcontainers.utility.DockerImageName;
 @ActiveProfiles({ "in-memory-blobstore", "entur-pubsub-messaging-service" })
 public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
 
-  public static final String TEST_CODESPACE = "rut";
+  private static final String TEST_CODESPACE = "rut";
+  private static final String TEST_EXPORT_FILE_NAME = "netex.zip";
+  private static final String TEST_USERNAME = "TEST_USERNAME";
 
-  public static final String TEST_EXPORT_FILE_NAME = "netex.zip";
   private static PubSubEmulatorContainer pubsubEmulator;
 
   @Autowired
@@ -97,6 +101,7 @@ public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
   @Before
   public void setup() {
     enturGooglePubSubAdmin.createSubscriptionIfMissing(queueName);
+    Context.setUserName(TEST_USERNAME);
   }
 
   @After
@@ -120,13 +125,20 @@ public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
     messagingService.notifyExport(TEST_CODESPACE, TEST_EXPORT_FILE_NAME);
 
     List<PubsubMessage> messages = pubSubTemplate.pullAndAck(queueName, 1, false);
-    Assert.assertEquals(1, messages.size());
-    PubsubMessage pubsubMessage = messages.get(0);
-    String codespace = pubsubMessage
-      .getAttributesMap()
-      .get(EnturPubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL);
-    Assert.assertEquals("rb_" + TEST_CODESPACE, codespace);
-    Assert.assertEquals(
+    assertEquals(1, messages.size());
+    PubsubMessage pubsubMessage = messages.getFirst();
+    Map<String, String> headers = pubsubMessage.getAttributesMap();
+
+    String codespace = headers.get(
+      EnturPubSubMessagingService.HEADER_CHOUETTE_REFERENTIAL
+    );
+    assertEquals("rb_" + TEST_CODESPACE, codespace);
+
+    String userName = headers.get(EnturPubSubMessagingService.HEADER_USERNAME);
+    assertNotNull(userName);
+    assertTrue(userName.startsWith(TEST_USERNAME));
+
+    assertEquals(
       TEST_EXPORT_FILE_NAME,
       pubsubMessage.getData().toString(StandardCharsets.UTF_8)
     );

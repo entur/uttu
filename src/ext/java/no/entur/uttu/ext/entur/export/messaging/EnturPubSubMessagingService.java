@@ -48,7 +48,10 @@ public class EnturPubSubMessagingService implements MessagingService {
         HEADER_CHOUETTE_REFERENTIAL,
         ExportUtil.getMigratedReferential(codespace)
       );
-      pubSubAttributes.put(HEADER_USERNAME, Context.getUsername() + " (via NPlan)");
+      pubSubAttributes.put(
+        HEADER_USERNAME,
+        Context.getVerifiedUsername() + " (via NPlan)"
+      );
       pubSubAttributes.put(HEADER_CORRELATION_ID, UUID.randomUUID().toString());
       pubSubTemplate.publish(queueName, filename, pubSubAttributes);
 

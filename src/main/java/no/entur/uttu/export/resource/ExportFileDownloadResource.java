@@ -57,30 +57,23 @@ public class ExportFileDownloadResource {
     @PathParam("id") String exportId
   ) {
     Context.setProvider(providerCode);
-    try {
-      Export export = exportRepository.findByNetexIdAndProviderCode(
-        exportId,
-        providerCode
-      );
-      if (export == null) {
-        throw new EntityNotFoundException("No export with id= " + exportId + " found");
-      }
-      if (!StringUtils.hasText(export.getFileName())) {
-        throw new EntityNotFoundException(
-          "Export with id= " + exportId + " does not have a reference to export file"
-        );
-      }
-
-      InputStream content = blobStoreRepository.getBlob(export.getFileName());
-
-      String fileNameOnly = Paths.get(export.getFileName()).getFileName().toString();
-
-      return Response
-        .ok(content, MediaType.APPLICATION_OCTET_STREAM)
-        .header("content-disposition", "attachment; filename = " + fileNameOnly)
-        .build();
-    } finally {
-      Context.clear();
+    Export export = exportRepository.findByNetexIdAndProviderCode(exportId, providerCode);
+    if (export == null) {
+      throw new EntityNotFoundException("No export with id= " + exportId + " found");
     }
+    if (!StringUtils.hasText(export.getFileName())) {
+      throw new EntityNotFoundException(
+        "Export with id= " + exportId + " does not have a reference to export file"
+      );
+    }
+
+    InputStream content = blobStoreRepository.getBlob(export.getFileName());
+
+    String fileNameOnly = Paths.get(export.getFileName()).getFileName().toString();
+
+    return Response
+      .ok(content, MediaType.APPLICATION_OCTET_STREAM)
+      .header("content-disposition", "attachment; filename = " + fileNameOnly)
+      .build();
   }
 }
