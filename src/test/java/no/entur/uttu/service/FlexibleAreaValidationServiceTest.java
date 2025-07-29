@@ -195,7 +195,7 @@ class FlexibleAreaValidationServiceTest {
   }
 
   @Test
-  void shouldValidateFlexibleAreaWithStopPlacesAndReturnWarnings() {
+  void shouldValidateFlexibleAreaWithStopPlacesAndReturnNoWarnings() {
     FlexibleArea flexibleArea = createFlexibleArea();
     Map<String, Value> keyValues = new HashMap<>();
     keyValues.put("FlexibleStopAreaType", new Value("UnrestrictedPublicTransportAreas"));
@@ -210,7 +210,7 @@ class FlexibleAreaValidationServiceTest {
 
     assertTrue(result.isValid());
     assertTrue(result.getMessage().contains("contains 2 stop places"));
-    assertTrue(result.hasWarnings());
+    assertFalse(result.hasWarnings());
   }
 
   @Test
@@ -231,7 +231,7 @@ class FlexibleAreaValidationServiceTest {
 
     assertTrue(result.isValid());
     assertTrue(result.getMessage().contains("contains 1 stop places"));
-    assertTrue(result.hasWarnings());
+    assertFalse(result.hasWarnings());
   }
 
   @Test
