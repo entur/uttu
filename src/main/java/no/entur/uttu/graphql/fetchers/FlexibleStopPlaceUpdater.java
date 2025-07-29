@@ -15,14 +15,17 @@
 
 package no.entur.uttu.graphql.fetchers;
 
+import graphql.schema.DataFetchingEnvironment;
 import no.entur.uttu.error.codederror.CodedError;
 import no.entur.uttu.error.codederror.EntityHasReferencesCodedError;
+import no.entur.uttu.error.codederror.FlexibleAreaValidationCodedError;
 import no.entur.uttu.graphql.mappers.AbstractProviderEntityMapper;
 import no.entur.uttu.model.FlexibleStopPlace;
+import no.entur.uttu.model.ValidationResult;
 import no.entur.uttu.repository.StopPointInJourneyPatternRepository;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
+import no.entur.uttu.service.FlexibleAreaValidationService;
 import no.entur.uttu.util.Preconditions;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,14 +34,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class FlexibleStopPlaceUpdater
   extends AbstractProviderEntityUpdater<FlexibleStopPlace> {
 
-  @Autowired
-  private StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository;
+  private final StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository;
+  private final FlexibleAreaValidationService flexibleAreaValidationService;
 
   public FlexibleStopPlaceUpdater(
     AbstractProviderEntityMapper<FlexibleStopPlace> mapper,
-    ProviderEntityRepository<FlexibleStopPlace> repository
+    ProviderEntityRepository<FlexibleStopPlace> repository,
+    StopPointInJourneyPatternRepository stopPointInJourneyPatternRepository,
+    FlexibleAreaValidationService flexibleAreaValidationService
   ) {
     super(mapper, repository);
+    this.stopPointInJourneyPatternRepository = stopPointInJourneyPatternRepository;
+    this.flexibleAreaValidationService = flexibleAreaValidationService;
   }
 
   @Override
@@ -58,5 +65,26 @@ public class FlexibleStopPlaceUpdater
       );
     }
     super.verifyDeleteAllowed(id);
+  }
+
+  @Override
+  protected FlexibleStopPlace saveEntity(DataFetchingEnvironment env) {
+    FlexibleStopPlace entity = mapper.map(env.getArgument("input"));
+
+    // Validate flexible stop place before saving
+    ValidationResult validationResult =
+      flexibleAreaValidationService.validateFlexibleStopPlace(entity);
+    Preconditions.checkArgument(
+      validationResult.isValid(),
+      () ->
+        FlexibleAreaValidationCodedError.fromValidationMessage(
+          validationResult.getMessage()
+        ),
+      "Flexible stop place validation failed: %s",
+      validationResult.getMessage()
+    );
+
+    entity.checkPersistable();
+    return repository.save(entity);
   }
 }
