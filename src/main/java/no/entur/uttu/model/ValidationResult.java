@@ -39,6 +39,10 @@ public class ValidationResult {
     return new ValidationResult(true, message, true);
   }
 
+  public static ValidationResult withInfo(String message) {
+    return new ValidationResult(true, message, false);
+  }
+
   public boolean isValid() {
     return valid;
   }

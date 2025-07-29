@@ -99,7 +99,7 @@ public class FlexibleAreaValidationService {
       );
     }
 
-    return ValidationResult.withWarnings(
+    return ValidationResult.withInfo(
       "FlexibleArea " +
       flexibleArea.getPk() +
       " contains " +
