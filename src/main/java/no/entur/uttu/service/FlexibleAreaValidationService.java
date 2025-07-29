@@ -71,7 +71,7 @@ public class FlexibleAreaValidationService {
     return ValidationResult.valid();
   }
 
-  public ValidationResult validateFlexibleArea(FlexibleArea flexibleArea) {
+  protected ValidationResult validateFlexibleArea(FlexibleArea flexibleArea) {
     if (!requiresValidation(flexibleArea.getKeyValues())) {
       return ValidationResult.valid();
     }
