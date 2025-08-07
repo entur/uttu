@@ -1,0 +1,2280 @@
+{
+  "input": {
+    "name": "Bradbenken-Nykirkekaien",
+    "description": "Tverruten",
+    "publicCode": "BEF",
+    "transportMode": "water",
+    "transportSubmode": "localPassengerFerry",
+    "operatorRef": "77",
+    "notices": [
+      {
+        "text": "Båten kjører kontinuerlig, tidene er omtrentlige."
+      }
+    ],
+    "journeyPatterns": [
+      {
+        "name": "Rundtur",
+        "pointsInSequence": [
+          {
+            "quayRef": "NSR:Quay:105069",
+            "destinationDisplay": {
+              "frontText": "Nykirkekaien"
+            },
+            "forBoarding": true,
+            "forAlighting": false
+          },
+          {
+            "quayRef": "NSR:Quay:105070",
+            "destinationDisplay": {
+              "frontText": "Bradbenken"
+            },
+            "forBoarding": true,
+            "forAlighting": true
+          },
+          {
+            "quayRef": "NSR:Quay:105069",
+            "forBoarding": false,
+            "forAlighting": true
+          }
+        ],
+        "serviceJourneys": [
+          {
+            "name": "Tverruten hovedperiode (10:50 +0)",
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "10:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "10:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "10:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "10:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (11:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "11:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "11:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "11:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "11:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (11:10 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "11:10:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "11:15:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "11:14:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "11:19:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (15:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "15:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "15:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "15:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "15:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (11:50 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "11:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "11:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "11:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "11:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (16:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "16:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "16:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "16:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "16:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (09:20 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "09:20:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "09:25:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "09:24:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "09:29:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (14:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "14:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "14:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "14:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "14:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (14:10 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "14:10:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "14:15:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "14:14:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "14:19:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (13:10 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "13:10:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "13:15:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "13:14:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "13:19:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (10:20 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "10:20:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "10:25:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "10:24:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "10:29:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (14:30 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "14:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "14:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "14:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "14:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (09:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "09:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "09:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "09:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "09:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (10:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "10:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "10:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "10:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "10:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (12:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "12:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "12:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "12:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "12:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (08:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "08:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "08:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "08:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "08:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (09:30 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "09:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "09:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "09:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "09:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (12:20 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "12:20:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "12:25:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "12:24:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "12:29:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (13:20 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "13:20:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "13:25:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "13:24:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "13:29:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (12:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "12:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "12:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "12:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "12:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (09:10 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "09:10:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "09:15:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "09:14:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "09:19:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (15:50 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "15:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "15:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "15:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "15:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (10:10 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "10:10:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "10:15:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "10:14:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "10:19:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (15:30 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "15:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "15:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "15:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "15:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (13:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "13:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "13:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "13:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "13:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (13:30 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "13:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "13:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "13:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "13:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (14:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "14:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "14:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "14:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "14:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (14:50 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "14:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "14:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "14:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "14:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (11:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "11:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "11:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "11:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "11:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (11:30 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "11:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "11:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "11:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "11:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (12:30 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "12:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "12:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "12:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "12:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "07:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "07:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "07:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "07:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (09:50 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "09:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "09:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "09:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "09:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (13:50 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "13:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "13:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "13:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "13:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (15:20 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "15:20:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "15:25:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "15:24:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "15:29:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (15:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "15:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "15:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "15:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "15:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (10:30 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "10:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "10:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "10:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "10:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (10:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "10:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "10:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "10:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "10:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (12:50 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "12:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "12:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "12:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "12:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (07:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "07:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "07:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "07:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "07:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (07:50 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "07:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "07:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "07:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "07:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (11:20 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "11:20:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "11:25:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "11:24:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "11:29:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (15:10 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "15:10:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "15:15:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "15:14:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "15:19:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (14:20 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "14:20:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "14:25:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "14:24:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "14:29:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (08:10 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "08:10:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "08:15:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "08:14:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "08:19:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (08:20 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "08:20:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "08:25:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "08:24:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "08:29:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (08:30 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "08:30:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "08:35:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "08:34:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "08:39:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (08:40 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "08:40:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "08:45:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "08:44:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "08:49:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (08:50 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "08:50:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "08:55:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "08:54:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "08:59:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (09:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "09:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "09:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "09:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "09:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (13:00 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "13:00:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "13:05:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "13:04:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "13:09:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          },
+          {
+            "name": "Tverruten hovedperiode (12:10 +0)",
+            "description": null,
+            "privateCode": null,
+            "publicCode": null,
+            "operatorRef": "77",
+            "notices": [],
+            "passingTimes": [
+              {
+                "departureTime": "12:10:00",
+                "departureDayOffset": 0,
+                "arrivalTime": null,
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "departureTime": "12:15:00",
+                "departureDayOffset": 0,
+                "arrivalTime": "12:14:00",
+                "arrivalDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              },
+              {
+                "arrivalTime": "12:19:00",
+                "arrivalDayOffset": 0,
+                "departureTime": null,
+                "departureDayOffset": 0,
+                "earliestDepartureTime": null,
+                "earliestDepartureDayOffset": 0,
+                "latestArrivalTime": null,
+                "latestArrivalDayOffset": 0
+              }
+            ],
+            "dayTypesRefs": [
+              "BEF:DayType:7a58f626-1c71-4bdf-a120-486e66634543"
+            ]
+          }
+        ]
+      }
+    ],
+    "networkRef": "BEF:Network:90d6f706-c607-4c39-b6aa-6d0888b67a56",
+    "brandingRef": null
+  }
+}
