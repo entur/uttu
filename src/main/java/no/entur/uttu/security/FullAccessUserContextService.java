@@ -1,6 +1,7 @@
 package no.entur.uttu.security;
 
 import no.entur.uttu.security.spi.UserContextService;
+import org.rutebanken.helper.organisation.user.UserInfoExtractor;
 
 /**
  * Fallback implementation giving full access to all operations for authenticated users,
@@ -8,9 +9,15 @@ import no.entur.uttu.security.spi.UserContextService;
  */
 public class FullAccessUserContextService implements UserContextService {
 
+  private final UserInfoExtractor userInfoExtractor;
+
+  FullAccessUserContextService(UserInfoExtractor userInfoExtractor) {
+    this.userInfoExtractor = userInfoExtractor;
+  }
+
   @Override
   public String getPreferredName() {
-    return "Local User";
+    return userInfoExtractor.getPreferredName();
   }
 
   @Override

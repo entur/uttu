@@ -23,7 +23,7 @@ class LocalSecurityConfigurationTest {
   @Test
   void shouldCreateCorrectBeanTypes() {
     var userInfoExtractor = config.defaultUserInfoExtractor();
-    var userContextService = config.userContextService();
+    var userContextService = config.userContextService(userInfoExtractor);
 
     assertNotNull(userInfoExtractor);
     assertNotNull(userContextService);
@@ -34,7 +34,7 @@ class LocalSecurityConfigurationTest {
   @Test
   void shouldProvideCorrectLocalDevelopmentDefaults() {
     var userInfoExtractor = config.defaultUserInfoExtractor();
-    var userContextService = config.userContextService();
+    var userContextService = config.userContextService(userInfoExtractor);
 
     assertEquals("local-user", userInfoExtractor.getPreferredUsername());
     assertEquals("Local User", userInfoExtractor.getPreferredName());
@@ -44,7 +44,8 @@ class LocalSecurityConfigurationTest {
 
   @Test
   void shouldAllowAccessToAnyProvider() {
-    var userContextService = config.userContextService();
+    var userInfoExtractor = config.defaultUserInfoExtractor();
+    var userContextService = config.userContextService(userInfoExtractor);
 
     assertTrue(userContextService.hasAccessToProvider("FOO"));
     assertTrue(userContextService.hasAccessToProvider("test-provider"));

@@ -82,8 +82,8 @@ public class UttuSecurityConfiguration {
     havingValue = "full-access"
   )
   @Bean
-  public UserContextService userContextService() {
-    return new FullAccessUserContextService();
+  public UserContextService userContextService(UserInfoExtractor userInfoExtractor) {
+    return new FullAccessUserContextService(userInfoExtractor);
   }
 
   @ConditionalOnProperty(
