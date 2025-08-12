@@ -10,7 +10,7 @@ public class FullAccessUserContextService implements UserContextService {
 
   @Override
   public String getPreferredName() {
-    return "";
+    return "Local User";
   }
 
   @Override
