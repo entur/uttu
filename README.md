@@ -200,7 +200,7 @@ src/main/resources/db_init.sh
 mvn spring-boot:run -Dspring-boot.run.profiles=local,local-disk-blobstore,local-no-authentication \
     -Dspring-boot.run.jvmArguments='
       -Duttu.organisations.netex-file-uri=src/test/resources/fixtures/organisations.xml
-      -Duttu.stopplace.netex-file-uri=src/test/resources/fixtures/stopplace.xml
+      -Duttu.stopplace.netex-file-uri=src/test/resources/fixtures/stopplaces.xml
       -Dblobstore.gcs.container.name=foobar
       -Duttu.security.user-context-service=full-access
       -Dspring.cloud.aws.s3.enabled=false
