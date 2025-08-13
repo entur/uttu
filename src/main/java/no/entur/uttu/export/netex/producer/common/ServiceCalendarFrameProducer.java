@@ -106,6 +106,26 @@ public class ServiceCalendarFrameProducer {
       }
     }
 
+    // Ensure OperatingDay exists for all dates referenced by DatedServiceJourneys
+    if (!context.getOperatingDays().isEmpty()) {
+      for (var date : context.getOperatingDays()) {
+        var id = NetexIdProducer.getId(OperatingDay.class, date.toString(), context);
+        var od = new OperatingDay()
+          .withId(id)
+          .withVersion("0")
+          .withCalendarDate(date.atStartOfDay());
+        netexOperatingDays.add(od);
+      }
+      // Deduplicate by id to avoid duplicates with period endpoints
+      netexOperatingDays = netexOperatingDays
+        .stream()
+        .collect(Collectors.toMap(OperatingDay::getId, od -> od, (a, b) -> a))
+        .values()
+        .stream()
+        .sorted(Comparator.comparing(OperatingDay::getCalendarDate))
+        .collect(Collectors.toList());
+    }
+
     Collections.sort(netexDayTypeAssignments, new DayTypeAssignmentExportComparator());
 
     return objectFactory.createServiceCalendarFrame(

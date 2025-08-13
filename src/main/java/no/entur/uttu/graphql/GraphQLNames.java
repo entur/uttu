@@ -136,6 +136,8 @@ public class GraphQLNames {
   public static final String FIELD_GENERATE_SERVICE_LINKS = "generateServiceLinks";
   public static final String FIELD_DOWNLOAD_URL = "downloadUrl";
   public static final String FIELD_EXPORT_LINE_ASSOCIATIONS = "lineAssociations";
+  public static final String FIELD_INCLUDE_DATED_SERVICE_JOURNEYS =
+    "includeDatedServiceJourneys";
 
   // Export line association
   public static final String FIELD_LINE = "line";

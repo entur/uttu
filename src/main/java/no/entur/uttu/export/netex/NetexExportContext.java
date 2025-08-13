@@ -16,6 +16,7 @@
 package no.entur.uttu.export.netex;
 
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -69,6 +70,8 @@ public class NetexExportContext {
 
   private Export export;
 
+  private final Set<LocalDate> operatingDays = new HashSet<>();
+
   public NetexExportContext(Export export) {
     this.publicationTimestamp = Instant.now();
     this.export = export;
@@ -112,5 +115,19 @@ public class NetexExportContext {
 
   public boolean shouldGenerateServiceLinks() {
     return export.isGenerateServiceLinks();
+  }
+
+  public boolean shouldIncludeDatedServiceJourneys() {
+    return export.isIncludeDatedServiceJourneys();
+  }
+
+  public void addOperatingDay(LocalDate date) {
+    if (date != null) {
+      operatingDays.add(date);
+    }
+  }
+
+  public Set<LocalDate> getOperatingDays() {
+    return operatingDays;
   }
 }

@@ -54,6 +54,8 @@ public class Export extends ProviderEntity {
 
   private boolean generateServiceLinks;
 
+  private boolean includeDatedServiceJourneys;
+
   @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "export")
   private Collection<ExportLineAssociation> exportLineAssociations;
 
@@ -107,6 +109,14 @@ public class Export extends ProviderEntity {
 
   public void setGenerateServiceLinks(boolean generateServiceLinks) {
     this.generateServiceLinks = generateServiceLinks;
+  }
+
+  public boolean isIncludeDatedServiceJourneys() {
+    return includeDatedServiceJourneys;
+  }
+
+  public void setIncludeDatedServiceJourneys(boolean includeDatedServiceJourneys) {
+    this.includeDatedServiceJourneys = includeDatedServiceJourneys;
   }
 
   @Override
