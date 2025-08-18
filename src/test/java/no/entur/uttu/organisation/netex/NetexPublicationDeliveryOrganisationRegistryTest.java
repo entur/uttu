@@ -44,11 +44,13 @@ class NetexPublicationDeliveryOrganisationRegistryTest {
     var responseSpecMock = Mockito.mock(WebClient.ResponseSpec.class);
 
     when(webClientMock.get()).thenReturn(requestHeadersUriSpecMock);
-    when(requestHeadersUriSpecMock.uri("/organisations"))
-      .thenReturn(requestHeadersSpecMock);
+    when(requestHeadersUriSpecMock.uri("/organisations")).thenReturn(
+      requestHeadersSpecMock
+    );
     when(requestHeadersSpecMock.retrieve()).thenReturn(responseSpecMock);
-    when(responseSpecMock.bodyToMono(byte[].class))
-      .thenReturn(Mono.just(Files.readAllBytes(netexFile.toPath())));
+    when(responseSpecMock.bodyToMono(byte[].class)).thenReturn(
+      Mono.just(Files.readAllBytes(netexFile.toPath()))
+    );
 
     var registry = new NetexPublicationDeliveryHttpOrganisationRegistry(
       "/organisations",

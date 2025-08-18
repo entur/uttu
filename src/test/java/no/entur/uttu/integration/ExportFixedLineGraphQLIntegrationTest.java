@@ -37,10 +37,12 @@ public class ExportFixedLineGraphQLIntegrationTest
 
     String exportId = exportResponse.path("export.id").entity(String.class).get();
     assertThat(exportId).startsWith("TST:Export");
-    assertThat(exportResponse.path("export.name").entity(String.class).get())
-      .isEqualTo(FIXED_LINE_NAME);
-    assertThat(exportResponse.path("export.exportStatus").entity(String.class).get())
-      .isEqualTo(ExportStatusEnumeration.SUCCESS.value());
+    assertThat(exportResponse.path("export.name").entity(String.class).get()).isEqualTo(
+      FIXED_LINE_NAME
+    );
+    assertThat(
+      exportResponse.path("export.exportStatus").entity(String.class).get()
+    ).isEqualTo(ExportStatusEnumeration.SUCCESS.value());
 
     String downloadUrl = exportResponse
       .path("export.downloadUrl")

@@ -44,10 +44,9 @@ public class DataIntegrityViolationExceptionMapper
       ConstraintViolationException constraintViolationException =
         (ConstraintViolationException) e.getCause();
 
-      errorMsg =
-        errorMessagePerConstraintMap.get(
-          constraintViolationException.getConstraintName()
-        );
+      errorMsg = errorMessagePerConstraintMap.get(
+        constraintViolationException.getConstraintName()
+      );
       if (errorMsg == null) {
         errorMsg = constraintViolationException.getConstraintName();
       }
@@ -67,8 +66,7 @@ public class DataIntegrityViolationExceptionMapper
       errorMsg = e.getMessage();
     }
 
-    return Response
-      .status(Response.Status.OK)
+    return Response.status(Response.Status.OK)
       .entity(new ErrorResponseEntity(errorMsg))
       .build();
   }

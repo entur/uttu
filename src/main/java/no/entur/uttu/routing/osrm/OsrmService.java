@@ -37,8 +37,9 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
   private final ObjectMapper objectMapper = initializeObjectMapper();
 
   public OsrmService(List<OsrmProfile> profiles) {
-    profiles.forEach(profile ->
-      profile.getModes().forEach(mode -> endpointMap.put(mode, profile.getEndpoint()))
+    profiles.forEach(
+      profile ->
+        profile.getModes().forEach(mode -> endpointMap.put(mode, profile.getEndpoint()))
     );
     logger.info("OsrmService initialised with profiles={}", profiles);
   }
@@ -50,8 +51,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
   }
 
   private static Methanol initializeHttpClient() {
-    return Methanol
-      .newBuilder()
+    return Methanol.newBuilder()
       .connectTimeout(Duration.ofSeconds(5))
       .requestTimeout(Duration.ofSeconds(5))
       .headersTimeout(Duration.ofSeconds(5))
@@ -73,20 +73,18 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
   }
 
   private MutableRequest getRoutingRequest(RoutingServiceRequestParams requestParams) {
-    return MutableRequest
-      .GET(
-        endpointMap.get(requestParams.mode()) +
-        "/route/v1/driving/" +
-        requestParams.longitudeFrom() +
-        "," +
-        requestParams.latitudeFrom() +
-        ";" +
-        requestParams.longitudeTo() +
-        "," +
-        requestParams.latitudeTo() +
-        "?alternatives=false&steps=false&overview=full&geometries=geojson"
-      )
-      .header("Content-Type", "application/json");
+    return MutableRequest.GET(
+      endpointMap.get(requestParams.mode()) +
+      "/route/v1/driving/" +
+      requestParams.longitudeFrom() +
+      "," +
+      requestParams.latitudeFrom() +
+      ";" +
+      requestParams.longitudeTo() +
+      "," +
+      requestParams.latitudeTo() +
+      "?alternatives=false&steps=false&overview=full&geometries=geojson"
+    ).header("Content-Type", "application/json");
   }
 
   private RouteGeometry getRouteGeometry(

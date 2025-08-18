@@ -69,13 +69,11 @@ public abstract class ProviderEntity extends IdentifiedEntity {
   @PrePersist
   public void setNetexIdIfMissing() {
     this.setNetexId(
-        Joiner
-          .on(":")
-          .join(
-            getProvider().getCodespace().getXmlns(),
-            getNetexName(),
-            UUID.randomUUID()
-          )
+        Joiner.on(":").join(
+          getProvider().getCodespace().getXmlns(),
+          getNetexName(),
+          UUID.randomUUID()
+        )
       );
   }
 

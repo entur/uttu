@@ -28,12 +28,11 @@ class EnturUserContextServiceTest {
   @BeforeEach
   void setUp() {
     mockProviderRepository = Mockito.mock(ProviderRepository.class);
-    subject =
-      new EnturUserContextService(
-        mockProviderRepository,
-        new JwtRoleAssignmentExtractor(),
-        new JwtUserInfoExtractor()
-      );
+    subject = new EnturUserContextService(
+      mockProviderRepository,
+      new JwtRoleAssignmentExtractor(),
+      new JwtUserInfoExtractor()
+    );
   }
 
   @Test

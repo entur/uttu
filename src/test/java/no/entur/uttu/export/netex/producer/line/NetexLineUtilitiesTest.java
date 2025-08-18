@@ -81,8 +81,7 @@ public class NetexLineUtilitiesTest {
   ) {
     JourneyPattern journeyPattern = new JourneyPattern();
     journeyPattern.setServiceJourneys(
-      Stream
-        .of(operatingPeriods)
+      Stream.of(operatingPeriods)
         .map(operatingPeriod -> {
           ServiceJourney serviceJourney = new ServiceJourney();
           DayType dayType = new DayType();
@@ -100,8 +99,7 @@ public class NetexLineUtilitiesTest {
   private JourneyPattern createJourneyPatternForGivenDates(LocalDate... dates) {
     JourneyPattern journeyPattern = new JourneyPattern();
     journeyPattern.setServiceJourneys(
-      Stream
-        .of(dates)
+      Stream.of(dates)
         .map(date -> {
           ServiceJourney serviceJourney = new ServiceJourney();
           DayType dayType = new DayType();

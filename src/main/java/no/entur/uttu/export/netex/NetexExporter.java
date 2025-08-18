@@ -81,9 +81,9 @@ public class NetexExporter {
       exportContext
     );
 
-    List<Line> lines = Stream
-      .concat(flexibleLines.stream(), fixedLines.stream())
-      .collect(Collectors.toList());
+    List<Line> lines = Stream.concat(flexibleLines.stream(), fixedLines.stream()).collect(
+      Collectors.toList()
+    );
 
     List<Line> linesToExport = findLinesToExport(
       export.getExportLineAssociations(),
@@ -93,8 +93,8 @@ public class NetexExporter {
     linesToExport
       .stream()
       .map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
-      .forEach(netexFile ->
-        marshalToFile(netexFile, dataSetProducer, validateAgainstSchema)
+      .forEach(
+        netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema)
       );
 
     marshalToFile(
@@ -111,13 +111,12 @@ public class NetexExporter {
     List<Line> linesToExport = lines;
 
     if (null != exportLineAssociations && !exportLineAssociations.isEmpty()) {
-      linesToExport =
-        linesToExport
-          .stream()
-          .filter(line ->
-            exportLineAssociations.stream().anyMatch(la -> la.getLine() == line)
-          )
-          .collect(Collectors.toList());
+      linesToExport = linesToExport
+        .stream()
+        .filter(
+          line -> exportLineAssociations.stream().anyMatch(la -> la.getLine() == line)
+        )
+        .collect(Collectors.toList());
     }
 
     Preconditions.checkArgument(

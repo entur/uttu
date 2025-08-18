@@ -36,10 +36,12 @@ public class ExportGraphQLIntegrationTest extends AbstractGraphQLIntegrationTest
 
     String exportId = exportResponse.path("export.id").entity(String.class).get();
     assertThat(exportId).startsWith("TST:Export");
-    assertThat(exportResponse.path("export.name").entity(String.class).get())
-      .isEqualTo(EXPORT_NAME);
-    assertThat(exportResponse.path("export.exportStatus").entity(String.class).get())
-      .isEqualTo(ExportStatusEnumeration.SUCCESS.value());
+    assertThat(exportResponse.path("export.name").entity(String.class).get()).isEqualTo(
+      EXPORT_NAME
+    );
+    assertThat(
+      exportResponse.path("export.exportStatus").entity(String.class).get()
+    ).isEqualTo(ExportStatusEnumeration.SUCCESS.value());
 
     String downloadUrl = exportResponse
       .path("export.downloadUrl")
@@ -58,8 +60,9 @@ public class ExportGraphQLIntegrationTest extends AbstractGraphQLIntegrationTest
       .variable("id", lineRef)
       .execute();
 
-    assertThat(deleteResponse.path("deleteFlexibleLine.id").entity(String.class).get())
-      .isEqualTo(lineRef);
+    assertThat(
+      deleteResponse.path("deleteFlexibleLine.id").entity(String.class).get()
+    ).isEqualTo(lineRef);
   }
 
   private GraphQlTester.Response createFlexibleLine(String name) {

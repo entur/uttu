@@ -19,8 +19,10 @@ public class BrandingGraphQLIntegrationTest extends AbstractGraphQLIntegrationTe
 
     String brandingId = response.path("mutateBranding.id").entity(String.class).get();
 
-    response =
-      graphQlTester.documentName("branding").variable("id", brandingId).execute();
+    response = graphQlTester
+      .documentName("branding")
+      .variable("id", brandingId)
+      .execute();
 
     response
       .path("branding.id")
@@ -67,14 +69,14 @@ public class BrandingGraphQLIntegrationTest extends AbstractGraphQLIntegrationTe
       .variable("id", brandingId)
       .execute()
       .errors()
-      .satisfy(errors ->
-        assertThat(errors)
-          .anyMatch(error ->
-            error.getExtensions().get("code").equals("ENTITY_IS_REFERENCED") &&
-            ((Map<String, Object>) error.getExtensions().get("metadata")).get(
-                "numberOfReferences"
-              )
-              .equals(1)
+      .satisfy(
+        errors ->
+          assertThat(errors).anyMatch(
+            error ->
+              error.getExtensions().get("code").equals("ENTITY_IS_REFERENCED") &&
+              ((Map<String, Object>) error.getExtensions().get("metadata")).get(
+                  "numberOfReferences"
+                ).equals(1)
           )
       );
   }

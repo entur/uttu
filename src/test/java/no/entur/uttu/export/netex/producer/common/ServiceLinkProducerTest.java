@@ -43,8 +43,11 @@ class ServiceLinkProducerTest {
 
   @BeforeEach
   public void setUp() {
-    serviceLinkProducer =
-      new ServiceLinkProducer(objectFactory, mockStopPlaceRegistry, mockRoutingService);
+    serviceLinkProducer = new ServiceLinkProducer(
+      objectFactory,
+      mockStopPlaceRegistry,
+      mockRoutingService
+    );
   }
 
   @Test
@@ -57,15 +60,14 @@ class ServiceLinkProducerTest {
     export.setProvider(provider);
     NetexExportContext context = new NetexExportContext(export);
 
-    context.serviceLinks =
-      Set.of(
-        new ServiceLinkExportContext(
-          "TST:Quay:1",
-          "TST:Quay:2",
-          VehicleModeEnumeration.BUS,
-          new Ref("TST:ServiceLink:1", "1")
-        )
-      );
+    context.serviceLinks = Set.of(
+      new ServiceLinkExportContext(
+        "TST:Quay:1",
+        "TST:Quay:2",
+        VehicleModeEnumeration.BUS,
+        new Ref("TST:ServiceLink:1", "1")
+      )
+    );
 
     Quay quayFrom = new Quay();
     quayFrom.setId("TST:Quay:1");
@@ -89,8 +91,9 @@ class ServiceLinkProducerTest {
         )
     );
 
-    when(mockStopPlaceRegistry.getQuayById("TST:Quay:1"))
-      .thenReturn(Optional.of(quayFrom));
+    when(mockStopPlaceRegistry.getQuayById("TST:Quay:1")).thenReturn(
+      Optional.of(quayFrom)
+    );
     when(mockStopPlaceRegistry.getQuayById("TST:Quay:2")).thenReturn(Optional.of(quayTo));
 
     // GeoJSON uses coordinate pairs in order longitude then latitude
@@ -101,19 +104,18 @@ class ServiceLinkProducerTest {
       BigDecimal.valueOf(60.6),
       VehicleModeEnumeration.BUS
     );
-    when(mockRoutingService.getRouteGeometry(params))
-      .thenReturn(
-        new RouteGeometry(
-          List.of(
-            List.of(BigDecimal.valueOf(10.1), BigDecimal.valueOf(60.2)),
-            List.of(BigDecimal.valueOf(10.2), BigDecimal.valueOf(60.3)),
-            List.of(BigDecimal.valueOf(10.3), BigDecimal.valueOf(60.4)),
-            List.of(BigDecimal.valueOf(10.4), BigDecimal.valueOf(60.5)),
-            List.of(BigDecimal.valueOf(10.5), BigDecimal.valueOf(60.6))
-          ),
-          BigDecimal.valueOf(100)
-        )
-      );
+    when(mockRoutingService.getRouteGeometry(params)).thenReturn(
+      new RouteGeometry(
+        List.of(
+          List.of(BigDecimal.valueOf(10.1), BigDecimal.valueOf(60.2)),
+          List.of(BigDecimal.valueOf(10.2), BigDecimal.valueOf(60.3)),
+          List.of(BigDecimal.valueOf(10.3), BigDecimal.valueOf(60.4)),
+          List.of(BigDecimal.valueOf(10.4), BigDecimal.valueOf(60.5)),
+          List.of(BigDecimal.valueOf(10.5), BigDecimal.valueOf(60.6))
+        ),
+        BigDecimal.valueOf(100)
+      )
+    );
 
     List<ServiceLink> serviceLinkList = serviceLinkProducer.produce(context);
 

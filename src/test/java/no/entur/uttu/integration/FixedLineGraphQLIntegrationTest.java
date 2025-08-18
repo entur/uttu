@@ -13,17 +13,18 @@ public class FixedLineGraphQLIntegrationTest extends AbstractGraphQLIntegrationT
   public void testCreateFixedLine() {
     var response = createFixedLine(TEST_FIXED_LINE_NAME);
 
-    assertThat(response.path("mutateFixedLine.id").entity(String.class).get())
-      .startsWith("TST:Line");
-    assertThat(response.path("mutateFixedLine.name").entity(String.class).get())
-      .isEqualTo(TEST_FIXED_LINE_NAME);
+    assertThat(response.path("mutateFixedLine.id").entity(String.class).get()).startsWith(
+      "TST:Line"
+    );
+    assertThat(
+      response.path("mutateFixedLine.name").entity(String.class).get()
+    ).isEqualTo(TEST_FIXED_LINE_NAME);
     assertThat(
       response
         .path("mutateFixedLine.journeyPatterns[0].pointsInSequence[0].quayRef")
         .entity(String.class)
         .get()
-    )
-      .isEqualTo("NSR:Quay:494");
+    ).isEqualTo("NSR:Quay:494");
     assertThat(
       response
         .path(
@@ -31,8 +32,7 @@ public class FixedLineGraphQLIntegrationTest extends AbstractGraphQLIntegrationT
         )
         .entity(String.class)
         .get()
-    )
-      .isEqualTo("07:00:00");
+    ).isEqualTo("07:00:00");
   }
 
   private GraphQlTester.Response createFixedLine(String name) {

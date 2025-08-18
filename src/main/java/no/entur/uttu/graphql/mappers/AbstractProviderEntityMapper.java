@@ -64,12 +64,10 @@ public abstract class AbstractProviderEntityMapper<T extends ProviderEntity> {
     if (netexIds.isEmpty()) {
       existingEntities = Collections.emptyMap();
     } else {
-      existingEntities =
-        Optional
-          .ofNullable(entityRepository.findByIds(netexIds))
-          .orElse(Collections.emptyList())
-          .stream()
-          .collect(Collectors.toMap(T::getId, Function.identity()));
+      existingEntities = Optional.ofNullable(entityRepository.findByIds(netexIds))
+        .orElse(Collections.emptyList())
+        .stream()
+        .collect(Collectors.toMap(T::getId, Function.identity()));
     }
 
     List<T> result = new ArrayList<>();

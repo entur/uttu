@@ -182,14 +182,10 @@ public class NetexObjectFactory {
 
     Frames_RelStructure frames_relStructure = null;
     if (frames != null) {
-      frames_relStructure =
-        new Frames_RelStructure()
-          .withCommonFrame(
-            Arrays
-              .stream(frames)
-              .map(this::wrapAsJAXBElement)
-              .collect(Collectors.toList())
-          );
+      frames_relStructure = new Frames_RelStructure()
+        .withCommonFrame(
+          Arrays.stream(frames).map(this::wrapAsJAXBElement).collect(Collectors.toList())
+        );
     }
     String compositeFrameId = NetexIdProducer.generateId(CompositeFrame.class, context);
 
@@ -216,11 +212,10 @@ public class NetexObjectFactory {
     OrganisationsInFrame_RelStructure organisationsStruct = objectFactory
       .createOrganisationsInFrame_RelStructure()
       .withOrganisation_(
-        Stream
-          .concat(
-            authorities.stream().map(Organisation_VersionStructure.class::cast),
-            operators.stream().map(Organisation_VersionStructure.class::cast)
-          )
+        Stream.concat(
+          authorities.stream().map(Organisation_VersionStructure.class::cast),
+          operators.stream().map(Organisation_VersionStructure.class::cast)
+        )
           .distinct()
           .collect(toDistinctOrganisation())
           .values()
@@ -253,7 +248,11 @@ public class NetexObjectFactory {
     return resourceFrame;
   }
 
-  private static Collector<Organisation_VersionStructure, ?, Map<String, Organisation_VersionStructure>> toDistinctOrganisation() {
+  private static Collector<
+    Organisation_VersionStructure,
+    ?,
+    Map<String, Organisation_VersionStructure>
+  > toDistinctOrganisation() {
     return Collectors.toMap(
       Organisation_VersionStructure::getId,
       Function.identity(),
@@ -309,16 +308,16 @@ public class NetexObjectFactory {
     DestinationDisplaysInFrame_RelStructure destinationDisplaysInFrame_relStructure =
       null;
     if (!CollectionUtils.isEmpty(destinationDisplays)) {
-      destinationDisplaysInFrame_relStructure =
-        objectFactory
-          .createDestinationDisplaysInFrame_RelStructure()
-          .withDestinationDisplay(destinationDisplays);
+      destinationDisplaysInFrame_relStructure = objectFactory
+        .createDestinationDisplaysInFrame_RelStructure()
+        .withDestinationDisplay(destinationDisplays);
     }
 
     NoticesInFrame_RelStructure noticesInFrame_relStructure = null;
     if (!CollectionUtils.isEmpty(notices)) {
-      noticesInFrame_relStructure =
-        objectFactory.createNoticesInFrame_RelStructure().withNotice(notices);
+      noticesInFrame_relStructure = objectFactory
+        .createNoticesInFrame_RelStructure()
+        .withNotice(notices);
     }
 
     NetworksInFrame_RelStructure additionalNetworks = null;
@@ -485,18 +484,16 @@ public class NetexObjectFactory {
 
     DayTypesInFrame_RelStructure dayTypesStruct = null;
     if (dayTypes != null) {
-      dayTypesStruct =
-        new DayTypesInFrame_RelStructure()
-          .withDayType_(
-            dayTypes.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())
-          );
+      dayTypesStruct = new DayTypesInFrame_RelStructure()
+        .withDayType_(
+          dayTypes.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())
+        );
     }
 
     DayTypeAssignmentsInFrame_RelStructure dayTypeAssignmentsInFrameRelStructure = null;
     if (dayTypeAssignments != null) {
-      dayTypeAssignmentsInFrameRelStructure =
-        new DayTypeAssignmentsInFrame_RelStructure()
-          .withDayTypeAssignment(dayTypeAssignments);
+      dayTypeAssignmentsInFrameRelStructure = new DayTypeAssignmentsInFrame_RelStructure()
+        .withDayTypeAssignment(dayTypeAssignments);
       dayTypeAssignmentsInFrameRelStructure
         .getDayTypeAssignment()
         .sort(Comparator.comparing(DayTypeAssignment::getOrder));
@@ -538,11 +535,10 @@ public class NetexObjectFactory {
       context
     );
 
-    availabilityConditionId =
-      NetexIdProducer.updateIdSuffix(
-        availabilityConditionId,
-        getObjectIdSuffix(availabilityConditionId) + "_UTTU"
-      );
+    availabilityConditionId = NetexIdProducer.updateIdSuffix(
+      availabilityConditionId,
+      getObjectIdSuffix(availabilityConditionId) + "_UTTU"
+    );
 
     AvailabilityCondition availabilityCondition = objectFactory
       .createAvailabilityCondition()
@@ -684,14 +680,16 @@ public class NetexObjectFactory {
         keyValues
           .entrySet()
           .stream()
-          .flatMap(entry ->
-            entry
-              .getValue()
-              .getItems()
-              .stream()
-              .map(value ->
-                new KeyValueStructure().withKey(entry.getKey()).withValue(value)
-              )
+          .flatMap(
+            entry ->
+              entry
+                .getValue()
+                .getItems()
+                .stream()
+                .map(
+                  value ->
+                    new KeyValueStructure().withKey(entry.getKey()).withValue(value)
+                )
           )
           .collect(Collectors.toList())
       );

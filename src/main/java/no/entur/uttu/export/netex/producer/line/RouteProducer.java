@@ -115,11 +115,10 @@ public class RouteProducer {
     if (stopPoint.getFlexibleStopPlace() != null) {
       ref = stopPoint.getFlexibleStopPlace().getRef();
     } else {
-      ref =
-        objectFactory.createScheduledStopPointRefFromQuayRef(
-          stopPoint.getQuayRef(),
-          context
-        );
+      ref = objectFactory.createScheduledStopPointRefFromQuayRef(
+        stopPoint.getQuayRef(),
+        context
+      );
     }
 
     context.routePointRefs.add(ref);

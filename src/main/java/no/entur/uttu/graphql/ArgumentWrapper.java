@@ -69,11 +69,9 @@ public class ArgumentWrapper {
     if (reference == null) {
       return null;
     }
-    return Optional
-      .ofNullable(repository.getOne((String) reference))
-      .orElseThrow(() ->
-        new EntityNotFoundException("Referred entity not found: " + reference)
-      );
+    return Optional.ofNullable(repository.getOne((String) reference)).orElseThrow(
+      () -> new EntityNotFoundException("Referred entity not found: " + reference)
+    );
   }
 
   public <T, V> void apply(String name, Function<T, V> mapper, Consumer<V> func) {

@@ -72,8 +72,7 @@ public class GeneralExceptionMapper implements ExceptionMapper<Exception> {
       status = toStatus(rootCause);
     }
 
-    return Response
-      .status(status)
+    return Response.status(status)
       .entity(new ErrorResponseEntity(rootCause.getMessage()))
       .build();
   }

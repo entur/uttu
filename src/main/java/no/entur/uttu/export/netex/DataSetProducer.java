@@ -44,10 +44,9 @@ public class DataSetProducer implements Closeable {
 
   public DataSetProducer(String workingFolder) {
     try {
-      tmpFolder =
-        Files.createDirectories(
-          Paths.get(workingFolder, String.valueOf(System.currentTimeMillis()))
-        );
+      tmpFolder = Files.createDirectories(
+        Paths.get(workingFolder, String.valueOf(System.currentTimeMillis()))
+      );
       contentFolder = Files.createDirectory(tmpFolder.resolve(DATA_SET_CONTENT_FOLDER));
     } catch (IOException ioe) {
       throw new ExportException(

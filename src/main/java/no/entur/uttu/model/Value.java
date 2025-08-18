@@ -61,8 +61,7 @@ public class Value implements Serializable {
 
   @Override
   public String toString() {
-    return MoreObjects
-      .toStringHelper(this)
+    return MoreObjects.toStringHelper(this)
       .omitNullValues()
       .add("id", id)
       .add("items", items)

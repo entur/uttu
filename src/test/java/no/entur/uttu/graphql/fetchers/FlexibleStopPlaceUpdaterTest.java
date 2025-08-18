@@ -63,13 +63,12 @@ class FlexibleStopPlaceUpdaterTest {
 
   @BeforeEach
   void setUp() throws Exception {
-    updater =
-      new FlexibleStopPlaceUpdater(
-        mapper,
-        repository,
-        stopPointInJourneyPatternRepository,
-        flexibleAreaValidationService
-      );
+    updater = new FlexibleStopPlaceUpdater(
+      mapper,
+      repository,
+      stopPointInJourneyPatternRepository,
+      flexibleAreaValidationService
+    );
 
     // Use reflection to set the private field
     Field field =
@@ -86,8 +85,9 @@ class FlexibleStopPlaceUpdaterTest {
 
     when(environment.getArgument("input")).thenReturn(input);
     when(mapper.map(input)).thenReturn(flexibleStopPlace);
-    when(flexibleAreaValidationService.validateFlexibleStopPlace(flexibleStopPlace))
-      .thenReturn(ValidationResult.valid());
+    when(
+      flexibleAreaValidationService.validateFlexibleStopPlace(flexibleStopPlace)
+    ).thenReturn(ValidationResult.valid());
     when(repository.save(flexibleStopPlace)).thenReturn(flexibleStopPlace);
 
     // Act
@@ -107,8 +107,9 @@ class FlexibleStopPlaceUpdaterTest {
 
     when(environment.getArgument("input")).thenReturn(input);
     when(mapper.map(input)).thenReturn(flexibleStopPlace);
-    when(flexibleAreaValidationService.validateFlexibleStopPlace(flexibleStopPlace))
-      .thenReturn(ValidationResult.invalid("Test validation error"));
+    when(
+      flexibleAreaValidationService.validateFlexibleStopPlace(flexibleStopPlace)
+    ).thenReturn(ValidationResult.invalid("Test validation error"));
 
     // Act & Assert
     CodedIllegalArgumentException exception = assertThrows(
@@ -130,8 +131,9 @@ class FlexibleStopPlaceUpdaterTest {
 
     when(environment.getArgument("input")).thenReturn(input);
     when(mapper.map(input)).thenReturn(flexibleStopPlace);
-    when(flexibleAreaValidationService.validateFlexibleStopPlace(flexibleStopPlace))
-      .thenReturn(ValidationResult.withWarnings("Test warning"));
+    when(
+      flexibleAreaValidationService.validateFlexibleStopPlace(flexibleStopPlace)
+    ).thenReturn(ValidationResult.withWarnings("Test warning"));
     when(repository.save(flexibleStopPlace)).thenReturn(flexibleStopPlace);
 
     // Act

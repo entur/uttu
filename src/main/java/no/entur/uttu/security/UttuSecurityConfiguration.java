@@ -41,21 +41,27 @@ public class UttuSecurityConfiguration {
     UserInfoExtractor userInfoExtractor
   ) throws Exception {
     return http
-      .authorizeHttpRequests(auth ->
-        auth
-          .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/prometheus"))
-          .permitAll()
-          .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health"))
-          .permitAll()
-          .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health/liveness"))
-          .permitAll()
-          .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health/readiness"))
-          .permitAll()
-          .anyRequest()
-          .authenticated()
+      .authorizeHttpRequests(
+        auth ->
+          auth
+            .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/prometheus"))
+            .permitAll()
+            .requestMatchers(AntPathRequestMatcher.antMatcher("/actuator/health"))
+            .permitAll()
+            .requestMatchers(
+              AntPathRequestMatcher.antMatcher("/actuator/health/liveness")
+            )
+            .permitAll()
+            .requestMatchers(
+              AntPathRequestMatcher.antMatcher("/actuator/health/readiness")
+            )
+            .permitAll()
+            .anyRequest()
+            .authenticated()
       )
-      .oauth2ResourceServer(configurer ->
-        configurer.authenticationManagerResolver(authenticationManagerResolver)
+      .oauth2ResourceServer(
+        configurer ->
+          configurer.authenticationManagerResolver(authenticationManagerResolver)
       )
       .addFilterAfter(
         new UserInfoFilter(userInfoExtractor),

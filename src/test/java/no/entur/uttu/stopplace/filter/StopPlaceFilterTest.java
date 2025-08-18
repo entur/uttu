@@ -60,16 +60,13 @@ public class StopPlaceFilterTest {
               .toList();
 
             stopPlaces.forEach(stopPlace -> {
-              Optional
-                .ofNullable(stopPlace.getQuays())
-                .ifPresent(quays ->
-                  quays
-                    .getQuayRefOrQuay()
-                    .forEach(quayRefOrQuay -> {
-                      Quay quay = (Quay) quayRefOrQuay.getValue();
-                      stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
-                    })
-                );
+              Optional.ofNullable(stopPlace.getQuays()).ifPresent(quays ->
+                quays
+                  .getQuayRefOrQuay()
+                  .forEach(quayRefOrQuay -> {
+                    Quay quay = (Quay) quayRefOrQuay.getValue();
+                    stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+                  }));
               allStopPlacesIndex.add(stopPlace);
             });
           }
@@ -106,23 +103,21 @@ public class StopPlaceFilterTest {
 
     String stopId = "FIN:StopPlace:HKI";
     StopPlaceFilterParams stopIdFilter = new SearchTextStopPlaceFilterParams(stopId);
-    filteredStopPlaces =
-      stopPlacesFilter.filter(
-        allStopPlacesIndex,
-        stopPlaceByQuayRefIndex,
-        List.of(stopIdFilter)
-      );
+    filteredStopPlaces = stopPlacesFilter.filter(
+      allStopPlacesIndex,
+      stopPlaceByQuayRefIndex,
+      List.of(stopIdFilter)
+    );
     Assert.assertEquals(1, filteredStopPlaces.size());
     Assert.assertEquals(stopId, filteredStopPlaces.get(0).getId());
 
     String quayId = "FIN:Quay:HKI_1";
     StopPlaceFilterParams quayIdFilter = new SearchTextStopPlaceFilterParams(quayId);
-    filteredStopPlaces =
-      stopPlacesFilter.filter(
-        allStopPlacesIndex,
-        stopPlaceByQuayRefIndex,
-        List.of(quayIdFilter)
-      );
+    filteredStopPlaces = stopPlacesFilter.filter(
+      allStopPlacesIndex,
+      stopPlaceByQuayRefIndex,
+      List.of(quayIdFilter)
+    );
     Assert.assertEquals(1, filteredStopPlaces.size());
     Assert.assertTrue(
       filteredStopPlaces
@@ -151,12 +146,11 @@ public class StopPlaceFilterTest {
     StopPlaceFilterParams busFilter = new TransportModeStopPlaceFilterParams(
       AllVehicleModesOfTransportEnumeration.BUS
     );
-    filteredStopPlaces =
-      stopPlacesFilter.filter(
-        allStopPlacesIndex,
-        stopPlaceByQuayRefIndex,
-        List.of(busFilter)
-      );
+    filteredStopPlaces = stopPlacesFilter.filter(
+      allStopPlacesIndex,
+      stopPlaceByQuayRefIndex,
+      List.of(busFilter)
+    );
     Assert.assertEquals(5, filteredStopPlaces.size());
   }
 
@@ -185,12 +179,11 @@ public class StopPlaceFilterTest {
       BigDecimal.valueOf(64),
       BigDecimal.valueOf(24)
     );
-    filteredStopPlaces =
-      stopPlacesFilter.filter(
-        allStopPlacesIndex,
-        stopPlaceByQuayRefIndex,
-        List.of(ouluAreaFilter)
-      );
+    filteredStopPlaces = stopPlacesFilter.filter(
+      allStopPlacesIndex,
+      stopPlaceByQuayRefIndex,
+      List.of(ouluAreaFilter)
+    );
     // BoundingBox filtering is no longer applied at the filter level - should return all stops
     Assert.assertEquals(6, filteredStopPlaces.size());
   }

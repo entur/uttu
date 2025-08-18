@@ -80,9 +80,11 @@ public class NetexIdProducer {
     String suffix,
     NetexExportContext context
   ) {
-    return Joiner
-      .on(SEPARATOR)
-      .join(getIdPrefix(context), netexEntityClass.getSimpleName(), suffix);
+    return Joiner.on(SEPARATOR).join(
+      getIdPrefix(context),
+      netexEntityClass.getSimpleName(),
+      suffix
+    );
   }
 
   public static String getId(String prefix, String entityName, String suffix) {
@@ -126,8 +128,10 @@ public class NetexIdProducer {
       }
     } else if (entity instanceof VersionedChildStructure) {
       if (localPart.endsWith("VersionedChildStructure")) {
-        localPart =
-          localPart.substring(0, localPart.lastIndexOf("_VersionedChildStructure"));
+        localPart = localPart.substring(
+          0,
+          localPart.lastIndexOf("_VersionedChildStructure")
+        );
       }
     }
     return localPart;

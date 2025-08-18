@@ -62,11 +62,12 @@ public class StopPlacesFilter {
     );
 
     return limitFilterOpt
-      .map(stopPlaceFilter ->
-        limitNumberOfStopPlaces(
-          ((LimitStopPlacesQuantityFilterParams) stopPlaceFilter).limit(),
-          filteredStopPlaces
-        )
+      .map(
+        stopPlaceFilter ->
+          limitNumberOfStopPlaces(
+            ((LimitStopPlacesQuantityFilterParams) stopPlaceFilter).limit(),
+            filteredStopPlaces
+          )
       )
       .orElse(filteredStopPlaces);
   }
@@ -95,14 +96,14 @@ public class StopPlacesFilter {
     StopPlace stopPlace,
     List<StopPlaceFilterParams> filters
   ) {
-    List<Quay> quays = Optional
-      .ofNullable(stopPlace.getQuays())
-      .map(quaysRelStructure ->
-        quaysRelStructure
-          .getQuayRefOrQuay()
-          .stream()
-          .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
-          .toList()
+    List<Quay> quays = Optional.ofNullable(stopPlace.getQuays())
+      .map(
+        quaysRelStructure ->
+          quaysRelStructure
+            .getQuayRefOrQuay()
+            .stream()
+            .map(jaxbElement -> (org.rutebanken.netex.model.Quay) jaxbElement.getValue())
+            .toList()
       )
       .orElse(Collections.emptyList());
 

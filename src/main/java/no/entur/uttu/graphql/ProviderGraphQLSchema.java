@@ -79,12 +79,10 @@ public class ProviderGraphQLSchema {
   @PostConstruct
   public void init() {
     initCommonTypes();
-    graphQLSchema =
-      GraphQLSchema
-        .newSchema()
-        .query(createQueryObject())
-        .mutation(createMutationObject())
-        .build();
+    graphQLSchema = GraphQLSchema.newSchema()
+      .query(createQueryObject())
+      .mutation(createMutationObject())
+      .build();
   }
 
   public GraphQLSchema getGraphQLSchema() {
@@ -92,88 +90,80 @@ public class ProviderGraphQLSchema {
   }
 
   private void initCommonTypes() {
-    identifiedEntityObjectType =
-      newObject()
-        .name("IdentifiedEntity")
-        .field(
-          newFieldDefinition().name(FIELD_VERSION).type(new GraphQLNonNull(GraphQLString))
-        )
-        .field(
-          newFieldDefinition()
-            .name(FIELD_CREATED_BY)
-            .type(new GraphQLNonNull(GraphQLString))
-        )
-        .field(
-          newFieldDefinition()
-            .name(FIELD_CREATED)
-            .type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar()))
-        )
-        .field(
-          newFieldDefinition()
-            .name(FIELD_CHANGED_BY)
-            .type(new GraphQLNonNull(GraphQLString))
-        )
-        .field(
-          newFieldDefinition()
-            .name(FIELD_CHANGED)
-            .type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar()))
-        )
-        .build();
+    identifiedEntityObjectType = newObject()
+      .name("IdentifiedEntity")
+      .field(
+        newFieldDefinition().name(FIELD_VERSION).type(new GraphQLNonNull(GraphQLString))
+      )
+      .field(
+        newFieldDefinition()
+          .name(FIELD_CREATED_BY)
+          .type(new GraphQLNonNull(GraphQLString))
+      )
+      .field(
+        newFieldDefinition()
+          .name(FIELD_CREATED)
+          .type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar()))
+      )
+      .field(
+        newFieldDefinition()
+          .name(FIELD_CHANGED_BY)
+          .type(new GraphQLNonNull(GraphQLString))
+      )
+      .field(
+        newFieldDefinition()
+          .name(FIELD_CHANGED)
+          .type(new GraphQLNonNull(dateTimeScalar.getDateTimeScalar()))
+      )
+      .build();
 
-    codespaceObjectType =
-      newObject(identifiedEntityObjectType)
-        .name("Codespace")
-        .field(
-          newFieldDefinition().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString))
-        )
-        .field(
-          newFieldDefinition()
-            .name(FIELD_XMLNS_URL)
-            .type(new GraphQLNonNull(GraphQLString))
-        )
-        .build();
+    codespaceObjectType = newObject(identifiedEntityObjectType)
+      .name("Codespace")
+      .field(
+        newFieldDefinition().name(FIELD_XMLNS).type(new GraphQLNonNull(GraphQLString))
+      )
+      .field(
+        newFieldDefinition().name(FIELD_XMLNS_URL).type(new GraphQLNonNull(GraphQLString))
+      )
+      .build();
 
-    providerObjectType =
-      newObject(identifiedEntityObjectType)
-        .name("Provider")
-        .field(
-          newFieldDefinition()
-            .name(FIELD_CODE)
-            .type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE))
-        )
-        .field(
-          newFieldDefinition().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString))
-        )
-        .field(
-          newFieldDefinition()
-            .name(FIELD_CODE_SPACE)
-            .type(new GraphQLNonNull(codespaceObjectType))
-        )
-        .build();
+    providerObjectType = newObject(identifiedEntityObjectType)
+      .name("Provider")
+      .field(
+        newFieldDefinition()
+          .name(FIELD_CODE)
+          .type(new GraphQLNonNull(ProviderCodeScalar.PROVIDER_CODE))
+      )
+      .field(
+        newFieldDefinition().name(FIELD_NAME).type(new GraphQLNonNull(GraphQLString))
+      )
+      .field(
+        newFieldDefinition()
+          .name(FIELD_CODE_SPACE)
+          .type(new GraphQLNonNull(codespaceObjectType))
+      )
+      .build();
 
-    userContextObjectType =
-      newObject()
-        .name("UserContext")
-        .description("Context-aware object")
-        .field(
-          newFieldDefinition()
-            .name("preferredName")
-            .description("User's preferred (display) name")
-            .type(new GraphQLNonNull(GraphQLString))
-        )
-        .field(
-          newFieldDefinition().name("isAdmin").type(new GraphQLNonNull(GraphQLBoolean))
-        )
-        .field(
-          newFieldDefinition()
-            .name("providers")
-            .description(
-              "List of providers for which this user has access to manage data"
-            )
-            .type(new GraphQLList(providerObjectType))
-            .dataFetcher(providerFetcher)
-        )
-        .build();
+    userContextObjectType = newObject()
+      .name("UserContext")
+      .description("Context-aware object")
+      .field(
+        newFieldDefinition()
+          .name("preferredName")
+          .description("User's preferred (display) name")
+          .type(new GraphQLNonNull(GraphQLString))
+      )
+      .field(
+        newFieldDefinition().name("isAdmin").type(new GraphQLNonNull(GraphQLBoolean))
+      )
+      .field(
+        newFieldDefinition()
+          .name("providers")
+          .description("List of providers for which this user has access to manage data")
+          .type(new GraphQLList(providerObjectType))
+          .dataFetcher(providerFetcher)
+      )
+      .build();
   }
 
   private GraphQLObjectType createQueryObject() {

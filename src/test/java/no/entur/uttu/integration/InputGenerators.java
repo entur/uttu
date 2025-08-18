@@ -245,9 +245,10 @@ public class InputGenerators {
     );
   }
 
-  public static @NotNull Map<String, Object> generateFlexibleStopPlaceWithFlexibleAreaInput(
-    String name
-  ) {
+  public static @NotNull Map<
+    String,
+    Object
+  > generateFlexibleStopPlaceWithFlexibleAreaInput(String name) {
     return Map.of(
       "name",
       name,
@@ -273,9 +274,10 @@ public class InputGenerators {
     );
   }
 
-  public static @NotNull Map<String, Object> generateFlexibleStopPlaceWithFlexibleAreasInput(
-    String name
-  ) {
+  public static @NotNull Map<
+    String,
+    Object
+  > generateFlexibleStopPlaceWithFlexibleAreasInput(String name) {
     return Map.of(
       "name",
       name,
@@ -305,9 +307,10 @@ public class InputGenerators {
     );
   }
 
-  public static @NotNull Map<String, Object> generateFlexibleStopPlaceWithHailAndRideAreaInput(
-    String name
-  ) {
+  public static @NotNull Map<
+    String,
+    Object
+  > generateFlexibleStopPlaceWithHailAndRideAreaInput(String name) {
     return Map.of(
       "name",
       name,

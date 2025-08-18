@@ -155,12 +155,13 @@ public class NetexCommonFileProducer {
     stopAssignments.addAll(
       context.quayRefs
         .stream()
-        .map(quayRef ->
-          mapPassengerStopAssignment(
-            quayRef,
-            passengerStopAssignmentOrder.getAndIncrement(),
-            context
-          )
+        .map(
+          quayRef ->
+            mapPassengerStopAssignment(
+              quayRef,
+              passengerStopAssignmentOrder.getAndIncrement(),
+              context
+            )
         )
         .collect(Collectors.toList())
     );

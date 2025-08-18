@@ -75,15 +75,16 @@ public class FlexibleLine extends Line {
       this.bookingArrangement != null ||
       this.getJourneyPatterns()
         .stream()
-        .anyMatch(jp ->
-          jp
-            .getPointsInSequence()
-            .stream()
-            .anyMatch(point -> point.getBookingArrangement() != null) ||
-          jp
-            .getServiceJourneys()
-            .stream()
-            .anyMatch(sj -> sj.getBookingArrangement() != null)
+        .anyMatch(
+          jp ->
+            jp
+              .getPointsInSequence()
+              .stream()
+              .anyMatch(point -> point.getBookingArrangement() != null) ||
+            jp
+              .getServiceJourneys()
+              .stream()
+              .anyMatch(sj -> sj.getBookingArrangement() != null)
         )
     );
   }
@@ -96,8 +97,8 @@ public class FlexibleLine extends Line {
         jp
           .getPointsInSequence()
           .stream()
-          .forEach(stopPoint ->
-            validateBookingInformation(stopPoint.getBookingArrangement())
+          .forEach(
+            stopPoint -> validateBookingInformation(stopPoint.getBookingArrangement())
           );
         jp
           .getServiceJourneys()

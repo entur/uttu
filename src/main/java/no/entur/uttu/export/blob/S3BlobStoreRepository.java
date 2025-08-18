@@ -125,8 +125,8 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
 
   private boolean objectExists(String containerName, String objectName) {
     try {
-      s3Client.headObject(headObjectRequest ->
-        headObjectRequest.bucket(containerName).key(objectName)
+      s3Client.headObject(
+        headObjectRequest -> headObjectRequest.bucket(containerName).key(objectName)
       );
       return true;
     } catch (NoSuchKeyException e) {
@@ -141,12 +141,13 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
     String targetContainerName,
     String targetObjectName
   ) {
-    s3Client.copyObject(copyObjectRequest ->
-      copyObjectRequest
-        .sourceBucket(sourceContainerName)
-        .sourceKey(sourceObjectName)
-        .destinationBucket(targetContainerName)
-        .destinationKey(targetObjectName)
+    s3Client.copyObject(
+      copyObjectRequest ->
+        copyObjectRequest
+          .sourceBucket(sourceContainerName)
+          .sourceKey(sourceObjectName)
+          .destinationBucket(targetContainerName)
+          .destinationKey(targetObjectName)
     );
   }
 
@@ -174,17 +175,13 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
     String targetContainerName,
     String targetPrefix
   ) {
-    iteratePrefix(
-      sourceContainerName,
-      prefix,
-      s3Objects -> {
-        for (S3Object s3Object : s3Objects) {
-          String targetKey = targetPrefix + trimPrefix(prefix, s3Object.key());
-          copyBlob(sourceContainerName, s3Object.key(), targetContainerName, targetKey);
-        }
-        return null;
+    iteratePrefix(sourceContainerName, prefix, s3Objects -> {
+      for (S3Object s3Object : s3Objects) {
+        String targetKey = targetPrefix + trimPrefix(prefix, s3Object.key());
+        copyBlob(sourceContainerName, s3Object.key(), targetContainerName, targetKey);
       }
-    );
+      return null;
+    });
   }
 
   private String trimPrefix(String prefix, String s) {
@@ -203,22 +200,19 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
 
   @Override
   public boolean deleteAllFilesInFolder(String folder) {
-    for (boolean pageResult : iteratePrefix(
-      containerName,
-      folder,
-      s3Objects -> {
-        List<ObjectIdentifier> objectIdentifiers = s3Objects
-          .stream()
-          .map(s3Object -> ObjectIdentifier.builder().key(s3Object.key()).build())
-          .toList();
-        return s3Client
-          .deleteObjects(deleteObjectsRequest ->
+    for (boolean pageResult : iteratePrefix(containerName, folder, s3Objects -> {
+      List<ObjectIdentifier> objectIdentifiers = s3Objects
+        .stream()
+        .map(s3Object -> ObjectIdentifier.builder().key(s3Object.key()).build())
+        .toList();
+      return s3Client
+        .deleteObjects(
+          deleteObjectsRequest ->
             deleteObjectsRequest.delete(delete -> delete.objects(objectIdentifiers))
-          )
-          .errors()
-          .isEmpty();
-      }
-    )) {
+        )
+        .errors()
+        .isEmpty();
+    })) {
       if (!pageResult) {
         return false;
       }
@@ -231,8 +225,8 @@ public class S3BlobStoreRepository implements BlobStoreRepository {
     String prefix,
     Function<List<S3Object>, U> mapper
   ) {
-    ListObjectsV2Iterable iterable = s3Client.listObjectsV2Paginator(req ->
-      req.bucket(containerName).prefix(prefix)
+    ListObjectsV2Iterable iterable = s3Client.listObjectsV2Paginator(
+      req -> req.bucket(containerName).prefix(prefix)
     );
 
     List<U> pageResults = new ArrayList<>();

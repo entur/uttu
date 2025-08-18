@@ -61,7 +61,7 @@ public class DayTypeAssignment extends IdentifiedEntity {
     super.checkPersistable();
 
     Preconditions.checkArgument(
-      date != null ^ operatingPeriod != null,
+      (date != null) ^ (operatingPeriod != null),
       "Exactly one of date or operationPeriod must be set for DayTypeAssignment"
     );
 

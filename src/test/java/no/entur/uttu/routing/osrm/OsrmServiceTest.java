@@ -72,18 +72,19 @@ class OsrmServiceTest {
 
     String mockResponse =
       """
-            {
-                "code": "Ok",
-                "routes": [{
-                    "geometry": {
-                        "coordinates": [[10.39, 63.43], [10.395, 63.435], [10.40, 63.44]]
-                    },
-                    "distance": 1234.56
-                }]
-            }
-            """;
-    when(httpClient.send(any(MutableRequest.class), any(BodyHandler.class)))
-      .thenReturn(httpResponse);
+      {
+          "code": "Ok",
+          "routes": [{
+              "geometry": {
+                  "coordinates": [[10.39, 63.43], [10.395, 63.435], [10.40, 63.44]]
+              },
+              "distance": 1234.56
+          }]
+      }
+      """;
+    when(httpClient.send(any(MutableRequest.class), any(BodyHandler.class))).thenReturn(
+      httpResponse
+    );
     when(httpResponse.body()).thenReturn(mockResponse);
 
     // When
@@ -110,13 +111,14 @@ class OsrmServiceTest {
 
     String mockResponse =
       """
-            {
-                "code": "NoRoute",
-                "message": "No route found"
-            }
-            """;
-    when(httpClient.send(any(MutableRequest.class), any(BodyHandler.class)))
-      .thenReturn(httpResponse);
+      {
+          "code": "NoRoute",
+          "message": "No route found"
+      }
+      """;
+    when(httpClient.send(any(MutableRequest.class), any(BodyHandler.class))).thenReturn(
+      httpResponse
+    );
     when(httpResponse.body()).thenReturn(mockResponse);
 
     // When
@@ -141,8 +143,9 @@ class OsrmServiceTest {
       VehicleModeEnumeration.BUS
     );
 
-    when(httpClient.send(any(MutableRequest.class), any(BodyHandler.class)))
-      .thenThrow(new IOException("Network error"));
+    when(httpClient.send(any(MutableRequest.class), any(BodyHandler.class))).thenThrow(
+      new IOException("Network error")
+    );
 
     // When
     RouteGeometry geometry = osrmService.getRouteGeometry(params);
@@ -165,8 +168,9 @@ class OsrmServiceTest {
       VehicleModeEnumeration.BUS
     );
 
-    when(httpClient.send(any(MutableRequest.class), any(BodyHandler.class)))
-      .thenThrow(new InterruptedException("Request interrupted"));
+    when(httpClient.send(any(MutableRequest.class), any(BodyHandler.class))).thenThrow(
+      new InterruptedException("Request interrupted")
+    );
 
     // When
     RouteGeometry geometry = osrmService.getRouteGeometry(params);

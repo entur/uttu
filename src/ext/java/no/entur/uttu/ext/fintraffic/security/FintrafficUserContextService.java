@@ -103,8 +103,10 @@ public class FintrafficUserContextService implements UserContextService {
   /**
    * Stores authentication scope to {@link EntraTokenResponse} for reusing authentication tokens.
    */
-  private final ConcurrentMap<String, AtomicReference<EntraTokenResponse>> authenticationTokens =
-    new ConcurrentHashMap<>();
+  private final ConcurrentMap<
+    String,
+    AtomicReference<EntraTokenResponse>
+  > authenticationTokens = new ConcurrentHashMap<>();
 
   private final Methanol httpClient;
 
@@ -114,64 +116,66 @@ public class FintrafficUserContextService implements UserContextService {
    */
   private final ObjectMapper objectMapper;
 
-  private final LoadingCache<VacoApiCallContext, JsonNode> msGraphAppRoleAssignmentsCache =
-    CacheBuilder
-      .newBuilder()
-      .expireAfterAccess(20, TimeUnit.MINUTES)
-      .build(
-        new CacheLoader<>() {
-          @Override
-          public JsonNode load(VacoApiCallContext vacoApiCallContext) throws Exception {
-            MutableRequest request = MutableRequest
-              .GET(
-                MICROSOFT_GRAPH_API_ROOT +
-                "/users/" +
-                vacoApiCallContext.oid +
-                "/appRoleAssignments"
-              )
-              .header(
-                "Authorization",
-                "Bearer " + vacoApiCallContext.token.getAccessToken()
-              )
-              .header("Content-Type", "application/json");
+  private final LoadingCache<
+    VacoApiCallContext,
+    JsonNode
+  > msGraphAppRoleAssignmentsCache = CacheBuilder.newBuilder()
+    .expireAfterAccess(20, TimeUnit.MINUTES)
+    .build(
+      new CacheLoader<>() {
+        @Override
+        public JsonNode load(VacoApiCallContext vacoApiCallContext) throws Exception {
+          MutableRequest request = MutableRequest.GET(
+            MICROSOFT_GRAPH_API_ROOT +
+            "/users/" +
+            vacoApiCallContext.oid +
+            "/appRoleAssignments"
+          )
+            .header(
+              "Authorization",
+              "Bearer " + vacoApiCallContext.token.getAccessToken()
+            )
+            .header("Content-Type", "application/json");
 
-            HttpResponse<String> response = httpClient.send(
-              request,
-              BodyHandlers.ofString()
-            );
-            return objectMapper.readTree(response.body());
-          }
+          HttpResponse<String> response = httpClient.send(
+            request,
+            BodyHandlers.ofString()
+          );
+          return objectMapper.readTree(response.body());
         }
-      );
+      }
+    );
 
-  private final LoadingCache<VacoApiCallContext, VacoApiResponse<Me>> companyMembersCache =
-    CacheBuilder
-      .newBuilder()
-      .expireAfterAccess(20, TimeUnit.MINUTES)
-      .build(
-        new CacheLoader<>() {
-          @Override
-          public VacoApiResponse<Me> load(VacoApiCallContext vacoApiCallContext)
-            throws Exception {
-            MutableRequest request = MutableRequest
-              .GET(vacoApi + "/v1/companies/members/" + vacoApiCallContext.oid)
-              .header(
-                "Authorization",
-                "Bearer " + vacoApiCallContext.token.getAccessToken()
-              )
-              .header("Content-Type", "application/json");
+  private final LoadingCache<
+    VacoApiCallContext,
+    VacoApiResponse<Me>
+  > companyMembersCache = CacheBuilder.newBuilder()
+    .expireAfterAccess(20, TimeUnit.MINUTES)
+    .build(
+      new CacheLoader<>() {
+        @Override
+        public VacoApiResponse<Me> load(VacoApiCallContext vacoApiCallContext)
+          throws Exception {
+          MutableRequest request = MutableRequest.GET(
+            vacoApi + "/v1/companies/members/" + vacoApiCallContext.oid
+          )
+            .header(
+              "Authorization",
+              "Bearer " + vacoApiCallContext.token.getAccessToken()
+            )
+            .header("Content-Type", "application/json");
 
-            HttpResponse<String> response = httpClient.send(
-              request,
-              BodyHandlers.ofString()
-            );
-            return objectMapper.readValue(
-              response.body(),
-              new TypeReference<VacoApiResponse<Me>>() {}
-            );
-          }
+          HttpResponse<String> response = httpClient.send(
+            request,
+            BodyHandlers.ofString()
+          );
+          return objectMapper.readValue(
+            response.body(),
+            new TypeReference<VacoApiResponse<Me>>() {}
+          );
         }
-      );
+      }
+    );
 
   public FintrafficUserContextService(
     String tenantId,
@@ -198,8 +202,7 @@ public class FintrafficUserContextService implements UserContextService {
   }
 
   private static Methanol initializeHttpClient() {
-    return Methanol
-      .newBuilder()
+    return Methanol.newBuilder()
       .connectTimeout(Duration.ofSeconds(30))
       .requestTimeout(Duration.ofSeconds(30))
       .headersTimeout(Duration.ofSeconds(30))
@@ -211,9 +214,8 @@ public class FintrafficUserContextService implements UserContextService {
 
   private static Optional<Jwt> getToken() {
     if (
-      SecurityContextHolder
-        .getContext()
-        .getAuthentication() instanceof JwtAuthenticationToken token &&
+      SecurityContextHolder.getContext().getAuthentication() instanceof
+        JwtAuthenticationToken token &&
       (token.getPrincipal() instanceof Jwt jwt)
     ) {
       return Optional.of(jwt);
@@ -330,8 +332,7 @@ public class FintrafficUserContextService implements UserContextService {
       currentToken.getValidUntil().isBefore(LocalDateTime.now().minusSeconds(10))
     ) {
       try {
-        FormBodyPublisher formBody = FormBodyPublisher
-          .newBuilder()
+        FormBodyPublisher formBody = FormBodyPublisher.newBuilder()
           .query("client_id", clientId)
           .query("grant_type", "client_credentials")
           .query("scope", tokenScope)
