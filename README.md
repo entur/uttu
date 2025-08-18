@@ -5,7 +5,7 @@ Back-end for Nplan, a simple timetable editor. Front-end is [Enki](https://githu
 
 ## Codestyle
 
-Uttu uses [Prettier Java](https://github.com/jhipster/prettier-java). Use `mvn prettier:write` to reformat code before
+Uttu uses [Prettier Java](https://github.com/jhipster/prettier-java). Use `./mvnw prettier:write` to reformat code before
 pushing changes. You can also configure your IDE to reformat code when you save a file.
 
 ## Security
@@ -188,7 +188,7 @@ Run the [database initialization script](./src/main/resources/db_init.sh).
 **IntelliJ**: Right-click on `App.java` and choose Run (or Cmd+Shift+F10). Open Run -> Edit configurations, choose the
 correct configuration (Spring Boot -> App), and add `local` to Active profiles. Save the configuration.
 
-**Command line**: `mvn spring-boot:run`
+**Command line**: `./mvnw spring-boot:run`
 
 Uttu web server will expose APIs on port 11701 by default.
 
@@ -197,7 +197,7 @@ Uttu web server will expose APIs on port 11701 by default.
 ```
 docker compose up -d
 src/main/resources/db_init.sh
-mvn spring-boot:run -Dspring-boot.run.profiles=local,local-disk-blobstore,local-no-authentication \
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local,local-disk-blobstore,local-no-authentication \
     -Dspring-boot.run.jvmArguments='
       -Duttu.organisations.netex-file-uri=src/test/resources/fixtures/organisations.xml
       -Duttu.stopplace.netex-file-uri=src/test/resources/fixtures/stopplaces.xml

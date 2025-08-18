@@ -33,8 +33,8 @@ jobs:
       - name: Run tests
         run: |
           sudo timedatectl set-timezone "Europe/Oslo"
-          mvn --batch-mode jacoco:prepare-agent test jacoco:report -Dprettier.nodePath=node -Dprettier.npmPath=npm
-          mvn --batch-mode jib:dockerBuild -Dmaven.test.skip -P prettierSkip
+          ./mvnw --batch-mode jacoco:prepare-agent test jacoco:report -Dprettier.nodePath=node -Dprettier.npmPath=npm
+          ./mvnw --batch-mode jib:dockerBuild -Dmaven.test.skip -P prettierSkip
 
       - name: codecov
         uses: codecov/codecov-action@v5
@@ -61,12 +61,12 @@ jobs:
           cache: maven
       - name: set variables
         run: |
-          VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+          VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
           echo "GHA_DOCKER_PUSH_IMAGE_TAG=v$VERSION-${{ github.run_id }}" >> $GITHUB_ENV
 
       - name: Build container image with Jib, push to container repo
         run: |
-          mvn --batch-mode compile com.google.cloud.tools:jib-maven-plugin:build -Djib.to.tags=latest,${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }} -Dmaven.test.skip -P prettierSkip
+          ./mvnw --batch-mode compile com.google.cloud.tools:jib-maven-plugin:build -Djib.to.tags=latest,${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }} -Dmaven.test.skip -P prettierSkip
 
       - name: Tag default branch with the container image tag ${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }}
         id: tag-version
