@@ -86,10 +86,9 @@ public class EnturPubSubMessagingServiceTest extends UttuIntegrationTest {
 
   @BeforeClass
   public static void init() {
-    pubsubEmulator =
-      new PubSubEmulatorContainer(
-        DockerImageName.parse("gcr.io/google.com/cloudsdktool/cloud-sdk:emulators")
-      );
+    pubsubEmulator = new PubSubEmulatorContainer(
+      DockerImageName.parse("gcr.io/google.com/cloudsdktool/cloud-sdk:emulators")
+    );
     pubsubEmulator.start();
   }
 

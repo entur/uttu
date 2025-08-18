@@ -91,14 +91,15 @@ public class FlexibleStopPlaceProducer {
     return flexibleStopPlace
       .getFlexibleAreas()
       .stream()
-      .map(localArea ->
-        objectFactory
-          .populateId(
-            new FlexibleArea(),
-            new Ref(NetexIdProducer.generateId(FlexibleArea.class, context), "0")
-          )
-          .withKeyList(objectFactory.mapKeyValues(localArea.getKeyValues()))
-          .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon(), context))
+      .map(
+        localArea ->
+          objectFactory
+            .populateId(
+              new FlexibleArea(),
+              new Ref(NetexIdProducer.generateId(FlexibleArea.class, context), "0")
+            )
+            .withKeyList(objectFactory.mapKeyValues(localArea.getKeyValues()))
+            .withPolygon(NetexGeoUtil.toNetexPolygon(localArea.getPolygon(), context))
       )
       .toList();
   }

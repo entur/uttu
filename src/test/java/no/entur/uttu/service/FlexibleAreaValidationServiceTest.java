@@ -96,8 +96,9 @@ class FlexibleAreaValidationServiceTest {
     // Since FlexibleStopPlace has the key-value, the area will be validated
     // So we need to mock that the area contains stop places
     StopPlace stopPlace = new StopPlace();
-    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
-      .thenReturn(List.of(stopPlace));
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class))).thenReturn(
+      List.of(stopPlace)
+    );
 
     ValidationResult result = validationService.validateFlexibleStopPlace(
       flexibleStopPlace
@@ -124,8 +125,9 @@ class FlexibleAreaValidationServiceTest {
     flexibleArea.replaceKeyValues(areaKeyValues);
     flexibleStopPlace.setFlexibleAreas(List.of(flexibleArea));
 
-    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
-      .thenReturn(Collections.emptyList());
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class))).thenReturn(
+      Collections.emptyList()
+    );
 
     ValidationResult result = validationService.validateFlexibleStopPlace(
       flexibleStopPlace
@@ -184,8 +186,9 @@ class FlexibleAreaValidationServiceTest {
     keyValues.put("FlexibleStopAreaType", new Value("UnrestrictedPublicTransportAreas"));
     flexibleArea.replaceKeyValues(keyValues);
 
-    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
-      .thenReturn(Collections.emptyList());
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class))).thenReturn(
+      Collections.emptyList()
+    );
 
     ValidationResult result = validationService.validateFlexibleArea(flexibleArea);
 
@@ -203,8 +206,9 @@ class FlexibleAreaValidationServiceTest {
 
     StopPlace stopPlace1 = new StopPlace();
     StopPlace stopPlace2 = new StopPlace();
-    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
-      .thenReturn(List.of(stopPlace1, stopPlace2));
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class))).thenReturn(
+      List.of(stopPlace1, stopPlace2)
+    );
 
     ValidationResult result = validationService.validateFlexibleArea(flexibleArea);
 
@@ -224,8 +228,9 @@ class FlexibleAreaValidationServiceTest {
     flexibleArea.replaceKeyValues(keyValues);
 
     StopPlace stopPlace = new StopPlace();
-    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
-      .thenReturn(List.of(stopPlace));
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class))).thenReturn(
+      List.of(stopPlace)
+    );
 
     ValidationResult result = validationService.validateFlexibleArea(flexibleArea);
 
@@ -281,8 +286,9 @@ class FlexibleAreaValidationServiceTest {
 
     flexibleStopPlace.setFlexibleAreas(List.of(validArea, invalidArea));
 
-    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
-      .thenReturn(Collections.emptyList());
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class))).thenReturn(
+      Collections.emptyList()
+    );
 
     ValidationResult result = validationService.validateFlexibleStopPlace(
       flexibleStopPlace
@@ -312,8 +318,9 @@ class FlexibleAreaValidationServiceTest {
     flexibleStopPlace.setFlexibleAreas(List.of(areaWithoutKeyValue));
 
     // Area has no stop places, so should fail validation
-    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
-      .thenReturn(Collections.emptyList());
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class))).thenReturn(
+      Collections.emptyList()
+    );
 
     ValidationResult result = validationService.validateFlexibleStopPlace(
       flexibleStopPlace
@@ -345,8 +352,9 @@ class FlexibleAreaValidationServiceTest {
 
     // Area has stop places, so should pass validation
     StopPlace stopPlace = new StopPlace();
-    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class)))
-      .thenReturn(List.of(stopPlace));
+    when(stopPlaceRegistry.getStopPlacesWithinPolygon(any(Polygon.class))).thenReturn(
+      List.of(stopPlace)
+    );
 
     ValidationResult result = validationService.validateFlexibleStopPlace(
       flexibleStopPlace

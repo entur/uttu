@@ -71,13 +71,11 @@ public class S3BlobStoreRepositoryConfig {
 
   @Bean
   public S3Client s3Client(AwsCredentialsProvider credentialsProvider) {
-    S3ClientBuilder builder = S3Client
-      .builder()
+    S3ClientBuilder builder = S3Client.builder()
       .region(Region.of(region))
       .credentialsProvider(credentialsProvider)
       .overrideConfiguration(
-        ClientOverrideConfiguration
-          .builder()
+        ClientOverrideConfiguration.builder()
           .apiCallAttemptTimeout(Duration.ofSeconds(15))
           .apiCallTimeout(Duration.ofSeconds(15))
           .retryPolicy(retryPolicy -> retryPolicy.numRetries(5))

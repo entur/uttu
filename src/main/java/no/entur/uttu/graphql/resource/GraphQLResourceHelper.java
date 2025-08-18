@@ -88,13 +88,11 @@ public class GraphQLResourceHelper {
 
       // convert JSON string to Map
       try {
-        variables =
-          mapper.readValue(
-            s,
-            TypeFactory
-              .defaultInstance()
-              .constructMapType(HashMap.class, String.class, Object.class)
-          );
+        variables = mapper.readValue(
+          s,
+          TypeFactory.defaultInstance()
+            .constructMapType(HashMap.class, String.class, Object.class)
+        );
       } catch (IOException e) {
         ErrorResponseEntity content = new ErrorResponseEntity(e.getMessage());
         return Response.status(Response.Status.BAD_REQUEST).entity(content).build();
@@ -129,8 +127,7 @@ public class GraphQLResourceHelper {
       Response.ResponseBuilder res = Response.status(Response.Status.OK);
       HashMap<String, Object> content = new HashMap<>();
       try {
-        ExecutionInput executionInput = ExecutionInput
-          .newExecutionInput()
+        ExecutionInput executionInput = ExecutionInput.newExecutionInput()
           .query(query)
           .operationName(operationName)
           .root(null)
@@ -143,8 +140,8 @@ public class GraphQLResourceHelper {
           if (
             errors
               .stream()
-              .anyMatch(error ->
-                error.getErrorType().equals(ErrorType.DataFetchingException)
+              .anyMatch(
+                error -> error.getErrorType().equals(ErrorType.DataFetchingException)
               )
           ) {
             logger.info(
@@ -154,15 +151,15 @@ public class GraphQLResourceHelper {
             transactionStatus.setRollbackOnly();
           }
 
-          errors =
-            errors
-              .stream()
-              .map(exception ->
+          errors = errors
+            .stream()
+            .map(
+              exception ->
                 exception instanceof ExceptionWhileDataFetching
                   ? new CodedGraphQLError((ExceptionWhileDataFetching) exception)
                   : exception
-              )
-              .collect(Collectors.toList());
+            )
+            .collect(Collectors.toList());
 
           content.put("errors", errors);
         }
@@ -221,8 +218,7 @@ public class GraphQLResourceHelper {
     Throwable rootCause = getRootCause(e);
 
     if (
-      RETHROW_EXCEPTION_TYPES
-        .stream()
+      RETHROW_EXCEPTION_TYPES.stream()
         .anyMatch(c -> c.isAssignableFrom(rootCause.getClass()))
     ) {
       throw (RuntimeException) rootCause;

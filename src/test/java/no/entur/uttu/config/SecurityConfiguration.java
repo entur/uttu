@@ -57,16 +57,14 @@ public class SecurityConfiguration {
     PasswordEncoder encoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
     InMemoryUserDetailsManager manager = new InMemoryUserDetailsManager();
     manager.createUser(
-      User
-        .withUsername("admin")
+      User.withUsername("admin")
         .password("topsecret")
         .passwordEncoder(encoder::encode)
         .roles("adminEditRouteData")
         .build()
     );
     manager.createUser(
-      User
-        .withUsername("user")
+      User.withUsername("user")
         .password("secret")
         .passwordEncoder(encoder::encode)
         .roles("USER")

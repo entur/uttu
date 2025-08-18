@@ -52,24 +52,24 @@ public class FlexibleStopPlaceGraphQLIntegrationTest
   public void testCreateFlexibleStopPlaceWithHailAndRideArea() {
     var response = createFlexibleStopPlaceWithHailAndRideArea(HAIL_AND_RIDE_NAME);
 
-    assertThat(response.path("mutateFlexibleStopPlace.id").entity(String.class).get())
-      .startsWith("TST:FlexibleStopPlace");
-    assertThat(response.path("mutateFlexibleStopPlace.name").entity(String.class).get())
-      .isEqualTo(HAIL_AND_RIDE_NAME);
+    assertThat(
+      response.path("mutateFlexibleStopPlace.id").entity(String.class).get()
+    ).startsWith("TST:FlexibleStopPlace");
+    assertThat(
+      response.path("mutateFlexibleStopPlace.name").entity(String.class).get()
+    ).isEqualTo(HAIL_AND_RIDE_NAME);
     assertThat(
       response
         .path("mutateFlexibleStopPlace.hailAndRideArea.startQuayRef")
         .entity(String.class)
         .get()
-    )
-      .isEqualTo("NSR:Quay:565");
+    ).isEqualTo("NSR:Quay:565");
     assertThat(
       response
         .path("mutateFlexibleStopPlace.hailAndRideArea.endQuayRef")
         .entity(String.class)
         .get()
-    )
-      .isEqualTo("NSR:Quay:494");
+    ).isEqualTo("NSR:Quay:494");
   }
 
   @Test
@@ -84,68 +84,67 @@ public class FlexibleStopPlaceGraphQLIntegrationTest
     response
       .errors()
       .satisfy(errors -> {
-        assertThat(errors)
-          .anyMatch(error -> {
-            Map<String, Object> extensions = error.getExtensions();
-            return (
-              extensions.get("code").equals("ENTITY_IS_REFERENCED") &&
-              ((Map<String, Object>) extensions.get("metadata")).get("numberOfReferences")
-                .equals(1)
-            );
-          });
+        assertThat(errors).anyMatch(error -> {
+          Map<String, Object> extensions = error.getExtensions();
+          return (
+            extensions.get("code").equals("ENTITY_IS_REFERENCED") &&
+            ((Map<String, Object>) extensions.get("metadata")).get(
+                "numberOfReferences"
+              ).equals(1)
+          );
+        });
       });
 
     stopPointInJourneyPatternRepository.setNextCountByFlexibleStopPlace(0);
 
-    response =
-      graphQlTester
-        .documentName("deleteFlexibleStopPlace")
-        .variable("id", "TST:FlexibleStopPlace:1")
-        .execute();
+    response = graphQlTester
+      .documentName("deleteFlexibleStopPlace")
+      .variable("id", "TST:FlexibleStopPlace:1")
+      .execute();
 
     response.errors().verify();
   }
 
   private void assertFlexibleAreaResponse(GraphQlTester.Response response, String path) {
-    assertThat(response.path(path + ".id").entity(String.class).get())
-      .startsWith("TST:FlexibleStopPlace");
-    assertThat(response.path(path + ".name").entity(String.class).get())
-      .isEqualTo(FLEX_AREA_NAME);
-    assertThat(response.path(path + ".keyValues[0].key").entity(String.class).get())
-      .isEqualTo("foo");
+    assertThat(response.path(path + ".id").entity(String.class).get()).startsWith(
+      "TST:FlexibleStopPlace"
+    );
+    assertThat(response.path(path + ".name").entity(String.class).get()).isEqualTo(
+      FLEX_AREA_NAME
+    );
+    assertThat(
+      response.path(path + ".keyValues[0].key").entity(String.class).get()
+    ).isEqualTo("foo");
     assertThat(
       response.path(path + ".flexibleArea.polygon.type").entity(String.class).get()
-    )
-      .isEqualTo("Polygon");
+    ).isEqualTo("Polygon");
     assertThat(
       response.path(path + ".flexibleArea.polygon.coordinates").entity(List.class).get()
-    )
-      .hasSize(4);
+    ).hasSize(4);
   }
 
   private void assertFlexibleAreasResponse(GraphQlTester.Response response, String path) {
-    assertThat(response.path(path + ".id").entity(String.class).get())
-      .startsWith("TST:FlexibleStopPlace");
-    assertThat(response.path(path + ".name").entity(String.class).get())
-      .isEqualTo(FLEX_AREAS_NAME);
+    assertThat(response.path(path + ".id").entity(String.class).get()).startsWith(
+      "TST:FlexibleStopPlace"
+    );
+    assertThat(response.path(path + ".name").entity(String.class).get()).isEqualTo(
+      FLEX_AREAS_NAME
+    );
     assertThat(
       response
         .path(path + ".flexibleAreas[0].keyValues[0].key")
         .entity(String.class)
         .get()
-    )
-      .isEqualTo("foo");
+    ).isEqualTo("foo");
     assertThat(
       response.path(path + ".flexibleAreas[0].polygon.type").entity(String.class).get()
-    )
-      .isEqualTo("Polygon");
+    ).isEqualTo("Polygon");
     assertThat(
       response
         .path(path + ".flexibleAreas[0].polygon.coordinates")
         .entity(List.class)
         .get()
-    )
-      .hasSize(4);
+    ).hasSize(4);
   }
 
   private GraphQlTester.Response createFlexibleStopPlaceWithFlexibleArea(String name) {

@@ -71,8 +71,11 @@ public class ServiceJourneyProducer {
   ) {
     OperatorRefStructure operatorRefStructure = null;
     if (local.getOperatorRef() != null) {
-      operatorRefStructure =
-        organisationProducer.produceOperatorRef(local.getOperatorRef(), false, context);
+      operatorRefStructure = organisationProducer.produceOperatorRef(
+        local.getOperatorRef(),
+        false,
+        context
+      );
       context.operatorRefs.add(local.getOperatorRef());
     }
 
@@ -86,8 +89,13 @@ public class ServiceJourneyProducer {
       .withDayTypeRef(
         validDayTypes
           .stream()
-          .map(dt ->
-            objectFactory.wrapRefStructure(new DayTypeRefStructure(), dt.getRef(), false)
+          .map(
+            dt ->
+              objectFactory.wrapRefStructure(
+                new DayTypeRefStructure(),
+                dt.getRef(),
+                false
+              )
           )
           .collect(Collectors.toList())
       );
@@ -144,14 +152,13 @@ public class ServiceJourneyProducer {
       .filter(sp -> sp.getOrder() == local.getOrder())
       .findFirst();
     if (stopPointInJourneyPattern.isPresent()) {
-      pointInJourneyPatternRef =
-        objectFactory.wrapAsJAXBElement(
-          objectFactory.populateRefStructure(
-            new StopPointInJourneyPatternRefStructure(),
-            stopPointInJourneyPattern.get().getRef(),
-            true
-          )
-        );
+      pointInJourneyPatternRef = objectFactory.wrapAsJAXBElement(
+        objectFactory.populateRefStructure(
+          new StopPointInJourneyPatternRefStructure(),
+          stopPointInJourneyPattern.get().getRef(),
+          true
+        )
+      );
     } else {
       context.addExportMessage(
         SeverityEnumeration.ERROR,

@@ -70,10 +70,11 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
 
   @BeforeClass
   public static void init() {
-    localStack =
-      new LocalStackContainer(DockerImageName.parse("localstack/localstack:3.4.0"))
-        .withServices(Service.S3)
-        .withEnv("DEFAULT_REGION", Region.EU_NORTH_1.id());
+    localStack = new LocalStackContainer(
+      DockerImageName.parse("localstack/localstack:3.4.0")
+    )
+      .withServices(Service.S3)
+      .withEnv("DEFAULT_REGION", Region.EU_NORTH_1.id());
     localStack.start();
   }
 
@@ -117,8 +118,8 @@ public class S3BlobStoreRepositoryTest extends UttuIntegrationTest {
       contentType
     );
     assertBlobExists(TEST_BUCKET, "json", true);
-    HeadObjectResponse response = s3Client.headObject(request ->
-      request.bucket(TEST_BUCKET).key("json")
+    HeadObjectResponse response = s3Client.headObject(
+      request -> request.bucket(TEST_BUCKET).key("json")
     );
     Assert.assertEquals(contentType, response.contentType());
   }

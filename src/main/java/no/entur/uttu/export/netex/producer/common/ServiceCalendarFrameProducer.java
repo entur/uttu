@@ -125,11 +125,8 @@ public class ServiceCalendarFrameProducer {
         .stream()
         .map(dayOfWeekMap::get)
         .collect(Collectors.toList());
-      properties =
-        new PropertiesOfDay_RelStructure()
-          .withPropertyOfDay(
-            Arrays.asList(new PropertyOfDay().withDaysOfWeek(daysOfWeek))
-          );
+      properties = new PropertiesOfDay_RelStructure()
+        .withPropertyOfDay(Arrays.asList(new PropertyOfDay().withDaysOfWeek(daysOfWeek)));
     }
     return objectFactory
       .populateId(new org.rutebanken.netex.model.DayType(), local.getRef())
@@ -186,12 +183,11 @@ public class ServiceCalendarFrameProducer {
     }
     OperatingPeriodRefStructure operatingPeriodRefStructure = null;
     if (operatingPeriod != null) {
-      operatingPeriodRefStructure =
-        objectFactory.populateRefStructure(
-          new OperatingPeriodRefStructure(),
-          new Ref(operatingPeriod.getId(), operatingPeriod.getVersion()),
-          true
-        );
+      operatingPeriodRefStructure = objectFactory.populateRefStructure(
+        new OperatingPeriodRefStructure(),
+        new Ref(operatingPeriod.getId(), operatingPeriod.getVersion()),
+        true
+      );
     }
 
     JAXBElement<DayTypeRefStructure> dayTypeRefStructure = objectFactory.wrapRefStructure(

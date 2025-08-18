@@ -13,23 +13,24 @@ public class BrandingProducer {
   public List<Branding> produce(NetexExportContext context) {
     return context.brandings
       .stream()
-      .map(branding ->
-        new Branding()
-          .withId(branding.getNetexId())
-          .withVersion("1")
-          .withName(new MultilingualString().withValue(branding.getName()))
-          .withShortName(
-            branding.getShortName() != null
-              ? new MultilingualString().withValue(branding.getShortName())
-              : null
-          )
-          .withDescription(
-            branding.getDescription() != null
-              ? new MultilingualString().withValue(branding.getDescription())
-              : null
-          )
-          .withUrl(branding.getUrl())
-          .withImage(branding.getImageUrl())
+      .map(
+        branding ->
+          new Branding()
+            .withId(branding.getNetexId())
+            .withVersion("1")
+            .withName(new MultilingualString().withValue(branding.getName()))
+            .withShortName(
+              branding.getShortName() != null
+                ? new MultilingualString().withValue(branding.getShortName())
+                : null
+            )
+            .withDescription(
+              branding.getDescription() != null
+                ? new MultilingualString().withValue(branding.getDescription())
+                : null
+            )
+            .withUrl(branding.getUrl())
+            .withImage(branding.getImageUrl())
       )
       .collect(Collectors.toList());
   }

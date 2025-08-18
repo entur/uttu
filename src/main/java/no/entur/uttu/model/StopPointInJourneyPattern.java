@@ -139,7 +139,7 @@ public class StopPointInJourneyPattern extends ProviderEntity {
     );
 
     Preconditions.checkArgument(
-      flexibleStopPlace != null ^ quayRef != null,
+      (flexibleStopPlace != null) ^ (quayRef != null),
       "%s exactly one of flexibleStopPlace and quayRef should be set",
       identity()
     );

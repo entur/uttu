@@ -21,11 +21,10 @@ public class EnturUserContextService implements UserContextService {
   ) {
     this.providerRepository = providerRepository;
     this.userInfoExtractor = userInfoExtractor;
-    authorizationService =
-      new DefaultAuthorizationService<>(
-        this::getProviderCodespaceByProviderCode,
-        roleAssignmentExtractor
-      );
+    authorizationService = new DefaultAuthorizationService<>(
+      this::getProviderCodespaceByProviderCode,
+      roleAssignmentExtractor
+    );
   }
 
   @Override

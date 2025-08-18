@@ -34,10 +34,12 @@ public class FlexibleLineGraphQLIntegrationTest extends AbstractGraphQLIntegrati
       stopPlaceId2
     );
 
-    assertThat(response.path("mutateFlexibleLine.id").entity(String.class).get())
-      .startsWith("TST:FlexibleLine");
-    assertThat(response.path("mutateFlexibleLine.name").entity(String.class).get())
-      .isEqualTo(TEST_FLEXIBLE_LINE_NAME);
+    assertThat(
+      response.path("mutateFlexibleLine.id").entity(String.class).get()
+    ).startsWith("TST:FlexibleLine");
+    assertThat(
+      response.path("mutateFlexibleLine.name").entity(String.class).get()
+    ).isEqualTo(TEST_FLEXIBLE_LINE_NAME);
     assertThat(
       response
         .path(
@@ -45,8 +47,7 @@ public class FlexibleLineGraphQLIntegrationTest extends AbstractGraphQLIntegrati
         )
         .entity(String.class)
         .get()
-    )
-      .isEqualTo("16:00:00");
+    ).isEqualTo("16:00:00");
   }
 
   @Test
@@ -66,13 +67,14 @@ public class FlexibleLineGraphQLIntegrationTest extends AbstractGraphQLIntegrati
 
     response
       .errors()
-      .satisfy(errors ->
-        assertThat(errors)
-          .anyMatch(error ->
-            error
-              .getExtensions()
-              .get("code")
-              .equals("ORGANISATION_NOT_IN_ORGANISATION_REGISTRY")
+      .satisfy(
+        errors ->
+          assertThat(errors).anyMatch(
+            error ->
+              error
+                .getExtensions()
+                .get("code")
+                .equals("ORGANISATION_NOT_IN_ORGANISATION_REGISTRY")
           )
       );
   }
@@ -125,10 +127,10 @@ public class FlexibleLineGraphQLIntegrationTest extends AbstractGraphQLIntegrati
 
     response
       .errors()
-      .satisfy(errors ->
-        assertThat(errors)
-          .anyMatch(error ->
-            error.getExtensions().get("code").equals("CONSTRAINT_VIOLATION")
+      .satisfy(
+        errors ->
+          assertThat(errors).anyMatch(
+            error -> error.getExtensions().get("code").equals("CONSTRAINT_VIOLATION")
           )
       );
   }

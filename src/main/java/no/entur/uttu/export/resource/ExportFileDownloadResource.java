@@ -71,8 +71,7 @@ public class ExportFileDownloadResource {
 
     String fileNameOnly = Paths.get(export.getFileName()).getFileName().toString();
 
-    return Response
-      .ok(content, MediaType.APPLICATION_OCTET_STREAM)
+    return Response.ok(content, MediaType.APPLICATION_OCTET_STREAM)
       .header("content-disposition", "attachment; filename = " + fileNameOnly)
       .build();
   }

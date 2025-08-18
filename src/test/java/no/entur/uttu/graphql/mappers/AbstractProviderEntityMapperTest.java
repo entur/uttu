@@ -117,8 +117,9 @@ public class AbstractProviderEntityMapperTest {
     existingEntity2.setNetexId("existing-id-2");
     existingEntity2.setTestField("original-value2");
 
-    when(repository.findByIds(anyList()))
-      .thenReturn(Arrays.asList(existingEntity1, existingEntity2));
+    when(repository.findByIds(anyList())).thenReturn(
+      Arrays.asList(existingEntity1, existingEntity2)
+    );
 
     // When
     List<TestProviderEntity> result = mapper.mapList(inputObjs);

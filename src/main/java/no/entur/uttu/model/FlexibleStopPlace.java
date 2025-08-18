@@ -107,7 +107,7 @@ public class FlexibleStopPlace extends GroupOfEntities_VersionStructure {
   public void checkPersistable() {
     super.checkPersistable();
     Preconditions.checkArgument(
-      !flexibleAreas.isEmpty() ^ hailAndRideArea != null,
+      !flexibleAreas.isEmpty() ^ (hailAndRideArea != null),
       "%s exactly one of flexibleArea and hailAndRideArea must be set",
       identity()
     );

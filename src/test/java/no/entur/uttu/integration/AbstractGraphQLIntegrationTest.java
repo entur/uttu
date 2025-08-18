@@ -26,22 +26,20 @@ public abstract class AbstractGraphQLIntegrationTest extends UttuIntegrationTest
   public void setup() {
     jerseyClient = ClientBuilder.newClient();
     jerseyClient.register(HttpAuthenticationFeature.basic("admin", "topsecret"));
-    webTarget =
-      jerseyClient.target("http://localhost:" + port + "/services/flexible-lines");
+    webTarget = jerseyClient.target(
+      "http://localhost:" + port + "/services/flexible-lines"
+    );
 
     userContextServiceStub.setPreferredName("John Doe");
     userContextServiceStub.setAdmin(false);
     userContextServiceStub.setHasAccessToProvider("tst", true);
     userContextServiceStub.setHasAccessToProvider("foo", false);
 
-    WebTestClient.Builder clientBuilder = WebTestClient
-      .bindToServer()
+    WebTestClient.Builder clientBuilder = WebTestClient.bindToServer()
       .baseUrl("http://localhost:" + port + "/services/flexible-lines/tst/graphql");
 
-    graphQlTester =
-      HttpGraphQlTester
-        .builder(clientBuilder)
-        .headers(headers -> headers.setBasicAuth("admin", "topsecret"))
-        .build();
+    graphQlTester = HttpGraphQlTester.builder(clientBuilder)
+      .headers(headers -> headers.setBasicAuth("admin", "topsecret"))
+      .build();
   }
 }

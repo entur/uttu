@@ -185,12 +185,11 @@ public class OrganisationProducer {
     return extractLegacyId(organisation, type).orElse(organisation.getId());
   }
 
-  protected static <
-    T extends Organisation_VersionStructure
-  > Optional<String> extractLegacyId(T organisation, String type) {
-    return Optional
-      .ofNullable(organisation.getKeyList())
-      .flatMap(kl ->
+  protected static <T extends Organisation_VersionStructure> Optional<
+    String
+  > extractLegacyId(T organisation, String type) {
+    return Optional.ofNullable(organisation.getKeyList()).flatMap(
+      kl ->
         kl
           .getKeyValue()
           .stream()
@@ -198,9 +197,9 @@ public class OrganisationProducer {
           .findFirst()
           .map(KeyValueStructure::getValue)
           .map(value -> value.split(","))
-          .flatMap(value ->
-            Arrays.stream(value).filter(id -> id.contains(type)).findFirst()
+          .flatMap(
+            value -> Arrays.stream(value).filter(id -> id.contains(type)).findFirst()
           )
-      );
+    );
   }
 }

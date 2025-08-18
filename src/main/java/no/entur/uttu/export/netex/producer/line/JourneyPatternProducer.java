@@ -111,11 +111,11 @@ public class JourneyPatternProducer {
       routingService.isEnabled(local.getLine().getTransportMode()) &&
       context.shouldGenerateServiceLinks()
     ) {
-      linksInSequence =
-        local
-          .getPointsInSequence()
-          .stream()
-          .map(spinjp ->
+      linksInSequence = local
+        .getPointsInSequence()
+        .stream()
+        .map(
+          spinjp ->
             mapServiceLinkInJourneyPattern(
               local.getRef(),
               spinjp,
@@ -125,9 +125,9 @@ public class JourneyPatternProducer {
               context,
               local.getLine().getTransportMode()
             )
-          )
-          .filter(Objects::nonNull)
-          .collect(Collectors.toList());
+        )
+        .filter(Objects::nonNull)
+        .collect(Collectors.toList());
     } else {
       linksInSequence = new ArrayList<>();
     }
@@ -153,12 +153,11 @@ public class JourneyPatternProducer {
     DestinationDisplayRefStructure destinationDisplayRefStructure = null;
     if (local.getDestinationDisplay() != null) {
       context.destinationDisplays.add(local.getDestinationDisplay());
-      destinationDisplayRefStructure =
-        objectFactory.populateRefStructure(
-          new DestinationDisplayRefStructure(),
-          local.getDestinationDisplay().getRef(),
-          false
-        );
+      destinationDisplayRefStructure = objectFactory.populateRefStructure(
+        new DestinationDisplayRefStructure(),
+        local.getDestinationDisplay().getRef(),
+        false
+      );
     }
 
     // Create ref to scheduledStopPoint referring to either a flexible stop place or a NSR QuayRef
@@ -202,8 +201,10 @@ public class JourneyPatternProducer {
       }
     } else {
       addQuayRef(local.getQuayRef(), context);
-      stopRef =
-        objectFactory.createScheduledStopPointRefFromQuayRef(local.getQuayRef(), context);
+      stopRef = objectFactory.createScheduledStopPointRefFromQuayRef(
+        local.getQuayRef(),
+        context
+      );
     }
 
     Ref scheduledStopPointRef = NetexIdProducer.replaceEntityName(
