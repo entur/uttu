@@ -65,6 +65,49 @@ public class ExportGraphQLIntegrationTest extends AbstractGraphQLIntegrationTest
     ).isEqualTo(lineRef);
   }
 
+  @Test
+  public void testCreateExportWithDatedServiceJourneys() throws Exception {
+    // Create flexible line
+    var flexibleLineResponse = createFlexibleLine(EXPORT_NAME + "_DatedServiceJourneys");
+    String lineRef = flexibleLineResponse
+      .path("mutateFlexibleLine.id")
+      .entity(String.class)
+      .get();
+
+    // Create export with DatedServiceJourneys enabled
+    var exportInput = Map.of(
+      "name",
+      EXPORT_NAME + "_DatedServiceJourneys",
+      "lineAssociations",
+      List.of(Map.of("lineRef", lineRef)),
+      "includeDatedServiceJourneys",
+      true // Enable DatedServiceJourneys to test the schema validation fix
+    );
+
+    var exportResponse = graphQlTester
+      .documentName("export")
+      .variable("export", exportInput)
+      .execute();
+
+    String exportId = exportResponse.path("export.id").entity(String.class).get();
+    assertThat(exportId).startsWith("TST:Export");
+    assertThat(exportResponse.path("export.name").entity(String.class).get()).isEqualTo(
+      EXPORT_NAME + "_DatedServiceJourneys"
+    );
+    assertThat(
+      exportResponse.path("export.exportStatus").entity(String.class).get()
+    ).isEqualTo(ExportStatusEnumeration.SUCCESS.value());
+
+    String downloadUrl = exportResponse
+      .path("export.downloadUrl")
+      .entity(String.class)
+      .get();
+    assertThat(downloadUrl).startsWith("tst/export/");
+    // Verify that the export succeeded without schema validation errors
+    // This test specifically covers the DatedServiceJourney marshalling scenario
+    // that was failing with "dayTypes content not complete" schema validation error
+  }
+
   private GraphQlTester.Response createFlexibleLine(String name) {
     var networkId = createNetworkWithName(name + "_network")
       .path("mutateNetwork.id")

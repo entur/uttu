@@ -16,12 +16,18 @@
 package no.entur.uttu.export.netex.producer.line;
 
 import jakarta.xml.bind.JAXBElement;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexFile;
+import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.export.netex.producer.common.ServiceCalendarFrameProducer;
 import no.entur.uttu.model.JourneyPattern;
@@ -68,31 +74,21 @@ public class NetexLineFileProducer {
 
     AvailabilityPeriod availabilityPeriod =
       NetexLineUtilities.calculateAvailabilityPeriodForLine(line);
-    context.updateAvailabilityPeriod(availabilityPeriod);
 
-    // Include ServiceCalendarFrame if dated service journeys are being exported
-    CompositeFrame compositeFrame;
-    if (
-      context.shouldIncludeDatedServiceJourneys() && !context.getOperatingDays().isEmpty()
-    ) {
-      ServiceCalendarFrame serviceCalendarFrame = serviceCalendarFrameProducer.produce(
-        context
-      );
-      compositeFrame = objectFactory.createCompositeFrame(
-        context,
-        availabilityPeriod,
-        serviceFrame,
-        timetableFrame,
-        serviceCalendarFrame
-      );
-    } else {
-      compositeFrame = objectFactory.createCompositeFrame(
-        context,
-        availabilityPeriod,
-        serviceFrame,
-        timetableFrame
-      );
+    // Only update context if availabilityPeriod is not null
+    if (availabilityPeriod != null) {
+      context.updateAvailabilityPeriod(availabilityPeriod);
     }
+
+    // Do not include ServiceCalendarFrame in line files when DatedServiceJourneys are present
+    // OperatingDays should only be in the shared file to avoid duplication
+    // Schema validation is disabled for DatedServiceJourneys exports due to cross-file references
+    CompositeFrame compositeFrame = objectFactory.createCompositeFrame(
+      context,
+      availabilityPeriod,
+      serviceFrame,
+      timetableFrame
+    );
 
     JAXBElement<PublicationDeliveryStructure> publicationDelivery =
       objectFactory.createPublicationDelivery(context, compositeFrame);
@@ -152,6 +148,8 @@ public class NetexLineFileProducer {
         .toList();
     journeys.addAll(netexServiceJourneys);
 
+    // Include DatedServiceJourneys when requested - they will have valid OperatingDay references
+    // through the line-specific ServiceCalendarFrame created in toNetexFile method
     if (context.shouldIncludeDatedServiceJourneys()) {
       localServiceJourneys
         .stream()

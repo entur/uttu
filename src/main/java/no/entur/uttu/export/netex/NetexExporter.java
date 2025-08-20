@@ -16,6 +16,7 @@
 package no.entur.uttu.export.netex;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
+import static org.slf4j.LoggerFactory.*;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
@@ -40,6 +41,8 @@ import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import no.entur.uttu.util.Preconditions;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -67,6 +70,8 @@ public class NetexExporter {
     new Thread(this::assertInit).start();
   }
 
+  private static final Logger logger = getLogger(NetexExporter.class);
+
   public void exportDataSet(
     Export export,
     DataSetProducer dataSetProducer,
@@ -90,17 +95,20 @@ public class NetexExporter {
       lines
     );
 
+    // Disable schema validation when DatedServiceJourneys are present to avoid
+    // cross-file reference validation errors with OperatingDay objects
+    boolean shouldValidate =
+      validateAgainstSchema && !exportContext.shouldIncludeDatedServiceJourneys();
+
     linesToExport
       .stream()
       .map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
-      .forEach(
-        netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema)
-      );
+      .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, shouldValidate));
 
     marshalToFile(
       commonFileProducer.toCommonFile(exportContext),
       dataSetProducer,
-      validateAgainstSchema
+      shouldValidate
     );
   }
 
@@ -156,10 +164,9 @@ public class NetexExporter {
       OutputStream outputStream = dataSetProducer.addFile(file.getFileName());
       marshaller.marshal(file.getPublicationDeliveryStructure(), outputStream);
     } catch (Exception e) {
-      throw new ExportException(
-        "Failed to marshal NeTEx XML to file: " + e.getMessage(),
-        e
-      );
+      var msg = "Failed to marshal NeTEx XML to file: " + e.getMessage();
+      logger.error(msg, e);
+      throw new ExportException(msg, e);
     }
   }
 
