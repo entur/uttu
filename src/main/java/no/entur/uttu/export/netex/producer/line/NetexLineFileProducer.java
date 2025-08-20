@@ -16,23 +16,14 @@
 package no.entur.uttu.export.netex.producer.line;
 
 import jakarta.xml.bind.JAXBElement;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexFile;
-import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
-import no.entur.uttu.export.netex.producer.common.ServiceCalendarFrameProducer;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Line;
-import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.util.ExportUtil;
 import org.rutebanken.netex.model.*;
 import org.springframework.stereotype.Component;
@@ -46,7 +37,6 @@ public class NetexLineFileProducer {
   private final JourneyPatternProducer journeyPatternProducer;
   private final ServiceJourneyProducer serviceJourneyProducer;
   private final DatedServiceJourneyProducer datedServiceJourneyProducer;
-  private final ServiceCalendarFrameProducer serviceCalendarFrameProducer;
 
   public NetexLineFileProducer(
     NetexObjectFactory objectFactory,
@@ -54,8 +44,7 @@ public class NetexLineFileProducer {
     RouteProducer routeProducer,
     JourneyPatternProducer journeyPatternProducer,
     ServiceJourneyProducer serviceJourneyProducer,
-    DatedServiceJourneyProducer datedServiceJourneyProducer,
-    ServiceCalendarFrameProducer serviceCalendarFrameProducer
+    DatedServiceJourneyProducer datedServiceJourneyProducer
   ) {
     this.objectFactory = objectFactory;
     this.lineProducer = lineProducer;
@@ -63,7 +52,6 @@ public class NetexLineFileProducer {
     this.journeyPatternProducer = journeyPatternProducer;
     this.serviceJourneyProducer = serviceJourneyProducer;
     this.datedServiceJourneyProducer = datedServiceJourneyProducer;
-    this.serviceCalendarFrameProducer = serviceCalendarFrameProducer;
   }
 
   public NetexFile toNetexFile(Line line, NetexExportContext context) {
@@ -75,14 +63,10 @@ public class NetexLineFileProducer {
     AvailabilityPeriod availabilityPeriod =
       NetexLineUtilities.calculateAvailabilityPeriodForLine(line);
 
-    // Only update context if availabilityPeriod is not null
     if (availabilityPeriod != null) {
       context.updateAvailabilityPeriod(availabilityPeriod);
     }
 
-    // Do not include ServiceCalendarFrame in line files when DatedServiceJourneys are present
-    // OperatingDays should only be in the shared file to avoid duplication
-    // Schema validation is disabled for DatedServiceJourneys exports due to cross-file references
     CompositeFrame compositeFrame = objectFactory.createCompositeFrame(
       context,
       availabilityPeriod,
@@ -137,25 +121,23 @@ public class NetexLineFileProducer {
       .map(JourneyPattern::getServiceJourneys)
       .flatMap(List::stream)
       .filter(context::isValid)
-      .collect(Collectors.toList());
-
-    List<ServiceJourney_VersionStructure> journeys = new ArrayList<>();
+      .toList();
 
     List<org.rutebanken.netex.model.ServiceJourney> netexServiceJourneys =
       localServiceJourneys
         .stream()
         .map(sj -> serviceJourneyProducer.produce(sj, noticeAssignments, context))
         .toList();
-    journeys.addAll(netexServiceJourneys);
+    List<ServiceJourney_VersionStructure> journeys = new ArrayList<>(
+      netexServiceJourneys
+    );
 
-    // Include DatedServiceJourneys when requested - they will have valid OperatingDay references
-    // through the line-specific ServiceCalendarFrame created in toNetexFile method
     if (context.shouldIncludeDatedServiceJourneys()) {
       localServiceJourneys
         .stream()
         .map(sj -> datedServiceJourneyProducer.produce(sj, context))
         .flatMap(List::stream)
-        .forEach(e -> journeys.add(e));
+        .forEach(journeys::add);
     }
 
     return objectFactory.createTimetableFrame(context, journeys, noticeAssignments);

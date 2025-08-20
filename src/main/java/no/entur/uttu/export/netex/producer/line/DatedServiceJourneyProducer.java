@@ -60,7 +60,6 @@ public class DatedServiceJourneyProducer {
 
     List<DatedServiceJourney> result = new ArrayList<>();
     for (LocalDate date : dates) {
-      // Ensure OperatingDay is created in ServiceCalendarFrame
       context.addOperatingDay(date);
 
       String dsjId = NetexIdProducer.getId(
