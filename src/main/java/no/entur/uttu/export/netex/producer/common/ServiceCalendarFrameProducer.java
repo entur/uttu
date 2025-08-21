@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
@@ -74,7 +75,34 @@ public class ServiceCalendarFrameProducer {
     List<OperatingPeriod> netexOperatingPeriods = new ArrayList<>();
     List<OperatingDay> netexOperatingDays = new ArrayList<>();
 
-    for (java.time.LocalDate date : context.getOperatingDays()) {
+    // Collect all referenced operating day dates
+    Set<java.time.LocalDate> allOperatingDayDates = new java.util.HashSet<>();
+    // 1. From context (DatedServiceJourney)
+    allOperatingDayDates.addAll(context.getOperatingDays());
+    // 2. From DayTypeAssignments (explicit date)
+    for (DayType localDayType : context.dayTypes) {
+      List<no.entur.uttu.model.DayTypeAssignment> validDayTypeAssignments = localDayType
+        .getDayTypeAssignments()
+        .stream()
+        .filter(context::isValid)
+        .toList();
+      for (no.entur.uttu.model.DayTypeAssignment localDayTypeAssignment : validDayTypeAssignments) {
+        if (localDayTypeAssignment.getDate() != null) {
+          allOperatingDayDates.add(localDayTypeAssignment.getDate());
+        }
+        // 3. From OperatingPeriods (from/to)
+        if (
+          localDayTypeAssignment.getOperatingPeriod() != null &&
+          context.isValid(localDayTypeAssignment.getOperatingPeriod())
+        ) {
+          var op = localDayTypeAssignment.getOperatingPeriod();
+          if (op.getFromDate() != null) allOperatingDayDates.add(op.getFromDate());
+          if (op.getToDate() != null) allOperatingDayDates.add(op.getToDate());
+        }
+      }
+    }
+    // Create OperatingDay elements for all referenced dates
+    for (java.time.LocalDate date : allOperatingDayDates) {
       String operatingDayId = NetexIdProducer.getId(
         OperatingDay.class,
         date.toString(),
@@ -90,7 +118,6 @@ public class ServiceCalendarFrameProducer {
     int dayTypeAssignmentOrder = 1;
     for (DayType localDayType : context.dayTypes) {
       netexDayTypes.add(mapDayType(localDayType));
-
       List<no.entur.uttu.model.DayTypeAssignment> validDayTypeAssignments = localDayType
         .getDayTypeAssignments()
         .stream()
@@ -118,7 +145,7 @@ public class ServiceCalendarFrameProducer {
       }
     }
 
-    netexDayTypeAssignments.sort(new DayTypeAssignmentExportComparator());
+    Collections.sort(netexDayTypeAssignments, new DayTypeAssignmentExportComparator());
 
     return objectFactory.createServiceCalendarFrame(
       context,
