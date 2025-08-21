@@ -752,6 +752,11 @@ public class LinesGraphQLSchema {
       .field(newFieldDefinition().name(FIELD_GENERATE_SERVICE_LINKS).type(GraphQLBoolean))
       .field(
         newFieldDefinition()
+          .name(FIELD_INCLUDE_DATED_SERVICE_JOURNEYS)
+          .type(GraphQLBoolean)
+      )
+      .field(
+        newFieldDefinition()
           .name(FIELD_DOWNLOAD_URL)
           .type(GraphQLString)
           .dataFetcher(env -> {
@@ -1500,6 +1505,12 @@ public class LinesGraphQLSchema {
       .field(
         newInputObjectField()
           .name(FIELD_GENERATE_SERVICE_LINKS)
+          .type(GraphQLBoolean)
+          .defaultValue(Boolean.FALSE)
+      )
+      .field(
+        newInputObjectField()
+          .name(FIELD_INCLUDE_DATED_SERVICE_JOURNEYS)
           .type(GraphQLBoolean)
           .defaultValue(Boolean.FALSE)
       )

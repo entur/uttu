@@ -18,7 +18,6 @@ package no.entur.uttu.export.netex.producer.line;
 import jakarta.xml.bind.JAXBElement;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.NetexFile;
@@ -26,12 +25,7 @@ import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Line;
 import no.entur.uttu.util.ExportUtil;
-import org.rutebanken.netex.model.CompositeFrame;
-import org.rutebanken.netex.model.NoticeAssignment;
-import org.rutebanken.netex.model.PublicationDeliveryStructure;
-import org.rutebanken.netex.model.Route;
-import org.rutebanken.netex.model.ServiceFrame;
-import org.rutebanken.netex.model.TimetableFrame;
+import org.rutebanken.netex.model.*;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -42,19 +36,22 @@ public class NetexLineFileProducer {
   private final RouteProducer routeProducer;
   private final JourneyPatternProducer journeyPatternProducer;
   private final ServiceJourneyProducer serviceJourneyProducer;
+  private final DatedServiceJourneyProducer datedServiceJourneyProducer;
 
   public NetexLineFileProducer(
     NetexObjectFactory objectFactory,
     LineProducer lineProducer,
     RouteProducer routeProducer,
     JourneyPatternProducer journeyPatternProducer,
-    ServiceJourneyProducer serviceJourneyProducer
+    ServiceJourneyProducer serviceJourneyProducer,
+    DatedServiceJourneyProducer datedServiceJourneyProducer
   ) {
     this.objectFactory = objectFactory;
     this.lineProducer = lineProducer;
     this.routeProducer = routeProducer;
     this.journeyPatternProducer = journeyPatternProducer;
     this.serviceJourneyProducer = serviceJourneyProducer;
+    this.datedServiceJourneyProducer = datedServiceJourneyProducer;
   }
 
   public NetexFile toNetexFile(Line line, NetexExportContext context) {
@@ -65,7 +62,10 @@ public class NetexLineFileProducer {
 
     AvailabilityPeriod availabilityPeriod =
       NetexLineUtilities.calculateAvailabilityPeriodForLine(line);
-    context.updateAvailabilityPeriod(availabilityPeriod);
+
+    if (availabilityPeriod != null) {
+      context.updateAvailabilityPeriod(availabilityPeriod);
+    }
 
     CompositeFrame compositeFrame = objectFactory.createCompositeFrame(
       context,
@@ -73,6 +73,7 @@ public class NetexLineFileProducer {
       serviceFrame,
       timetableFrame
     );
+
     JAXBElement<PublicationDeliveryStructure> publicationDelivery =
       objectFactory.createPublicationDelivery(context, compositeFrame);
 
@@ -113,19 +114,32 @@ public class NetexLineFileProducer {
 
   private TimetableFrame createTimetableFrame(Line line, NetexExportContext context) {
     List<NoticeAssignment> noticeAssignments = new ArrayList<>();
-    List<org.rutebanken.netex.model.ServiceJourney> netexServiceJourneys = line
+
+    List<no.entur.uttu.model.ServiceJourney> localServiceJourneys = line
       .getJourneyPatterns()
       .stream()
       .map(JourneyPattern::getServiceJourneys)
       .flatMap(List::stream)
       .filter(context::isValid)
-      .map(sj -> serviceJourneyProducer.produce(sj, noticeAssignments, context))
-      .collect(Collectors.toList());
+      .toList();
 
-    return objectFactory.createTimetableFrame(
-      context,
-      netexServiceJourneys,
-      noticeAssignments
+    List<org.rutebanken.netex.model.ServiceJourney> netexServiceJourneys =
+      localServiceJourneys
+        .stream()
+        .map(sj -> serviceJourneyProducer.produce(sj, noticeAssignments, context))
+        .toList();
+    List<ServiceJourney_VersionStructure> journeys = new ArrayList<>(
+      netexServiceJourneys
     );
+
+    if (context.shouldIncludeDatedServiceJourneys()) {
+      localServiceJourneys
+        .stream()
+        .map(sj -> datedServiceJourneyProducer.produce(sj, context))
+        .flatMap(List::stream)
+        .forEach(journeys::add);
+    }
+
+    return objectFactory.createTimetableFrame(context, journeys, noticeAssignments);
   }
 }

@@ -18,31 +18,16 @@ package no.entur.uttu.export.netex.producer.common;
 import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
 import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.Ref;
-import org.rutebanken.netex.model.DayOfWeekEnumeration;
-import org.rutebanken.netex.model.DayTypeAssignment;
-import org.rutebanken.netex.model.DayTypeRefStructure;
-import org.rutebanken.netex.model.OperatingDay;
-import org.rutebanken.netex.model.OperatingDayRefStructure;
-import org.rutebanken.netex.model.OperatingPeriod;
-import org.rutebanken.netex.model.OperatingPeriodRefStructure;
-import org.rutebanken.netex.model.PropertiesOfDay_RelStructure;
-import org.rutebanken.netex.model.PropertyOfDay;
-import org.rutebanken.netex.model.ServiceCalendarFrame;
+import org.rutebanken.netex.model.*;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -74,15 +59,59 @@ public class ServiceCalendarFrameProducer {
     List<OperatingPeriod> netexOperatingPeriods = new ArrayList<>();
     List<OperatingDay> netexOperatingDays = new ArrayList<>();
 
-    int dayTypeAssignmentOrder = 1;
-    for (DayType localDayType : context.dayTypes) {
-      netexDayTypes.add(mapDayType(localDayType));
+    // Collect all referenced operating day dates
+    // 1. From context (DatedServiceJourney)
+    Set<LocalDate> allOperatingDayDates = new java.util.HashSet<>(
+      context.getOperatingDays()
+    );
 
+    // 2. From DayTypeAssignments (explicit date)
+    for (DayType localDayType : context.dayTypes) {
       List<no.entur.uttu.model.DayTypeAssignment> validDayTypeAssignments = localDayType
         .getDayTypeAssignments()
         .stream()
         .filter(context::isValid)
-        .collect(Collectors.toList());
+        .toList();
+
+      for (no.entur.uttu.model.DayTypeAssignment localDayTypeAssignment : validDayTypeAssignments) {
+        if (localDayTypeAssignment.getDate() != null) {
+          allOperatingDayDates.add(localDayTypeAssignment.getDate());
+        }
+
+        // 3. From OperatingPeriods (from/to)
+        if (
+          localDayTypeAssignment.getOperatingPeriod() != null &&
+          context.isValid(localDayTypeAssignment.getOperatingPeriod())
+        ) {
+          var op = localDayTypeAssignment.getOperatingPeriod();
+          if (op.getFromDate() != null) allOperatingDayDates.add(op.getFromDate());
+          if (op.getToDate() != null) allOperatingDayDates.add(op.getToDate());
+        }
+      }
+    }
+
+    // Create OperatingDay elements for all referenced dates
+    for (LocalDate date : allOperatingDayDates) {
+      String operatingDayId = NetexIdProducer.getId(
+        OperatingDay.class,
+        date.toString(),
+        context
+      );
+      OperatingDay operatingDay = new OperatingDay()
+        .withId(operatingDayId)
+        .withVersion("0")
+        .withCalendarDate(date.atStartOfDay());
+      netexOperatingDays.add(operatingDay);
+    }
+
+    int dayTypeAssignmentOrder = 1;
+    for (DayType localDayType : context.dayTypes) {
+      netexDayTypes.add(mapDayType(localDayType));
+      List<no.entur.uttu.model.DayTypeAssignment> validDayTypeAssignments = localDayType
+        .getDayTypeAssignments()
+        .stream()
+        .filter(context::isValid)
+        .toList();
       for (no.entur.uttu.model.DayTypeAssignment localDayTypeAssignment : validDayTypeAssignments) {
         OperatingPeriod operatingPeriod = null;
         if (context.isValid(localDayTypeAssignment.getOperatingPeriod())) {
@@ -91,7 +120,6 @@ public class ServiceCalendarFrameProducer {
             context
           );
           netexOperatingPeriods.add(mappedOperatingPeriod.getOperatingPeriod());
-          netexOperatingDays.addAll(mappedOperatingPeriod.getOperatingDays());
           operatingPeriod = mappedOperatingPeriod.getOperatingPeriod();
         }
         netexDayTypeAssignments.add(
@@ -106,7 +134,7 @@ public class ServiceCalendarFrameProducer {
       }
     }
 
-    Collections.sort(netexDayTypeAssignments, new DayTypeAssignmentExportComparator());
+    netexDayTypeAssignments.sort(new DayTypeAssignmentExportComparator());
 
     return objectFactory.createServiceCalendarFrame(
       context,
@@ -126,7 +154,7 @@ public class ServiceCalendarFrameProducer {
         .map(dayOfWeekMap::get)
         .collect(Collectors.toList());
       properties = new PropertiesOfDay_RelStructure()
-        .withPropertyOfDay(Arrays.asList(new PropertyOfDay().withDaysOfWeek(daysOfWeek)));
+        .withPropertyOfDay(List.of(new PropertyOfDay().withDaysOfWeek(daysOfWeek)));
     }
     return objectFactory
       .populateId(new org.rutebanken.netex.model.DayType(), local.getRef())
@@ -139,12 +167,23 @@ public class ServiceCalendarFrameProducer {
   ) {
     var id = NetexIdProducer.generateId(OperatingPeriod.class, context);
 
+    String fromDateId = NetexIdProducer.getId(
+      OperatingDay.class,
+      local.getFromDate().toString(),
+      context
+    );
+    String toDateId = NetexIdProducer.getId(
+      OperatingDay.class,
+      local.getToDate().toString(),
+      context
+    );
+
     var fromDate = new OperatingDay()
-      .withId(NetexIdProducer.generateId(OperatingDay.class, context))
+      .withId(fromDateId)
       .withVersion("0")
       .withCalendarDate(local.getFromDate().atStartOfDay());
     var toDate = new OperatingDay()
-      .withId(NetexIdProducer.generateId(OperatingDay.class, context))
+      .withId(toDateId)
       .withVersion("0")
       .withCalendarDate(local.getToDate().atStartOfDay());
 

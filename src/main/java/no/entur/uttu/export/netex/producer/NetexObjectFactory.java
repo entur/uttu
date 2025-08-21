@@ -406,7 +406,7 @@ public class NetexObjectFactory {
 
   public TimetableFrame createTimetableFrame(
     NetexExportContext context,
-    Collection<ServiceJourney> serviceJourneys,
+    Collection<ServiceJourney_VersionStructure> serviceJourneys,
     Collection<NoticeAssignment> noticeAssignments
   ) {
     JourneysInFrame_RelStructure journeysInFrameRelStructure =
