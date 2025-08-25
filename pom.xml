@@ -523,7 +523,7 @@
                 </dependencies>
                 <configuration>
                     <from>
-                        <image>bellsoft/liberica-openjdk-alpine:21.0.5-11</image>
+                        <image>bellsoft/liberica-openjdk-alpine:21</image>
                     </from>
                     <to>
                         <image>${env.CONTAINER_REPO}</image>
