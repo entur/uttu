@@ -32,6 +32,7 @@ import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.model.TimetabledPassingTime;
 import no.entur.uttu.model.job.SeverityEnumeration;
+import org.jetbrains.annotations.Nullable;
 import org.rutebanken.netex.model.BookingAccessEnumeration;
 import org.rutebanken.netex.model.BookingMethodEnumeration;
 import org.rutebanken.netex.model.DayTypeRefStructure;
@@ -79,27 +80,7 @@ public class ServiceJourneyProducer {
       context.operatorRefs.add(local.getOperatorRef());
     }
 
-    List<DayType> validDayTypes = local
-      .getDayTypes()
-      .stream()
-      .filter(context::isValid)
-      .toList();
-
-    DayTypeRefs_RelStructure dayTypeRefs_relStructure = new DayTypeRefs_RelStructure()
-      .withDayTypeRef(
-        validDayTypes
-          .stream()
-          .map(
-            dt ->
-              objectFactory.wrapRefStructure(
-                new DayTypeRefStructure(),
-                dt.getRef(),
-                false
-              )
-          )
-          .collect(Collectors.toList())
-      );
-    context.dayTypes.addAll(validDayTypes);
+    DayTypeRefs_RelStructure dayTypeRefs_relStructure = generateDayTypes(local, context);
 
     List<org.rutebanken.netex.model.TimetabledPassingTime> timetabledPassingTimes = local
       .getPassingTimes()
@@ -121,7 +102,7 @@ public class ServiceJourneyProducer {
     );
     context.notices.addAll(local.getNotices());
 
-    org.rutebanken.netex.model.ServiceJourney sj = objectFactory
+    return objectFactory
       .populate(new org.rutebanken.netex.model.ServiceJourney(), local)
       .withJourneyPatternRef(journeyPatternRef)
       .withName(objectFactory.createMultilingualString(local.getName()))
@@ -133,11 +114,39 @@ public class ServiceJourneyProducer {
       .withPassingTimes(
         new TimetabledPassingTimes_RelStructure()
           .withTimetabledPassingTime(timetabledPassingTimes)
-      );
+      )
+      .withDayTypes(dayTypeRefs_relStructure);
+  }
+
+  private @Nullable DayTypeRefs_RelStructure generateDayTypes(
+    ServiceJourney local,
+    NetexExportContext context
+  ) {
+    DayTypeRefs_RelStructure dayTypeRefs_relStructure = null;
     if (!context.shouldIncludeDatedServiceJourneys()) {
-      sj.withDayTypes(dayTypeRefs_relStructure);
+      List<DayType> validDayTypes = local
+        .getDayTypes()
+        .stream()
+        .filter(context::isValid)
+        .toList();
+
+      dayTypeRefs_relStructure = new DayTypeRefs_RelStructure()
+        .withDayTypeRef(
+          validDayTypes
+            .stream()
+            .map(
+              dt ->
+                objectFactory.wrapRefStructure(
+                  new DayTypeRefStructure(),
+                  dt.getRef(),
+                  false
+                )
+            )
+            .collect(Collectors.toList())
+        );
+      context.dayTypes.addAll(validDayTypes);
     }
-    return sj;
+    return dayTypeRefs_relStructure;
   }
 
   private org.rutebanken.netex.model.TimetabledPassingTime mapTimetabledPassingTime(

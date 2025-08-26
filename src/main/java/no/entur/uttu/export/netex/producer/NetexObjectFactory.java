@@ -483,7 +483,7 @@ public class NetexObjectFactory {
     String frameId = NetexIdProducer.generateId(ServiceCalendarFrame.class, context);
 
     DayTypesInFrame_RelStructure dayTypesStruct = null;
-    if (dayTypes != null) {
+    if (dayTypes != null && !context.shouldIncludeDatedServiceJourneys()) {
       dayTypesStruct = new DayTypesInFrame_RelStructure()
         .withDayType_(
           dayTypes.stream().map(this::wrapAsJAXBElement).collect(Collectors.toList())
@@ -491,7 +491,7 @@ public class NetexObjectFactory {
     }
 
     DayTypeAssignmentsInFrame_RelStructure dayTypeAssignmentsInFrameRelStructure = null;
-    if (dayTypeAssignments != null) {
+    if (dayTypeAssignments != null && !context.shouldIncludeDatedServiceJourneys()) {
       dayTypeAssignmentsInFrameRelStructure = new DayTypeAssignmentsInFrame_RelStructure()
         .withDayTypeAssignment(dayTypeAssignments);
       dayTypeAssignmentsInFrameRelStructure
