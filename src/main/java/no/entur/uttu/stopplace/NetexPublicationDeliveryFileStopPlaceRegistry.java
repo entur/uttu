@@ -3,7 +3,8 @@ package no.entur.uttu.stopplace;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -57,13 +58,15 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
   private final List<StopPlace> allStopPlacesIndex = new ArrayList<>();
 
-  private final STRtree spatialIndex = new STRtree();
+  private STRtree spatialIndex = new STRtree();
   private final GeometryFactory geometryFactory = new GeometryFactory();
 
   @Value("${uttu.stopplace.netex-file-uri}")
   String netexFileUri;
 
   private StopPlacesFilter stopPlacesFilter = new StopPlacesFilter();
+
+  private Instant publicationTime;
 
   @PostConstruct
   public void init() {
@@ -75,6 +78,7 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
       logger.info("Creating StreamSource from netexFileInputStream");
       PublicationDeliveryStructure publicationDeliveryStructure =
         netexUnmarshaller.unmarshalFromSource(new StreamSource(netexFileInputStream));
+      extractPublicationTime(publicationDeliveryStructure);
       extractStopPlaceData(publicationDeliveryStructure);
       buildSpatialIndex();
     } catch (IOException ioException) {
@@ -100,6 +104,12 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
         unmarshalFromSourceException
       );
     }
+  }
+
+  private void extractPublicationTime(PublicationDeliveryStructure publicationDeliveryStructure) {
+    var localPublicationTimestamp = publicationDeliveryStructure.getPublicationTimestamp();
+    var timeZone =  "Europe/Oslo";
+    publicationTime = localPublicationTimestamp.atZone(ZoneId.of(timeZone)).toInstant();
   }
 
   private void extractStopPlaceData(
@@ -261,5 +271,118 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     double latitude = centroid.getLatitude().doubleValue();
 
     return geometryFactory.createPoint(new Coordinate(longitude, latitude));
+  }
+
+  private void rebuildSpatialIndexAfterModification() {
+    // STRtree doesn't support removal after build, so we need to create a new instance
+    spatialIndex = new STRtree();
+    buildSpatialIndex();
+  }
+
+  public void createStopPlace(String id, StopPlace stopPlace) {
+    if (id == null || stopPlace == null) {
+      throw new IllegalArgumentException("ID and StopPlace cannot be null");
+    }
+
+    stopPlace.setId(id);
+
+    // Add to all stop places index
+    allStopPlacesIndex.add(stopPlace);
+
+    // Index quays if present
+    Optional.ofNullable(stopPlace.getQuays()).ifPresent(quays ->
+      quays.getQuayRefOrQuay().forEach(quayRefOrQuay -> {
+        Quay quay = (Quay) quayRefOrQuay.getValue();
+        stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+        quayByQuayRefIndex.put(quay.getId(), quay);
+      })
+    );
+
+    // Rebuild spatial index (STRtree doesn't support insertion after build)
+    rebuildSpatialIndexAfterModification();
+
+    logger.debug("Created stop place with id: {}", id);
+  }
+
+  public void updateStopPlace(String id, StopPlace stopPlace) {
+    if (id == null || stopPlace == null) {
+      throw new IllegalArgumentException("ID and StopPlace cannot be null");
+    }
+
+    // Remove old stop place
+    StopPlace oldStopPlace = allStopPlacesIndex.stream()
+      .filter(sp -> id.equals(sp.getId()))
+      .findFirst()
+      .orElse(null);
+
+    if (oldStopPlace != null) {
+      // Remove from all indexes
+      allStopPlacesIndex.remove(oldStopPlace);
+
+      // Remove old quay references
+      Optional.ofNullable(oldStopPlace.getQuays()).ifPresent(quays ->
+        quays.getQuayRefOrQuay().forEach(quayRefOrQuay -> {
+          Quay quay = (Quay) quayRefOrQuay.getValue();
+          stopPlaceByQuayRefIndex.remove(quay.getId());
+          quayByQuayRefIndex.remove(quay.getId());
+        })
+      );
+
+      // Remove from spatial index (note: STRtree doesn't support removal after build,
+      // so we'll need to rebuild the index)
+      rebuildSpatialIndexAfterModification();
+    }
+
+    // Add updated stop place
+    stopPlace.setId(id);
+    allStopPlacesIndex.add(stopPlace);
+
+    // Index new quays
+    Optional.ofNullable(stopPlace.getQuays()).ifPresent(quays ->
+      quays.getQuayRefOrQuay().forEach(quayRefOrQuay -> {
+        Quay quay = (Quay) quayRefOrQuay.getValue();
+        stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+        quayByQuayRefIndex.put(quay.getId(), quay);
+      })
+    );
+
+    logger.debug("Updated stop place with id: {}", id);
+  }
+
+  public void deleteStopPlace(String id) {
+    if (id == null) {
+      throw new IllegalArgumentException("ID cannot be null");
+    }
+
+    // Find and remove stop place
+    StopPlace stopPlaceToRemove = allStopPlacesIndex.stream()
+      .filter(sp -> id.equals(sp.getId()))
+      .findFirst()
+      .orElse(null);
+
+    if (stopPlaceToRemove != null) {
+      // Remove from all stop places index
+      allStopPlacesIndex.remove(stopPlaceToRemove);
+
+      // Remove quay references
+      Optional.ofNullable(stopPlaceToRemove.getQuays()).ifPresent(quays ->
+        quays.getQuayRefOrQuay().forEach(quayRefOrQuay -> {
+          Quay quay = (Quay) quayRefOrQuay.getValue();
+          stopPlaceByQuayRefIndex.remove(quay.getId());
+          quayByQuayRefIndex.remove(quay.getId());
+        })
+      );
+
+      // Rebuild spatial index (STRtree doesn't support removal after build)
+      rebuildSpatialIndexAfterModification();
+
+      logger.debug("Deleted stop place with id: {}", id);
+    } else {
+      logger.warn("Attempted to delete non-existent stop place with id: {}", id);
+    }
+  }
+
+  public Instant getPublicationTime() {
+    return publicationTime;
   }
 }

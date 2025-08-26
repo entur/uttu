@@ -144,6 +144,12 @@
             <version>${entur.helpers.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.entur.ror.helpers</groupId>
+            <artifactId>stopplace-changelog</artifactId>
+            <version>5.41.0-SNAPSHOT</version>
+        </dependency>
+
         <!-- Spring -->
 
         <dependency>
