@@ -27,19 +27,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
-import no.entur.uttu.export.netex.producer.line.DatedServiceJourneyProducer;
-import no.entur.uttu.export.netex.producer.line.JourneyPatternProducer;
-import no.entur.uttu.export.netex.producer.line.LineProducer;
-import no.entur.uttu.export.netex.producer.line.NetexLineFileProducer;
-import no.entur.uttu.export.netex.producer.line.RouteProducer;
-import no.entur.uttu.export.netex.producer.line.ServiceJourneyProducer;
+import no.entur.uttu.export.netex.producer.line.*;
+import no.entur.uttu.model.*;
 import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
-import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.ServiceJourney;
-import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.model.TimetabledPassingTime;
 import no.entur.uttu.model.job.Export;
 import org.junit.Test;
@@ -47,12 +41,7 @@ import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.rutebanken.netex.model.CompositeFrame;
-import org.rutebanken.netex.model.DatedServiceJourney;
-import org.rutebanken.netex.model.Line_VersionStructure;
-import org.rutebanken.netex.model.Route;
-import org.rutebanken.netex.model.ServiceFrame;
-import org.rutebanken.netex.model.TimetableFrame;
+import org.rutebanken.netex.model.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class NetexLineFileProducerTest {
@@ -80,37 +69,27 @@ public class NetexLineFileProducerTest {
 
   @Test
   public void testToNetexFileWithoutDatedServiceJourneys() {
-    // Setup
     FlexibleLine line = createTestLine();
     NetexExportContext context = createTestContext(false); // No DatedServiceJourneys
 
-    // Mock dependencies
     setupMockDependencies();
 
-    // Execute
     NetexFile result = netexLineFileProducer.toNetexFile(line, context);
 
-    // Verify
     assertThat(result).isNotNull();
     assertThat(result.getFileName()).contains("TestLine");
-    // Verify that CompositeFrame was created with only ServiceFrame and TimetableFrame
-    // No ServiceCalendarFrame should be included in individual line files
   }
 
   @Test
   public void testToNetexFileWithDatedServiceJourneys() {
-    // Setup
     FlexibleLine line = createTestLine();
     NetexExportContext context = createTestContext(true); // Include DatedServiceJourneys
 
-    // Add some operating days to the context to simulate DatedServiceJourney dates
     context.addOperatingDay(LocalDate.of(2026, 2, 3));
     context.addOperatingDay(LocalDate.of(2026, 2, 4));
 
-    // Mock dependencies
     setupMockDependencies();
 
-    // Mock DatedServiceJourney production to return some dated journeys
     when(
       datedServiceJourneyProducer.produce(
         any(ServiceJourney.class),
@@ -123,32 +102,23 @@ public class NetexLineFileProducerTest {
       )
     );
 
-    // Execute
     NetexFile result = netexLineFileProducer.toNetexFile(line, context);
 
-    // Verify
     assertThat(result).isNotNull();
     assertThat(result.getFileName()).contains("TestLine");
 
-    // Verify that operating days were added to the context (for the shared file)
     assertThat(context.getOperatingDays()).isNotEmpty();
     assertThat(context.getOperatingDays()).contains(
       LocalDate.of(2026, 2, 3),
       LocalDate.of(2026, 2, 4)
     );
-    // Verify that NO ServiceCalendarFrame is created in individual line files
-    // OperatingDays should only be in the shared file to avoid duplication
   }
 
   @Test
   public void testNoDuplicationOfOperatingDaysInLineFiles() {
-    // This test verifies the fix for OperatingDay duplication between
-    // shared file and individual line files
-
     FlexibleLine line = createTestLineWithServiceJourneys();
     NetexExportContext context = createTestContext(true);
 
-    // Mock the DatedServiceJourneyProducer to add specific dates to context
     when(
       datedServiceJourneyProducer.produce(
         any(ServiceJourney.class),
@@ -156,7 +126,7 @@ public class NetexLineFileProducerTest {
       )
     ).thenAnswer(invocation -> {
       NetexExportContext ctx = invocation.getArgument(1);
-      // Simulate adding operating days when producing DatedServiceJourneys
+
       ctx.addOperatingDay(LocalDate.of(2026, 2, 5));
       ctx.addOperatingDay(LocalDate.of(2026, 2, 6));
       return Collections.singletonList(
@@ -166,35 +136,25 @@ public class NetexLineFileProducerTest {
 
     setupMockDependencies();
 
-    // Execute
     NetexFile result = netexLineFileProducer.toNetexFile(line, context);
 
-    // Verify
     assertThat(result).isNotNull();
 
-    // Verify that operating days were added to context (for shared file)
     Set<LocalDate> operatingDays = context.getOperatingDays();
     assertThat(operatingDays).contains(
       LocalDate.of(2026, 2, 5),
       LocalDate.of(2026, 2, 6)
     );
-    // Key verification: CompositeFrame should be created with only 2 frames
-    // (ServiceFrame and TimetableFrame), not 3 (no ServiceCalendarFrame)
-    // This prevents OperatingDay duplication between shared and line files
   }
 
   @Test
   public void testDatedServiceJourneysIncludedInTimetableFrame() {
-    // This test verifies that DatedServiceJourneys are properly included
-    // in the TimetableFrame when the export option is enabled
-
     FlexibleLine line = createTestLine();
     NetexExportContext context = createTestContext(true);
     context.addOperatingDay(LocalDate.of(2026, 2, 7));
 
     setupMockDependencies();
 
-    // Mock DatedServiceJourney production
     List<DatedServiceJourney> datedJourneys = Arrays.asList(
       createMockDatedServiceJourney("DSJ_1"),
       createMockDatedServiceJourney("DSJ_2")
@@ -206,14 +166,9 @@ public class NetexLineFileProducerTest {
       )
     ).thenReturn(datedJourneys);
 
-    // Execute
     NetexFile result = netexLineFileProducer.toNetexFile(line, context);
 
-    // Verify
     assertThat(result).isNotNull();
-    // Verify that DatedServiceJourneys were processed
-    // The TimetableFrame should include both regular ServiceJourneys and DatedServiceJourneys
-    // DatedServiceJourneys will reference OperatingDays from the shared file, not local ones
   }
 
   private FlexibleLine createTestLine() {
@@ -280,18 +235,15 @@ public class NetexLineFileProducerTest {
   }
 
   private void setupMockDependencies() {
-    // Mock LineProducer
     Line_VersionStructure mockLine = mock(Line_VersionStructure.class);
     when(
       lineProducer.produce(any(FlexibleLine.class), any(), any(NetexExportContext.class))
     ).thenReturn(mockLine);
 
-    // Mock RouteProducer
     when(
       routeProducer.produce(any(FlexibleLine.class), any(NetexExportContext.class))
     ).thenReturn(Collections.singletonList(mock(Route.class)));
 
-    // Mock JourneyPatternProducer
     when(
       journeyPatternProducer.produce(
         any(JourneyPattern.class),
@@ -300,7 +252,6 @@ public class NetexLineFileProducerTest {
       )
     ).thenReturn(mock(org.rutebanken.netex.model.JourneyPattern.class));
 
-    // Mock ServiceJourneyProducer
     when(
       serviceJourneyProducer.produce(
         any(ServiceJourney.class),
@@ -309,7 +260,6 @@ public class NetexLineFileProducerTest {
       )
     ).thenReturn(mock(org.rutebanken.netex.model.ServiceJourney.class));
 
-    // Mock ObjectFactory methods
     when(
       objectFactory.createLineServiceFrame(any(), any(), any(), any(), any())
     ).thenReturn(mock(ServiceFrame.class));

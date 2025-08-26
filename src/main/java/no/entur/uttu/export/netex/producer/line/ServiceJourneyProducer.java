@@ -83,7 +83,7 @@ public class ServiceJourneyProducer {
       .getDayTypes()
       .stream()
       .filter(context::isValid)
-      .collect(Collectors.toList());
+      .toList();
 
     DayTypeRefs_RelStructure dayTypeRefs_relStructure = new DayTypeRefs_RelStructure()
       .withDayTypeRef(
@@ -121,7 +121,7 @@ public class ServiceJourneyProducer {
     );
     context.notices.addAll(local.getNotices());
 
-    return objectFactory
+    org.rutebanken.netex.model.ServiceJourney sj = objectFactory
       .populate(new org.rutebanken.netex.model.ServiceJourney(), local)
       .withJourneyPatternRef(journeyPatternRef)
       .withName(objectFactory.createMultilingualString(local.getName()))
@@ -133,8 +133,11 @@ public class ServiceJourneyProducer {
       .withPassingTimes(
         new TimetabledPassingTimes_RelStructure()
           .withTimetabledPassingTime(timetabledPassingTimes)
-      )
-      .withDayTypes(dayTypeRefs_relStructure);
+      );
+    if (!context.shouldIncludeDatedServiceJourneys()) {
+      sj.withDayTypes(dayTypeRefs_relStructure);
+    }
+    return sj;
   }
 
   private org.rutebanken.netex.model.TimetabledPassingTime mapTimetabledPassingTime(

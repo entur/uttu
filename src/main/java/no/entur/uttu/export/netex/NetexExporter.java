@@ -16,7 +16,7 @@
 package no.entur.uttu.export.netex;
 
 import static jakarta.xml.bind.JAXBContext.newInstance;
-import static org.slf4j.LoggerFactory.*;
+import static org.slf4j.LoggerFactory.getLogger;
 
 import jakarta.xml.bind.JAXBContext;
 import jakarta.xml.bind.Marshaller;
@@ -42,7 +42,6 @@ import no.entur.uttu.util.Preconditions;
 import org.rutebanken.netex.model.PublicationDeliveryStructure;
 import org.rutebanken.netex.validation.NeTExValidator;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -95,20 +94,17 @@ public class NetexExporter {
       lines
     );
 
-    // Disable schema validation when DatedServiceJourneys are present to avoid
-    // cross-file reference validation errors with OperatingDay objects
-    boolean shouldValidate =
-      validateAgainstSchema && !exportContext.shouldIncludeDatedServiceJourneys();
-
     linesToExport
       .stream()
       .map(line -> netexLineFileProducer.toNetexFile(line, exportContext))
-      .forEach(netexFile -> marshalToFile(netexFile, dataSetProducer, shouldValidate));
+      .forEach(
+        netexFile -> marshalToFile(netexFile, dataSetProducer, validateAgainstSchema)
+      );
 
     marshalToFile(
       commonFileProducer.toCommonFile(exportContext),
       dataSetProducer,
-      shouldValidate
+      validateAgainstSchema
     );
   }
 

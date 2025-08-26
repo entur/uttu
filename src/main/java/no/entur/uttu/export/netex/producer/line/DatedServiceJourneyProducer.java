@@ -79,8 +79,7 @@ public class DatedServiceJourneyProducer {
         .withVersion(local.getNetexVersion());
 
       OperatingDayRefStructure odRef = new OperatingDayRefStructure()
-        .withRef(operatingDayId)
-        .withVersion("0");
+        .withRef(operatingDayId);
 
       DatedServiceJourney dsj = new DatedServiceJourney()
         .withId(dsjId)

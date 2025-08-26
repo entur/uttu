@@ -1,11 +1,23 @@
 package no.entur.uttu.export.netex;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
+import no.entur.uttu.export.netex.producer.NetexObjectFactory;
+import no.entur.uttu.export.netex.producer.common.OrganisationProducer;
+import no.entur.uttu.export.netex.producer.line.ContactStructureProducer;
+import no.entur.uttu.export.netex.producer.line.ServiceJourneyProducer;
+import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.FixedLine;
+import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Line;
+import no.entur.uttu.model.ServiceJourney;
+import no.entur.uttu.model.TimetabledPassingTime;
+import no.entur.uttu.model.job.Export;
 import no.entur.uttu.model.job.ExportLineAssociation;
+import no.entur.uttu.util.DateUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
