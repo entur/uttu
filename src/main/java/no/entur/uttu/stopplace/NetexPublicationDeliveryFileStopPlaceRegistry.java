@@ -36,11 +36,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 
-@Component
-@ConditionalOnMissingBean(
-  value = StopPlaceRegistry.class,
-  ignored = NetexPublicationDeliveryFileStopPlaceRegistry.class
-)
 public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceRegistry {
 
   private final Logger logger = LoggerFactory.getLogger(
@@ -106,9 +101,12 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     }
   }
 
-  private void extractPublicationTime(PublicationDeliveryStructure publicationDeliveryStructure) {
-    var localPublicationTimestamp = publicationDeliveryStructure.getPublicationTimestamp();
-    var timeZone =  "Europe/Oslo";
+  private void extractPublicationTime(
+    PublicationDeliveryStructure publicationDeliveryStructure
+  ) {
+    var localPublicationTimestamp =
+      publicationDeliveryStructure.getPublicationTimestamp();
+    var timeZone = "Europe/Oslo";
     publicationTime = localPublicationTimestamp.atZone(ZoneId.of(timeZone)).toInstant();
   }
 
@@ -291,12 +289,13 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
     // Index quays if present
     Optional.ofNullable(stopPlace.getQuays()).ifPresent(quays ->
-      quays.getQuayRefOrQuay().forEach(quayRefOrQuay -> {
-        Quay quay = (Quay) quayRefOrQuay.getValue();
-        stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
-        quayByQuayRefIndex.put(quay.getId(), quay);
-      })
-    );
+      quays
+        .getQuayRefOrQuay()
+        .forEach(quayRefOrQuay -> {
+          Quay quay = (Quay) quayRefOrQuay.getValue();
+          stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+          quayByQuayRefIndex.put(quay.getId(), quay);
+        }));
 
     // Rebuild spatial index (STRtree doesn't support insertion after build)
     rebuildSpatialIndexAfterModification();
@@ -310,7 +309,8 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     }
 
     // Remove old stop place
-    StopPlace oldStopPlace = allStopPlacesIndex.stream()
+    StopPlace oldStopPlace = allStopPlacesIndex
+      .stream()
       .filter(sp -> id.equals(sp.getId()))
       .findFirst()
       .orElse(null);
@@ -321,12 +321,13 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
       // Remove old quay references
       Optional.ofNullable(oldStopPlace.getQuays()).ifPresent(quays ->
-        quays.getQuayRefOrQuay().forEach(quayRefOrQuay -> {
-          Quay quay = (Quay) quayRefOrQuay.getValue();
-          stopPlaceByQuayRefIndex.remove(quay.getId());
-          quayByQuayRefIndex.remove(quay.getId());
-        })
-      );
+        quays
+          .getQuayRefOrQuay()
+          .forEach(quayRefOrQuay -> {
+            Quay quay = (Quay) quayRefOrQuay.getValue();
+            stopPlaceByQuayRefIndex.remove(quay.getId());
+            quayByQuayRefIndex.remove(quay.getId());
+          }));
 
       // Remove from spatial index (note: STRtree doesn't support removal after build,
       // so we'll need to rebuild the index)
@@ -339,12 +340,13 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
     // Index new quays
     Optional.ofNullable(stopPlace.getQuays()).ifPresent(quays ->
-      quays.getQuayRefOrQuay().forEach(quayRefOrQuay -> {
-        Quay quay = (Quay) quayRefOrQuay.getValue();
-        stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
-        quayByQuayRefIndex.put(quay.getId(), quay);
-      })
-    );
+      quays
+        .getQuayRefOrQuay()
+        .forEach(quayRefOrQuay -> {
+          Quay quay = (Quay) quayRefOrQuay.getValue();
+          stopPlaceByQuayRefIndex.put(quay.getId(), stopPlace);
+          quayByQuayRefIndex.put(quay.getId(), quay);
+        }));
 
     logger.debug("Updated stop place with id: {}", id);
   }
@@ -355,7 +357,8 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
     }
 
     // Find and remove stop place
-    StopPlace stopPlaceToRemove = allStopPlacesIndex.stream()
+    StopPlace stopPlaceToRemove = allStopPlacesIndex
+      .stream()
       .filter(sp -> id.equals(sp.getId()))
       .findFirst()
       .orElse(null);
@@ -366,12 +369,13 @@ public class NetexPublicationDeliveryFileStopPlaceRegistry implements StopPlaceR
 
       // Remove quay references
       Optional.ofNullable(stopPlaceToRemove.getQuays()).ifPresent(quays ->
-        quays.getQuayRefOrQuay().forEach(quayRefOrQuay -> {
-          Quay quay = (Quay) quayRefOrQuay.getValue();
-          stopPlaceByQuayRefIndex.remove(quay.getId());
-          quayByQuayRefIndex.remove(quay.getId());
-        })
-      );
+        quays
+          .getQuayRefOrQuay()
+          .forEach(quayRefOrQuay -> {
+            Quay quay = (Quay) quayRefOrQuay.getValue();
+            stopPlaceByQuayRefIndex.remove(quay.getId());
+            quayByQuayRefIndex.remove(quay.getId());
+          }));
 
       // Rebuild spatial index (STRtree doesn't support removal after build)
       rebuildSpatialIndexAfterModification();

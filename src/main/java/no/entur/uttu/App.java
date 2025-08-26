@@ -33,7 +33,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 )
 @EntityScan(basePackageClasses = { Provider.class, Jsr310JpaConverters.class })
 @EnableCaching
-@ComponentScan(basePackages = {"no.entur.uttu", "org.rutebanken.helper.stopplace.changelog"})
+@ComponentScan(
+  basePackages = { "no.entur.uttu", "org.rutebanken.helper.stopplace.changelog" }
+)
 public class App {
 
   public static void main(String[] args) {
