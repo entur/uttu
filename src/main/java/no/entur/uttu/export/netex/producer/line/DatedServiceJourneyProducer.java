@@ -36,7 +36,6 @@ public class DatedServiceJourneyProducer {
       .flatMap(List::stream)
       .filter(dta -> Boolean.TRUE.equals(dta.getAvailable()))
       .flatMap(dta -> {
-        // Handle explicit dates
         if (dta.getDate() != null) {
           return Stream.of(dta.getDate());
         }
@@ -50,6 +49,7 @@ public class DatedServiceJourneyProducer {
         }
         return Stream.empty();
       })
+      .filter(date -> !date.isBefore(LocalDate.now()))
       .collect(Collectors.toSet());
 
     if (dates.isEmpty()) {
