@@ -49,7 +49,7 @@ public class DatedServiceJourneyProducer {
         }
         return Stream.empty();
       })
-      .filter(date -> !date.isBefore(LocalDate.now()))
+      .filter(date -> !date.isBefore(LocalDate.now().minusDays(1)))
       .collect(Collectors.toSet());
 
     if (dates.isEmpty()) {
