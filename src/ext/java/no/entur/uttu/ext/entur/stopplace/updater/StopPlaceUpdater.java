@@ -3,7 +3,6 @@ package no.entur.uttu.ext.entur.stopplace.updater;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
 import java.io.InputStream;
-import java.time.Instant;
 import java.util.List;
 import javax.xml.transform.stream.StreamSource;
 import no.entur.uttu.netex.NetexUnmarshaller;
@@ -172,12 +171,6 @@ public class StopPlaceUpdater implements StopPlaceChangelogListener {
       List<StopPlace> result = NetexStopPlaceExtractor.extractStopPlaces(
         publicationDeliveryStructure
       );
-
-      // Update publication time if available
-      Instant publicationTime = NetexStopPlaceExtractor.extractPublicationTime(
-        publicationDeliveryStructure
-      );
-      registry.setPublicationTime(publicationTime);
 
       if (!result.isEmpty()) {
         logger.debug(
