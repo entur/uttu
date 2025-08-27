@@ -1,9 +1,11 @@
 package no.entur.uttu.export.netex.producer.line;
 
+import static no.entur.uttu.model.DayTypeTest.period;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -58,7 +60,7 @@ class ServiceJourneyProducerTest {
   }
 
   private void setDayTypes(Set<DayType> dayTypes) {
-    when(local.getDayTypes()).thenReturn(dayTypes);
+    local.getDayTypes().addAll(dayTypes);
   }
 
   @Test
@@ -66,7 +68,10 @@ class ServiceJourneyProducerTest {
     export = new Export();
     export.setIncludeDatedServiceJourneys(true);
     context = new NetexExportContext(export);
-    setDayTypes(Set.of());
+
+    DayType dayType = new DayType();
+    dayType.getDayTypeAssignments().add(period(LocalDate.MIN, LocalDate.MAX));
+    setDayTypes(Set.of(dayType));
 
     org.rutebanken.netex.model.ServiceJourney sj = producer.produce(
       local,
@@ -85,9 +90,10 @@ class ServiceJourneyProducerTest {
     export.setIncludeDatedServiceJourneys(false);
     context = new NetexExportContext(export);
 
-    DayType dayType = mock(DayType.class);
-    no.entur.uttu.model.Ref dtRef = new no.entur.uttu.model.Ref("DT:1", "1");
-    when(dayType.getRef()).thenReturn(dtRef);
+    DayType dayType = new DayType();
+    dayType.setNetexId("DT:1");
+    dayType.setVersion(1L);
+    dayType.getDayTypeAssignments().add(period(LocalDate.MIN, LocalDate.MAX));
     setDayTypes(Set.of(dayType));
 
     org.rutebanken.netex.model.ServiceJourney sj = producer.produce(

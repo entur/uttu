@@ -1,7 +1,10 @@
 package no.entur.uttu.export.netex.producer.line;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import no.entur.uttu.export.netex.NetexExportContext;
@@ -49,7 +52,7 @@ public class DatedServiceJourneyProducer {
         }
         return Stream.empty();
       })
-      .filter(date -> !date.isBefore(LocalDate.now().minusDays(1)))
+      .filter(date -> !date.isBefore(ServiceJourneyProducer.CUTOFF))
       .collect(Collectors.toSet());
 
     if (dates.isEmpty()) {

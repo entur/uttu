@@ -78,7 +78,7 @@ public class DayTypeTest {
     return dayTypeAssignment;
   }
 
-  private DayTypeAssignment period(LocalDate from, LocalDate to) {
+  public static DayTypeAssignment period(LocalDate from, LocalDate to) {
     DayTypeAssignment dayTypeAssignment = new DayTypeAssignment();
     OperatingPeriod period = new OperatingPeriod();
     period.setFromDate(from);
