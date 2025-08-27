@@ -112,16 +112,6 @@ public class StopPlaceSpatialService {
   }
 
   /**
-   * Find stop places within a bounding box
-   */
-  public List<StopPlace> getStopPlacesWithinBoundingBox(
-    BoundingBoxFilterParams boundingBox
-  ) {
-    Polygon polygon = createPolygonFromBoundingBox(boundingBox);
-    return getStopPlacesWithinPolygon(polygon);
-  }
-
-  /**
    * Pre-filter stop places by bounding box for optimization
    */
   public List<StopPlace> preFilterByBoundingBox(
@@ -189,17 +179,5 @@ public class StopPlaceSpatialService {
     double latitude = location.getLatitude().doubleValue();
 
     return geometryFactory.createPoint(new Coordinate(longitude, latitude));
-  }
-
-  /**
-   * Check if spatial index needs rebuilding
-   */
-  public boolean needsRebuild() {
-    spatialIndexLock.readLock().lock();
-    try {
-      return !indexBuilt;
-    } finally {
-      spatialIndexLock.readLock().unlock();
-    }
   }
 }
