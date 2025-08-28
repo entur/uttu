@@ -36,14 +36,13 @@ public class StopPlaceIndexManager {
     StopPlaceIndexManager.class
   );
 
-  // Use CopyOnWriteArrayList for thread-safe reads with infrequent writes
   private final CopyOnWriteArrayList<StopPlace> allStopPlaces =
     new CopyOnWriteArrayList<>();
 
-  // Thread-safe maps for quay lookups
   private final Map<String, StopPlace> stopPlaceByQuayRef = new ConcurrentHashMap<>();
   private final Map<String, Quay> quayById = new ConcurrentHashMap<>();
   private final Map<String, StopPlace> stopPlaceById = new ConcurrentHashMap<>();
+  private final Map<String, List<String>> childrenByParentId = new ConcurrentHashMap<>();
 
   /**
    * Add a stop place to all indexes
@@ -53,12 +52,11 @@ public class StopPlaceIndexManager {
       throw new IllegalArgumentException("StopPlace and its ID cannot be null");
     }
 
-    // Add to main collections
     allStopPlaces.add(stopPlace);
     stopPlaceById.put(stopPlace.getId(), stopPlace);
 
-    // Index quays
     indexQuays(stopPlace);
+    trackParentChildRelationship(stopPlace);
 
     logger.debug("Added stop place {} to indexes", stopPlace.getId());
   }
@@ -71,10 +69,7 @@ public class StopPlaceIndexManager {
       throw new IllegalArgumentException("ID and StopPlace cannot be null");
     }
 
-    // Remove old version
     removeStopPlace(id);
-
-    // Add new version
     newStopPlace.setId(id);
     addStopPlace(newStopPlace);
 
@@ -84,28 +79,79 @@ public class StopPlaceIndexManager {
   /**
    * Remove a stop place from all indexes
    */
-  public void removeStopPlace(String id) {
+  private void removeStopPlace(String id) {
     if (id == null) {
       throw new IllegalArgumentException("ID cannot be null");
     }
 
     StopPlace stopPlace = stopPlaceById.remove(id);
     if (stopPlace != null) {
-      // Remove from main list
       allStopPlaces.remove(stopPlace);
-
-      // Remove quay references
       removeQuayReferences(stopPlace);
+
+      if (
+        stopPlace.getParentSiteRef() != null &&
+        stopPlace.getParentSiteRef().getRef() != null
+      ) {
+        String parentId = stopPlace.getParentSiteRef().getRef();
+        List<String> siblings = childrenByParentId.get(parentId);
+        if (siblings != null) {
+          siblings.remove(id);
+          if (siblings.isEmpty()) {
+            childrenByParentId.remove(parentId);
+          }
+        }
+      }
+
+      childrenByParentId.remove(id);
 
       logger.debug("Removed stop place {} from indexes", id);
     }
   }
 
   /**
+   * Remove a stop place and all its children (for multimodal structures)
+   * Since events only come for parent IDs, we only need to handle parent + children
+   */
+  public List<String> removeStopPlaceAndRelated(String parentId) {
+    if (parentId == null) {
+      throw new IllegalArgumentException("ID cannot be null");
+    }
+
+    List<String> removedIds = new ArrayList<>();
+
+    StopPlace parentStop = stopPlaceById.remove(parentId);
+    if (parentStop != null) {
+      allStopPlaces.remove(parentStop);
+      removeQuayReferences(parentStop);
+      removedIds.add(parentId);
+    }
+
+    List<String> children = childrenByParentId.remove(parentId);
+    if (children != null) {
+      for (String childId : children) {
+        StopPlace childStop = stopPlaceById.remove(childId);
+        if (childStop != null) {
+          allStopPlaces.remove(childStop);
+          removeQuayReferences(childStop);
+          removedIds.add(childId);
+        }
+      }
+      logger.debug("Removed {} child stops for parent {}", children.size(), parentId);
+    }
+
+    logger.info(
+      "Removed stop place {} and {} related stops",
+      parentId,
+      removedIds.size() - 1
+    );
+    return removedIds;
+  }
+
+  /**
    * Get all stop places
    */
   public List<StopPlace> getAllStopPlaces() {
-    // Return a defensive copy
     return new ArrayList<>(allStopPlaces);
   }
 
@@ -143,10 +189,8 @@ public class StopPlaceIndexManager {
   public void loadBulkData(List<StopPlace> stopPlaces) {
     logger.info("Loading {} stop places in bulk", stopPlaces.size());
 
-    // Clear existing data
     clear();
 
-    // Add all stop places
     for (StopPlace stopPlace : stopPlaces) {
       if (stopPlace != null && stopPlace.getId() != null) {
         allStopPlaces.add(stopPlace);
@@ -166,6 +210,40 @@ public class StopPlaceIndexManager {
     stopPlaceByQuayRef.clear();
     quayById.clear();
     stopPlaceById.clear();
+    childrenByParentId.clear();
+  }
+
+  /**
+   * Track parent-child relationship for a stop place
+   * Since we only get events for parents, we only need to track children by parent
+   */
+  private void trackParentChildRelationship(StopPlace stopPlace) {
+    if (
+      stopPlace.getParentSiteRef() != null &&
+      stopPlace.getParentSiteRef().getRef() != null
+    ) {
+      String parentId = stopPlace.getParentSiteRef().getRef();
+      String childId = stopPlace.getId();
+
+      for (Map.Entry<String, List<String>> entry : childrenByParentId.entrySet()) {
+        if (!entry.getKey().equals(parentId)) {
+          entry.getValue().remove(childId);
+        }
+      }
+
+      List<String> children = childrenByParentId.computeIfAbsent(
+        parentId,
+        k -> new CopyOnWriteArrayList<>()
+      );
+      if (!children.contains(childId)) {
+        children.add(childId);
+        logger.debug(
+          "Tracked parent-child relationship: parent={}, child={}",
+          parentId,
+          childId
+        );
+      }
+    }
   }
 
   private void indexQuays(StopPlace stopPlace) {

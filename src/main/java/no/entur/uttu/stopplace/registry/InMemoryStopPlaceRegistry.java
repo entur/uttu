@@ -78,13 +78,8 @@ public class InMemoryStopPlaceRegistry implements MutableStopPlaceRegistry {
       try {
         StopPlaceDataLoader.LoadResult result = dataLoader.get().loadStopPlaces();
 
-        // Load data into indexes
         indexManager.loadBulkData(result.stopPlaces());
-
-        // Build spatial index
         spatialService.buildSpatialIndex(result.stopPlaces());
-
-        // Set publication time
         publicationTime.set(result.publicationTime());
 
         logger.info("Successfully loaded {} stop places", result.stopPlaces().size());
@@ -117,7 +112,6 @@ public class InMemoryStopPlaceRegistry implements MutableStopPlaceRegistry {
       .findFirst();
 
     if (boundingBoxFilter.isPresent()) {
-      // Pre-filter with spatial index
       stopPlaces = spatialService.preFilterByBoundingBox(
         stopPlaces,
         boundingBoxFilter.get()
@@ -139,46 +133,15 @@ public class InMemoryStopPlaceRegistry implements MutableStopPlaceRegistry {
   }
 
   @Override
-  public void createStopPlace(String id, StopPlace stopPlace) {
-    if (id == null || stopPlace == null) {
-      throw new IllegalArgumentException("ID and StopPlace cannot be null");
-    }
-
-    stopPlace.setId(id);
-    indexManager.addStopPlace(stopPlace);
-
-    // Rebuild spatial index
-    rebuildSpatialIndex();
-
-    logger.info("Created stop place with id: {}", id);
-  }
-
-  @Override
-  public void updateStopPlace(String id, StopPlace stopPlace) {
-    if (id == null || stopPlace == null) {
-      throw new IllegalArgumentException("ID and StopPlace cannot be null");
-    }
-
-    indexManager.updateStopPlace(id, stopPlace);
-
-    // Rebuild spatial index
-    rebuildSpatialIndex();
-
-    logger.info("Updated stop place with id: {}", id);
-  }
-
-  @Override
-  public void deleteStopPlace(String id) {
+  public void deleteStopPlaceAndRelated(String id) {
     if (id == null) {
       throw new IllegalArgumentException("ID cannot be null");
     }
 
-    indexManager.removeStopPlace(id);
-
-    // Rebuild spatial index
+    List<String> removedIds = indexManager.removeStopPlaceAndRelated(id);
     rebuildSpatialIndex();
 
-    logger.info("Deleted stop place with id: {}", id);
+    logger.info("Deleted stop place {} and {} related stops", id, removedIds.size() - 1);
   }
 
   @Override
@@ -189,6 +152,38 @@ public class InMemoryStopPlaceRegistry implements MutableStopPlaceRegistry {
   @Override
   public void setPublicationTime(Instant publicationTime) {
     this.publicationTime.set(publicationTime);
+  }
+
+  @Override
+  public void createOrUpdateStopPlaces(List<StopPlace> stopPlaces) {
+    if (stopPlaces == null || stopPlaces.isEmpty()) {
+      return;
+    }
+
+    logger.info("Processing {} stop places in create-or-update batch", stopPlaces.size());
+
+    int created = 0;
+    int updated = 0;
+
+    for (StopPlace stopPlace : stopPlaces) {
+      if (stopPlace != null && stopPlace.getId() != null) {
+        if (indexManager.getStopPlaceById(stopPlace.getId()).isPresent()) {
+          indexManager.updateStopPlace(stopPlace.getId(), stopPlace);
+          updated++;
+        } else {
+          indexManager.addStopPlace(stopPlace);
+          created++;
+        }
+      }
+    }
+
+    rebuildSpatialIndex();
+
+    logger.info(
+      "Create-or-update batch completed: {} created, {} updated",
+      created,
+      updated
+    );
   }
 
   private void rebuildSpatialIndex() {

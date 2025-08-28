@@ -53,14 +53,11 @@ public class StopPlaceUpdater implements StopPlaceChangelogListener {
     try {
       List<StopPlace> stopPlaces = extractStopPlacesFromStream(publicationDelivery);
       if (!stopPlaces.isEmpty()) {
-        int updatedCount = 0;
-        for (StopPlace stopPlace : stopPlaces) {
-          registry.updateStopPlace(stopPlace.getId(), stopPlace);
-          updatedCount++;
-        }
+        // Use createOrUpdate to handle both updates and potential new stops in multimodal structures
+        registry.createOrUpdateStopPlaces(stopPlaces);
         logger.info(
-          "Successfully updated {} stop place(s) from publication delivery triggered by id: {} - Applied changes to registry",
-          updatedCount,
+          "Successfully processed {} stop place(s) from update event triggered by id: {} - Applied changes to registry",
+          stopPlaces.size(),
           id
         );
       } else {
@@ -84,14 +81,10 @@ public class StopPlaceUpdater implements StopPlaceChangelogListener {
     try {
       List<StopPlace> stopPlaces = extractStopPlacesFromStream(publicationDelivery);
       if (!stopPlaces.isEmpty()) {
-        int createdCount = 0;
-        for (StopPlace stopPlace : stopPlaces) {
-          registry.createStopPlace(stopPlace.getId(), stopPlace);
-          createdCount++;
-        }
+        registry.createOrUpdateStopPlaces(stopPlaces);
         logger.info(
-          "Successfully created {} stop place(s) from publication delivery triggered by id: {} - Added to registry",
-          createdCount,
+          "Successfully processed {} stop place(s) from creation event triggered by id: {} - Applied to registry",
+          stopPlaces.size(),
           id
         );
       } else {
@@ -113,25 +106,12 @@ public class StopPlaceUpdater implements StopPlaceChangelogListener {
   public void onStopPlaceDeactivated(String id, InputStream publicationDelivery) {
     logger.info("Received deactivation event for stop place with id: {}", id);
     try {
-      List<StopPlace> stopPlaces = extractStopPlacesFromStream(publicationDelivery);
-      if (!stopPlaces.isEmpty()) {
-        int deactivatedCount = 0;
-        for (StopPlace stopPlace : stopPlaces) {
-          // For deactivation, we update the stop place (it should have a deactivation timestamp)
-          registry.updateStopPlace(stopPlace.getId(), stopPlace);
-          deactivatedCount++;
-        }
-        logger.info(
-          "Successfully deactivated {} stop place(s) from publication delivery triggered by id: {} - Applied deactivation to registry",
-          deactivatedCount,
-          id
-        );
-      } else {
-        logger.warn(
-          "No stop places found in publication delivery for deactivation with id: {} - Deactivation skipped",
-          id
-        );
-      }
+      // Remove the stop place and all related stops
+      registry.deleteStopPlaceAndRelated(id);
+      logger.info(
+        "Successfully deactivated stop place with id: {} and related stops - Removed from registry",
+        id
+      );
     } catch (Exception e) {
       logger.error(
         "Failed to apply deactivation for stop place with id: {} - Error during processing",
@@ -145,9 +125,10 @@ public class StopPlaceUpdater implements StopPlaceChangelogListener {
   public void onStopPlaceDeleted(String id) {
     logger.info("Received deletion event for stop place with id: {}", id);
     try {
-      registry.deleteStopPlace(id);
+      // Delete the stop place and all related stops (for multimodal structures)
+      registry.deleteStopPlaceAndRelated(id);
       logger.info(
-        "Successfully deleted stop place with id: {} - Removed from registry",
+        "Successfully deleted stop place with id: {} and related stops - Removed from registry",
         id
       );
     } catch (Exception e) {

@@ -16,6 +16,7 @@
 package no.entur.uttu.stopplace.spi;
 
 import java.time.Instant;
+import java.util.List;
 import org.rutebanken.netex.model.StopPlace;
 
 /**
@@ -24,24 +25,21 @@ import org.rutebanken.netex.model.StopPlace;
  */
 public interface MutableStopPlaceRegistry extends StopPlaceRegistry {
   /**
-   * Create a new stop place in the registry
-   * @param id The ID of the stop place
-   * @param stopPlace The stop place to create
+   * Create or update multiple stop places in a batch operation.
+   * This method intelligently handles mixed operations - creating new stops
+   * and updating existing ones. This is particularly important for multimodal
+   * structures where a "create" event may include both a new parent stop
+   * and updates to existing child stops.
+   * @param stopPlaces List of stop places to create or update
    */
-  void createStopPlace(String id, StopPlace stopPlace);
+  void createOrUpdateStopPlaces(List<StopPlace> stopPlaces);
 
   /**
-   * Update an existing stop place in the registry
-   * @param id The ID of the stop place
-   * @param stopPlace The updated stop place
-   */
-  void updateStopPlace(String id, StopPlace stopPlace);
-
-  /**
-   * Delete a stop place from the registry
+   * Delete a stop place and all related stops (for multimodal structures)
+   * This will remove the stop with the given ID and any child stops that reference it
    * @param id The ID of the stop place to delete
    */
-  void deleteStopPlace(String id);
+  void deleteStopPlaceAndRelated(String id);
 
   /**
    * Get the publication time of the stop place data

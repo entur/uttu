@@ -53,13 +53,11 @@ public class StopPlaceSpatialService {
   public void buildSpatialIndex(List<StopPlace> stopPlaces) {
     spatialIndexLock.writeLock().lock();
     try {
-      logger.info("Building spatial index with {} stop places", stopPlaces.size());
+      logger.debug("Building spatial index with {} stop places", stopPlaces.size());
 
-      // Create a new index
       spatialIndex = new STRtree();
       indexBuilt = false;
 
-      // Add all stop places to the index
       int indexed = 0;
       for (StopPlace stopPlace : stopPlaces) {
         Point point = createPointFromStopPlace(stopPlace);
@@ -69,11 +67,10 @@ public class StopPlaceSpatialService {
         }
       }
 
-      // Build the index
       spatialIndex.build();
       indexBuilt = true;
 
-      logger.info("Spatial index built successfully with {} stop places", indexed);
+      logger.debug("Spatial index built successfully with {} stop places", indexed);
     } finally {
       spatialIndexLock.writeLock().unlock();
     }
@@ -94,11 +91,9 @@ public class StopPlaceSpatialService {
         return new ArrayList<>();
       }
 
-      // Fast spatial query using bounding box
       @SuppressWarnings("unchecked")
       List<StopPlace> candidates = spatialIndex.query(polygon.getEnvelopeInternal());
 
-      // Precise polygon containment check
       return candidates
         .stream()
         .filter(stopPlace -> {
