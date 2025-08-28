@@ -146,7 +146,7 @@
 
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
-            <artifactId>stopplace-changelog</artifactId>
+            <artifactId>stopplace-changelog-starter</artifactId>
             <version>5.41.0-SNAPSHOT</version>
         </dependency>
 
