@@ -1,5 +1,7 @@
 package no.entur.uttu.routing;
 
+import static no.entur.uttu.routing.osrm.OsrmService.createStraightLineRouteGeometry;
+
 import no.entur.uttu.model.VehicleModeEnumeration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,6 +33,6 @@ public class DefaultRoutingService implements RoutingService {
 
   @Override
   public RouteGeometry getRouteGeometry(RoutingServiceRequestParams request) {
-    return null;
+    return createStraightLineRouteGeometry(request);
   }
 }

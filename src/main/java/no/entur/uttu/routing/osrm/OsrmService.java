@@ -145,7 +145,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
     return createStraightLineRouteGeometry(requestParams);
   }
 
-  private RouteGeometry createStraightLineRouteGeometry(
+  public static RouteGeometry createStraightLineRouteGeometry(
     RoutingServiceRequestParams requestParams
   ) {
     List<List<BigDecimal>> coordinates = List.of(
@@ -163,7 +163,7 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
     return new RouteGeometry(coordinates, distance);
   }
 
-  private BigDecimal calculateDistance(
+  private static BigDecimal calculateDistance(
     BigDecimal lat1,
     BigDecimal lon1,
     BigDecimal lat2,
