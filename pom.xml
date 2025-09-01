@@ -39,7 +39,7 @@
     <properties>
         <java.version>21</java.version>
 
-        <entur.helpers.version>5.42.0</entur.helpers.version>
+        <entur.helpers.version>5.44.0</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
@@ -141,6 +141,12 @@
         <dependency>
             <groupId>org.entur.ror.helpers</groupId>
             <artifactId>permission-store-proxy</artifactId>
+            <version>${entur.helpers.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.entur.ror.helpers</groupId>
+            <artifactId>stopplace-changelog-starter</artifactId>
             <version>${entur.helpers.version}</version>
         </dependency>
 
