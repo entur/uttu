@@ -50,7 +50,7 @@ public class StopPlaceUpdater implements StopPlaceChangelogListener {
   @Override
   public void onStopPlaceUpdated(String id, InputStream publicationDelivery) {
     logger.info("Received update for stop place with id: {}", id);
-    try {
+    try (publicationDelivery) {
       List<StopPlace> stopPlaces = extractStopPlacesFromStream(publicationDelivery);
       if (!stopPlaces.isEmpty()) {
         // Use createOrUpdate to handle both updates and potential new stops in multimodal structures
@@ -78,7 +78,7 @@ public class StopPlaceUpdater implements StopPlaceChangelogListener {
   @Override
   public void onStopPlaceCreated(String id, InputStream publicationDelivery) {
     logger.info("Received creation event for stop place with id: {}", id);
-    try {
+    try (publicationDelivery){
       List<StopPlace> stopPlaces = extractStopPlacesFromStream(publicationDelivery);
       if (!stopPlaces.isEmpty()) {
         registry.createOrUpdateStopPlaces(stopPlaces);
