@@ -15,7 +15,6 @@
 
 package no.entur.uttu.stopplace.spi;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;
