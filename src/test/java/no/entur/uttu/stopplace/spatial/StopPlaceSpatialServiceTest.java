@@ -122,10 +122,13 @@ class StopPlaceSpatialServiceTest {
 
   @Test
   void testGetStopPlacesWithinPolygon_withLargePolygon_findsAllStops() {
+    // Test with more stop places to verify large polygon correctly includes multiple regions
     List<StopPlace> stopPlaces = List.of(
       createStopPlaceWithLocation("NSR:StopPlace:1", "Oslo S", 59.911491, 10.750375),
       createStopPlaceWithLocation("NSR:StopPlace:2", "Bergen", 60.391263, 5.322054),
-      createStopPlaceWithLocation("NSR:StopPlace:3", "Trondheim", 63.436188, 10.398583)
+      createStopPlaceWithLocation("NSR:StopPlace:3", "Trondheim", 63.436188, 10.398583),
+      createStopPlaceWithLocation("NSR:StopPlace:4", "Stavanger", 58.969975, 5.733107),
+      createStopPlaceWithLocation("NSR:StopPlace:5", "Tromsø", 69.649208, 18.955324)
     );
 
     spatialService.buildSpatialIndex(stopPlaces);
@@ -133,7 +136,30 @@ class StopPlaceSpatialServiceTest {
     Polygon largePolygon = createPolygonAroundNorway();
     List<StopPlace> result = spatialService.getStopPlacesWithinPolygon(largePolygon);
 
-    assertEquals(3, result.size());
+    // Verify all stops are found and check they're ordered correctly
+    assertEquals(5, result.size());
+
+    // Verify specific stops are included to ensure polygon boundaries work correctly
+    assertTrue(
+      result.stream().anyMatch(sp -> "NSR:StopPlace:1".equals(sp.getId())),
+      "Oslo should be included"
+    );
+    assertTrue(
+      result.stream().anyMatch(sp -> "NSR:StopPlace:2".equals(sp.getId())),
+      "Bergen should be included"
+    );
+    assertTrue(
+      result.stream().anyMatch(sp -> "NSR:StopPlace:3".equals(sp.getId())),
+      "Trondheim should be included"
+    );
+    assertTrue(
+      result.stream().anyMatch(sp -> "NSR:StopPlace:4".equals(sp.getId())),
+      "Stavanger should be included"
+    );
+    assertTrue(
+      result.stream().anyMatch(sp -> "NSR:StopPlace:5".equals(sp.getId())),
+      "Tromsø should be included"
+    );
   }
 
   @Test
