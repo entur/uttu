@@ -1,5 +1,6 @@
 package no.entur.uttu.export.netex.producer;
 
+import no.entur.uttu.config.AdditionalCodespacesConfig;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.model.Ref;
 import no.entur.uttu.util.DateUtils;
@@ -13,7 +14,8 @@ public class NetexObjectFactoryTest {
   void populateIdReturnsValidIdForVersionedChildStructureElements() {
     NetexObjectFactory factory = new NetexObjectFactory(
       new DateUtils(),
-      new ExportTimeZone()
+      new ExportTimeZone(),
+      new AdditionalCodespacesConfig()
     );
 
     Assertions.assertEquals(

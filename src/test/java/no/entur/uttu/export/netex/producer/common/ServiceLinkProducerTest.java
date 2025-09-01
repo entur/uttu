@@ -6,6 +6,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import no.entur.uttu.config.AdditionalCodespacesConfig;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.ServiceLinkExportContext;
 import no.entur.uttu.export.netex.NetexExportContext;
@@ -35,7 +36,8 @@ class ServiceLinkProducerTest {
   ServiceLinkProducer serviceLinkProducer;
   NetexObjectFactory objectFactory = new NetexObjectFactory(
     new DateUtils(),
-    new ExportTimeZone()
+    new ExportTimeZone(),
+    new AdditionalCodespacesConfig()
   );
 
   StopPlaceRegistry mockStopPlaceRegistry = Mockito.mock(StopPlaceRegistry.class);

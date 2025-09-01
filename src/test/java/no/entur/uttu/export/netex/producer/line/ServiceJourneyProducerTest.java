@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import no.entur.uttu.config.AdditionalCodespacesConfig;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
@@ -37,7 +38,11 @@ class ServiceJourneyProducerTest {
 
   @BeforeEach
   void setUp() {
-    objectFactory = new NetexObjectFactory(new DateUtils(), new ExportTimeZone());
+    objectFactory = new NetexObjectFactory(
+      new DateUtils(),
+      new ExportTimeZone(),
+      new AdditionalCodespacesConfig()
+    );
     contactStructureProducer = new ContactStructureProducer(objectFactory);
     organisationProducer = mock(OrganisationProducer.class);
     producer = new ServiceJourneyProducer(

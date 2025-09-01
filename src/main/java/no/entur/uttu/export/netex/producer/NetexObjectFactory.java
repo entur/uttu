@@ -32,6 +32,7 @@ import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import javax.xml.namespace.QName;
+import no.entur.uttu.config.AdditionalCodespacesConfig;
 import no.entur.uttu.config.ExportTimeZone;
 import no.entur.uttu.export.model.AvailabilityPeriod;
 import no.entur.uttu.export.netex.NetexExportContext;
@@ -49,8 +50,6 @@ public class NetexObjectFactory {
 
   public static final String VERSION_ONE = "1";
   public static final String DEFAULT_LANGUAGE = "no";
-  public static final String NSR_XMLNS = "NSR";
-  public static final String NSR_XMLNSURL = "http://www.rutebanken.org/ns/nsr";
 
   @Value("${netex.export.version:1.15:NO-NeTEx-networktimetable:1.5}")
   private String netexVersion;
@@ -58,10 +57,16 @@ public class NetexObjectFactory {
   private final ObjectFactory objectFactory = new ObjectFactory();
   private final DateUtils dateUtils;
   private final ExportTimeZone exportTimeZone;
+  private final Map<String, String> additionalCodespaces;
 
-  public NetexObjectFactory(DateUtils dateUtils, ExportTimeZone exportTimeZone) {
+  public NetexObjectFactory(
+    DateUtils dateUtils,
+    ExportTimeZone exportTimeZone,
+    AdditionalCodespacesConfig config
+  ) {
     this.dateUtils = dateUtils;
     this.exportTimeZone = exportTimeZone;
+    this.additionalCodespaces = config.getAdditional();
   }
 
   public <E> JAXBElement<E> wrapAsJAXBElement(E entity) {
@@ -164,12 +169,15 @@ public class NetexObjectFactory {
       localProviderCodespace.getXmlns(),
       localProviderCodespace.getXmlnsUrl()
     );
-    Codespace nsrCodespace = createCodespace(NSR_XMLNS, NSR_XMLNSURL);
 
     Codespaces_RelStructure codespaces = objectFactory
       .createCodespaces_RelStructure()
-      .withCodespaceRefOrCodespace(providerCodespace)
-      .withCodespaceRefOrCodespace(nsrCodespace);
+      .withCodespaceRefOrCodespace(providerCodespace);
+
+    additionalCodespaces.forEach((code, xmlnsUrl) -> {
+      Codespace additionalCodespace = createCodespace(code, xmlnsUrl);
+      codespaces.withCodespaceRefOrCodespace(additionalCodespace);
+    });
 
     LocaleStructure localeStructure = objectFactory
       .createLocaleStructure()
