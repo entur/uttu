@@ -78,7 +78,7 @@ public class StopPlaceUpdater implements StopPlaceChangelogListener {
   @Override
   public void onStopPlaceCreated(String id, InputStream publicationDelivery) {
     logger.info("Received creation event for stop place with id: {}", id);
-    try (publicationDelivery){
+    try (publicationDelivery) {
       List<StopPlace> stopPlaces = extractStopPlacesFromStream(publicationDelivery);
       if (!stopPlaces.isEmpty()) {
         registry.createOrUpdateStopPlaces(stopPlaces);
