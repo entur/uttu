@@ -109,7 +109,9 @@ class NetexFileStopPlaceLoaderTest {
       () -> loader.loadStopPlaces()
     );
 
-    assertTrue(exception.getMessage().contains("Failed to unmarshal publication delivery from zip"));
+    assertTrue(
+      exception.getMessage().contains("Failed to unmarshal publication delivery from zip")
+    );
   }
 
   @Test
@@ -155,7 +157,9 @@ class NetexFileStopPlaceLoaderTest {
       () -> loader.loadStopPlaces()
     );
 
-    assertTrue(exception.getMessage().contains("Failed to unmarshal publication delivery from zip"));
+    assertTrue(
+      exception.getMessage().contains("Failed to unmarshal publication delivery from zip")
+    );
   }
 
   @Test
