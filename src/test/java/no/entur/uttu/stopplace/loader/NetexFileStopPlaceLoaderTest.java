@@ -24,6 +24,7 @@ import java.lang.reflect.Field;
 import java.time.Instant;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import no.entur.uttu.stopplace.loader.StopPlaceLoadingException;
 import no.entur.uttu.stopplace.spi.StopPlaceDataLoader;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -87,8 +88,8 @@ class NetexFileStopPlaceLoaderTest {
 
     setNetexFileUri(emptyZipFile.getAbsolutePath());
 
-    RuntimeException exception = assertThrows(
-      RuntimeException.class,
+    StopPlaceLoadingException exception = assertThrows(
+      StopPlaceLoadingException.class,
       () -> loader.loadStopPlaces()
     );
 
@@ -104,8 +105,8 @@ class NetexFileStopPlaceLoaderTest {
 
     setNetexFileUri(zipFile.getAbsolutePath());
 
-    RuntimeException exception = assertThrows(
-      RuntimeException.class,
+    StopPlaceLoadingException exception = assertThrows(
+      StopPlaceLoadingException.class,
       () -> loader.loadStopPlaces()
     );
 
@@ -119,8 +120,8 @@ class NetexFileStopPlaceLoaderTest {
     String nonExistentPath = new File(tempDir, "non-existent.xml").getAbsolutePath();
     setNetexFileUri(nonExistentPath);
 
-    RuntimeException exception = assertThrows(
-      RuntimeException.class,
+    StopPlaceLoadingException exception = assertThrows(
+      StopPlaceLoadingException.class,
       () -> loader.loadStopPlaces()
     );
 
@@ -136,8 +137,8 @@ class NetexFileStopPlaceLoaderTest {
 
     setNetexFileUri(invalidXmlFile.getAbsolutePath());
 
-    RuntimeException exception = assertThrows(
-      RuntimeException.class,
+    StopPlaceLoadingException exception = assertThrows(
+      StopPlaceLoadingException.class,
       () -> loader.loadStopPlaces()
     );
 
@@ -152,8 +153,8 @@ class NetexFileStopPlaceLoaderTest {
 
     setNetexFileUri(zipFile.getAbsolutePath());
 
-    RuntimeException exception = assertThrows(
-      RuntimeException.class,
+    StopPlaceLoadingException exception = assertThrows(
+      StopPlaceLoadingException.class,
       () -> loader.loadStopPlaces()
     );
 

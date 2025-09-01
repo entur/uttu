@@ -64,8 +64,10 @@ public class NetexFileStopPlaceLoader implements StopPlaceDataLoader {
     try {
       return loadFromXmlFile();
     } catch (Exception e) {
-      logger.error("Failed to load stop places from file", e);
-      throw new RuntimeException("Unable to load stop places from: " + netexFileUri, e);
+      throw new StopPlaceLoadingException(
+        "Unable to load stop places from: " + netexFileUri,
+        e
+      );
     }
   }
 
@@ -87,7 +89,7 @@ public class NetexFileStopPlaceLoader implements StopPlaceDataLoader {
             new StreamSource(inputStream)
           );
         } catch (Exception e) {
-          throw new RuntimeException(
+          throw new StopPlaceLoadingException(
             "Failed to unmarshal publication delivery from zip",
             e
           );
@@ -113,14 +115,17 @@ public class NetexFileStopPlaceLoader implements StopPlaceDataLoader {
     File file = new File(netexFileUri);
 
     if (!file.exists()) {
-      throw new RuntimeException("File not found: " + netexFileUri);
+      throw new StopPlaceLoadingException("File not found: " + netexFileUri);
     }
 
     PublicationDeliveryStructure publicationDelivery;
     try {
       publicationDelivery = netexUnmarshaller.unmarshalFromSource(new StreamSource(file));
     } catch (Exception e) {
-      throw new RuntimeException("Failed to unmarshal publication delivery from file", e);
+      throw new StopPlaceLoadingException(
+        "Failed to unmarshal publication delivery from file",
+        e
+      );
     }
 
     NetexStopPlaceExtractor.ExtractResult extractResult =
