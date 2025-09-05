@@ -25,7 +25,9 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 import org.locationtech.jts.index.strtree.STRtree;
+import org.rutebanken.netex.model.Quay;
 import org.rutebanken.netex.model.StopPlace;
+import org.rutebanken.netex.model.Zone_VersionStructure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -60,10 +62,22 @@ public class StopPlaceSpatialService {
 
       int indexed = 0;
       for (StopPlace stopPlace : stopPlaces) {
-        Point point = createPointFromStopPlace(stopPlace);
-        if (point != null) {
-          spatialIndex.insert(point.getEnvelopeInternal(), stopPlace);
+        if (
+          stopPlace.getQuays() != null &&
+          !stopPlace.getQuays().getQuayRefOrQuay().isEmpty()
+        ) {
           indexed++;
+          stopPlace
+            .getQuays()
+            .getQuayRefOrQuay()
+            .forEach(quayRefOrQuay -> {
+              Point quayPoint = createPointFromEntityWithCentroid(
+                (Quay) quayRefOrQuay.getValue()
+              );
+              if (quayPoint != null) {
+                spatialIndex.insert(quayPoint.getEnvelopeInternal(), stopPlace);
+              }
+            });
         }
       }
 
@@ -96,9 +110,21 @@ public class StopPlaceSpatialService {
 
       return candidates
         .stream()
+        .distinct() // Remove duplicates since same StopPlace can be indexed multiple times (once per quay)
         .filter(stopPlace -> {
-          Point point = createPointFromStopPlace(stopPlace);
-          return point != null && polygon.contains(point);
+          if (stopPlace.getQuays() != null) {
+            return stopPlace
+              .getQuays()
+              .getQuayRefOrQuay()
+              .stream()
+              .anyMatch(quayRefOrQuay -> {
+                Point quayPoint = createPointFromEntityWithCentroid(
+                  (Quay) quayRefOrQuay.getValue()
+                );
+                return quayPoint != null && polygon.contains(quayPoint);
+              });
+          }
+          return false;
         })
         .toList();
     } finally {
@@ -156,16 +182,18 @@ public class StopPlaceSpatialService {
   /**
    * Create a JTS Point from a StopPlace's centroid
    */
-  private Point createPointFromStopPlace(StopPlace stopPlace) {
+  private Point createPointFromEntityWithCentroid(
+    Zone_VersionStructure entityWithCentroid
+  ) {
     if (
-      stopPlace == null ||
-      stopPlace.getCentroid() == null ||
-      stopPlace.getCentroid().getLocation() == null
+      entityWithCentroid == null ||
+      entityWithCentroid.getCentroid() == null ||
+      entityWithCentroid.getCentroid().getLocation() == null
     ) {
       return null;
     }
 
-    var location = stopPlace.getCentroid().getLocation();
+    var location = entityWithCentroid.getCentroid().getLocation();
     if (location.getLongitude() == null || location.getLatitude() == null) {
       return null;
     }

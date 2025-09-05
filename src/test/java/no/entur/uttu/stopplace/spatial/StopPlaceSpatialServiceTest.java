@@ -17,11 +17,13 @@ package no.entur.uttu.stopplace.spatial;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import jakarta.xml.bind.JAXBElement;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import javax.xml.namespace.QName;
 import no.entur.uttu.stopplace.filter.params.BoundingBoxFilterParams;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -30,6 +32,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
 import org.rutebanken.netex.model.LocationStructure;
 import org.rutebanken.netex.model.MultilingualString;
+import org.rutebanken.netex.model.Quay;
+import org.rutebanken.netex.model.Quays_RelStructure;
 import org.rutebanken.netex.model.SimplePoint_VersionStructure;
 import org.rutebanken.netex.model.StopPlace;
 
@@ -72,11 +76,12 @@ class StopPlaceSpatialServiceTest {
   }
 
   @Test
-  void testBuildSpatialIndex_withStopsWithoutCentroids_indexesOnlyValidStops() {
-    StopPlace stopWithoutCentroid = createStopPlace("NSR:StopPlace:1", "No Location");
+  void testBuildSpatialIndex_withStopsWithoutQuays_doesNotIndexStopsWithoutQuays() {
+    // Stop without quays (won't be indexed)
+    StopPlace stopWithoutQuays = createStopPlace("NSR:StopPlace:1", "No Quays");
 
     List<StopPlace> stopPlaces = List.of(
-      stopWithoutCentroid,
+      stopWithoutQuays,
       createStopPlaceWithLocation("NSR:StopPlace:2", "Oslo S", 59.911491, 10.750375)
     );
 
@@ -85,7 +90,7 @@ class StopPlaceSpatialServiceTest {
     Polygon largePolygon = createPolygonAroundNorway();
     List<StopPlace> result = spatialService.getStopPlacesWithinPolygon(largePolygon);
 
-    // Only the stop with valid centroid should be found
+    // Only the stop with quays should be found
     assertEquals(1, result.size());
     assertEquals("NSR:StopPlace:2", result.get(0).getId());
   }
@@ -307,6 +312,68 @@ class StopPlaceSpatialServiceTest {
   }
 
   @Test
+  void testBuildSpatialIndex_withMultipleQuaysPerStop_indexesAllQuays() {
+    // Create a stop place with multiple quays at slightly different locations
+    StopPlace stopWithMultipleQuays = createStopPlace(
+      "NSR:StopPlace:1",
+      "Central Station"
+    );
+
+    Quays_RelStructure quays = new Quays_RelStructure();
+
+    // First quay
+    Quay quay1 = new Quay();
+    quay1.setId("NSR:StopPlace:1:Quay:1");
+    SimplePoint_VersionStructure centroid1 = new SimplePoint_VersionStructure();
+    LocationStructure location1 = new LocationStructure();
+    location1.setLatitude(BigDecimal.valueOf(59.9114));
+    location1.setLongitude(BigDecimal.valueOf(10.7503));
+    centroid1.setLocation(location1);
+    quay1.setCentroid(centroid1);
+
+    // Second quay (slightly offset)
+    Quay quay2 = new Quay();
+    quay2.setId("NSR:StopPlace:1:Quay:2");
+    SimplePoint_VersionStructure centroid2 = new SimplePoint_VersionStructure();
+    LocationStructure location2 = new LocationStructure();
+    location2.setLatitude(BigDecimal.valueOf(59.9115));
+    location2.setLongitude(BigDecimal.valueOf(10.7504));
+    centroid2.setLocation(location2);
+    quay2.setCentroid(centroid2);
+
+    quays
+      .getQuayRefOrQuay()
+      .add(
+        new JAXBElement<>(
+          new QName("http://www.netex.org.uk/netex", "Quay"),
+          Quay.class,
+          quay1
+        )
+      );
+    quays
+      .getQuayRefOrQuay()
+      .add(
+        new JAXBElement<>(
+          new QName("http://www.netex.org.uk/netex", "Quay"),
+          Quay.class,
+          quay2
+        )
+      );
+
+    stopWithMultipleQuays.setQuays(quays);
+
+    spatialService.buildSpatialIndex(List.of(stopWithMultipleQuays));
+
+    // Query with polygon that includes both quays
+    Polygon polygon = createSmallPolygonAroundOslo();
+    List<StopPlace> result = spatialService.getStopPlacesWithinPolygon(polygon);
+
+    // Should find the stop place (once, even though it has multiple quays)
+    assertEquals(1, result.size());
+    assertEquals("NSR:StopPlace:1", result.get(0).getId());
+  }
+
+  @Test
   void testMultipleIndexRebuilds_maintainsCorrectState() {
     // Initial build
     List<StopPlace> firstSet = List.of(
@@ -351,12 +418,28 @@ class StopPlaceSpatialServiceTest {
   ) {
     StopPlace stopPlace = createStopPlace(id, name);
 
-    SimplePoint_VersionStructure centroid = new SimplePoint_VersionStructure();
-    LocationStructure location = new LocationStructure();
-    location.setLatitude(BigDecimal.valueOf(lat));
-    location.setLongitude(BigDecimal.valueOf(lng));
-    centroid.setLocation(location);
-    stopPlace.setCentroid(centroid);
+    // Create a quay with the location
+    Quay quay = new Quay();
+    quay.setId(id + ":Quay:1");
+    quay.setName(new MultilingualString().withValue(name + " Quay"));
+
+    // Set centroid on the quay
+    SimplePoint_VersionStructure quayCentroid = new SimplePoint_VersionStructure();
+    LocationStructure quayLocation = new LocationStructure();
+    quayLocation.setLatitude(BigDecimal.valueOf(lat));
+    quayLocation.setLongitude(BigDecimal.valueOf(lng));
+    quayCentroid.setLocation(quayLocation);
+    quay.setCentroid(quayCentroid);
+
+    // Add quay to stop place
+    Quays_RelStructure quays = new Quays_RelStructure();
+    JAXBElement<Quay> quayElement = new JAXBElement<>(
+      new QName("http://www.netex.org.uk/netex", "Quay"),
+      Quay.class,
+      quay
+    );
+    quays.getQuayRefOrQuay().add(quayElement);
+    stopPlace.setQuays(quays);
 
     return stopPlace;
   }
