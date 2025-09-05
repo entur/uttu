@@ -57,8 +57,8 @@ public class ServiceLinkProducer {
         routeGeometry
           .coordinates()
           .forEach(location -> {
-            posListCoordinates.add(location.get(1).doubleValue());
-            posListCoordinates.add(location.get(0).doubleValue());
+            posListCoordinates.add(location.get(1).doubleValue()); // Latitude
+            posListCoordinates.add(location.get(0).doubleValue()); // Longitude
           });
 
         DirectPositionListType posList = new DirectPositionListType()
