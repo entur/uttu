@@ -13,7 +13,6 @@ import java.net.http.HttpResponse;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.EnumMap;
 import java.util.List;
 import java.util.Map;
@@ -154,24 +153,24 @@ public class OsrmService implements no.entur.uttu.routing.RoutingService {
     );
 
     BigDecimal distance = calculateDistance(
-      requestParams.latitudeFrom(),
       requestParams.longitudeFrom(),
-      requestParams.latitudeTo(),
-      requestParams.longitudeTo()
+      requestParams.latitudeFrom(),
+      requestParams.longitudeTo(),
+      requestParams.latitudeTo()
     );
 
     return new RouteGeometry(coordinates, distance);
   }
 
   private static BigDecimal calculateDistance(
-    BigDecimal lat1,
-    BigDecimal lon1,
-    BigDecimal lat2,
-    BigDecimal lon2
+    BigDecimal lonFrom,
+    BigDecimal latFrom,
+    BigDecimal lonTo,
+    BigDecimal latTo
   ) {
     GeodeticCalculator calculator = new GeodeticCalculator(DefaultGeographicCRS.WGS84);
-    calculator.setStartingGeographicPoint(lon1.doubleValue(), lat1.doubleValue());
-    calculator.setDestinationGeographicPoint(lon2.doubleValue(), lat2.doubleValue());
+    calculator.setStartingGeographicPoint(lonFrom.doubleValue(), latFrom.doubleValue());
+    calculator.setDestinationGeographicPoint(lonTo.doubleValue(), latTo.doubleValue());
     return BigDecimal.valueOf(calculator.getOrthodromicDistance());
   }
 }
