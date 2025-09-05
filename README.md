@@ -239,6 +239,24 @@ The following endpoint exposes exports for direct download:
 
     /services/flexible-lines/{providerCode}/export/
 
+### Additional Codespaces in Export
+
+By default, the NeTEx export includes the provider's codespace in the CompositeFrame. You can configure additional 
+codespaces to be included in the export using the property `no.entur.uttu.codespaces.additional` as follows:
+
+```properties
+no.entur.uttu.codespaces.additional.[code]=[xml namespace uri]
+```
+
+Example:
+
+```properties
+no.entur.uttu.codespaces.additional.nsr=http://www.rutebanken.org/ns/nsr
+no.entur.uttu.codespaces.additional.nog=http://www.rutebanken.org/ns/nog
+```
+
+This allows you to add any required codespace references to the exported NeTEx file.
+
 ## Error code extension
 
 Some errors are augmented with a code extension. See [`ErrorCodeEnumeration`](src/main/java/no/entur/uttu/error/codes/ErrorCodeEnumeration.java) 
