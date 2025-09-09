@@ -1,10 +1,15 @@
 package no.entur.uttu.export.netex.producer.common;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import net.opengis.gml._3.DirectPositionListType;
 import net.opengis.gml._3.LineStringType;
+import no.entur.uttu.export.model.ServiceLinkExportContext;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
@@ -38,7 +43,18 @@ public class ServiceLinkProducer {
   }
 
   public List<ServiceLink> produce(NetexExportContext context) {
-    return context.serviceLinks
+    Map<String, ServiceLinkExportContext> uniqueServiceLinks = context.serviceLinks
+      .stream()
+      .collect(
+        toMap(
+          this::createServiceLinkKey,
+          serviceLink -> serviceLink,
+          (existing, replacement) -> existing
+        )
+      );
+
+    return uniqueServiceLinks
+      .values()
       .stream()
       .map(serviceLink -> {
         Quay quayFrom = getQuay(serviceLink.quayRefFrom());
@@ -124,5 +140,15 @@ public class ServiceLinkProducer {
   private String getLineStringId(Ref serviceLinkRef) {
     String serviceLinkSuffix = NetexIdProducer.getObjectIdSuffix(serviceLinkRef.id);
     return "LS_" + serviceLinkSuffix;
+  }
+
+  private String createServiceLinkKey(ServiceLinkExportContext serviceLink) {
+    return (
+      serviceLink.quayRefFrom() +
+      "_" +
+      serviceLink.quayRefTo() +
+      "_" +
+      serviceLink.transportMode()
+    );
   }
 }

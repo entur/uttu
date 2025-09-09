@@ -1,6 +1,10 @@
 package no.entur.uttu.export.netex.producer.common;
 
-import static org.mockito.Mockito.when;
+import static no.entur.uttu.model.VehicleModeEnumeration.BUS;
+import static no.entur.uttu.model.VehicleModeEnumeration.TRAM;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,7 +25,6 @@ import no.entur.uttu.routing.RoutingService;
 import no.entur.uttu.routing.RoutingServiceRequestParams;
 import no.entur.uttu.stopplace.spi.StopPlaceRegistry;
 import no.entur.uttu.util.DateUtils;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -40,8 +43,8 @@ class ServiceLinkProducerTest {
     new AdditionalCodespacesConfig()
   );
 
-  StopPlaceRegistry mockStopPlaceRegistry = Mockito.mock(StopPlaceRegistry.class);
-  RoutingService mockRoutingService = Mockito.mock(RoutingService.class);
+  StopPlaceRegistry mockStopPlaceRegistry = mock(StopPlaceRegistry.class);
+  RoutingService mockRoutingService = mock(RoutingService.class);
 
   @BeforeEach
   public void setUp() {
@@ -52,70 +55,88 @@ class ServiceLinkProducerTest {
     );
   }
 
-  @Test
-  void testServiceLinkProducerProducesCorrectLineString() {
+  private NetexExportContext createTestContext() {
     Export export = new Export();
     Provider provider = new Provider();
     Codespace codespace = new Codespace();
     codespace.setXmlns("TST");
     provider.setCodespace(codespace);
     export.setProvider(provider);
-    NetexExportContext context = new NetexExportContext(export);
+    return new NetexExportContext(export);
+  }
+
+  private void setupMockQuays() {
+    Quay quay1 = createQuay("TST:Quay:1", 10.1, 60.2);
+    Quay quay2 = createQuay("TST:Quay:2", 10.5, 60.6);
+    Quay quay3 = createQuay("TST:Quay:3", 10.9, 61.0);
+
+    when(mockStopPlaceRegistry.getQuayById("TST:Quay:1")).thenReturn(Optional.of(quay1));
+    when(mockStopPlaceRegistry.getQuayById("TST:Quay:2")).thenReturn(Optional.of(quay2));
+    when(mockStopPlaceRegistry.getQuayById("TST:Quay:3")).thenReturn(Optional.of(quay3));
+  }
+
+  private void setupMockRoutingService() {
+    var params1to2Bus = new RoutingServiceRequestParams(
+      bigDec(10.1),
+      bigDec(60.2),
+      bigDec(10.5),
+      bigDec(60.6),
+      BUS
+    );
+    var params2to3Bus = new RoutingServiceRequestParams(
+      bigDec(10.5),
+      bigDec(60.6),
+      bigDec(10.9),
+      bigDec(61.0),
+      BUS
+    );
+    var params1to2Tram = new RoutingServiceRequestParams(
+      bigDec(10.1),
+      bigDec(60.2),
+      bigDec(10.5),
+      bigDec(60.6),
+      TRAM
+    );
+
+    when(mockRoutingService.getRouteGeometry(params1to2Bus)).thenReturn(
+      new RouteGeometry(List.of(coord(10.1, 60.2), coord(10.5, 60.6)), bigDec(100))
+    );
+    when(mockRoutingService.getRouteGeometry(params2to3Bus)).thenReturn(
+      new RouteGeometry(List.of(coord(10.5, 60.6), coord(10.9, 61.0)), bigDec(150))
+    );
+    when(mockRoutingService.getRouteGeometry(params1to2Tram)).thenReturn(
+      new RouteGeometry(List.of(coord(10.1, 60.2), coord(10.5, 60.6)), bigDec(100))
+    );
+  }
+
+  @Test
+  void testServiceLinkProducerProducesCorrectLineString() {
+    NetexExportContext context = createTestContext();
 
     context.serviceLinks = Set.of(
-      new ServiceLinkExportContext(
-        "TST:Quay:1",
-        "TST:Quay:2",
-        VehicleModeEnumeration.BUS,
-        new Ref("TST:ServiceLink:1", "1")
-      )
+      createContext("TST:Quay:1", "TST:Quay:2", BUS, "TST:ServiceLink:1")
     );
 
-    Quay quayFrom = new Quay();
-    quayFrom.setId("TST:Quay:1");
-    quayFrom.setCentroid(
-      new SimplePoint_VersionStructure()
-        .withLocation(
-          new LocationStructure()
-            .withLongitude(BigDecimal.valueOf(10.1))
-            .withLatitude(BigDecimal.valueOf(60.2))
-        )
-    );
-
-    Quay quayTo = new Quay();
-    quayTo.setId("TST:Quay:2");
-    quayTo.setCentroid(
-      new SimplePoint_VersionStructure()
-        .withLocation(
-          new LocationStructure()
-            .withLongitude(BigDecimal.valueOf(10.5))
-            .withLatitude(BigDecimal.valueOf(60.6))
-        )
-    );
-
-    when(mockStopPlaceRegistry.getQuayById("TST:Quay:1")).thenReturn(
-      Optional.of(quayFrom)
-    );
-    when(mockStopPlaceRegistry.getQuayById("TST:Quay:2")).thenReturn(Optional.of(quayTo));
+    setupMockQuays();
 
     // GeoJSON uses coordinate pairs in order longitude then latitude
     var params = new RoutingServiceRequestParams(
-      BigDecimal.valueOf(10.1),
-      BigDecimal.valueOf(60.2),
-      BigDecimal.valueOf(10.5),
-      BigDecimal.valueOf(60.6),
-      VehicleModeEnumeration.BUS
+      bigDec(10.1),
+      bigDec(60.2),
+      bigDec(10.5),
+      bigDec(60.6),
+      BUS
     );
     when(mockRoutingService.getRouteGeometry(params)).thenReturn(
       new RouteGeometry(
         List.of(
-          List.of(BigDecimal.valueOf(10.1), BigDecimal.valueOf(60.2)),
-          List.of(BigDecimal.valueOf(10.2), BigDecimal.valueOf(60.3)),
-          List.of(BigDecimal.valueOf(10.3), BigDecimal.valueOf(60.4)),
-          List.of(BigDecimal.valueOf(10.4), BigDecimal.valueOf(60.5)),
-          List.of(BigDecimal.valueOf(10.5), BigDecimal.valueOf(60.6))
+          coord(10.1, 60.2),
+          coord(10.2, 60.3),
+          coord(10.3, 60.4),
+          coord(10.4, 60.5),
+          coord(10.5, 60.6)
         ),
-        BigDecimal.valueOf(100)
+        bigDec(100)
       )
     );
 
@@ -129,7 +150,7 @@ class ServiceLinkProducerTest {
         .getFirst()
         .getValue();
 
-    Assertions.assertEquals(
+    assertEquals(
       List.of(
         // NeTEx expects coordinate pairs in order of latitude then longitude
         60.2,
@@ -144,6 +165,85 @@ class ServiceLinkProducerTest {
         10.5
       ),
       linkSequenceProjection.getLineString().getPosList().getValue()
+    );
+  }
+
+  @Test
+  void testServiceLinkProducerDeduplicatesDuplicateServiceLinks() {
+    NetexExportContext context = createTestContext();
+
+    context.serviceLinks = Set.of(
+      createContext("TST:Quay:1", "TST:Quay:2", BUS, "TST:ServiceLink:1"),
+      createContext("TST:Quay:1", "TST:Quay:2", BUS, "TST:ServiceLink:2"),
+      createContext("TST:Quay:2", "TST:Quay:3", BUS, "TST:ServiceLink:3"),
+      createContext("TST:Quay:1", "TST:Quay:2", TRAM, "TST:ServiceLink:4")
+    );
+
+    setupMockQuays();
+    setupMockRoutingService();
+
+    List<ServiceLink> serviceLinkList = serviceLinkProducer.produce(context);
+
+    assertEquals(
+      3,
+      serviceLinkList.size(),
+      "Should deduplicate identical service links but keep different transport modes"
+    );
+
+    boolean hasBusLink1to2 = serviceLinkList
+      .stream()
+      .anyMatch(
+        sl ->
+          sl.getFromPointRef().getRef().equals("TST:ScheduledStopPoint:1_UTTU") &&
+          sl.getToPointRef().getRef().equals("TST:ScheduledStopPoint:2_UTTU")
+      );
+    boolean hasBusLink2to3 = serviceLinkList
+      .stream()
+      .anyMatch(
+        sl ->
+          sl.getFromPointRef().getRef().equals("TST:ScheduledStopPoint:2_UTTU") &&
+          sl.getToPointRef().getRef().equals("TST:ScheduledStopPoint:3_UTTU")
+      );
+
+    assertTrue(hasBusLink1to2, "Should have bus link from quay 1 to quay 2");
+    assertTrue(hasBusLink2to3, "Should have bus link from quay 2 to quay 3");
+
+    verify(mockRoutingService, Mockito.times(3)).getRouteGeometry(Mockito.any());
+  }
+
+  private Quay createQuay(String id, double longitude, double latitude) {
+    Quay quay = new Quay();
+    quay.setId(id);
+    quay.setCentroid(
+      new SimplePoint_VersionStructure()
+        .withLocation(
+          new LocationStructure()
+            .withLongitude(bigDec(longitude))
+            .withLatitude(bigDec(latitude))
+        )
+    );
+    return quay;
+  }
+
+  private BigDecimal bigDec(double value) {
+    return BigDecimal.valueOf(value);
+  }
+
+  private List<BigDecimal> coord(double longitude, double latitude) {
+    return List.of(bigDec(longitude), bigDec(latitude));
+  }
+
+  private ServiceLinkExportContext createContext(
+    String fromQuay,
+    String toQuay,
+    VehicleModeEnumeration mode,
+    String serviceLinkId
+  ) {
+    return new ServiceLinkExportContext(
+      fromQuay,
+      toQuay,
+      mode,
+      new Ref(serviceLinkId, "1")
     );
   }
 }
