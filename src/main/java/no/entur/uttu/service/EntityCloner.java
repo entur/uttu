@@ -16,19 +16,35 @@
 package no.entur.uttu.service;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import no.entur.uttu.model.*;
+import no.entur.uttu.service.LineMigrationService.ConflictResolutionStrategy;
 import org.springframework.stereotype.Component;
 
 @Component
 public class EntityCloner {
 
-  private final Map<String, String> idMappings = new HashMap<>();
+  private final MigrationIdGenerator idGenerator;
+  private final ReferenceMapper referenceMapper;
+  private ConflictResolutionStrategy conflictResolution = ConflictResolutionStrategy.FAIL;
+  private boolean includeDayTypes = true;
+
+  public EntityCloner(MigrationIdGenerator idGenerator, ReferenceMapper referenceMapper) {
+    this.idGenerator = idGenerator;
+    this.referenceMapper = referenceMapper;
+  }
 
   public void clearMappings() {
-    idMappings.clear();
+    idGenerator.clearMappings();
+    referenceMapper.clearMappings();
+  }
+
+  public void setConflictResolution(ConflictResolutionStrategy strategy) {
+    this.conflictResolution = strategy;
+  }
+
+  public void setIncludeDayTypes(boolean includeDayTypes) {
+    this.includeDayTypes = includeDayTypes;
   }
 
   public <T extends Line> T cloneLine(
@@ -38,13 +54,68 @@ public class EntityCloner {
   ) {
     LineCloningVisitor visitor = new LineCloningVisitor(targetProvider, targetNetwork);
     sourceLine.accept(visitor);
-    return (T) visitor.getClonedLine();
+    T clonedLine = (T) visitor.getClonedLine();
+
+    // Update internal references after cloning
+    // Update all references using the stored mappings
+    updateAllReferences(clonedLine);
+
+    return clonedLine;
+  }
+
+  private void updateAllReferences(Line clonedLine) {
+    referenceMapper.updateLineReferences(clonedLine);
+
+    if (clonedLine.getJourneyPatterns() != null) {
+      for (JourneyPattern jp : clonedLine.getJourneyPatterns()) {
+        updateJourneyPatternReferences(jp);
+      }
+    }
+  }
+
+  private void updateJourneyPatternReferences(JourneyPattern journeyPattern) {
+    // Update Line reference
+    String lineId = journeyPattern.getLine().getNetexId();
+    String mappedLineId = idGenerator.getMappedId(lineId);
+    if (mappedLineId != null) {
+      journeyPattern.getLine().setNetexId(mappedLineId);
+    }
+
+    if (journeyPattern.getServiceJourneys() != null) {
+      for (ServiceJourney sj : journeyPattern.getServiceJourneys()) {
+        updateServiceJourneyReferences(sj);
+      }
+    }
+  }
+
+  private void updateServiceJourneyReferences(ServiceJourney serviceJourney) {
+    // Update JourneyPattern reference
+    String jpId = serviceJourney.getJourneyPattern().getNetexId();
+    String mappedJpId = idGenerator.getMappedId(jpId);
+    if (mappedJpId != null) {
+      serviceJourney.getJourneyPattern().setNetexId(mappedJpId);
+    }
   }
 
   public JourneyPattern cloneJourneyPattern(JourneyPattern source, Line targetLine) {
     JourneyPattern clone = new JourneyPattern();
 
     copyProviderEntityFields(source, clone, targetLine.getProvider());
+
+    // Generate new ID and track mapping
+    String newId = idGenerator.generateNetexId(clone, targetLine.getProvider());
+    clone.setNetexId(newId);
+    idGenerator.addIdMapping(source.getNetexId(), newId);
+    referenceMapper.addMapping(source.getNetexId(), newId);
+
+    // Generate unique name if needed
+    String newName = idGenerator.generateUniqueNameWithConflictResolution(
+      source.getName(),
+      "JourneyPattern",
+      targetLine.getProvider(),
+      conflictResolution
+    );
+    clone.setName(newName);
 
     clone.setLine(targetLine);
     clone.setDirectionType(source.getDirectionType());
@@ -84,8 +155,42 @@ public class EntityCloner {
 
     copyProviderEntityFields(source, clone, targetPattern.getProvider());
 
+    // Generate new ID and track mapping
+    String newId = idGenerator.generateNetexId(clone, targetPattern.getProvider());
+    clone.setNetexId(newId);
+    idGenerator.addIdMapping(source.getNetexId(), newId);
+    referenceMapper.addMapping(source.getNetexId(), newId);
+
+    // Generate unique name if needed
+    String newName = idGenerator.generateUniqueNameWithConflictResolution(
+      source.getName(),
+      "ServiceJourney",
+      targetPattern.getProvider(),
+      conflictResolution
+    );
+    clone.setName(newName);
+
     clone.setJourneyPattern(targetPattern);
-    clone.updateDayTypes(new ArrayList<>(source.getDayTypes()));
+
+    // Handle DayTypes with deduplication (if enabled)
+    if (includeDayTypes && source.getDayTypes() != null) {
+      List<DayType> clonedDayTypes = new ArrayList<>();
+      for (DayType dayType : source.getDayTypes()) {
+        // Check if we can reuse an existing DayType
+        DayType existingDayType = referenceMapper.findExistingDayType(dayType);
+        if (existingDayType != null) {
+          clonedDayTypes.add(existingDayType);
+        } else {
+          // Clone the DayType if no match found
+          DayType clonedDayType = cloneDayType(dayType, targetPattern.getProvider());
+          clonedDayTypes.add(clonedDayType);
+        }
+      }
+      clone.updateDayTypes(clonedDayTypes);
+    } else if (!includeDayTypes) {
+      // Clear DayTypes if not including them
+      clone.updateDayTypes(new ArrayList<>());
+    }
     clone.setPublicCode(source.getPublicCode());
     clone.setOperatorRef(source.getOperatorRef());
 
@@ -134,8 +239,25 @@ public class EntityCloner {
 
     copyProviderEntityFields(source, clone, targetProvider);
 
-    clone.setDaysOfWeek(source.getDaysOfWeek());
-    clone.setDayTypeAssignments(source.getDayTypeAssignments());
+    // Generate new ID and track mapping
+    String newId = idGenerator.generateNetexId(clone, targetProvider);
+    clone.setNetexId(newId);
+    idGenerator.addIdMapping(source.getNetexId(), newId);
+    referenceMapper.addMapping(source.getNetexId(), newId);
+
+    // Clone days of week
+    if (source.getDaysOfWeek() != null) {
+      clone.setDaysOfWeek(new ArrayList<>(source.getDaysOfWeek()));
+    }
+
+    // Clone DayTypeAssignments
+    if (source.getDayTypeAssignments() != null) {
+      List<DayTypeAssignment> clonedAssignments = new ArrayList<>();
+      for (DayTypeAssignment assignment : source.getDayTypeAssignments()) {
+        clonedAssignments.add(cloneDayTypeAssignment(assignment, targetProvider));
+      }
+      clone.setDayTypeAssignments(clonedAssignments);
+    }
 
     return clone;
   }
@@ -150,6 +272,15 @@ public class EntityCloner {
 
     clone.setDate(source.getDate());
     clone.setAvailable(source.getAvailable());
+
+    // Clone OperatingPeriod if present
+    if (source.getOperatingPeriod() != null) {
+      OperatingPeriod clonedPeriod = new OperatingPeriod();
+      copyIdentifiedEntityFields(source.getOperatingPeriod(), clonedPeriod);
+      clonedPeriod.setFromDate(source.getOperatingPeriod().getFromDate());
+      clonedPeriod.setToDate(source.getOperatingPeriod().getToDate());
+      clone.setOperatingPeriod(clonedPeriod);
+    }
 
     return clone;
   }
@@ -193,6 +324,10 @@ public class EntityCloner {
     StopPointInJourneyPattern clone = new StopPointInJourneyPattern();
 
     copyProviderEntityFields(source, clone, targetPattern.getProvider());
+
+    // Generate new ID
+    String newId = idGenerator.generateNetexId(clone, targetPattern.getProvider());
+    clone.setNetexId(newId);
 
     clone.setJourneyPattern(targetPattern);
     clone.setOrder(source.getOrder());
@@ -241,6 +376,10 @@ public class EntityCloner {
 
     copyProviderEntityFields(source, clone, targetJourney.getProvider());
 
+    // Generate new ID
+    String newId = idGenerator.generateNetexId(clone, targetJourney.getProvider());
+    clone.setNetexId(newId);
+
     clone.setServiceJourney(targetJourney);
     clone.setOrder(source.getOrder());
     clone.setArrivalTime(source.getArrivalTime());
@@ -270,7 +409,7 @@ public class EntityCloner {
   ) {
     copyIdentifiedEntityFields(source, target);
     target.setProvider(targetProvider);
-    target.setNetexId(null);
+    // NetexId will be set by the calling method
 
     if (
       source instanceof GroupOfEntities_VersionStructure &&
@@ -333,6 +472,21 @@ public class EntityCloner {
 
     private void copyLineFields(Line source, Line target) {
       copyProviderEntityFields(source, target, targetProvider);
+
+      // Generate new ID and track mapping
+      String newId = idGenerator.generateNetexId(target, targetProvider);
+      target.setNetexId(newId);
+      idGenerator.addIdMapping(source.getNetexId(), newId);
+      referenceMapper.addMapping(source.getNetexId(), newId);
+
+      // Generate unique name if needed
+      String newName = idGenerator.generateUniqueNameWithConflictResolution(
+        source.getName(),
+        "Line",
+        targetProvider,
+        conflictResolution
+      );
+      target.setName(newName);
 
       target.setNetwork(targetNetwork);
       target.setPublicCode(source.getPublicCode());

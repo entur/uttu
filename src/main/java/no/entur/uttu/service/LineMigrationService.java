@@ -17,6 +17,8 @@ package no.entur.uttu.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import no.entur.uttu.model.FixedLine;
+import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Line;
 import no.entur.uttu.model.Network;
@@ -40,6 +42,8 @@ public class LineMigrationService {
   private final NetworkRepository networkRepository;
   private final UserContextService userContextService;
   private final EntityCloner entityCloner;
+  private final ReferenceMapper referenceMapper;
+  private final MigrationIdGenerator idGenerator;
 
   public LineMigrationService(
     ProviderRepository providerRepository,
@@ -47,7 +51,9 @@ public class LineMigrationService {
     FlexibleLineRepository flexibleLineRepository,
     NetworkRepository networkRepository,
     UserContextService userContextService,
-    EntityCloner entityCloner
+    EntityCloner entityCloner,
+    ReferenceMapper referenceMapper,
+    MigrationIdGenerator idGenerator
   ) {
     this.providerRepository = providerRepository;
     this.fixedLineRepository = fixedLineRepository;
@@ -55,38 +61,122 @@ public class LineMigrationService {
     this.networkRepository = networkRepository;
     this.userContextService = userContextService;
     this.entityCloner = entityCloner;
+    this.referenceMapper = referenceMapper;
+    this.idGenerator = idGenerator;
   }
 
   public LineMigrationResult migrateLine(LineMigrationInput input) {
-    validateMigration(input);
+    long startTime = System.currentTimeMillis();
+    List<LineMigrationWarning> warnings = new ArrayList<>();
 
-    Line sourceLine = loadSourceLine(input.getSourceLineId());
-    List<Object> sourceEntities = loadSourceEntities(sourceLine);
+    try {
+      validateMigration(input);
 
-    Provider targetProvider = providerRepository.getOne(input.getTargetProviderId());
-    Network targetNetwork = networkRepository.getOne(input.getTargetNetworkId());
+      Line sourceLine = loadSourceLine(input.getSourceLineId());
+      List<Object> sourceEntities = loadSourceEntities(sourceLine);
 
-    entityCloner.clearMappings();
+      Provider targetProvider = providerRepository.getOne(input.getTargetProviderId());
+      Network targetNetwork = networkRepository.getOne(input.getTargetNetworkId());
 
-    Line clonedLine = entityCloner.cloneLine(sourceLine, targetProvider, targetNetwork);
+      // Clear mappings and set conflict resolution strategy
+      entityCloner.clearMappings();
+      referenceMapper.clearMappings();
+      idGenerator.clearMappings();
 
-    LineMigrationResult result = new LineMigrationResult();
-    result.setSuccess(true);
-    result.setMigratedLineId(clonedLine.getNetexId());
+      // Set target provider for DayType deduplication
+      referenceMapper.setTargetProvider(targetProvider);
 
-    LineMigrationSummary summary = new LineMigrationSummary();
-    summary.setEntitiesMigrated(sourceEntities.size());
-    summary.setWarningsCount(0);
-    summary.setExecutionTimeMs(0);
-    result.setSummary(summary);
+      ConflictResolutionStrategy strategy = input.getOptions() != null
+        ? input.getOptions().getConflictResolution()
+        : ConflictResolutionStrategy.FAIL;
+      entityCloner.setConflictResolution(strategy);
 
-    return result;
+      Boolean includeDayTypes = input.getOptions() != null
+        ? input.getOptions().getIncludeDayTypes()
+        : true;
+      entityCloner.setIncludeDayTypes(includeDayTypes != null ? includeDayTypes : true);
+
+      // Validate external references before cloning
+      try {
+        referenceMapper.validateLineReferences(sourceLine, targetProvider);
+      } catch (ReferenceMapper.ReferenceValidationException e) {
+        warnings.add(
+          createWarning("REFERENCE_VALIDATION", e.getMessage(), sourceLine.getNetexId())
+        );
+      }
+
+      // Clone the line with all its entities
+      Line clonedLine = entityCloner.cloneLine(sourceLine, targetProvider, targetNetwork);
+
+      // Update references after cloning
+      if (clonedLine.getJourneyPatterns() != null) {
+        for (JourneyPattern jp : clonedLine.getJourneyPatterns()) {
+          referenceMapper.updateJourneyPatternReferences(jp);
+          if (jp.getServiceJourneys() != null) {
+            for (ServiceJourney sj : jp.getServiceJourneys()) {
+              referenceMapper.updateServiceJourneyReferences(sj);
+            }
+          }
+        }
+      }
+
+      // Perform dry run check
+      Boolean dryRun = input.getOptions() != null
+        ? input.getOptions().getDryRun()
+        : false;
+      if (!dryRun) {
+        // Save the cloned entities
+        if (clonedLine instanceof FixedLine) {
+          clonedLine = fixedLineRepository.save((FixedLine) clonedLine);
+        } else {
+          clonedLine = flexibleLineRepository.save((FlexibleLine) clonedLine);
+        }
+      }
+
+      LineMigrationResult result = new LineMigrationResult();
+      result.setSuccess(true);
+      result.setMigratedLineId(clonedLine.getNetexId());
+      result.setWarnings(warnings);
+
+      LineMigrationSummary summary = new LineMigrationSummary();
+      summary.setEntitiesMigrated(sourceEntities.size());
+      summary.setWarningsCount(warnings.size());
+      summary.setExecutionTimeMs(System.currentTimeMillis() - startTime);
+      result.setSummary(summary);
+
+      return result;
+    } catch (MigrationIdGenerator.ConflictSkippedException e) {
+      // Handle SKIP strategy
+      LineMigrationResult result = new LineMigrationResult();
+      result.setSuccess(false);
+      result.setErrorMessage(e.getMessage());
+      result.setWarnings(warnings);
+
+      LineMigrationSummary summary = new LineMigrationSummary();
+      summary.setEntitiesMigrated(0);
+      summary.setWarningsCount(warnings.size());
+      summary.setExecutionTimeMs(System.currentTimeMillis() - startTime);
+      result.setSummary(summary);
+
+      return result;
+    }
   }
 
   public void validateMigration(LineMigrationInput input) {
     validateProviderAccess(input);
     validateTargetNetwork(input.getTargetProviderId(), input.getTargetNetworkId());
     validateSourceLine(input.getSourceLineId());
+
+    // Validate network reference using ReferenceMapper
+    Provider targetProvider = providerRepository.getOne(input.getTargetProviderId());
+    try {
+      referenceMapper.validateNetworkReference(
+        input.getTargetNetworkId(),
+        targetProvider
+      );
+    } catch (ReferenceMapper.ReferenceValidationException e) {
+      throw new IllegalArgumentException(e.getMessage());
+    }
   }
 
   private void validateProviderAccess(LineMigrationInput input) {
@@ -194,6 +284,18 @@ public class LineMigrationService {
     }
 
     return entities;
+  }
+
+  private LineMigrationWarning createWarning(
+    String type,
+    String message,
+    String entityId
+  ) {
+    LineMigrationWarning warning = new LineMigrationWarning();
+    warning.setType(type);
+    warning.setMessage(message);
+    warning.setEntityId(entityId);
+    return warning;
   }
 
   // Input and Result classes to be defined based on GraphQL types

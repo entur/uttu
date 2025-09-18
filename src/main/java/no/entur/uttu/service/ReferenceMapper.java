@@ -15,14 +15,20 @@
 
 package no.entur.uttu.service;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import no.entur.uttu.model.DayType;
+import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Line;
 import no.entur.uttu.model.Network;
+import no.entur.uttu.model.OperatingPeriod;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.ServiceJourney;
@@ -39,6 +45,7 @@ public class ReferenceMapper {
 
   private final Map<String, String> idMappings = new HashMap<>();
   private final Map<String, DayType> sharedDayTypes = new HashMap<>();
+  private Provider currentTargetProvider;
 
   public ReferenceMapper(
     NetworkRepository networkRepository,
@@ -46,6 +53,10 @@ public class ReferenceMapper {
   ) {
     this.networkRepository = networkRepository;
     this.dayTypeRepository = dayTypeRepository;
+  }
+
+  public void setTargetProvider(Provider provider) {
+    this.currentTargetProvider = provider;
   }
 
   public void addMapping(String oldId, String newId) {
@@ -114,10 +125,19 @@ public class ReferenceMapper {
   public DayType getMappedDayType(DayType originalDayType) {
     String dayTypeKey = generateDayTypeKey(originalDayType);
 
+    // Check if we've already mapped this DayType
     if (sharedDayTypes.containsKey(dayTypeKey)) {
       return sharedDayTypes.get(dayTypeKey);
     }
 
+    // Check if an equivalent DayType already exists in the database
+    DayType existingDayType = findExistingMatchingDayType(originalDayType);
+    if (existingDayType != null) {
+      sharedDayTypes.put(dayTypeKey, existingDayType);
+      return existingDayType;
+    }
+
+    // Create new DayType if no match found
     String mappedId = getMappedId(originalDayType.getNetexId());
     if (mappedId != null) {
       DayType mappedDayType = createDayTypeClone(originalDayType);
@@ -127,6 +147,136 @@ public class ReferenceMapper {
     }
 
     return originalDayType;
+  }
+
+  public DayType findExistingDayType(DayType dayType) {
+    return findExistingMatchingDayType(dayType);
+  }
+
+  private DayType findExistingMatchingDayType(DayType dayType) {
+    if (currentTargetProvider == null) {
+      return null;
+    }
+
+    // Find all DayTypes for the target provider
+    List<DayType> existingDayTypes = dayTypeRepository.findByProvider(
+      currentTargetProvider
+    );
+
+    // Check if any existing DayType matches the content of the source DayType
+    for (DayType existing : existingDayTypes) {
+      if (isDayTypeContentEqual(existing, dayType)) {
+        return existing;
+      }
+    }
+
+    return null;
+  }
+
+  private boolean isDayTypeContentEqual(DayType dayType1, DayType dayType2) {
+    // Compare the content of two DayTypes (not the IDs)
+    if (!Objects.equals(dayType1.getName(), dayType2.getName())) {
+      return false;
+    }
+
+    if (!Objects.equals(dayType1.getDaysOfWeek(), dayType2.getDaysOfWeek())) {
+      return false;
+    }
+
+    // Compare DayTypeAssignments by their content
+    if (
+      dayType1.getDayTypeAssignments() == null && dayType2.getDayTypeAssignments() == null
+    ) {
+      return true;
+    }
+
+    if (
+      dayType1.getDayTypeAssignments() == null || dayType2.getDayTypeAssignments() == null
+    ) {
+      return false;
+    }
+
+    List<DayTypeAssignment> assignments1 = dayType1.getDayTypeAssignments();
+    List<DayTypeAssignment> assignments2 = dayType2.getDayTypeAssignments();
+
+    if (assignments1.size() != assignments2.size()) {
+      return false;
+    }
+
+    // Sort assignments for comparison
+    List<DayTypeAssignment> sorted1 = new ArrayList<>(assignments1);
+    List<DayTypeAssignment> sorted2 = new ArrayList<>(assignments2);
+
+    sorted1.sort(this::compareDayTypeAssignments);
+    sorted2.sort(this::compareDayTypeAssignments);
+
+    // Compare each assignment
+    for (int i = 0; i < sorted1.size(); i++) {
+      if (!isDayTypeAssignmentEqual(sorted1.get(i), sorted2.get(i))) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  private boolean isDayTypeAssignmentEqual(
+    DayTypeAssignment assignment1,
+    DayTypeAssignment assignment2
+  ) {
+    // Compare available flag
+    if (!Objects.equals(assignment1.getAvailable(), assignment2.getAvailable())) {
+      return false;
+    }
+
+    // Compare date (single date assignment)
+    if (assignment1.getDate() != null && assignment2.getDate() != null) {
+      return Objects.equals(assignment1.getDate(), assignment2.getDate());
+    }
+
+    // Compare operating period (date range assignment)
+    if (
+      assignment1.getOperatingPeriod() != null && assignment2.getOperatingPeriod() != null
+    ) {
+      OperatingPeriod period1 = assignment1.getOperatingPeriod();
+      OperatingPeriod period2 = assignment2.getOperatingPeriod();
+      return (
+        Objects.equals(period1.getFromDate(), period2.getFromDate()) &&
+        Objects.equals(period1.getToDate(), period2.getToDate())
+      );
+    }
+
+    // One has date and other has operating period, or both are null
+    return (
+      assignment1.getDate() == null &&
+      assignment2.getDate() == null &&
+      assignment1.getOperatingPeriod() == null &&
+      assignment2.getOperatingPeriod() == null
+    );
+  }
+
+  private int compareDayTypeAssignments(DayTypeAssignment a1, DayTypeAssignment a2) {
+    // Sort by date or operating period start date
+    LocalDate date1 = a1.getDate();
+    LocalDate date2 = a2.getDate();
+
+    if (date1 == null && a1.getOperatingPeriod() != null) {
+      date1 = a1.getOperatingPeriod().getFromDate();
+    }
+    if (date2 == null && a2.getOperatingPeriod() != null) {
+      date2 = a2.getOperatingPeriod().getFromDate();
+    }
+
+    if (date1 == null && date2 == null) {
+      return 0;
+    }
+    if (date1 == null) {
+      return -1;
+    }
+    if (date2 == null) {
+      return 1;
+    }
+    return date1.compareTo(date2);
   }
 
   private String generateDayTypeKey(DayType dayType) {
