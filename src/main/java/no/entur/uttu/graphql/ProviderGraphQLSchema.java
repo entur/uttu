@@ -41,6 +41,7 @@ import no.entur.uttu.graphql.scalars.ProviderCodeScalar;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodespaceRepository;
+import no.entur.uttu.service.LineMigrationService;
 import org.springframework.stereotype.Component;
 
 /**
@@ -54,6 +55,9 @@ public class ProviderGraphQLSchema {
   private final DataFetcher<Provider> providerUpdater;
   private final DataFetcher<List<Provider>> providerFetcher;
   private final DataFetcher<UserContext> userContextFetcher;
+  private final DataFetcher<
+    LineMigrationService.LineMigrationResult
+  > lineMigrationFetcher;
   private final DateTimeScalar dateTimeScalar;
 
   private GraphQLSchema graphQLSchema;
@@ -74,6 +78,7 @@ public class ProviderGraphQLSchema {
     DataFetcher<Provider> providerUpdater,
     DataFetcher<List<Provider>> providerFetcher,
     DataFetcher<UserContext> userContextFetcher,
+    DataFetcher<LineMigrationService.LineMigrationResult> lineMigrationFetcher,
     DateTimeScalar dateTimeScalar
   ) {
     this.codespaceRepository = codespaceRepository;
@@ -81,6 +86,7 @@ public class ProviderGraphQLSchema {
     this.providerUpdater = providerUpdater;
     this.providerFetcher = providerFetcher;
     this.userContextFetcher = userContextFetcher;
+    this.lineMigrationFetcher = lineMigrationFetcher;
     this.dateTimeScalar = dateTimeScalar;
   }
 
@@ -429,10 +435,7 @@ public class ProviderGraphQLSchema {
               .name(FIELD_INPUT)
               .type(new GraphQLNonNull(lineMigrationInputType))
           )
-          .dataFetcher(env -> {
-            // TODO: Implement LineMigrationFetcher in Milestone 6
-            throw new UnsupportedOperationException("Line migration not yet implemented");
-          })
+          .dataFetcher(lineMigrationFetcher)
       )
       .build();
 

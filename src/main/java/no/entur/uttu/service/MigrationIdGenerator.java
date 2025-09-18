@@ -88,11 +88,17 @@ public class MigrationIdGenerator {
           )
         );
       default:
-        throw new IllegalArgumentException("Unknown conflict resolution strategy: " + strategy);
+        throw new IllegalArgumentException(
+          "Unknown conflict resolution strategy: " + strategy
+        );
     }
   }
 
-  private boolean hasNameConflict(String name, String entityType, Provider targetProvider) {
+  private boolean hasNameConflict(
+    String name,
+    String entityType,
+    Provider targetProvider
+  ) {
     switch (entityType) {
       case "Line":
         return hasLineNameConflict(name, targetProvider);
@@ -115,12 +121,18 @@ public class MigrationIdGenerator {
   }
 
   private boolean hasJourneyPatternNameConflict(String name, Provider targetProvider) {
-    var journeyPattern = journeyPatternRepository.findByProviderAndName(targetProvider, name);
+    var journeyPattern = journeyPatternRepository.findByProviderAndName(
+      targetProvider,
+      name
+    );
     return journeyPattern != null;
   }
 
   private boolean hasServiceJourneyNameConflict(String name, Provider targetProvider) {
-    var serviceJourney = serviceJourneyRepository.findByProviderAndName(targetProvider, name);
+    var serviceJourney = serviceJourneyRepository.findByProviderAndName(
+      targetProvider,
+      name
+    );
     return serviceJourney != null;
   }
 

@@ -67,11 +67,13 @@ public class ReferenceMapper {
 
   public void updateLineReferences(Line clonedLine) {
     if (clonedLine.getJourneyPatterns() != null) {
-      clonedLine.getJourneyPatterns().forEach(journeyPattern -> {
-        if (hasMapping(journeyPattern.getNetexId())) {
-          journeyPattern.setNetexId(getMappedId(journeyPattern.getNetexId()));
-        }
-      });
+      clonedLine
+        .getJourneyPatterns()
+        .forEach(journeyPattern -> {
+          if (hasMapping(journeyPattern.getNetexId())) {
+            journeyPattern.setNetexId(getMappedId(journeyPattern.getNetexId()));
+          }
+        });
     }
   }
 
@@ -82,11 +84,13 @@ public class ReferenceMapper {
     }
 
     if (clonedJourneyPattern.getServiceJourneys() != null) {
-      clonedJourneyPattern.getServiceJourneys().forEach(serviceJourney -> {
-        if (hasMapping(serviceJourney.getNetexId())) {
-          serviceJourney.setNetexId(getMappedId(serviceJourney.getNetexId()));
-        }
-      });
+      clonedJourneyPattern
+        .getServiceJourneys()
+        .forEach(serviceJourney -> {
+          if (hasMapping(serviceJourney.getNetexId())) {
+            serviceJourney.setNetexId(getMappedId(serviceJourney.getNetexId()));
+          }
+        });
     }
   }
 
@@ -126,19 +130,27 @@ public class ReferenceMapper {
   }
 
   private String generateDayTypeKey(DayType dayType) {
-    return dayType.getName() + "_" + dayType.getDaysOfWeek() + "_" + dayType.getDayTypeAssignments();
+    return (
+      dayType.getName() +
+      "_" +
+      dayType.getDaysOfWeek() +
+      "_" +
+      dayType.getDayTypeAssignments()
+    );
   }
 
   private DayType createDayTypeClone(DayType original) {
     DayType clone = new DayType();
     clone.setName(original.getName());
     clone.setDaysOfWeek(new java.util.ArrayList<>(original.getDaysOfWeek()));
-    clone.setDayTypeAssignments(new java.util.ArrayList<>(original.getDayTypeAssignments()));
+    clone.setDayTypeAssignments(
+      new java.util.ArrayList<>(original.getDayTypeAssignments())
+    );
     return clone;
   }
 
   public void validateNetworkReference(String networkId, Provider targetProvider)
-      throws ReferenceValidationException {
+    throws ReferenceValidationException {
     if (networkId == null || networkId.trim().isEmpty()) {
       throw new ReferenceValidationException("Network reference cannot be null or empty");
     }
@@ -147,46 +159,57 @@ public class ReferenceMapper {
       Network network = networkRepository.getOne(networkId);
       if (network == null || !network.getProvider().equals(targetProvider)) {
         throw new ReferenceValidationException(
-          String.format("Network with ID '%s' not found in target provider '%s'",
-                       networkId, targetProvider.getCode())
+          String.format(
+            "Network with ID '%s' not found in target provider '%s'",
+            networkId,
+            targetProvider.getCode()
+          )
         );
       }
     } catch (Exception e) {
       throw new ReferenceValidationException(
-        String.format("Failed to validate Network reference '%s': %s",
-                     networkId, e.getMessage())
+        String.format(
+          "Failed to validate Network reference '%s': %s",
+          networkId,
+          e.getMessage()
+        )
       );
     }
   }
 
   public void validateOperatorReference(String operatorRef)
-      throws ReferenceValidationException {
+    throws ReferenceValidationException {
     if (operatorRef == null || operatorRef.trim().isEmpty()) {
       throw new ReferenceValidationException("OperatorRef cannot be null or empty");
     }
 
     if (!operatorRef.matches("^[A-Za-z0-9_-]+:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$")) {
       throw new ReferenceValidationException(
-        String.format("OperatorRef '%s' does not match expected NetEx format 'codespace:type:id'", operatorRef)
+        String.format(
+          "OperatorRef '%s' does not match expected NetEx format 'codespace:type:id'",
+          operatorRef
+        )
       );
     }
   }
 
-  public void validateQuayReference(String quayRef)
-      throws ReferenceValidationException {
+  public void validateQuayReference(String quayRef) throws ReferenceValidationException {
     if (quayRef == null || quayRef.trim().isEmpty()) {
       throw new ReferenceValidationException("QuayRef cannot be null or empty");
     }
 
     if (!quayRef.matches("^[A-Za-z0-9_-]+:[A-Za-z0-9_-]+:[A-Za-z0-9_-]+$")) {
       throw new ReferenceValidationException(
-        String.format("QuayRef '%s' does not match expected NetEx format 'codespace:type:id'", quayRef)
+        String.format(
+          "QuayRef '%s' does not match expected NetEx format 'codespace:type:id'",
+          quayRef
+        )
       );
     }
   }
 
   public void validateLineReferences(Line line, Provider targetProvider)
-      throws ReferenceValidationException {
+    throws ReferenceValidationException {
     if (line.getNetwork() != null) {
       validateNetworkReference(line.getNetwork().getNetexId(), targetProvider);
     }
@@ -201,7 +224,7 @@ public class ReferenceMapper {
   }
 
   private void validateFixedLineReferences(FixedLine fixedLine)
-      throws ReferenceValidationException {
+    throws ReferenceValidationException {
     for (JourneyPattern journeyPattern : fixedLine.getJourneyPatterns()) {
       for (StopPointInJourneyPattern stopPoint : journeyPattern.getPointsInSequence()) {
         if (stopPoint.getQuayRef() != null) {
@@ -212,6 +235,7 @@ public class ReferenceMapper {
   }
 
   public static class ReferenceValidationException extends Exception {
+
     public ReferenceValidationException(String message) {
       super(message);
     }
