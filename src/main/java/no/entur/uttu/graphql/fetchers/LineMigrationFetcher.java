@@ -26,12 +26,16 @@ import no.entur.uttu.service.LineMigrationService.ConflictResolutionStrategy;
 import no.entur.uttu.service.LineMigrationService.LineMigrationInput;
 import no.entur.uttu.service.LineMigrationService.LineMigrationOptions;
 import no.entur.uttu.service.LineMigrationService.LineMigrationResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Component;
 
 @Component
 public class LineMigrationFetcher implements DataFetcher<LineMigrationResult> {
+
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   @Autowired
   private LineMigrationService lineMigrationService;
@@ -52,10 +56,13 @@ public class LineMigrationFetcher implements DataFetcher<LineMigrationResult> {
 
       return result;
     } catch (SecurityException e) {
+      logger.error("Authorization error in line migration: {}", e.getMessage());
       return createErrorResult("AUTHORIZATION_ERROR", e.getMessage());
     } catch (IllegalArgumentException e) {
+      logger.error("Validation error in line migration: {}", e.getMessage());
       return createErrorResult("VALIDATION_ERROR", e.getMessage());
     } catch (Exception e) {
+      logger.error("Unexpected error in line migration: {}", e.getMessage(), e);
       return createErrorResult("MIGRATION_ERROR", "Migration failed: " + e.getMessage());
     }
   }

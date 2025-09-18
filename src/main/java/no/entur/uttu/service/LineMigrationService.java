@@ -29,12 +29,16 @@ import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.NetworkRepository;
 import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.security.spi.UserContextService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
 public class LineMigrationService {
+
+  private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
   private final ProviderRepository providerRepository;
   private final FixedLineRepository fixedLineRepository;
@@ -68,6 +72,13 @@ public class LineMigrationService {
   public LineMigrationResult migrateLine(LineMigrationInput input) {
     long startTime = System.currentTimeMillis();
     List<LineMigrationWarning> warnings = new ArrayList<>();
+
+    logger.info(
+      "Starting line migration - sourceLineId: {}, targetProviderId: {}, targetNetworkId: {}",
+      input.getSourceLineId(),
+      input.getTargetProviderId(),
+      input.getTargetNetworkId()
+    );
 
     try {
       validateMigration(input);
@@ -128,9 +139,27 @@ public class LineMigrationService {
         // Save the cloned entities
         if (clonedLine instanceof FixedLine) {
           clonedLine = fixedLineRepository.save((FixedLine) clonedLine);
+          logger.info(
+            "Successfully migrated FixedLine {} to provider {} with new ID: {}",
+            input.getSourceLineId(),
+            input.getTargetProviderId(),
+            clonedLine.getNetexId()
+          );
         } else {
           clonedLine = flexibleLineRepository.save((FlexibleLine) clonedLine);
+          logger.info(
+            "Successfully migrated FlexibleLine {} to provider {} with new ID: {}",
+            input.getSourceLineId(),
+            input.getTargetProviderId(),
+            clonedLine.getNetexId()
+          );
         }
+      } else {
+        logger.info(
+          "Dry run completed successfully for line migration - sourceLineId: {}, targetProviderId: {}",
+          input.getSourceLineId(),
+          input.getTargetProviderId()
+        );
       }
 
       LineMigrationResult result = new LineMigrationResult();
@@ -147,6 +176,12 @@ public class LineMigrationService {
       return result;
     } catch (MigrationIdGenerator.ConflictSkippedException e) {
       // Handle SKIP strategy
+      logger.warn(
+        "Line migration skipped due to conflicts - sourceLineId: {}, targetProviderId: {}, reason: {}",
+        input.getSourceLineId(),
+        input.getTargetProviderId(),
+        e.getMessage()
+      );
       LineMigrationResult result = new LineMigrationResult();
       result.setSuccess(false);
       result.setErrorMessage(e.getMessage());
@@ -183,6 +218,7 @@ public class LineMigrationService {
     // Load source line to get source provider
     Line sourceLine = loadSourceLine(input.getSourceLineId());
     if (sourceLine == null) {
+      logger.error("Source line not found during migration: {}", input.getSourceLineId());
       throw new IllegalArgumentException(
         "Source line not found: " + input.getSourceLineId()
       );
@@ -193,6 +229,10 @@ public class LineMigrationService {
 
     // Validate access to source provider (read)
     if (!userContextService.hasAccessToProvider(sourceProviderCode)) {
+      logger.error(
+        "User attempted to access source provider without permission: {}",
+        sourceProviderCode
+      );
       throw new SecurityException(
         "User does not have access to source provider: " + sourceProviderCode
       );
@@ -200,6 +240,10 @@ public class LineMigrationService {
 
     // Validate access to target provider (write)
     if (!userContextService.hasAccessToProvider(targetProviderCode)) {
+      logger.error(
+        "User attempted to access target provider without permission: {}",
+        targetProviderCode
+      );
       throw new SecurityException(
         "User does not have access to target provider: " + targetProviderCode
       );
@@ -207,6 +251,11 @@ public class LineMigrationService {
 
     // Prevent migration within the same provider
     if (sourceProviderCode.equals(targetProviderCode)) {
+      logger.error(
+        "Attempted migration within same provider: {} -> {}",
+        sourceProviderCode,
+        targetProviderCode
+      );
       throw new IllegalArgumentException("Cannot migrate line within the same provider");
     }
   }
