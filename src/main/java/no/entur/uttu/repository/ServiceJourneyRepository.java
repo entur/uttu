@@ -15,6 +15,7 @@
 
 package no.entur.uttu.repository;
 
+import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -27,4 +28,6 @@ public interface ServiceJourneyRepository
     nativeQuery = true
   )
   long countByDayTypePk(@Param("dayTypePk") Long dayTypePk);
+
+  ServiceJourney findByProviderAndName(Provider provider, String name);
 }
