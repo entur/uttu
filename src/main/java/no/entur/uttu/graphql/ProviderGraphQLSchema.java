@@ -16,6 +16,7 @@
 package no.entur.uttu.graphql;
 
 import static graphql.Scalars.GraphQLBoolean;
+import static graphql.Scalars.GraphQLInt;
 import static graphql.Scalars.GraphQLString;
 import static graphql.scalars.ExtendedScalars.GraphQLLong;
 import static graphql.schema.GraphQLFieldDefinition.newFieldDefinition;
@@ -26,16 +27,22 @@ import static no.entur.uttu.graphql.GraphQLNames.*;
 
 import graphql.schema.DataFetcher;
 import graphql.schema.GraphQLArgument;
+import graphql.schema.GraphQLEnumType;
 import graphql.schema.GraphQLInputObjectType;
 import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.PostConstruct;
 import no.entur.uttu.graphql.model.UserContext;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
 import no.entur.uttu.graphql.scalars.ProviderCodeScalar;
+import no.entur.uttu.migration.LineMigrationService;
+import no.entur.uttu.migration.LineMigrationService.ConflictResolutionStrategy;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodespaceRepository;
@@ -52,6 +59,9 @@ public class ProviderGraphQLSchema {
   private final DataFetcher<Provider> providerUpdater;
   private final DataFetcher<List<Provider>> providerFetcher;
   private final DataFetcher<UserContext> userContextFetcher;
+  private final DataFetcher<
+    LineMigrationService.LineMigrationResult
+  > lineMigrationFetcher;
   private final DateTimeScalar dateTimeScalar;
 
   private GraphQLSchema graphQLSchema;
@@ -59,6 +69,12 @@ public class ProviderGraphQLSchema {
   private GraphQLObjectType codespaceObjectType;
   private GraphQLObjectType providerObjectType;
   private GraphQLObjectType userContextObjectType;
+  private GraphQLEnumType conflictResolutionStrategyEnum;
+  private GraphQLInputObjectType lineMigrationOptionsType;
+  private GraphQLInputObjectType lineMigrationInputType;
+  private GraphQLObjectType lineMigrationSummaryType;
+  private GraphQLObjectType lineMigrationWarningType;
+  private GraphQLObjectType lineMigrationResultType;
 
   public ProviderGraphQLSchema(
     CodespaceRepository codespaceRepository,
@@ -66,6 +82,7 @@ public class ProviderGraphQLSchema {
     DataFetcher<Provider> providerUpdater,
     DataFetcher<List<Provider>> providerFetcher,
     DataFetcher<UserContext> userContextFetcher,
+    DataFetcher<LineMigrationService.LineMigrationResult> lineMigrationFetcher,
     DateTimeScalar dateTimeScalar
   ) {
     this.codespaceRepository = codespaceRepository;
@@ -73,6 +90,7 @@ public class ProviderGraphQLSchema {
     this.providerUpdater = providerUpdater;
     this.providerFetcher = providerFetcher;
     this.userContextFetcher = userContextFetcher;
+    this.lineMigrationFetcher = lineMigrationFetcher;
     this.dateTimeScalar = dateTimeScalar;
   }
 
@@ -162,6 +180,148 @@ public class ProviderGraphQLSchema {
           .description("List of providers for which this user has access to manage data")
           .type(new GraphQLList(providerObjectType))
           .dataFetcher(providerFetcher)
+      )
+      .build();
+
+    // Line migration types
+    conflictResolutionStrategyEnum = TypeUtils.createEnum(
+      "ConflictResolutionStrategy",
+      ConflictResolutionStrategy.values(),
+      (ConflictResolutionStrategy::name)
+    );
+
+    lineMigrationOptionsType = newInputObject()
+      .name("LineMigrationOptions")
+      .description("Options for line migration")
+      .field(
+        newInputObjectField()
+          .name("conflictResolution")
+          .type(conflictResolutionStrategyEnum)
+          .description("How to handle naming conflicts (default: FAIL)")
+      )
+      .field(
+        newInputObjectField()
+          .name("includeDayTypes")
+          .type(GraphQLBoolean)
+          .description("Whether to migrate associated day types (default: true)")
+      )
+      .field(
+        newInputObjectField()
+          .name("dryRun")
+          .type(GraphQLBoolean)
+          .description(
+            "Perform validation only without persisting changes (default: false)"
+          )
+      )
+      .build();
+
+    lineMigrationInputType = newInputObject()
+      .name("LineMigrationInput")
+      .description("Input for migrating a line between providers")
+      .field(
+        newInputObjectField()
+          .name("sourceLineId")
+          .type(new GraphQLNonNull(GraphQLString))
+          .description("NeTEx ID of the line to migrate")
+      )
+      .field(
+        newInputObjectField()
+          .name("targetProviderId")
+          .type(new GraphQLNonNull(GraphQLString))
+          .description("ID of the target provider")
+      )
+      .field(
+        newInputObjectField()
+          .name("targetNetworkId")
+          .type(new GraphQLNonNull(GraphQLString))
+          .description("NeTEx ID of the network in the target provider")
+      )
+      .field(
+        newInputObjectField()
+          .name("options")
+          .type(lineMigrationOptionsType)
+          .description("Migration options")
+      )
+      .build();
+
+    lineMigrationSummaryType = newObject()
+      .name("LineMigrationSummary")
+      .description("Summary of the migration operation")
+      .field(
+        newFieldDefinition()
+          .name("entitiesMigrated")
+          .type(new GraphQLNonNull(GraphQLInt))
+          .description("Total number of entities migrated")
+      )
+      .field(
+        newFieldDefinition()
+          .name("warningsCount")
+          .type(new GraphQLNonNull(GraphQLInt))
+          .description("Number of warnings generated")
+      )
+      .field(
+        newFieldDefinition()
+          .name("executionTimeMs")
+          .type(new GraphQLNonNull(GraphQLLong))
+          .description("Execution time in milliseconds")
+      )
+      .build();
+
+    lineMigrationWarningType = newObject()
+      .name("LineMigrationWarning")
+      .description("Warning generated during migration")
+      .field(
+        newFieldDefinition()
+          .name("type")
+          .type(new GraphQLNonNull(GraphQLString))
+          .description("Warning type")
+      )
+      .field(
+        newFieldDefinition()
+          .name("message")
+          .type(new GraphQLNonNull(GraphQLString))
+          .description("Warning message")
+      )
+      .field(
+        newFieldDefinition()
+          .name("entityId")
+          .type(GraphQLString)
+          .description("ID of the affected entity")
+      )
+      .build();
+
+    lineMigrationResultType = newObject()
+      .name("LineMigrationResult")
+      .description("Result of a line migration operation")
+      .field(
+        newFieldDefinition()
+          .name("success")
+          .type(new GraphQLNonNull(GraphQLBoolean))
+          .description("Whether the migration succeeded")
+      )
+      .field(
+        newFieldDefinition()
+          .name("migratedLineId")
+          .type(GraphQLString)
+          .description("NeTEx ID of the migrated line in the target provider")
+      )
+      .field(
+        newFieldDefinition()
+          .name("summary")
+          .type(lineMigrationSummaryType)
+          .description("Migration summary statistics")
+      )
+      .field(
+        newFieldDefinition()
+          .name("warnings")
+          .type(new GraphQLList(lineMigrationWarningType))
+          .description("Warnings generated during migration")
+      )
+      .field(
+        newFieldDefinition()
+          .name("errorMessage")
+          .type(GraphQLString)
+          .description("Error message if migration failed")
       )
       .build();
   }
@@ -266,6 +426,19 @@ public class ProviderGraphQLSchema {
             GraphQLArgument.newArgument().name(FIELD_INPUT).type(providerInputType)
           )
           .dataFetcher(providerUpdater)
+      )
+      .field(
+        newFieldDefinition()
+          .type(new GraphQLNonNull(lineMigrationResultType))
+          .name("migrateLine")
+          .description("Migrate a line from one provider to another")
+          .deprecate("Experimental feature: use with caution")
+          .argument(
+            GraphQLArgument.newArgument()
+              .name(FIELD_INPUT)
+              .type(new GraphQLNonNull(lineMigrationInputType))
+          )
+          .dataFetcher(lineMigrationFetcher)
       )
       .build();
 

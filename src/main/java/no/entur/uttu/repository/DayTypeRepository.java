@@ -15,7 +15,11 @@
 
 package no.entur.uttu.repository;
 
+import java.util.List;
 import no.entur.uttu.model.DayType;
+import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.generic.ProviderEntityRepository;
 
-public interface DayTypeRepository extends ProviderEntityRepository<DayType> {}
+public interface DayTypeRepository extends ProviderEntityRepository<DayType> {
+  List<DayType> findByProvider(Provider provider);
+}
