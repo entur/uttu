@@ -432,6 +432,7 @@ public class ProviderGraphQLSchema {
           .type(new GraphQLNonNull(lineMigrationResultType))
           .name("migrateLine")
           .description("Migrate a line from one provider to another")
+          .deprecate("Experimental feature: use with caution")
           .argument(
             GraphQLArgument.newArgument()
               .name(FIELD_INPUT)
