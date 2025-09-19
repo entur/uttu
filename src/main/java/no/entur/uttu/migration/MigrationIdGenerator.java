@@ -20,13 +20,13 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import no.entur.uttu.migration.LineMigrationService.ConflictResolutionStrategy;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.JourneyPatternRepository;
 import no.entur.uttu.repository.ServiceJourneyRepository;
-import no.entur.uttu.migration.LineMigrationService.ConflictResolutionStrategy;
 import org.springframework.stereotype.Component;
 
 @Component

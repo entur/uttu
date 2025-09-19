@@ -17,8 +17,8 @@ package no.entur.uttu.migration;
 
 import java.util.ArrayList;
 import java.util.List;
-import no.entur.uttu.model.*;
 import no.entur.uttu.migration.LineMigrationService.ConflictResolutionStrategy;
+import no.entur.uttu.model.*;
 import org.springframework.stereotype.Component;
 
 @Component
