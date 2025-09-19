@@ -33,7 +33,10 @@ import graphql.schema.GraphQLList;
 import graphql.schema.GraphQLNonNull;
 import graphql.schema.GraphQLObjectType;
 import graphql.schema.GraphQLSchema;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Function;
 import javax.annotation.PostConstruct;
 import no.entur.uttu.graphql.model.UserContext;
 import no.entur.uttu.graphql.scalars.DateTimeScalar;
@@ -42,6 +45,7 @@ import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodespaceRepository;
 import no.entur.uttu.service.LineMigrationService;
+import no.entur.uttu.service.LineMigrationService.ConflictResolutionStrategy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -88,6 +92,24 @@ public class ProviderGraphQLSchema {
     this.userContextFetcher = userContextFetcher;
     this.lineMigrationFetcher = lineMigrationFetcher;
     this.dateTimeScalar = dateTimeScalar;
+  }
+
+  private <T extends Enum> GraphQLEnumType createEnum(
+    String name,
+    T[] values,
+    Function<T, String> mapping
+  ) {
+    return createEnum(name, Arrays.asList(values), mapping);
+  }
+
+  private <T extends Enum> GraphQLEnumType createEnum(
+    String name,
+    Collection<T> values,
+    Function<T, String> mapping
+  ) {
+    GraphQLEnumType.Builder enumBuilder = GraphQLEnumType.newEnum().name(name);
+    values.forEach(type -> enumBuilder.value(mapping.apply(type), type));
+    return enumBuilder.build();
   }
 
   @PostConstruct
@@ -180,13 +202,11 @@ public class ProviderGraphQLSchema {
       .build();
 
     // Line migration types
-    conflictResolutionStrategyEnum = GraphQLEnumType.newEnum()
-      .name("ConflictResolutionStrategy")
-      .description("Strategy for handling naming conflicts during migration")
-      .value("FAIL", "Stop migration if any conflicts detected")
-      .value("RENAME", "Automatically rename conflicting entities")
-      .value("SKIP", "Skip conflicting entities and continue")
-      .build();
+    conflictResolutionStrategyEnum = createEnum(
+      "ConflictResolutionStrategy",
+      ConflictResolutionStrategy.values(),
+      (ConflictResolutionStrategy::name)
+    );
 
     lineMigrationOptionsType = newInputObject()
       .name("LineMigrationOptions")

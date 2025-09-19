@@ -100,18 +100,28 @@ public class LineMigrationFetcher implements DataFetcher<LineMigrationResult> {
     return options;
   }
 
-  private ConflictResolutionStrategy parseConflictResolution(String strategyStr) {
-    if (strategyStr == null) {
+  private ConflictResolutionStrategy parseConflictResolution(Object strategy) {
+    if (strategy == null) {
       return ConflictResolutionStrategy.FAIL;
     }
 
-    try {
-      return ConflictResolutionStrategy.valueOf(strategyStr);
-    } catch (IllegalArgumentException e) {
-      throw new IllegalArgumentException(
-        "Invalid conflict resolution strategy: " + strategyStr
-      );
+    if (strategy instanceof ConflictResolutionStrategy) {
+      return (ConflictResolutionStrategy) strategy;
     }
+
+    if (strategy instanceof String) {
+      try {
+        return ConflictResolutionStrategy.valueOf((String) strategy);
+      } catch (IllegalArgumentException e) {
+        throw new IllegalArgumentException(
+          "Invalid conflict resolution strategy: " + strategy
+        );
+      }
+    }
+
+    throw new IllegalArgumentException(
+      "Invalid conflict resolution strategy type: " + strategy.getClass()
+    );
   }
 
   private LineMigrationResult createErrorResult(String errorType, String errorMessage) {
