@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.service;
+package no.entur.uttu.migration;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -30,7 +30,6 @@ import no.entur.uttu.model.Line;
 import no.entur.uttu.model.Network;
 import no.entur.uttu.model.OperatingPeriod;
 import no.entur.uttu.model.Provider;
-import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.model.StopPointInJourneyPattern;
 import no.entur.uttu.repository.DayTypeRepository;

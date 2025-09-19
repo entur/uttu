@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.service;
+package no.entur.uttu.migration;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -23,13 +23,11 @@ import java.util.List;
 import java.util.Set;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.model.DayType;
-import no.entur.uttu.model.DayTypeAssignment;
 import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Line;
 import no.entur.uttu.model.Network;
-import no.entur.uttu.model.Notice;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.repository.DayTypeRepository;

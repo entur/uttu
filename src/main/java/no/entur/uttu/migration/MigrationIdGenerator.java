@@ -13,7 +13,7 @@
  * limitations under the Licence.
  */
 
-package no.entur.uttu.service;
+package no.entur.uttu.migration;
 
 import com.google.common.base.Joiner;
 import java.time.Instant;
@@ -26,7 +26,7 @@ import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
 import no.entur.uttu.repository.JourneyPatternRepository;
 import no.entur.uttu.repository.ServiceJourneyRepository;
-import no.entur.uttu.service.LineMigrationService.ConflictResolutionStrategy;
+import no.entur.uttu.migration.LineMigrationService.ConflictResolutionStrategy;
 import org.springframework.stereotype.Component;
 
 @Component

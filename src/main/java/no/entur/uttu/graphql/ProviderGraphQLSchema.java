@@ -44,8 +44,8 @@ import no.entur.uttu.graphql.scalars.ProviderCodeScalar;
 import no.entur.uttu.model.Codespace;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.repository.CodespaceRepository;
-import no.entur.uttu.service.LineMigrationService;
-import no.entur.uttu.service.LineMigrationService.ConflictResolutionStrategy;
+import no.entur.uttu.migration.LineMigrationService;
+import no.entur.uttu.migration.LineMigrationService.ConflictResolutionStrategy;
 import org.springframework.stereotype.Component;
 
 /**
