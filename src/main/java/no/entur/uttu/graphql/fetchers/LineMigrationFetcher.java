@@ -41,7 +41,7 @@ public class LineMigrationFetcher implements DataFetcher<LineMigrationResult> {
   private LineMigrationService lineMigrationService;
 
   @Override
-  @PreAuthorize("hasRole('ROLE_ROUTE_DATA_ADMIN')")
+  @PreAuthorize("@userContextService.isAdmin()")
   public LineMigrationResult get(DataFetchingEnvironment env) {
     try {
       long startTime = System.currentTimeMillis();
