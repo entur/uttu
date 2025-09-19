@@ -635,8 +635,8 @@ public class NetexObjectFactory {
   public Codespace createCodespace(String xmlns, String xmlnsUrl) {
     return objectFactory
       .createCodespace()
-      .withId(xmlns.toUpperCase())
-      .withXmlns(xmlns)
+      .withId(xmlns.toLowerCase())
+      .withXmlns(xmlns.toUpperCase())
       .withXmlnsUrl(xmlnsUrl);
   }
 
