@@ -189,6 +189,7 @@ public class EntityCloner {
       clone.updateDayTypes(clonedDayTypes);
     } else if (!includeDayTypes) {
       // Clear DayTypes if not including them
+      // Note: ServiceJourneys without DayTypes won't be exported to NeTEx
       clone.updateDayTypes(new ArrayList<>());
     }
     clone.setPublicCode(source.getPublicCode());

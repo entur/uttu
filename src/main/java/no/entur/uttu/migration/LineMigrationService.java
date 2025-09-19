@@ -141,6 +141,33 @@ public class LineMigrationService {
         : true;
       entityCloner.setIncludeDayTypes(includeDayTypes != null ? includeDayTypes : true);
 
+      // Warn if not including DayTypes
+      if (includeDayTypes != null && !includeDayTypes) {
+        int serviceJourneyCount = 0;
+        if (sourceLine.getJourneyPatterns() != null) {
+          for (JourneyPattern jp : sourceLine.getJourneyPatterns()) {
+            if (jp.getServiceJourneys() != null) {
+              serviceJourneyCount += jp.getServiceJourneys().size();
+            }
+          }
+        }
+
+        if (serviceJourneyCount > 0) {
+          warnings.add(
+            createWarning(
+              "NO_DAY_TYPES",
+              String.format(
+                "%d ServiceJourney(s) migrated without DayTypes will not be exported to NeTEx. " +
+                "These ServiceJourneys will exist in the database but won't be visible in exports or timetables. " +
+                "You will need to manually assign DayTypes to them after migration.",
+                serviceJourneyCount
+              ),
+              sourceLine.getNetexId()
+            )
+          );
+        }
+      }
+
       // Note: We don't validate the source line's network reference here because
       // it will be replaced with the target network during cloning.
       // Only validate other external references like operators and stop places.
