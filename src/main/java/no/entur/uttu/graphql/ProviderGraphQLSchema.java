@@ -94,24 +94,6 @@ public class ProviderGraphQLSchema {
     this.dateTimeScalar = dateTimeScalar;
   }
 
-  private <T extends Enum> GraphQLEnumType createEnum(
-    String name,
-    T[] values,
-    Function<T, String> mapping
-  ) {
-    return createEnum(name, Arrays.asList(values), mapping);
-  }
-
-  private <T extends Enum> GraphQLEnumType createEnum(
-    String name,
-    Collection<T> values,
-    Function<T, String> mapping
-  ) {
-    GraphQLEnumType.Builder enumBuilder = GraphQLEnumType.newEnum().name(name);
-    values.forEach(type -> enumBuilder.value(mapping.apply(type), type));
-    return enumBuilder.build();
-  }
-
   @PostConstruct
   public void init() {
     initCommonTypes();
@@ -202,7 +184,7 @@ public class ProviderGraphQLSchema {
       .build();
 
     // Line migration types
-    conflictResolutionStrategyEnum = createEnum(
+    conflictResolutionStrategyEnum = TypeUtils.createEnum(
       "ConflictResolutionStrategy",
       ConflictResolutionStrategy.values(),
       (ConflictResolutionStrategy::name)

@@ -168,24 +168,6 @@ public class LinesGraphQLSchema {
   @Autowired
   private DataFetcher<Branding> brandingUpdater;
 
-  private <T extends Enum> GraphQLEnumType createEnum(
-    String name,
-    T[] values,
-    Function<T, String> mapping
-  ) {
-    return createEnum(name, Arrays.asList(values), mapping);
-  }
-
-  private <T extends Enum> GraphQLEnumType createEnum(
-    String name,
-    Collection<T> values,
-    Function<T, String> mapping
-  ) {
-    GraphQLEnumType.Builder enumBuilder = GraphQLEnumType.newEnum().name(name);
-    values.forEach(type -> enumBuilder.value(mapping.apply(type), type));
-    return enumBuilder.build();
-  }
-
   private GraphQLEnumType geometryTypeEnum = GraphQLEnumType.newEnum()
     .name("GeometryType")
     .value("Point")
@@ -197,17 +179,17 @@ public class LinesGraphQLSchema {
     .value("GeometryCollection")
     .build();
 
-  private GraphQLEnumType dayOfWeekEnum = createEnum(
+  private GraphQLEnumType dayOfWeekEnum = TypeUtils.createEnum(
     "DayOfWeekEnumeration",
     DayOfWeek.values(),
     (t -> t.name().toLowerCase())
   );
-  private GraphQLEnumType exportStatusEnum = createEnum(
+  private GraphQLEnumType exportStatusEnum = TypeUtils.createEnum(
     "ExportStatusEnumeration",
     ExportStatusEnumeration.values(),
     (t -> t.name().toLowerCase())
   );
-  private GraphQLEnumType severityEnum = createEnum(
+  private GraphQLEnumType severityEnum = TypeUtils.createEnum(
     "SeverityEnumeration",
     SeverityEnumeration.values(),
     (t -> t.name().toLowerCase())
@@ -215,43 +197,43 @@ public class LinesGraphQLSchema {
 
   private GraphQLEnumType vehicleModeEnum;
   private GraphQLEnumType vehicleSubmodeEnum;
-  private GraphQLEnumType flexibleLineTypeEnum = createEnum(
+  private GraphQLEnumType flexibleLineTypeEnum = TypeUtils.createEnum(
     "FlexibleLineTypeEnumeration",
     FlexibleLineTypeEnumeration.values(),
     (FlexibleLineTypeEnumeration::value)
   );
-  private GraphQLEnumType bookingMethodEnum = createEnum(
+  private GraphQLEnumType bookingMethodEnum = TypeUtils.createEnum(
     "BookingMethodEnumeration",
     BookingMethodEnumeration.values(),
     (BookingMethodEnumeration::value)
   );
-  private GraphQLEnumType bookingAccessEnum = createEnum(
+  private GraphQLEnumType bookingAccessEnum = TypeUtils.createEnum(
     "BookingAccessEnumeration",
     BookingAccessEnumeration.values(),
     (BookingAccessEnumeration::value)
   );
-  private GraphQLEnumType purchaseWhenEnum = createEnum(
+  private GraphQLEnumType purchaseWhenEnum = TypeUtils.createEnum(
     "PurchaseWhenEnumeration",
     PurchaseWhenEnumeration.values(),
     (PurchaseWhenEnumeration::value)
   );
-  private GraphQLEnumType purchaseMomentEnum = createEnum(
+  private GraphQLEnumType purchaseMomentEnum = TypeUtils.createEnum(
     "PurchaseMomentEnumeration",
     PurchaseMomentEnumeration.values(),
     (PurchaseMomentEnumeration::value)
   );
-  private GraphQLEnumType directionTypeEnum = createEnum(
+  private GraphQLEnumType directionTypeEnum = TypeUtils.createEnum(
     "DirectionTypeEnumeration",
     DirectionTypeEnumeration.values(),
     (DirectionTypeEnumeration::value)
   );
-  private GraphQLEnumType transportModeEnum = createEnum(
+  private GraphQLEnumType transportModeEnum = TypeUtils.createEnum(
     "TransportModeEnumeration",
     AllVehicleModesOfTransportEnumeration.values(),
     (AllVehicleModesOfTransportEnumeration::value)
   );
 
-  private GraphQLEnumType organisationTypeEnum = createEnum(
+  private GraphQLEnumType organisationTypeEnum = TypeUtils.createEnum(
     "OrganisationType",
     OrganisationTypeEnumeration.values(),
     (OrganisationTypeEnumeration::value)
@@ -278,12 +260,12 @@ public class LinesGraphQLSchema {
 
   @PostConstruct
   public void init() {
-    vehicleModeEnum = createEnum(
+    vehicleModeEnum = TypeUtils.createEnum(
       "VehicleModeEnumeration",
       profile.getLegalVehicleModes(),
       (VehicleModeEnumeration::value)
     );
-    vehicleSubmodeEnum = createEnum(
+    vehicleSubmodeEnum = TypeUtils.createEnum(
       "VehicleSubmodeEnumeration",
       profile.getLegalVehicleSubmodes(),
       (VehicleSubmodeEnumeration::value)
