@@ -2,7 +2,6 @@ package no.entur.uttu.graphql.scalars;
 
 import static org.junit.Assert.assertEquals;
 
-import graphql.Scalars;
 import graphql.language.StringValue;
 import graphql.schema.CoercingParseLiteralException;
 import graphql.schema.CoercingParseValueException;

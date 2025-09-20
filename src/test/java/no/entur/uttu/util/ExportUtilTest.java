@@ -15,7 +15,6 @@
 
 package no.entur.uttu.util;
 
-import java.time.LocalDate;
 import no.entur.uttu.model.Provider;
 import no.entur.uttu.model.job.Export;
 import org.junit.Assert;

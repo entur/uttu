@@ -17,7 +17,6 @@ package no.entur.uttu.model;
 
 import static org.junit.Assert.assertEquals;
 
-import no.entur.uttu.error.ErrorCode;
 import no.entur.uttu.error.codedexception.CodedIllegalArgumentException;
 import no.entur.uttu.error.codes.ErrorCodeEnumeration;
 import org.junit.Assert;

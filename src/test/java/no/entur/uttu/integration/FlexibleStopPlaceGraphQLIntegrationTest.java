@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.List;
 import java.util.Map;
-import no.entur.uttu.repository.StopPointInJourneyPatternRepository;
 import no.entur.uttu.stubs.StopPointInJourneyPatternRepositoryStub;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
