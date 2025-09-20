@@ -33,7 +33,7 @@ jobs:
       - name: Run tests
         run: |
           sudo timedatectl set-timezone "Europe/Oslo"
-          ./mvnw --batch-mode jacoco:prepare-agent test jacoco:report -Dprettier.nodePath=node -Dprettier.npmPath=npm
+          ./mvnw --batch-mode jacoco:prepare-agent test jacoco:report -Dprettier.nodePath=node -Dprettier.npmPath=npm spotless:check
           ./mvnw --batch-mode jib:dockerBuild -Dmaven.test.skip -P prettierSkip
 
       - name: codecov
