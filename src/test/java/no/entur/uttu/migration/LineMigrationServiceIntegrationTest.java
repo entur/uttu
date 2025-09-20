@@ -588,5 +588,4 @@ public class LineMigrationServiceIntegrationTest extends UttuIntegrationTest {
 
     return dayTypeRepository.save(dayType);
   }
-
 }
