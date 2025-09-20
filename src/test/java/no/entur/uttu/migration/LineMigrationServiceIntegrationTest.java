@@ -404,7 +404,7 @@ public class LineMigrationServiceIntegrationTest extends UttuIntegrationTest {
 
     // Create matching DayType in target provider
     Context.setProvider("TARGET");
-    DayType existingTargetDayType = createSampleDayType("Weekdays", targetProvider);
+    createSampleDayType("Weekdays", targetProvider);
 
     // Set up migration input - ensure we're still in SOURCE context for source line
     Context.setProvider("SOURCE");
@@ -589,17 +589,4 @@ public class LineMigrationServiceIntegrationTest extends UttuIntegrationTest {
     return dayTypeRepository.save(dayType);
   }
 
-  private FixedLine createSampleFixedLineWithDayType(DayType dayType) {
-    // Ensure we're in the source provider context
-    Context.setProvider("SOURCE");
-    FixedLine line = createSampleFixedLine();
-
-    // Add DayType to service journey
-    JourneyPattern pattern = line.getJourneyPatterns().get(0);
-    ServiceJourney journey = pattern.getServiceJourneys().get(0);
-    journey.updateDayTypes(Arrays.asList(dayType));
-    serviceJourneyRepository.save(journey);
-
-    return line;
-  }
 }
