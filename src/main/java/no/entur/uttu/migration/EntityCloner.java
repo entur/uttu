@@ -246,6 +246,9 @@ public class EntityCloner {
     idGenerator.addIdMapping(source.getNetexId(), newId);
     referenceMapper.addMapping(source.getNetexId(), newId);
 
+    // Copy DayType specific fields
+    clone.setName(source.getName());
+
     // Clone days of week
     if (source.getDaysOfWeek() != null) {
       clone.setDaysOfWeek(new ArrayList<>(source.getDaysOfWeek()));
