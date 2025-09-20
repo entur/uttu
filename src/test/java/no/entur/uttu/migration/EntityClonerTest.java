@@ -340,10 +340,10 @@ public class EntityClonerTest {
     );
     when(
       idGenerator.generateUniqueNameWithConflictResolution(
-        eq("Test Fixed Line"),
-        eq("Line"),
-        eq(targetProvider),
-        eq(ConflictResolutionStrategy.RENAME)
+        "Test Fixed Line",
+        "Line",
+        targetProvider,
+        ConflictResolutionStrategy.RENAME
       )
     ).thenReturn("Test Fixed Line_migrated_123456");
 
