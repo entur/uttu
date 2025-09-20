@@ -1,6 +1,5 @@
 package no.entur.uttu.error.codes;
 
-import no.entur.uttu.error.ErrorCode;
 import no.entur.uttu.error.SubCode;
 
 public enum ConstraintSubCodeEnumeration implements SubCode {

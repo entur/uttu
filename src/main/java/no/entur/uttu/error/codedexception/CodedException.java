@@ -16,8 +16,6 @@
 package no.entur.uttu.error.codedexception;
 
 import java.util.Map;
-import no.entur.uttu.error.ErrorCode;
-import no.entur.uttu.error.SubCode;
 
 public interface CodedException {
   public String getCode();
