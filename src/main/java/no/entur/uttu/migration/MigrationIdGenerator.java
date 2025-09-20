@@ -67,6 +67,10 @@ public class MigrationIdGenerator {
       return originalName;
     }
 
+    if (strategy == null) {
+      throw new IllegalArgumentException("Unknown conflict resolution strategy: null");
+    }
+
     switch (strategy) {
       case FAIL:
         throw new IllegalArgumentException(
