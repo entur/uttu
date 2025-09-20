@@ -24,8 +24,6 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
 import no.entur.uttu.migration.LineMigrationService.ConflictResolutionStrategy;
 import no.entur.uttu.model.*;
 import org.junit.Before;

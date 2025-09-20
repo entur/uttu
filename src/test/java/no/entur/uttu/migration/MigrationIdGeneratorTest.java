@@ -25,7 +25,6 @@ import no.entur.uttu.model.FixedLine;
 import no.entur.uttu.model.FlexibleLine;
 import no.entur.uttu.model.JourneyPattern;
 import no.entur.uttu.model.Provider;
-import no.entur.uttu.model.ProviderEntity;
 import no.entur.uttu.model.ServiceJourney;
 import no.entur.uttu.repository.FixedLineRepository;
 import no.entur.uttu.repository.FlexibleLineRepository;
