@@ -54,7 +54,7 @@
         <netex-java-model.version>2.0.15</netex-java-model.version>
 
         <jakarta-xml-bind.version>4.0.4</jakarta-xml-bind.version>
-        <glassfish-jaxb.version>4.0.5</glassfish-jaxb.version>
+        <glassfish-jaxb.version>4.0.6</glassfish-jaxb.version>
 
         <prettier-java.version>2.6.0</prettier-java.version>
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
