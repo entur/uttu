@@ -10,7 +10,6 @@ import java.util.stream.Stream;
 import no.entur.uttu.export.netex.NetexExportContext;
 import no.entur.uttu.export.netex.producer.NetexIdProducer;
 import no.entur.uttu.export.netex.producer.NetexObjectFactory;
-import no.entur.uttu.model.DayType;
 import no.entur.uttu.model.ServiceJourney;
 import org.rutebanken.netex.model.DatedServiceJourney;
 import org.rutebanken.netex.model.JourneyRefStructure;
@@ -35,23 +34,35 @@ public class DatedServiceJourneyProducer {
       .getDayTypes()
       .stream()
       .filter(context::isValid)
-      .map(DayType::getDayTypeAssignments)
-      .flatMap(List::stream)
-      .filter(dta -> Boolean.TRUE.equals(dta.getAvailable()))
-      .flatMap(dta -> {
-        if (dta.getDate() != null) {
-          return Stream.of(dta.getDate());
-        }
-        // Handle operating period ranges
-        if (dta.getOperatingPeriod() != null) {
-          LocalDate from = dta.getOperatingPeriod().getFromDate();
-          LocalDate to = dta.getOperatingPeriod().getToDate();
-          if (from != null && to != null) {
-            return from.datesUntil(to.plusDays(1));
-          }
-        }
-        return Stream.empty();
-      })
+      .flatMap(dayType ->
+        dayType
+          .getDayTypeAssignments()
+          .stream()
+          .filter(dta -> Boolean.TRUE.equals(dta.getAvailable()))
+          .flatMap(dta -> {
+            if (dta.getDate() != null) {
+              // Explicit dates are always included, regardless of daysOfWeek
+              return Stream.of(dta.getDate());
+            }
+            // Handle operating period ranges
+            if (dta.getOperatingPeriod() != null) {
+              LocalDate from = dta.getOperatingPeriod().getFromDate();
+              LocalDate to = dta.getOperatingPeriod().getToDate();
+              if (from != null && to != null) {
+                Stream<LocalDate> allDatesInRange = from.datesUntil(to.plusDays(1));
+                // Filter by daysOfWeek if specified
+                if (
+                  dayType.getDaysOfWeek() != null && !dayType.getDaysOfWeek().isEmpty()
+                ) {
+                  return allDatesInRange.filter(
+                    date -> dayType.getDaysOfWeek().contains(date.getDayOfWeek())
+                  );
+                }
+                return allDatesInRange;
+              }
+            }
+            return Stream.empty();
+          }))
       .filter(date -> !date.isBefore(ServiceJourneyProducer.CUTOFF))
       .collect(Collectors.toSet());
 
