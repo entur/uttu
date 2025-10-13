@@ -17,8 +17,11 @@ package no.entur.uttu.export.netex.producer.line;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Clock;
 import java.time.DayOfWeek;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
 import no.entur.uttu.config.AdditionalCodespacesConfig;
@@ -42,19 +45,26 @@ class DatedServiceJourneyProducerTest {
   private DatedServiceJourneyProducer producer;
   private NetexObjectFactory objectFactory;
   private NetexExportContext context;
+  private Clock clock;
 
-  // Use fixed future dates for testing (well beyond the CUTOFF date)
-  private static final LocalDate TEST_START_DATE = LocalDate.of(2026, 1, 1); // Wednesday
-  private static final LocalDate TEST_END_DATE = LocalDate.of(2026, 1, 31);
+  // Test date is Jan 1, 2024 (a Monday)
+  // Cutoff will be Dec 31, 2023
+  private static final LocalDate TEST_START_DATE = LocalDate.of(2024, 1, 1);
 
   @BeforeEach
   void setUp() {
+    // Fix the clock to Jan 1, 2024 00:00:00 UTC
+    clock = Clock.fixed(
+      Instant.parse("2024-01-01T00:00:00Z"),
+      ZoneId.of("UTC")
+    );
+
     objectFactory = new NetexObjectFactory(
       new DateUtils(),
       new ExportTimeZone(),
       new AdditionalCodespacesConfig()
     );
-    producer = new DatedServiceJourneyProducer(objectFactory);
+    producer = new DatedServiceJourneyProducer(objectFactory, clock);
 
     Export export = new Export();
     export.setIncludeDatedServiceJourneys(true);
@@ -79,8 +89,8 @@ class DatedServiceJourneyProducerTest {
     dayType.getDaysOfWeek().add(DayOfWeek.MONDAY);
     dayType.getDaysOfWeek().add(DayOfWeek.WEDNESDAY);
 
-    // Create operating period: Jan 1-7, 2026
-    // Jan 1 = Thursday, Jan 5 = Monday, Jan 7 = Wednesday
+    // Create operating period: Jan 1-7, 2024
+    // Jan 1 = Monday, Jan 3 = Wednesday, Jan 8 = Monday (next week)
     DayTypeAssignment assignment = createPeriodAssignment(
       TEST_START_DATE,
       TEST_START_DATE.plusDays(6)
@@ -93,7 +103,7 @@ class DatedServiceJourneyProducerTest {
     // Act
     List<DatedServiceJourney> result = producer.produce(serviceJourney, context);
 
-    // Assert - Expected: Should generate only 2 dates (Mon Jan 5, Wed Jan 7)
+    // Assert - Expected: Should generate only 2 dates (Mon Jan 1, Wed Jan 3)
     assertThat(result)
       .as("Should only generate DatedServiceJourneys for days matching daysOfWeek")
       .hasSize(2);
@@ -103,17 +113,17 @@ class DatedServiceJourneyProducerTest {
 
     // Expected: Only Monday and Wednesday should be included
     assertThat(operatingDays).containsExactlyInAnyOrder(
-      TEST_START_DATE.plusDays(4), // Monday Jan 5
-      TEST_START_DATE.plusDays(6) // Wednesday Jan 7
+      TEST_START_DATE, // Monday Jan 1
+      TEST_START_DATE.plusDays(2) // Wednesday Jan 3
     );
 
     // Verify these dates are NOT included
     assertThat(operatingDays).doesNotContain(
-      TEST_START_DATE, // Thursday
-      TEST_START_DATE.plusDays(1), // Friday
-      TEST_START_DATE.plusDays(2), // Saturday
-      TEST_START_DATE.plusDays(3), // Sunday
-      TEST_START_DATE.plusDays(5) // Tuesday
+      TEST_START_DATE.plusDays(1), // Tuesday
+      TEST_START_DATE.plusDays(3), // Thursday
+      TEST_START_DATE.plusDays(4), // Friday
+      TEST_START_DATE.plusDays(5), // Saturday
+      TEST_START_DATE.plusDays(6) // Sunday
     );
   }
 
@@ -130,8 +140,8 @@ class DatedServiceJourneyProducerTest {
     dayType.getDaysOfWeek().add(DayOfWeek.SATURDAY);
     dayType.getDaysOfWeek().add(DayOfWeek.SUNDAY);
 
-    // Create operating period: Jan 1-14, 2026 (2 weeks, should have 4 weekend days)
-    // Jan 3 = Sat, Jan 4 = Sun, Jan 10 = Sat, Jan 11 = Sun
+    // Create operating period: Jan 1-14, 2024 (2 weeks)
+    // Jan 1 = Mon, Jan 6 = Sat, Jan 7 = Sun, Jan 13 = Sat, Jan 14 = Sun
     DayTypeAssignment assignment = createPeriodAssignment(
       TEST_START_DATE,
       TEST_START_DATE.plusDays(13)
@@ -151,10 +161,10 @@ class DatedServiceJourneyProducerTest {
 
     Set<LocalDate> operatingDays = context.getOperatingDays();
     assertThat(operatingDays).containsExactlyInAnyOrder(
-      TEST_START_DATE.plusDays(2), // Saturday Jan 3
-      TEST_START_DATE.plusDays(3), // Sunday Jan 4
-      TEST_START_DATE.plusDays(9), // Saturday Jan 10
-      TEST_START_DATE.plusDays(10) // Sunday Jan 11
+      TEST_START_DATE.plusDays(5), // Saturday Jan 6
+      TEST_START_DATE.plusDays(6), // Sunday Jan 7
+      TEST_START_DATE.plusDays(12), // Saturday Jan 13
+      TEST_START_DATE.plusDays(13) // Sunday Jan 14
     );
   }
 
@@ -167,12 +177,12 @@ class DatedServiceJourneyProducerTest {
     dayType.setNetexId("TST:DayType:5");
     dayType.setVersion(1L);
 
-    // Set daysOfWeek to only Monday
-    dayType.getDaysOfWeek().add(DayOfWeek.MONDAY);
+    // Set daysOfWeek to only Wednesday (but explicit date is Monday)
+    dayType.getDaysOfWeek().add(DayOfWeek.WEDNESDAY);
 
-    // Create an explicit date assignment for a Thursday (Jan 1, 2026)
+    // Create an explicit date assignment for Monday Jan 1, 2024
     DayTypeAssignment explicitDate = new DayTypeAssignment();
-    explicitDate.setDate(TEST_START_DATE); // Thursday
+    explicitDate.setDate(TEST_START_DATE); // Monday
     explicitDate.setAvailable(true);
 
     dayType.getDayTypeAssignments().add(explicitDate);
@@ -199,7 +209,7 @@ class DatedServiceJourneyProducerTest {
     dayType.getDaysOfWeek().add(DayOfWeek.MONDAY);
 
     // Add operating period (should only generate Mondays)
-    // Jan 1-14, 2026 contains Mondays on Jan 5 and Jan 12
+    // Jan 1-14, 2024 contains Mondays on Jan 1 and Jan 8
     DayTypeAssignment periodAssignment = createPeriodAssignment(
       TEST_START_DATE,
       TEST_START_DATE.plusDays(13)
@@ -209,7 +219,7 @@ class DatedServiceJourneyProducerTest {
 
     // Add explicit date for a Friday (should be included)
     DayTypeAssignment explicitDate = new DayTypeAssignment();
-    explicitDate.setDate(TEST_START_DATE.plusDays(8)); // Friday Jan 9
+    explicitDate.setDate(TEST_START_DATE.plusDays(4)); // Friday Jan 5
     explicitDate.setAvailable(true);
     dayType.getDayTypeAssignments().add(explicitDate);
 
@@ -218,12 +228,12 @@ class DatedServiceJourneyProducerTest {
     // Act
     List<DatedServiceJourney> result = producer.produce(serviceJourney, context);
 
-    // Assert - Expected: 2 Mondays (Jan 5, 12) + 1 explicit Friday (Jan 9) = 3 dates
+    // Assert - Expected: 2 Mondays (Jan 1, 8) + 1 explicit Friday (Jan 5) = 3 dates
     assertThat(result).hasSize(3);
     assertThat(context.getOperatingDays()).containsExactlyInAnyOrder(
-      TEST_START_DATE.plusDays(4), // Monday Jan 5
-      TEST_START_DATE.plusDays(8), // Friday Jan 9 (explicit)
-      TEST_START_DATE.plusDays(11) // Monday Jan 12
+      TEST_START_DATE, // Monday Jan 1
+      TEST_START_DATE.plusDays(4), // Friday Jan 5 (explicit)
+      TEST_START_DATE.plusDays(7) // Monday Jan 8
     );
   }
 

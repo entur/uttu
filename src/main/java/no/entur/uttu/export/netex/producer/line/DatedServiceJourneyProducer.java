@@ -1,5 +1,6 @@
 package no.entur.uttu.export.netex.producer.line;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,9 +22,15 @@ import org.springframework.stereotype.Component;
 public class DatedServiceJourneyProducer {
 
   private final NetexObjectFactory objectFactory;
+  private final Clock clock;
 
-  public DatedServiceJourneyProducer(NetexObjectFactory objectFactory) {
+  public DatedServiceJourneyProducer(NetexObjectFactory objectFactory, Clock clock) {
     this.objectFactory = objectFactory;
+    this.clock = clock;
+  }
+
+  private LocalDate getCutoff() {
+    return LocalDate.now(clock).minusDays(1);
   }
 
   public List<DatedServiceJourney> produce(
@@ -63,7 +70,7 @@ public class DatedServiceJourneyProducer {
             }
             return Stream.empty();
           }))
-      .filter(date -> !date.isBefore(ServiceJourneyProducer.CUTOFF))
+      .filter(date -> !date.isBefore(getCutoff()))
       .collect(Collectors.toSet());
 
     if (dates.isEmpty()) {

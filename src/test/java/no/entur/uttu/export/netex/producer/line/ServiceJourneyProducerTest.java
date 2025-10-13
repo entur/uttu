@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.*;
 
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,10 +46,12 @@ class ServiceJourneyProducerTest {
     );
     contactStructureProducer = new ContactStructureProducer(objectFactory);
     organisationProducer = mock(OrganisationProducer.class);
+    Clock clock = Clock.systemDefaultZone();
     producer = new ServiceJourneyProducer(
       objectFactory,
       contactStructureProducer,
-      organisationProducer
+      organisationProducer,
+      clock
     );
     local = mock(ServiceJourney.class, RETURNS_DEEP_STUBS);
     journeyPattern = mock(JourneyPattern.class);
