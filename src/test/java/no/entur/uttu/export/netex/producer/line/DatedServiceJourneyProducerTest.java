@@ -54,10 +54,7 @@ class DatedServiceJourneyProducerTest {
   @BeforeEach
   void setUp() {
     // Fix the clock to Jan 1, 2024 00:00:00 UTC
-    clock = Clock.fixed(
-      Instant.parse("2024-01-01T00:00:00Z"),
-      ZoneId.of("UTC")
-    );
+    clock = Clock.fixed(Instant.parse("2024-01-01T00:00:00Z"), ZoneId.of("UTC"));
 
     objectFactory = new NetexObjectFactory(
       new DateUtils(),
