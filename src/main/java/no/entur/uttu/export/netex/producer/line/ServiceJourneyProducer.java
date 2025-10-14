@@ -20,6 +20,7 @@ import static no.entur.uttu.export.netex.producer.NetexObjectFactory.VERSION_ONE
 
 import jakarta.xml.bind.JAXBElement;
 import java.math.BigInteger;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -48,16 +49,22 @@ public class ServiceJourneyProducer {
   private final NetexObjectFactory objectFactory;
   private final ContactStructureProducer contactStructureProducer;
   private final OrganisationProducer organisationProducer;
-  public static final LocalDate CUTOFF = LocalDate.now().minusDays(1);
+  private final Clock clock;
 
   public ServiceJourneyProducer(
     NetexObjectFactory objectFactory,
     ContactStructureProducer contactStructureProducer,
-    OrganisationProducer organisationProducer
+    OrganisationProducer organisationProducer,
+    Clock clock
   ) {
     this.objectFactory = objectFactory;
     this.contactStructureProducer = contactStructureProducer;
     this.organisationProducer = organisationProducer;
+    this.clock = clock;
+  }
+
+  private LocalDate getCutoff() {
+    return LocalDate.now(clock).minusDays(1);
   }
 
   public org.rutebanken.netex.model.ServiceJourney produce(
@@ -121,6 +128,7 @@ public class ServiceJourneyProducer {
     ServiceJourney local,
     NetexExportContext context
   ) {
+    LocalDate cutoff = getCutoff();
     return local
       .getDayTypes()
       .stream()
@@ -130,7 +138,7 @@ public class ServiceJourneyProducer {
           dayType
             .getDayTypeAssignments()
             .stream()
-            .anyMatch(dta -> (!dta.getOperatingPeriod().getToDate().isBefore(CUTOFF)))
+            .anyMatch(dta -> (!dta.getOperatingPeriod().getToDate().isBefore(cutoff)))
       )
       .toList();
   }
