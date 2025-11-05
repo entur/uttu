@@ -68,7 +68,8 @@ public class NorwegianProfile implements Profile {
       SIGHTSEEING_SERVICE,
       CHARTER_TAXI,
       COMMUNAL_TAXI,
-      WATER_TAXI
+      WATER_TAXI,
+      SNOW_COACH
     );
 
   @Override
