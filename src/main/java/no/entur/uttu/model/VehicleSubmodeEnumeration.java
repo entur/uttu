@@ -133,7 +133,9 @@ public enum VehicleSubmodeEnumeration {
   SHUTTLE_FERRY_SERVICE("shuttleFerryService", VehicleModeEnumeration.WATER),
   CHARTER_TAXI("charterTaxi", VehicleModeEnumeration.TAXI),
   COMMUNAL_TAXI("communalTaxi", VehicleModeEnumeration.TAXI),
-  WATER_TAXI("waterTaxi", VehicleModeEnumeration.TAXI);
+  WATER_TAXI("waterTaxi", VehicleModeEnumeration.TAXI),
+  // Snow and ice
+  SNOW_COACH("snowCoach", VehicleModeEnumeration.SNOW_AND_ICE);
 
   private final String value;
 
