@@ -2,6 +2,7 @@ package no.entur.uttu.ext.entur.synthetictestdata;
 
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.repository.ExportRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,28 +14,26 @@ import org.springframework.scheduling.annotation.Scheduled;
 )
 public class SyntheticTestDataExportNotificationSchedule {
 
-  private static final String SCHEDULE = "0 2 0 * * *";
-  private static final String SYNTHETIC_TEST_DATA_CODESPACE = "aas";
-
   private final MessagingService messagingService;
   private final ExportRepository exportRepository;
+  private final String codespace;
 
   public SyntheticTestDataExportNotificationSchedule(
     MessagingService messagingService,
-    ExportRepository exportRepository
+    ExportRepository exportRepository,
+    @Value("${entur.synthetictestdata.schedule.codespace:aas}") String codespace
   ) {
     this.messagingService = messagingService;
     this.exportRepository = exportRepository;
+    this.codespace = codespace;
   }
 
-  @Scheduled(cron = SCHEDULE)
+  @Scheduled(cron = "${entur.synthetictestdata.schedule.cron:0 0 2 * * *}")
   public void schedule() {
     exportRepository
       .getLatestExportByProviders()
       .stream()
-      .filter(
-        export -> export.getProvider().getCode().equals(SYNTHETIC_TEST_DATA_CODESPACE)
-      )
+      .filter(export -> export.getProvider().getCode().equals(codespace))
       .findFirst()
       .ifPresent(
         export ->
