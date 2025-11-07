@@ -14,7 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 public class SyntheticTestDataExportNotificationSchedule {
 
   private static final String SCHEDULE = "0 2 0 * * *";
-  private static final String SYNTHETIC_TEST_DATA_CODESPACE = "AAS";
+  private static final String SYNTHETIC_TEST_DATA_CODESPACE = "aas";
 
   private final MessagingService messagingService;
   private final ExportRepository exportRepository;
@@ -39,7 +39,7 @@ public class SyntheticTestDataExportNotificationSchedule {
       .ifPresent(
         export ->
           messagingService.notifyExport(
-            SYNTHETIC_TEST_DATA_CODESPACE,
+            export.getProvider().getCode(),
             export.getFileName()
           )
       );
