@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.scheduling.annotation.SchedulingConfigurer;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
+import org.springframework.scheduling.config.ScheduledTaskRegistrar;
 
 /**
  * This class will send an export notification to the messaging service
@@ -28,7 +31,7 @@ import org.springframework.scheduling.annotation.Scheduled;
   value = "entur.export.notification.schedule.enabled",
   havingValue = "true"
 )
-public class EnturExportNotificationSchedule {
+public class EnturExportNotificationSchedule implements SchedulingConfigurer {
 
   private final MessagingService messagingService;
   private final ExportRepository exportRepository;
@@ -41,9 +44,18 @@ public class EnturExportNotificationSchedule {
     this.exportRepository = exportRepository;
   }
 
+  @Override
+  public void configureTasks(ScheduledTaskRegistrar taskRegistrar) {
+    ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+    taskScheduler.setPoolSize(1);
+    taskScheduler.setThreadNamePrefix("export-notification-scheduler-");
+    taskScheduler.initialize();
+    taskRegistrar.setTaskScheduler(taskScheduler);
+  }
+
   @Scheduled(cron = "${entur.export.notification.schedule.cron:0 0 2 * * *}")
   public void schedule() {
-    Context.setUserName("scheduled");
+    Context.setUserName("export-notification-scheduler");
     exportRepository
       .getLatestExportByProviders()
       .stream()
@@ -55,6 +67,5 @@ public class EnturExportNotificationSchedule {
             export.getFileName()
           )
       );
-    Context.setUserName(null);
   }
 }
