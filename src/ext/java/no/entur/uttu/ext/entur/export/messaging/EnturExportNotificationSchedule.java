@@ -1,5 +1,6 @@
 package no.entur.uttu.ext.entur.export.messaging;
 
+import no.entur.uttu.config.Context;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.repository.ExportRepository;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -42,6 +43,7 @@ public class EnturExportNotificationSchedule {
 
   @Scheduled(cron = "${entur.export.notification.schedule.cron:0 0 2 * * *}")
   public void schedule() {
+    Context.setUserName("scheduled");
     exportRepository
       .getLatestExportByProviders()
       .stream()
@@ -53,5 +55,6 @@ public class EnturExportNotificationSchedule {
             export.getFileName()
           )
       );
+    Context.setUserName(null);
   }
 }
