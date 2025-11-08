@@ -44,6 +44,8 @@ public class EnturExportNotificationSchedule {
   public void schedule() {
     exportRepository
       .getLatestExportByProviders()
+      .stream()
+      .filter(export -> !export.isDryRun() && export.isSuccess())
       .forEach(
         export ->
           messagingService.notifyExport(
