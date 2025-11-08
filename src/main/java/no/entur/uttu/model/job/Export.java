@@ -119,6 +119,10 @@ public class Export extends ProviderEntity {
     this.includeDatedServiceJourneys = includeDatedServiceJourneys;
   }
 
+  public boolean isSuccess() {
+    return ExportStatusEnumeration.SUCCESS.equals(exportStatus);
+  }
+
   @Override
   public String toString() {
     return (
