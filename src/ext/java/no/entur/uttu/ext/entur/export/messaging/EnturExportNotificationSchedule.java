@@ -1,5 +1,6 @@
 package no.entur.uttu.ext.entur.export.messaging;
 
+import java.util.Arrays;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.repository.ExportRepository;
@@ -40,6 +41,9 @@ public class EnturExportNotificationSchedule implements SchedulingConfigurer {
   @Value("${export.blob.folder:inbound/uttu/}")
   private String exportFolder;
 
+  @Value("${entur.export.notification.schedule.codespaces:#{null}}")
+  private String[] codespaces;
+
   public EnturExportNotificationSchedule(
     MessagingService messagingService,
     ExportRepository exportRepository
@@ -59,17 +63,29 @@ public class EnturExportNotificationSchedule implements SchedulingConfigurer {
 
   @Scheduled(cron = "${entur.export.notification.schedule.cron:0 0 2 * * *}")
   public void schedule() {
-    Context.setUserName("export-notification-scheduler");
-    exportRepository
-      .getLatestExportByProviders()
-      .stream()
-      .filter(export -> !export.isDryRun() && export.isSuccess())
-      .forEach(
-        export ->
-          messagingService.notifyExport(
-            export.getProvider().getCode(),
-            export.getFileName().replace(exportFolder, "")
-          )
-      );
+    try {
+      Context.setUserName("export-notification-scheduler");
+      exportRepository
+        .getLatestExportByProviders()
+        .stream()
+        .filter(
+          export ->
+            !export.isDryRun() &&
+            export.isSuccess() &&
+            (codespaces == null ||
+              Arrays.stream(codespaces).anyMatch(
+                export.getProvider().getCode()::equalsIgnoreCase
+              ))
+        )
+        .forEach(
+          export ->
+            messagingService.notifyExport(
+              export.getProvider().getCode(),
+              export.getFileName().replace(exportFolder, "")
+            )
+        );
+    } finally {
+      Context.clear();
+    }
   }
 }
