@@ -3,6 +3,7 @@ package no.entur.uttu.ext.entur.export.messaging;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.repository.ExportRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -36,6 +37,9 @@ public class EnturExportNotificationSchedule implements SchedulingConfigurer {
   private final MessagingService messagingService;
   private final ExportRepository exportRepository;
 
+  @Value("${export.blob.folder:inbound/uttu/}")
+  private String exportFolder;
+
   public EnturExportNotificationSchedule(
     MessagingService messagingService,
     ExportRepository exportRepository
@@ -64,7 +68,7 @@ public class EnturExportNotificationSchedule implements SchedulingConfigurer {
         export ->
           messagingService.notifyExport(
             export.getProvider().getCode(),
-            export.getFileName()
+            export.getFileName().replace(exportFolder, "")
           )
       );
   }
