@@ -63,25 +63,29 @@ public class EnturExportNotificationSchedule implements SchedulingConfigurer {
 
   @Scheduled(cron = "${entur.export.notification.schedule.cron:0 0 2 * * *}")
   public void schedule() {
-    Context.setUserName("export-notification-scheduler");
-    exportRepository
-      .getLatestExportByProviders()
-      .stream()
-      .filter(
-        export ->
-          !export.isDryRun() &&
-          export.isSuccess() &&
-          (codespaces == null ||
-            Arrays.stream(codespaces).anyMatch(
-              export.getProvider().getCode()::equalsIgnoreCase
-            ))
-      )
-      .forEach(
-        export ->
-          messagingService.notifyExport(
-            export.getProvider().getCode(),
-            export.getFileName().replace(exportFolder, "")
-          )
-      );
+    try {
+      Context.setUserName("export-notification-scheduler");
+      exportRepository
+              .getLatestExportByProviders()
+              .stream()
+              .filter(
+                      export ->
+                              !export.isDryRun() &&
+                                      export.isSuccess() &&
+                                      (codespaces == null ||
+                                              Arrays.stream(codespaces).anyMatch(
+                                                      export.getProvider().getCode()::equalsIgnoreCase
+                                              ))
+              )
+              .forEach(
+                      export ->
+                              messagingService.notifyExport(
+                                      export.getProvider().getCode(),
+                                      export.getFileName().replace(exportFolder, "")
+                              )
+              );
+    } finally {
+      Context.clear();
+    }
   }
 }
