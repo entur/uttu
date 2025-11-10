@@ -1,5 +1,6 @@
 package no.entur.uttu.ext.entur.export.messaging;
 
+import java.util.Arrays;
 import no.entur.uttu.config.Context;
 import no.entur.uttu.export.messaging.spi.MessagingService;
 import no.entur.uttu.repository.ExportRepository;
@@ -40,6 +41,9 @@ public class EnturExportNotificationSchedule implements SchedulingConfigurer {
   @Value("${export.blob.folder:inbound/uttu/}")
   private String exportFolder;
 
+  @Value("${entur.export.notification.schedule.codespaces:#{null}}")
+  private String[] codespaces;
+
   public EnturExportNotificationSchedule(
     MessagingService messagingService,
     ExportRepository exportRepository
@@ -63,7 +67,15 @@ public class EnturExportNotificationSchedule implements SchedulingConfigurer {
     exportRepository
       .getLatestExportByProviders()
       .stream()
-      .filter(export -> !export.isDryRun() && export.isSuccess())
+      .filter(
+        export ->
+          !export.isDryRun() &&
+          export.isSuccess() &&
+          (codespaces == null ||
+            Arrays.stream(codespaces).anyMatch(
+              export.getProvider().getCode()::equalsIgnoreCase
+            ))
+      )
       .forEach(
         export ->
           messagingService.notifyExport(
