@@ -66,24 +66,24 @@ public class EnturExportNotificationSchedule implements SchedulingConfigurer {
     try {
       Context.setUserName("export-notification-scheduler");
       exportRepository
-              .getLatestExportByProviders()
-              .stream()
-              .filter(
-                      export ->
-                              !export.isDryRun() &&
-                                      export.isSuccess() &&
-                                      (codespaces == null ||
-                                              Arrays.stream(codespaces).anyMatch(
-                                                      export.getProvider().getCode()::equalsIgnoreCase
-                                              ))
-              )
-              .forEach(
-                      export ->
-                              messagingService.notifyExport(
-                                      export.getProvider().getCode(),
-                                      export.getFileName().replace(exportFolder, "")
-                              )
-              );
+        .getLatestExportByProviders()
+        .stream()
+        .filter(
+          export ->
+            !export.isDryRun() &&
+            export.isSuccess() &&
+            (codespaces == null ||
+              Arrays.stream(codespaces).anyMatch(
+                export.getProvider().getCode()::equalsIgnoreCase
+              ))
+        )
+        .forEach(
+          export ->
+            messagingService.notifyExport(
+              export.getProvider().getCode(),
+              export.getFileName().replace(exportFolder, "")
+            )
+        );
     } finally {
       Context.clear();
     }
