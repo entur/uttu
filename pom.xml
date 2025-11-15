@@ -332,7 +332,7 @@
         <dependency>
             <groupId>com.github.mizosoft.methanol</groupId>
             <artifactId>methanol</artifactId>
-            <version>1.8.3</version>
+            <version>v1.8.4</version>
         </dependency>
 
         <!-- Test-->
