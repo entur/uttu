@@ -118,6 +118,7 @@ public class JourneyPatternProducer {
           spinjp ->
             mapServiceLinkInJourneyPattern(
               local.getRef(),
+              local.getId(),
               spinjp,
               spinjp.getOrder() != local.getPointsInSequence().size()
                 ? local.getPointsInSequence().get(spinjp.getOrder())
@@ -274,6 +275,7 @@ public class JourneyPatternProducer {
 
   private ServiceLinkInJourneyPattern_VersionedChildStructure mapServiceLinkInJourneyPattern(
     Ref lineRef,
+    String journeyPatternId,
     StopPointInJourneyPattern from,
     StopPointInJourneyPattern to,
     NetexExportContext context,
@@ -283,17 +285,27 @@ public class JourneyPatternProducer {
       return null;
     }
 
-    String refId = NetexIdProducer.updateIdSuffix(
+    String serviceLinkInJourneyPatternId = NetexIdProducer.updateIdSuffix(
+      lineRef.id,
+      NetexIdProducer.getObjectIdSuffix(journeyPatternId) +
+      "_" +
+      NetexIdProducer.getObjectIdSuffix(from.getQuayRef()) +
+      "_" +
+      NetexIdProducer.getObjectIdSuffix(to.getQuayRef())
+    );
+    Ref serviceLinkInJourneyPatternRef = new Ref(serviceLinkInJourneyPatternId, "1");
+
+    String serviceLinkId = NetexIdProducer.updateIdSuffix(
       lineRef.id,
       NetexIdProducer.getObjectIdSuffix(from.getQuayRef()) +
       "_" +
       NetexIdProducer.getObjectIdSuffix(to.getQuayRef())
     );
-    Ref ref = new Ref(refId, "1");
+    Ref serviceLinkRef = new Ref(serviceLinkId, "1");
 
-    ServiceLinkRefStructure serviceLinkRef = objectFactory.populateRefStructure(
+    ServiceLinkRefStructure serviceLinkRefStructure = objectFactory.populateRefStructure(
       new ServiceLinkRefStructure(),
-      ref,
+      serviceLinkRef,
       false
     );
 
@@ -302,13 +314,16 @@ public class JourneyPatternProducer {
         from.getQuayRef(),
         to.getQuayRef(),
         transportMode,
-        new Ref(serviceLinkRef.getRef(), "1")
+        new Ref(serviceLinkRefStructure.getRef(), "1")
       )
     );
 
     return objectFactory
-      .populateId(new ServiceLinkInJourneyPattern_VersionedChildStructure(), ref)
+      .populateId(
+        new ServiceLinkInJourneyPattern_VersionedChildStructure(),
+        serviceLinkInJourneyPatternRef
+      )
       .withOrder(BigInteger.valueOf(from.getOrder()))
-      .withServiceLinkRef(serviceLinkRef);
+      .withServiceLinkRef(serviceLinkRefStructure);
   }
 }
