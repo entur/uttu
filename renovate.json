@@ -10,6 +10,10 @@
       "matchDatasources": ["maven"],
       "matchPackageNames": ["com.graphql-java:graphql-java", "com.graphql-java:graphql-java-extended-scalars"],
       "versioning": "semver-coerced"
+    },
+    {
+      "matchPackageNames": ["com.github.mizosoft.methanol:methanol"],
+      "groupName": null
     }
   ]
 }
