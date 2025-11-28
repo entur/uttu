@@ -627,6 +627,12 @@ public class NetexObjectFactory {
         break;
       case TAXI:
         submodeStructure.withTaxiSubmode(mapEnum(submode, TaxiSubmodeEnumeration.class));
+        break;
+      case SNOW_AND_ICE:
+        submodeStructure.withSnowAndIceSubmode(
+          mapEnum(submode, SnowAndIceSubmodeEnumeration.class)
+        );
+        break;
     }
 
     return submodeStructure;
