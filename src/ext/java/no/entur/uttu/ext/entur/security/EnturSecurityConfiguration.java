@@ -5,7 +5,6 @@ import no.entur.uttu.repository.ProviderRepository;
 import no.entur.uttu.security.spi.UserContextService;
 import org.entur.oauth2.AuthorizedWebClientBuilder;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
-import org.entur.oauth2.RorAuthenticationConverter;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolverBuilder;
 import org.entur.oauth2.user.EnturJwtUserInfoExtractor;
 import org.entur.ror.permission.RemoteBabaRoleAssignmentExtractor;
@@ -20,17 +19,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManagerResolver;
-import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Configuration
 @Profile("entur")
 public class EnturSecurityConfiguration {
-
-  @Bean
-  public JwtAuthenticationConverter customJwtAuthenticationConverter() {
-    return new RorAuthenticationConverter();
-  }
 
   @ConditionalOnProperty(
     value = "entur.security.role.assignment.extractor",
@@ -118,23 +111,11 @@ public class EnturSecurityConfiguration {
     ) String enturPartnerAuth0Audience,
     @Value(
       "${uttu.oauth2.resourceserver.auth0.entur.partner.jwt.issuer-uri:}"
-    ) String enturPartnerAuth0Issuer,
-    @Value(
-      "${uttu.oauth2.resourceserver.auth0.ror.jwt.audience:}"
-    ) String rorAuth0Audience,
-    @Value(
-      "${uttu.oauth2.resourceserver.auth0.ror.jwt.issuer-uri:}"
-    ) String rorAuth0Issuer,
-    @Value(
-      "${uttu.oauth2.resourceserver.auth0.ror.claim.namespace:}"
-    ) String rorAuth0ClaimNamespace
+    ) String enturPartnerAuth0Issuer
   ) {
     return new MultiIssuerAuthenticationManagerResolverBuilder()
       .withEnturPartnerAuth0Issuer(enturPartnerAuth0Issuer)
       .withEnturPartnerAuth0Audience(enturPartnerAuth0Audience)
-      .withRorAuth0Issuer(rorAuth0Issuer)
-      .withRorAuth0Audience(rorAuth0Audience)
-      .withRorAuth0ClaimNamespace(rorAuth0ClaimNamespace)
       .build();
   }
 }
