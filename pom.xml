@@ -60,7 +60,7 @@
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.39.2</awssdk.version>
+        <awssdk.version>2.39.6</awssdk.version>
     </properties>
 
     <distributionManagement>
@@ -303,7 +303,7 @@
         <dependency>
             <groupId>io.awspring.cloud</groupId>
             <artifactId>spring-cloud-aws-starter-secrets-manager</artifactId>
-            <version>3.4.1</version>
+            <version>3.4.2</version>
         </dependency>
         <!-- AWS: acquire and refresh jdbc credentials from Secrets Manager in cloud environments -->
         <dependency>
