@@ -18,7 +18,7 @@ public class WithMockCustomUserSecurityContextFactory
     Map<String, Object> headers = Map.of("alg", "HS256", "typ", "JWT");
 
     Map<String, Object> claims = Map.of(
-      "https://ror.entur.io/preferred_name",
+      "preferred_username",
       annotation.preferredName(),
       "role_assignments",
       Arrays.asList(annotation.roles())

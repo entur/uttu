@@ -8,7 +8,7 @@ import no.entur.uttu.security.spi.UserContextService;
 import org.entur.oauth2.AuthorizedWebClientBuilder;
 import org.entur.oauth2.JwtRoleAssignmentExtractor;
 import org.entur.oauth2.multiissuer.MultiIssuerAuthenticationManagerResolverBuilder;
-import org.entur.oauth2.user.EnturJwtUserInfoExtractor;
+import org.entur.oauth2.user.DefaultJwtUserInfoExtractor;
 import org.entur.ror.permission.RemoteBabaRoleAssignmentExtractor;
 import org.entur.ror.permission.RemoteBabaUserInfoExtractor;
 import org.rutebanken.helper.organisation.RoleAssignmentExtractor;
@@ -78,7 +78,7 @@ public class EnturSecurityConfiguration {
   @ConditionalOnProperty(value = "uttu.security.user.info.extractor", havingValue = "jwt")
   @Bean
   public UserInfoExtractor jwtUserInfoExtractor() {
-    return new EnturJwtUserInfoExtractor();
+    return new DefaultJwtUserInfoExtractor();
   }
 
   @ConditionalOnProperty(
