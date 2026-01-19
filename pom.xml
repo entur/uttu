@@ -60,7 +60,7 @@
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.41.5</awssdk.version>
+        <awssdk.version>2.41.10</awssdk.version>
     </properties>
 
     <distributionManagement>
@@ -309,7 +309,7 @@
         <dependency>
             <groupId>com.amazonaws.secretsmanager</groupId>
             <artifactId>aws-secretsmanager-jdbc</artifactId>
-            <version>2.0.3</version>
+            <version>2.0.4</version>
         </dependency>
 
         <dependency>
