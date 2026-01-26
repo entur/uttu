@@ -51,7 +51,7 @@
         <commons-io.version>2.21.0</commons-io.version>
         <graphql.version>25.0</graphql.version>
         <graphql-extended-scalars.version>24.0</graphql-extended-scalars.version>
-        <netex-java-model.version>2.0.15</netex-java-model.version>
+        <netex-java-model.version>2.0.15.1</netex-java-model.version>
 
         <jakarta-xml-bind.version>4.0.4</jakarta-xml-bind.version>
         <glassfish-jaxb.version>4.0.6</glassfish-jaxb.version>
@@ -60,7 +60,7 @@
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.41.10</awssdk.version>
+        <awssdk.version>2.41.14</awssdk.version>
     </properties>
 
     <distributionManagement>
@@ -495,7 +495,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.1.0</version>
+                <version>3.2.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
