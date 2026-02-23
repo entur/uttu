@@ -60,7 +60,7 @@
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.41.29</awssdk.version>
+        <awssdk.version>2.41.34</awssdk.version>
     </properties>
 
     <distributionManagement>
@@ -263,7 +263,7 @@
         <dependency>
             <groupId>org.jetbrains</groupId>
             <artifactId>annotations</artifactId>
-            <version>26.0.2-1</version>
+            <version>26.1.0</version>
         </dependency>
 
         <dependency>
