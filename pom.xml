@@ -60,7 +60,7 @@
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.42.4</awssdk.version>
+        <awssdk.version>2.42.8</awssdk.version>
     </properties>
 
     <distributionManagement>
@@ -495,7 +495,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.2.1</version>
+                <version>3.3.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
