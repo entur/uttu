@@ -39,7 +39,7 @@
     <properties>
         <java.version>21</java.version>
 
-        <entur.helpers.version>6.1.0</entur.helpers.version>
+        <entur.helpers.version>6.3.0</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
@@ -54,13 +54,13 @@
         <netex-java-model.version>2.0.15.2</netex-java-model.version>
 
         <jakarta-xml-bind.version>4.0.5</jakarta-xml-bind.version>
-        <glassfish-jaxb.version>4.0.6</glassfish-jaxb.version>
+        <glassfish-jaxb.version>4.0.7</glassfish-jaxb.version>
 
         <prettier-java.version>2.6.0</prettier-java.version>
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.42.8</awssdk.version>
+        <awssdk.version>2.42.13</awssdk.version>
     </properties>
 
     <distributionManagement>
