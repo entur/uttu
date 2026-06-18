@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>5.3.0</version>
+        <version>5.6.0</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -48,19 +48,19 @@
         <geotools.version>33.1</geotools.version>
         <wololo.version>0.18.1</wololo.version>
 
-        <commons-io.version>2.21.0</commons-io.version>
+        <commons-io.version>2.22.0</commons-io.version>
         <graphql.version>26.0</graphql.version>
         <graphql-extended-scalars.version>24.0</graphql-extended-scalars.version>
-        <netex-java-model.version>2.0.15.2</netex-java-model.version>
+        <netex-java-model.version>2.0.16</netex-java-model.version>
 
         <jakarta-xml-bind.version>4.0.5</jakarta-xml-bind.version>
-        <glassfish-jaxb.version>4.0.7</glassfish-jaxb.version>
+        <glassfish-jaxb.version>4.0.9</glassfish-jaxb.version>
 
         <prettier-java.version>2.6.0</prettier-java.version>
         <prettier-maven-plugin.version>0.22</prettier-maven-plugin.version>
         <plugin.prettier.goal>write</plugin.prettier.goal>
 
-        <awssdk.version>2.42.13</awssdk.version>
+        <awssdk.version>2.46.10</awssdk.version>
     </properties>
 
     <distributionManagement>
@@ -309,7 +309,7 @@
         <dependency>
             <groupId>com.amazonaws.secretsmanager</groupId>
             <artifactId>aws-secretsmanager-jdbc</artifactId>
-            <version>2.0.4</version>
+            <version>2.1.2</version>
         </dependency>
 
         <dependency>
@@ -356,7 +356,7 @@
         <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
-            <version>2.0.3</version>
+            <version>2.0.5</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -495,7 +495,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.3.0</version>
+                <version>3.6.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
