@@ -16,6 +16,7 @@
 package no.entur.uttu.graphql.resource;
 
 import graphql.GraphQL;
+import jakarta.annotation.PostConstruct;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
@@ -23,7 +24,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.util.HashMap;
-import javax.annotation.PostConstruct;
 import no.entur.uttu.graphql.ProviderGraphQLSchema;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;

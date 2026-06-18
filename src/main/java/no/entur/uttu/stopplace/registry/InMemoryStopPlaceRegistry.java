@@ -15,11 +15,11 @@
 
 package no.entur.uttu.stopplace.registry;
 
+import jakarta.annotation.PostConstruct;
 import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
-import javax.annotation.PostConstruct;
 import no.entur.uttu.stopplace.filter.StopPlacesFilter;
 import no.entur.uttu.stopplace.filter.params.BoundingBoxFilterParams;
 import no.entur.uttu.stopplace.filter.params.StopPlaceFilterParams;

@@ -22,14 +22,25 @@ import org.glassfish.jersey.servlet.ServletContainer;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 
 @Configuration
 public class JerseyConfig {
 
   @Bean
-  public ServletRegistrationBean publicAPIJerseyConfig() {
+  public ServletRegistrationBean publicAPIJerseyConfig(
+    @Lazy LinesGraphQLResource linesGraphQLResource,
+    @Lazy ProviderGraphQLResource providerGraphQLResource,
+    @Lazy ExportFileDownloadResource exportFileDownloadResource
+  ) {
     ServletRegistrationBean publicJersey = new ServletRegistrationBean(
-      new ServletContainer(new LinesAPI())
+      new ServletContainer(
+        new LinesAPI(
+          linesGraphQLResource,
+          providerGraphQLResource,
+          exportFileDownloadResource
+        )
+      )
     );
     publicJersey.addUrlMappings("/services/flexible-lines/*");
     publicJersey.setName("FlexibleLinesAPI");
@@ -37,14 +48,22 @@ public class JerseyConfig {
     return publicJersey;
   }
 
-  private class LinesAPI extends ResourceConfig {
+  private static class LinesAPI extends ResourceConfig {
 
-    public LinesAPI() {
+    public LinesAPI(
+      LinesGraphQLResource linesGraphQLResource,
+      ProviderGraphQLResource providerGraphQLResource,
+      ExportFileDownloadResource exportFileDownloadResource
+    ) {
       register(DataIntegrityViolationExceptionMapper.class);
       register(GeneralExceptionMapper.class);
-      register(LinesGraphQLResource.class);
-      register(ProviderGraphQLResource.class);
-      register(ExportFileDownloadResource.class);
+      // Register the Spring-managed bean instances (not the classes) so they are fully
+      // initialised by Spring (incl. @PostConstruct and @PreAuthorize proxying). The
+      // Jersey/Spring bridge in Boot 4.0 no longer runs @PostConstruct on resources
+      // registered by class.
+      register(linesGraphQLResource);
+      register(providerGraphQLResource);
+      register(exportFileDownloadResource);
     }
   }
 }
