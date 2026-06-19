@@ -17,6 +17,8 @@ package no.entur.uttu.migration;
 
 import static org.junit.Assert.*;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -42,6 +44,9 @@ import org.springframework.transaction.annotation.Transactional;
 @ActiveProfiles({ "in-memory-blobstore" })
 @Transactional
 public class LineMigrationServiceIntegrationTest extends UttuIntegrationTest {
+
+  @PersistenceContext
+  private EntityManager entityManager;
 
   @Autowired
   private LineMigrationService lineMigrationService;
@@ -401,6 +406,10 @@ public class LineMigrationServiceIntegrationTest extends UttuIntegrationTest {
     ServiceJourney journey = pattern.getServiceJourneys().get(0);
     journey.updateDayTypes(new ArrayList<>(Arrays.asList(sourceDayType)));
     serviceJourneyRepository.save(journey);
+    // Flush this extra source-side modification while still in SOURCE context, so it is
+    // not auto-flushed later under the target Context during the migration's validation
+    // queries (see createSampleFixedLine for the full rationale).
+    entityManager.flush();
 
     // Create matching DayType in target provider
     Context.setProvider("TARGET");
@@ -502,7 +511,14 @@ public class LineMigrationServiceIntegrationTest extends UttuIntegrationTest {
 
     // Link the journey pattern to the line
     line.setJourneyPatterns(new ArrayList<>(Arrays.asList(pattern)));
-    return fixedLineRepository.save(line);
+    line = fixedLineRepository.save(line);
+    // Flush under the source provider context so the setup is fully persisted before the
+    // migration switches Context to the target provider. Otherwise the migration's first
+    // query would auto-flush these still-dirty source entities under the target Context,
+    // tripping ProviderEntity#verifyProvider. (In production the source line is committed
+    // in a prior transaction, so this situation does not arise.)
+    entityManager.flush();
+    return line;
   }
 
   private FlexibleLine createSampleFlexibleLine() {
@@ -542,7 +558,10 @@ public class LineMigrationServiceIntegrationTest extends UttuIntegrationTest {
 
     // Link the journey pattern to the line
     line.setJourneyPatterns(new ArrayList<>(Arrays.asList(pattern)));
-    return flexibleLineRepository.save(line);
+    line = flexibleLineRepository.save(line);
+    // Flush under the source provider context (see createSampleFixedLine for rationale).
+    entityManager.flush();
+    return line;
   }
 
   private JourneyPattern createJourneyPattern(Line line) {
