@@ -21,7 +21,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.persistence.autoconfigure.EntityScan;
 import org.springframework.boot.security.autoconfigure.UserDetailsServiceAutoConfiguration;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
@@ -32,7 +31,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
   repositoryBaseClass = ProviderEntityRepositoryImpl.class
 )
 @EntityScan(basePackageClasses = { Provider.class, Jsr310JpaConverters.class })
-@EnableCaching
 @ComponentScan(
   basePackages = { "no.entur.uttu", "org.rutebanken.helper.stopplace.changelog" }
 )
