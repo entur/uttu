@@ -14,6 +14,15 @@
     {
       "matchPackageNames": ["com.github.mizosoft.methanol:methanol"],
       "groupName": null
+    },
+    {
+      "matchPackageNames": ["org.entur:netex-java-model"],
+      "groupName": null
+    },
+    {
+      "groupName": "aws",
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["software.amazon.awssdk:**", "com.amazonaws:**", "com.amazonaws.secretsmanager:**", "io.awspring.cloud:**"]
     }
   ]
 }
