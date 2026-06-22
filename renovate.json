@@ -13,11 +13,13 @@
     },
     {
       "matchPackageNames": ["com.github.mizosoft.methanol:methanol"],
-      "groupName": null
+      "groupName": "methanol",
+      "groupSlug": "methanol"
     },
     {
       "matchPackageNames": ["org.entur:netex-java-model"],
-      "groupName": null
+      "groupName": "netex-java-model",
+      "groupSlug": "netex-java-model"
     },
     {
       "groupName": "aws",
