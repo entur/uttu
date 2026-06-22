@@ -25,6 +25,11 @@
       "groupName": "aws",
       "matchDatasources": ["maven"],
       "matchPackageNames": ["software.amazon.awssdk:**", "com.amazonaws:**", "com.amazonaws.secretsmanager:**", "io.awspring.cloud:**"]
+    },
+    {
+      "matchDatasources": ["maven"],
+      "matchPackageNames": ["org.geotools:**"],
+      "registryUrls": ["https://repo.osgeo.org/repository/release/", "https://repo1.maven.org/maven2"]
     }
   ]
 }
