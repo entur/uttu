@@ -72,6 +72,10 @@ public class ServiceJourneyMapper extends AbstractGroupOfEntitiesMapper<ServiceJ
       entity::setOperatorRef
     );
     input.apply(
+      FIELD_VEHICLE_TYPE_REF,
+      entity::setVehicleTypeRef
+    );
+    input.apply(
       FIELD_BOOKING_ARRANGEMENT,
       bookingArrangementMapper::map,
       entity::setBookingArrangement

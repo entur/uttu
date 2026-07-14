@@ -32,6 +32,7 @@ public class GraphQLNames {
   public static final String FIELD_TRANSPORT_MODE = "transportMode";
   public static final String FIELD_TRANSPORT_SUBMODE = "transportSubmode";
   public static final String FIELD_OPERATOR_REF = "operatorRef";
+  public static final String FIELD_VEHICLE_TYPE_REF = "vehicleTypeRef";
   public static final String FIELD_POINTS_IN_SEQUENCE = "pointsInSequence";
   public static final String FIELD_BOOKING_ARRANGEMENT = "bookingArrangement";
   public static final String FIELD_NOTICES = "notices";

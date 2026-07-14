@@ -64,6 +64,7 @@ class ServiceJourneyProducerTest {
     when(local.getBookingArrangement()).thenReturn(null);
     when(local.getPublicCode()).thenReturn("PCODE");
     when(local.getRef()).thenReturn(new no.entur.uttu.model.Ref("SJ:1", "1"));
+    when(local.getVehicleTypeRef()).thenReturn("NMR:VehicleType:123");
     noticeAssignments = new ArrayList<>();
   }
 
@@ -89,6 +90,23 @@ class ServiceJourneyProducerTest {
     assertNull(
       sj.getDayTypes(),
       "DayTypes should not be set when includeDatedServiceJourneys is true"
+    );
+  }
+
+  @Test
+  void produce_shouldReturnVehicleTypeRef() {
+    export = new Export();
+    export.setIncludeDatedServiceJourneys(true);
+    context = new NetexExportContext(export);
+
+    org.rutebanken.netex.model.ServiceJourney sj = producer.produce(
+      local,
+      noticeAssignments,
+      context
+    );
+    assertNotNull(
+      sj.getVehicleTypeRef(),
+      "VehicleTypeRef should be set"
     );
   }
 
