@@ -45,7 +45,7 @@ import org.hibernate.annotations.FetchMode;
     @UniqueConstraint(
       name = SERVICE_JOURNEY_UNIQUE_NAME,
       columnNames = { "provider_pk", "name" }
-    ),
+    )
   }
 )
 @BatchSize(size = 100)
@@ -111,6 +111,7 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
   public String getVehicleTypeRef() {
     return vehicleTypeRef;
   }
+
   public void setVehicleTypeRef(String vehicleTypeRef) {
     this.vehicleTypeRef = vehicleTypeRef;
   }
