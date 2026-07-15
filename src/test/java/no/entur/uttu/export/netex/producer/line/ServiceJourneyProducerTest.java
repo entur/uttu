@@ -99,12 +99,21 @@ class ServiceJourneyProducerTest {
     export.setIncludeDatedServiceJourneys(true);
     context = new NetexExportContext(export);
 
+    DayType dayType = new DayType();
+    dayType.getDayTypeAssignments().add(period(LocalDate.MIN, LocalDate.MAX));
+    setDayTypes(Set.of(dayType));
+
     org.rutebanken.netex.model.ServiceJourney sj = producer.produce(
       local,
       noticeAssignments,
       context
     );
+    assertNotNull(sj, "ServiceJourney should be produced when day types are valid");
     assertNotNull(sj.getVehicleTypeRef(), "VehicleTypeRef should be set");
+    org.junit.jupiter.api.Assertions.assertEquals(
+      "NMR:VehicleType:123",
+      sj.getVehicleTypeRef().getValue().getRef()
+    );
   }
 
   @Test
