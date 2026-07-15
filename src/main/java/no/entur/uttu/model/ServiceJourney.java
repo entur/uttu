@@ -45,7 +45,7 @@ import org.hibernate.annotations.FetchMode;
     @UniqueConstraint(
       name = SERVICE_JOURNEY_UNIQUE_NAME,
       columnNames = { "provider_pk", "name" }
-    )
+    ),
   }
 )
 @BatchSize(size = 100)

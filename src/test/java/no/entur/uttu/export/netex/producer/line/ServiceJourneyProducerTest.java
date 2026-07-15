@@ -39,22 +39,20 @@ class ServiceJourneyProducerTest {
 
   @BeforeEach
   void setUp() {
-    objectFactory =
-      new NetexObjectFactory(
-        new DateUtils(),
-        new ExportTimeZone(),
-        new AdditionalCodespacesConfig()
-      );
+    objectFactory = new NetexObjectFactory(
+      new DateUtils(),
+      new ExportTimeZone(),
+      new AdditionalCodespacesConfig()
+    );
     contactStructureProducer = new ContactStructureProducer(objectFactory);
     organisationProducer = mock(OrganisationProducer.class);
     Clock clock = Clock.systemDefaultZone();
-    producer =
-      new ServiceJourneyProducer(
-        objectFactory,
-        contactStructureProducer,
-        organisationProducer,
-        clock
-      );
+    producer = new ServiceJourneyProducer(
+      objectFactory,
+      contactStructureProducer,
+      organisationProducer,
+      clock
+    );
     local = mock(ServiceJourney.class, RETURNS_DEEP_STUBS);
     journeyPattern = mock(JourneyPattern.class);
     no.entur.uttu.model.Ref jpRef = new no.entur.uttu.model.Ref("JP:1", "1");
