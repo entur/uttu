@@ -21,10 +21,10 @@ public class NetexOrganisationRegistryClient {
     return webClientBuilder
       .defaultHeader("Et-Client-Name", "entur-nplan")
       .exchangeStrategies(
-        ExchangeStrategies
-          .builder()
-          .codecs(codecs ->
-            codecs.defaultCodecs().maxInMemorySize(resolveMaxInMemorySizeBytes())
+        ExchangeStrategies.builder()
+          .codecs(
+            codecs ->
+              codecs.defaultCodecs().maxInMemorySize(resolveMaxInMemorySizeBytes())
           )
           .build()
       )
