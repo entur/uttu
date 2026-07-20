@@ -16,15 +16,14 @@ public class NetexOrganisationRegistryClient {
   String maxInMemorySizeKB;
 
   @Bean("orgRegisterClient")
-  @ConditionalOnMissingBean(name = "orgRegisterClient")
   WebClient webClient(WebClient.Builder webClientBuilder) {
     return webClientBuilder
       .defaultHeader("Et-Client-Name", "entur-nplan")
       .exchangeStrategies(
-        ExchangeStrategies.builder()
-          .codecs(
-            codecs ->
-              codecs.defaultCodecs().maxInMemorySize(resolveMaxInMemorySizeBytes())
+        ExchangeStrategies
+          .builder()
+          .codecs(codecs ->
+            codecs.defaultCodecs().maxInMemorySize(resolveMaxInMemorySizeBytes())
           )
           .build()
       )
