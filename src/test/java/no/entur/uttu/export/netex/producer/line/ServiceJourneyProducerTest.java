@@ -1,8 +1,7 @@
 package no.entur.uttu.export.netex.producer.line;
 
 import static no.entur.uttu.model.DayTypeTest.period;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.Clock;
@@ -110,10 +109,7 @@ class ServiceJourneyProducerTest {
     );
     assertNotNull(sj, "ServiceJourney should be produced when day types are valid");
     assertNotNull(sj.getVehicleTypeRef(), "VehicleTypeRef should be set");
-    org.junit.jupiter.api.Assertions.assertEquals(
-      "NMR:VehicleType:123",
-      sj.getVehicleTypeRef().getValue().getRef()
-    );
+    assertEquals("NMR:VehicleType:123", sj.getVehicleTypeRef().getValue().getRef());
   }
 
   @Test
