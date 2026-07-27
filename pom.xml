@@ -20,7 +20,7 @@
     <parent>
         <groupId>org.entur.ror</groupId>
         <artifactId>superpom</artifactId>
-        <version>6.4.0</version>
+        <version>6.5.0</version>
     </parent>
 
     <groupId>no.rutebanken</groupId>
@@ -39,7 +39,7 @@
     <properties>
         <java.version>21</java.version>
 
-        <entur.helpers.version>7.1.0</entur.helpers.version>
+        <entur.helpers.version>7.2.0</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>
         <gcp-storage.version>${entur.helpers.version}</gcp-storage.version>
@@ -504,7 +504,7 @@
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
                 <artifactId>spotless-maven-plugin</artifactId>
-                <version>3.7.0</version>
+                <version>3.8.0</version>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -552,7 +552,7 @@
             <plugin>
                 <groupId>com.google.cloud.tools</groupId>
                 <artifactId>jib-maven-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.5.2</version>
                 <dependencies>
                     <!-- Include jib-spring-boot-extension-maven to prevent spring-boot-devtools from being packaged.-->
                     <dependency>
