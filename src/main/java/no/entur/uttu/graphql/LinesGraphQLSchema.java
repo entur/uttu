@@ -586,6 +586,7 @@ public class LinesGraphQLSchema {
       .name("ServiceJourney")
       .field(newFieldDefinition().name(FIELD_PUBLIC_CODE).type(GraphQLString))
       .field(newFieldDefinition().name(FIELD_OPERATOR_REF).type(GraphQLString))
+      .field(newFieldDefinition().name(FIELD_VEHICLE_TYPE_REF).type(GraphQLString))
       .field(
         newFieldDefinition()
           .name(FIELD_BOOKING_ARRANGEMENT)
@@ -1352,6 +1353,7 @@ public class LinesGraphQLSchema {
       .name("ServiceJourneyInput")
       .field(newInputObjectField().name(FIELD_PUBLIC_CODE).type(GraphQLString))
       .field(newInputObjectField().name(FIELD_OPERATOR_REF).type(GraphQLString))
+      .field(newInputObjectField().name(FIELD_VEHICLE_TYPE_REF).type(GraphQLString))
       .field(
         newInputObjectField()
           .name(FIELD_BOOKING_ARRANGEMENT)

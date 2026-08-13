@@ -55,6 +55,8 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
 
   private String operatorRef;
 
+  private String vehicleTypeRef;
+
   @OneToOne(cascade = CascadeType.ALL)
   @Fetch(FetchMode.JOIN)
   private BookingArrangement bookingArrangement;
@@ -104,6 +106,14 @@ public class ServiceJourney extends GroupOfEntities_VersionStructure {
       }
       this.passingTimes.addAll(passingTimes);
     }
+  }
+
+  public String getVehicleTypeRef() {
+    return vehicleTypeRef;
+  }
+
+  public void setVehicleTypeRef(String vehicleTypeRef) {
+    this.vehicleTypeRef = vehicleTypeRef;
   }
 
   public String getPublicCode() {

@@ -1,8 +1,7 @@
 package no.entur.uttu.export.netex.producer.line;
 
 import static no.entur.uttu.model.DayTypeTest.period;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.Clock;
@@ -64,6 +63,7 @@ class ServiceJourneyProducerTest {
     when(local.getBookingArrangement()).thenReturn(null);
     when(local.getPublicCode()).thenReturn("PCODE");
     when(local.getRef()).thenReturn(new no.entur.uttu.model.Ref("SJ:1", "1"));
+    when(local.getVehicleTypeRef()).thenReturn("NMR:VehicleType:123");
     noticeAssignments = new ArrayList<>();
   }
 
@@ -90,6 +90,26 @@ class ServiceJourneyProducerTest {
       sj.getDayTypes(),
       "DayTypes should not be set when includeDatedServiceJourneys is true"
     );
+  }
+
+  @Test
+  void produce_shouldReturnVehicleTypeRef() {
+    export = new Export();
+    export.setIncludeDatedServiceJourneys(true);
+    context = new NetexExportContext(export);
+
+    DayType dayType = new DayType();
+    dayType.getDayTypeAssignments().add(period(LocalDate.MIN, LocalDate.MAX));
+    setDayTypes(Set.of(dayType));
+
+    org.rutebanken.netex.model.ServiceJourney sj = producer.produce(
+      local,
+      noticeAssignments,
+      context
+    );
+    assertNotNull(sj, "ServiceJourney should be produced when day types are valid");
+    assertNotNull(sj.getVehicleTypeRef(), "VehicleTypeRef should be set");
+    assertEquals("NMR:VehicleType:123", sj.getVehicleTypeRef().getValue().getRef());
   }
 
   @Test

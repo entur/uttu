@@ -108,7 +108,7 @@ public class ServiceJourneyProducer {
     );
     context.notices.addAll(local.getNotices());
 
-    return objectFactory
+    org.rutebanken.netex.model.ServiceJourney serviceJourney = objectFactory
       .populate(new org.rutebanken.netex.model.ServiceJourney(), local)
       .withJourneyPatternRef(journeyPatternRef)
       .withName(objectFactory.createMultilingualString(local.getName()))
@@ -122,6 +122,15 @@ public class ServiceJourneyProducer {
           .withTimetabledPassingTime(timetabledPassingTimes)
       )
       .withDayTypes(dayTypeRefs);
+
+    if (local.getVehicleTypeRef() != null) {
+      JAXBElement<VehicleTypeRefStructure> vehicleTypeRef =
+        objectFactory.wrapAsJAXBElement(
+          new VehicleTypeRefStructure().withRef(local.getVehicleTypeRef())
+        );
+      serviceJourney.withVehicleTypeRef(vehicleTypeRef);
+    }
+    return serviceJourney;
   }
 
   private @NotNull List<DayType> listValidDayTypes(
