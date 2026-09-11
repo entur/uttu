@@ -1,0 +1,66 @@
+# publiccode.yml metadata, see https://yml.publiccode.tools/
+publiccodeYmlVersion: "0.7.0"
+
+name: Uttu
+url: https://github.com/entur/uttu
+
+platforms:
+  - web
+  - linux
+
+categories:
+  - data-collection
+  - geographic-information-systems
+
+developmentStatus: stable
+softwareType: standalone/backend
+
+organisation:
+  name: Entur AS
+  uri: https://entur.no
+
+usedBy:
+  - Norway (nationwide), Entur AS
+  - Finland, Fintraffic
+
+intendedAudience:
+  scope:
+    - transportation
+  countries:
+    - "NO"
+
+description:
+  en:
+    localisedName: Uttu
+    shortDescription: Backend for Nplan, a timetable editor that exports NeTEx datasets.
+    longDescription: >
+      Uttu is the backend of Nplan, a simple editor for public transport timetables. It stores lines, journey
+      patterns, service journeys, flexible stop places and day types per data provider, and exports them as NeTEx
+      datasets that follow the Nordic NeTEx Profile. Editing happens over a GraphQL API that is consumed by the
+      Enki front-end.
+      Uttu is a Spring Boot application backed by PostgreSQL. It authenticates users against any OAuth2 issuer and
+      resolves permissions through a pluggable UserContextService, and it reads authority and operator references
+      from an external organisation registry supplied as a NeTEx file or over HTTP.
+    documentation: https://github.com/entur/uttu/blob/master/README.md
+    features:
+      - GraphQL API for editing lines, journey patterns and service journeys
+      - Export of NeTEx datasets following the Nordic NeTEx Profile
+      - Support for flexible and on-demand transport
+      - Multi-provider data separation
+      - OAuth2 authentication with pluggable user context
+      - Organisation registry import from NeTEx
+
+legal:
+  license: EUPL-1.2
+  mainCopyrightOwner: Entur AS
+
+maintenance:
+  type: internal
+  contacts:
+    - name: Entur ROR (Open Data and Journey Planning)
+      email: kollektivdata@entur.org
+
+localisation:
+  localisationReady: false
+  availableLanguages:
+    - en
