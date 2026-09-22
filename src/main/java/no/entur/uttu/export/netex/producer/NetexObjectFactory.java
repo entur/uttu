@@ -51,7 +51,7 @@ public class NetexObjectFactory {
   public static final String VERSION_ONE = "1";
   public static final String DEFAULT_LANGUAGE = "no";
 
-  @Value("${netex.export.version:1.15:NO-NeTEx-networktimetable:1.5}")
+  @Value("${netex.export.version:1.16:NO-NeTEx-networktimetable:1.6}")
   private String netexVersion;
 
   private final ObjectFactory objectFactory = new ObjectFactory();

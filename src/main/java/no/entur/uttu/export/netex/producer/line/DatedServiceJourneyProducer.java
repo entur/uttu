@@ -2,7 +2,6 @@ package no.entur.uttu.export.netex.producer.line;
 
 import java.time.Clock;
 import java.time.LocalDate;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -154,7 +153,7 @@ public class DatedServiceJourneyProducer {
     return new DatedServiceJourney()
       .withId(dsjId)
       .withVersion("0")
-      .withJourneyRef(Collections.singletonList(objectFactory.wrapAsJAXBElement(sjRef)))
+      .withJourneyRef(objectFactory.wrapAsJAXBElement(sjRef))
       .withOperatingDayRef(odRef);
   }
 }
