@@ -28,7 +28,7 @@ import org.locationtech.jts.geom.Polygon;
 
 public class NetexGeoUtil {
 
-  public static final String SRS_NAME_WGS84 = "ESPG:4326";
+  public static final String SRS_NAME_WGS84 = "EPSG:4326";
 
   public static PolygonType toNetexPolygon(Polygon polygon, NetexExportContext context) {
     if (polygon == null) {
