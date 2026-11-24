@@ -166,7 +166,7 @@ See [Supported Docker Compose Profiles](#supported-docker-compose-profiles) for 
 
 ### Build
 
-To build the project from source, you need Java 21 and Maven 3.
+To build the project from source, you need Java 25 and Maven 3.
 
 ### Database
 
