@@ -166,7 +166,14 @@ See [Supported Docker Compose Profiles](#supported-docker-compose-profiles) for 
 
 ### Build
 
-To build the project from source, you need Java 21 and Maven 3.
+To build the project from source, you need Java 25 and Maven 3.
+
+### Container image
+
+`docker.io/entur/uttu` is built from the [Dockerfile](./Dockerfile) on
+`gcr.io/distroless/java25-debian13:nonroot`. Unlike the earlier Jib-built images, it has no shell,
+runs as uid 65532 and keeps the application in `/deployments`. Pass JVM flags with
+`JDK_JAVA_OPTIONS`.
 
 ### Database
 

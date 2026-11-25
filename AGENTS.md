@@ -6,7 +6,7 @@ This file provides guidance to AI agents when working with code in this reposito
 
 Uttu is the back-end for Nplan, a timetable editor for flexible transport services. It provides GraphQL APIs for managing lines (both fixed and flexible), journey patterns, service journeys, day types, and exports to NeTEx format. The front-end is Enki.
 
-**Technology Stack:** Spring Boot 3.x, Java 21, PostgreSQL with PostGIS, JPA/Hibernate, GraphQL Java, Jersey (JAX-RS), NeTEx XML model
+**Technology Stack:** Spring Boot 4.x, Java 25, PostgreSQL with PostGIS, JPA/Hibernate, GraphQL Java, Jersey (JAX-RS), NeTEx XML model
 
 ## Build and Development Commands
 
@@ -72,6 +72,20 @@ Application runs on `http://localhost:11701` by default.
 - Provider-independent: `/services/flexible-lines/providers/graphql`
 - Provider-specific: `/services/flexible-lines/{providerCode}/graphql`
 - Export download: `/services/flexible-lines/{providerCode}/export/`
+
+## Docker Image
+The `Dockerfile` extracts the Spring Boot layers and runs them on
+`gcr.io/distroless/java25-debian13:nonroot`: Temurin JRE, no shell, no package manager. `nonroot`
+carries no version, so it is pinned to a digest that Dependabot moves. CI builds with the same
+Temurin major, and the `docker-smoke` job boots the image and checks for Spring's `using Java`
+startup line. On master, CI pushes the image to `docker.io/entur/uttu` and triggers
+`uttu-deployment-config`, whose Dockerfile is just `FROM entur/uttu:<tag>`. With no shell, JVM flags
+come from `JDK_JAVA_OPTIONS` in that repo's Helm chart. To look inside locally, swap the runtime
+`FROM` for `gcr.io/distroless/java25-debian13:debug-nonroot` (no digest) and run with
+`--entrypoint /busybox/sh`.
+
+Dependencies (Maven, actions, the distroless digest) are updated by Dependabot
+(`.github/dependabot.yml`), one PR per dependency.
 
 ## Architecture
 

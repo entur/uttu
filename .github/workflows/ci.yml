@@ -8,65 +8,108 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
+# A newer run supersedes an older one, so an older master build never deploys last.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     runs-on: ubuntu-latest
     env:
       TZ: Europe/Oslo
+    outputs:
+      version: ${{ steps.version.outputs.version }}
     steps:
-      - uses: actions/checkout@v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       # nodejs is needed because the dynamic download of it via the prettier maven plugin often
       # times out
       # Example: https://github.com/opentripplanner/OpenTripPlanner/actions/runs/4490450225/jobs/7897533439
-      - uses: actions/setup-node@v7.0.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
-          node-version: 24.21.0
+          node-version: 24
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v6.0.1
+      # Same JDK as the distroless runtime image (Temurin). check-latest skips the runner's
+      # cached JDK, which can lag behind.
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
         with:
-          java-version: 21.0.13+9.0.LTS
           distribution: temurin
+          java-version: 25
+          check-latest: true
           cache: maven
 
       - name: Run tests
         run: |
           sudo timedatectl set-timezone "Europe/Oslo"
           ./mvnw --batch-mode jacoco:prepare-agent test jacoco:report -Dprettier.nodePath=node -Dprettier.npmPath=npm spotless:check
-          ./mvnw --batch-mode jib:dockerBuild -Dmaven.test.skip -P prettierSkip
 
       - name: codecov
-        uses: codecov/codecov-action@v7.1.1
+        uses: codecov/codecov-action@303a32d7a59b442fa8d48b6a1cc6825c09c847a5 # v7.1.1
         with:
           files: ./target/site/jacoco/jacoco.xml
+
+      - name: Package
+        run: ./mvnw --batch-mode package -Dmaven.test.skip -P prettierSkip
+
+      - id: version
+        run: echo "version=$(./mvnw -q -Dexec.executable=echo -Dexec.args='${project.version}' --non-recursive exec:exec)" >> "$GITHUB_OUTPUT"
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          path: target/uttu-*.jar
+
+  docker-smoke:
+    needs: [ tests ]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: artifact
+          path: target
+      - run: docker build -t uttu:smoke .
+      # Nothing else in CI runs the image. Reaching Spring's startup line proves the JRE loaded the
+      # application bytecode; it then fails on config that only exists in the cluster, which is fine.
+      # A wrong class file version or an unusable base image never gets that far.
+      - run: |
+          timeout 180 docker run --rm uttu:smoke 2>&1 | tee smoke.log || true
+          grep -q "using Java" smoke.log
 
   image:
     # only build and push the image when it's a commit to master in Entur's repository
     if: github.repository_owner == 'entur' && github.event_name == 'push'
     runs-on: ubuntu-latest
-    needs: [ tests ]
+    needs: [ tests, docker-smoke ]
+    permissions:
+      contents: write
     env:
       CONTAINER_REPO: docker.io/entur/uttu
-      CONTAINER_REGISTRY_USER: ${{ secrets.DOCKERHUB_LOGIN }}
-      CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      GHA_DOCKER_PUSH_IMAGE_TAG: v${{ needs.tests.outputs.version }}-${{ github.run_id }}
     steps:
-      - uses: actions/checkout@v7.0.1
-
-      - name: Set up JDK 21
-        uses: actions/setup-java@v6.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          java-version: 21.0.13+9.0.LTS
-          distribution: temurin
-          cache: maven
-      - name: set variables
-        run: |
-          VERSION=$(./mvnw -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-          echo "GHA_DOCKER_PUSH_IMAGE_TAG=v$VERSION-${{ github.run_id }}" >> $GITHUB_ENV
+          name: artifact
+          path: target
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
-      - name: Build container image with Jib, push to container repo
+      # Fixed timestamps keep unchanged layers identical between builds, so the dependency layer
+      # is not uploaded again on every push.
+      - name: Build container image, push to container repo
+        env:
+          CONTAINER_REGISTRY_USER: ${{ secrets.DOCKERHUB_LOGIN }}
+          CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          SOURCE_DATE_EPOCH: 0
         run: |
-          ./mvnw --batch-mode compile com.google.cloud.tools:jib-maven-plugin:build -Djib.to.tags=latest,${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }} -Dmaven.test.skip -P prettierSkip
+          echo "$CONTAINER_REGISTRY_PASSWORD" | docker login docker.io --username "$CONTAINER_REGISTRY_USER" --password-stdin
+          docker buildx build \
+            -t "$CONTAINER_REPO:$GHA_DOCKER_PUSH_IMAGE_TAG" -t "$CONTAINER_REPO:latest" \
+            --output type=image,rewrite-timestamp=true,push=true .
 
       - name: Tag default branch with the container image tag ${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }}
         id: tag-version
@@ -81,7 +124,7 @@ jobs:
           repo_owner="entur"
           repo_name="uttu-deployment-config"
           event_type="trigger-downstream-ci"
-          service="uttu"   
+          service="uttu"
           echo "Triggering downstream CI for $service with version ${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }}"
           curl -X POST \
           -H "Authorization: token ${{ secrets.GITFLOW_PAT }}" \
