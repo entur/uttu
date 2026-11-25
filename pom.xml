@@ -37,8 +37,6 @@
     </scm>
 
     <properties>
-        <java.version>25</java.version>
-
         <entur.helpers.version>7.4.0</entur.helpers.version>
 
         <entur-google-pubsub-version>${entur.helpers.version}</entur-google-pubsub-version>

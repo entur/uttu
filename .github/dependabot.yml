@@ -47,6 +47,10 @@ updates:
     commit-message:
       prefix: "chore"
       include: "scope"
+    # uttu only: graphql-java publishes date-stamped and branch builds as releases
+    ignore:
+      - dependency-name: "com.graphql-java:*"
+        versions: [">= 1000"]
 
   #   - package-ecosystem: "npm"
   #     directories: ["/"]

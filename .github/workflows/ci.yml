@@ -8,6 +8,14 @@ on:
     branches:
       - master
 
+permissions:
+  contents: read
+
+# A newer run supersedes an older one, so an older master build never deploys last.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   tests:
     runs-on: ubuntu-latest
@@ -77,6 +85,8 @@ jobs:
     if: github.repository_owner == 'entur' && github.event_name == 'push'
     runs-on: ubuntu-latest
     needs: [ tests, docker-smoke ]
+    permissions:
+      contents: write
     env:
       CONTAINER_REPO: docker.io/entur/uttu
       GHA_DOCKER_PUSH_IMAGE_TAG: v${{ needs.tests.outputs.version }}-${{ github.run_id }}
@@ -86,16 +96,20 @@ jobs:
         with:
           name: artifact
           path: target
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
+      # Fixed timestamps keep unchanged layers identical between builds, so the dependency layer
+      # is not uploaded again on every push.
       - name: Build container image, push to container repo
         env:
           CONTAINER_REGISTRY_USER: ${{ secrets.DOCKERHUB_LOGIN }}
           CONTAINER_REGISTRY_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+          SOURCE_DATE_EPOCH: 0
         run: |
           echo "$CONTAINER_REGISTRY_PASSWORD" | docker login docker.io --username "$CONTAINER_REGISTRY_USER" --password-stdin
-          docker build -t "$CONTAINER_REPO:$GHA_DOCKER_PUSH_IMAGE_TAG" -t "$CONTAINER_REPO:latest" .
-          docker push "$CONTAINER_REPO:$GHA_DOCKER_PUSH_IMAGE_TAG"
-          docker push "$CONTAINER_REPO:latest"
+          docker buildx build \
+            -t "$CONTAINER_REPO:$GHA_DOCKER_PUSH_IMAGE_TAG" -t "$CONTAINER_REPO:latest" \
+            --output type=image,rewrite-timestamp=true,push=true .
 
       - name: Tag default branch with the container image tag ${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }}
         id: tag-version

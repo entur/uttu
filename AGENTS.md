@@ -68,11 +68,16 @@ src/main/resources/db_init.sh
 
 Application runs on `http://localhost:11701` by default.
 
-### Docker Image
+### GraphQL Endpoints
+- Provider-independent: `/services/flexible-lines/providers/graphql`
+- Provider-specific: `/services/flexible-lines/{providerCode}/graphql`
+- Export download: `/services/flexible-lines/{providerCode}/export/`
+
+## Docker Image
 The `Dockerfile` extracts the Spring Boot layers and runs them on
 `gcr.io/distroless/java25-debian13:nonroot`: Temurin JRE, no shell, no package manager. `nonroot`
 carries no version, so it is pinned to a digest that Dependabot moves. CI builds with the same
-Temurin version, and the `docker-smoke` job boots the image and checks for Spring's `using Java`
+Temurin major, and the `docker-smoke` job boots the image and checks for Spring's `using Java`
 startup line. On master, CI pushes the image to `docker.io/entur/uttu` and triggers
 `uttu-deployment-config`, whose Dockerfile is just `FROM entur/uttu:<tag>`. With no shell, JVM flags
 come from `JDK_JAVA_OPTIONS` in that repo's Helm chart. To look inside locally, swap the runtime
@@ -81,11 +86,6 @@ come from `JDK_JAVA_OPTIONS` in that repo's Helm chart. To look inside locally, 
 
 Dependencies (Maven, actions, the distroless digest) are updated by Dependabot
 (`.github/dependabot.yml`), one PR per dependency.
-
-### GraphQL Endpoints
-- Provider-independent: `/services/flexible-lines/providers/graphql`
-- Provider-specific: `/services/flexible-lines/{providerCode}/graphql`
-- Export download: `/services/flexible-lines/{providerCode}/export/`
 
 ## Architecture
 
