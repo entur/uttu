@@ -11,10 +11,11 @@ on:
 permissions:
   contents: read
 
-# A newer run supersedes an older one, so an older master build never deploys last.
+# PR runs are cancelled by newer ones. Master runs queue instead, so a started build always
+# finishes and an older build never deploys last.
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   tests:
