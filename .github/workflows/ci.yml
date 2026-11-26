@@ -121,14 +121,16 @@ jobs:
           git push origin "$GHA_DOCKER_PUSH_IMAGE_TAG" --force
 
       - name: Trigger downstream CI
+        env:
+          GITFLOW_PAT: ${{ secrets.GITFLOW_PAT }}
         run: |
           repo_owner="entur"
           repo_name="uttu-deployment-config"
           event_type="trigger-downstream-ci"
           service="uttu"
-          echo "Triggering downstream CI for $service with version ${{ env.GHA_DOCKER_PUSH_IMAGE_TAG }}"
-          curl -X POST \
-          -H "Authorization: token ${{ secrets.GITFLOW_PAT }}" \
+          echo "Triggering downstream CI for $service with version $GHA_DOCKER_PUSH_IMAGE_TAG"
+          curl --fail-with-body -sS -X POST \
+          -H "Authorization: token $GITFLOW_PAT" \
           -H "Accept: application/vnd.github.everest-preview+json" \
           -H "Content-Type: application/json" https://api.github.com/repos/$repo_owner/$repo_name/dispatches \
           -d "{\"event_type\": \"$event_type\", \"client_payload\": {\"service\": \"$service\", \"version\": \"$GHA_DOCKER_PUSH_IMAGE_TAG\", \"unit\": false, \"integration\": true}}"
