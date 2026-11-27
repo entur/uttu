@@ -81,6 +81,32 @@ jobs:
           timeout 180 docker run --rm uttu:smoke 2>&1 | tee smoke.log || true
           grep -q "using Java" smoke.log
 
+      # docker-scan downloads the artifact and loads <artifact>.tar from it
+      - name: Save the image for docker-scan
+        run: docker save uttu:smoke -o uttu-image.tar
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: uttu-image
+          path: uttu-image.tar
+          retention-days: 1
+
+  # Scans the smoke-test image: same Dockerfile and jar as the pushed one, amd64 only.
+  # Not on fork PRs, whose read-only token cannot upload the SARIF.
+  docker-scan:
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    needs: [docker-smoke]
+    # docker-scan's own job asks for these; a called workflow cannot get more than the caller grants
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      security-events: write
+      actions: read
+    uses: entur/gha-security/.github/workflows/docker-scan.yml@v2
+    with:
+      image_artifact: uttu-image
+
   image:
     # only build and push the image when it's a commit to master in Entur's repository
     if: github.repository_owner == 'entur' && github.event_name == 'push'
